@@ -1,5 +1,9 @@
 # How to contribute to Jasonette
 
+## **Can you help with documentation?**
+
+If you would like to contribute to the [documentation](https://jasonette.github.io/documentation/), let's discuss on the [documentation repository](https://github.com/Jasonette/documentation/issues).
+
 ## **Do you have a bug report or a feature request?**
 
 * **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/Jasonette/JASONETTE-iOS/issues).
