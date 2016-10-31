@@ -1,0 +1,345 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2214365616B48FD70057C96E /* SVPullToRefresh.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 2214365516B48FD70057C96E /* SVPullToRefresh.podspec */; };
+		22E0D9191545EE5B00BB6BB5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E0D9181545EE5B00BB6BB5 /* UIKit.framework */; };
+		22E0D91B1545EE5B00BB6BB5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E0D91A1545EE5B00BB6BB5 /* Foundation.framework */; };
+		22E0D91D1545EE5B00BB6BB5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E0D91C1545EE5B00BB6BB5 /* CoreGraphics.framework */; };
+		22E0D9231545EE5B00BB6BB5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 22E0D9211545EE5B00BB6BB5 /* InfoPlist.strings */; };
+		22E0D9251545EE5B00BB6BB5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0D9241545EE5B00BB6BB5 /* main.m */; };
+		22E0D9291545EE5B00BB6BB5 /* SVAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0D9281545EE5B00BB6BB5 /* SVAppDelegate.m */; };
+		22E0D92C1545EE5B00BB6BB5 /* SVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0D92B1545EE5B00BB6BB5 /* SVViewController.m */; };
+		22E0D92F1545EE5B00BB6BB5 /* SVViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0D92D1545EE5B00BB6BB5 /* SVViewController.xib */; };
+		22E0D93D1545EE7600BB6BB5 /* UIScrollView+SVPullToRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0D93B1545EE7600BB6BB5 /* UIScrollView+SVPullToRefresh.m */; };
+		22E0D9411545EE9000BB6BB5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E0D9401545EE9000BB6BB5 /* QuartzCore.framework */; };
+		22E0D94B1545F63300BB6BB5 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 22E0D94A1545F63300BB6BB5 /* README.md */; };
+		22FDEC971639082E00DB53A8 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 22FDEC961639082E00DB53A8 /* Default-568h@2x.png */; };
+		22FDEC9D16390CC800DB53A8 /* UIScrollView+SVInfiniteScrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = 2288146016047C06005C6461 /* UIScrollView+SVInfiniteScrolling.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2214365516B48FD70057C96E /* SVPullToRefresh.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SVPullToRefresh.podspec; path = ../SVPullToRefresh.podspec; sourceTree = "<group>"; };
+		226989041639F55E00FCBB3B /* SVPullToRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVPullToRefresh.h; sourceTree = "<group>"; };
+		2288145F16047C06005C6461 /* UIScrollView+SVInfiniteScrolling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+SVInfiniteScrolling.h"; sourceTree = "<group>"; };
+		2288146016047C06005C6461 /* UIScrollView+SVInfiniteScrolling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+SVInfiniteScrolling.m"; sourceTree = "<group>"; };
+		22E0D9141545EE5B00BB6BB5 /* SVPullToRefreshDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SVPullToRefreshDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		22E0D9181545EE5B00BB6BB5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		22E0D91A1545EE5B00BB6BB5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		22E0D91C1545EE5B00BB6BB5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		22E0D9201545EE5B00BB6BB5 /* SVPullToRefreshDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SVPullToRefreshDemo-Info.plist"; sourceTree = "<group>"; };
+		22E0D9221545EE5B00BB6BB5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		22E0D9241545EE5B00BB6BB5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		22E0D9261545EE5B00BB6BB5 /* SVPullToRefreshDemo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SVPullToRefreshDemo-Prefix.pch"; sourceTree = "<group>"; };
+		22E0D9271545EE5B00BB6BB5 /* SVAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVAppDelegate.h; sourceTree = "<group>"; };
+		22E0D9281545EE5B00BB6BB5 /* SVAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVAppDelegate.m; sourceTree = "<group>"; };
+		22E0D92A1545EE5B00BB6BB5 /* SVViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVViewController.h; sourceTree = "<group>"; };
+		22E0D92B1545EE5B00BB6BB5 /* SVViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVViewController.m; sourceTree = "<group>"; };
+		22E0D92E1545EE5B00BB6BB5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/SVViewController.xib; sourceTree = "<group>"; };
+		22E0D93A1545EE7600BB6BB5 /* UIScrollView+SVPullToRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+SVPullToRefresh.h"; sourceTree = "<group>"; };
+		22E0D93B1545EE7600BB6BB5 /* UIScrollView+SVPullToRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+SVPullToRefresh.m"; sourceTree = "<group>"; };
+		22E0D9401545EE9000BB6BB5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		22E0D94A1545F63300BB6BB5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		22FDEC961639082E00DB53A8 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		22E0D9111545EE5B00BB6BB5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22E0D9411545EE9000BB6BB5 /* QuartzCore.framework in Frameworks */,
+				22E0D9191545EE5B00BB6BB5 /* UIKit.framework in Frameworks */,
+				22E0D91B1545EE5B00BB6BB5 /* Foundation.framework in Frameworks */,
+				22E0D91D1545EE5B00BB6BB5 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		22E0D9091545EE5B00BB6BB5 = {
+			isa = PBXGroup;
+			children = (
+				22E0D94A1545F63300BB6BB5 /* README.md */,
+				2214365516B48FD70057C96E /* SVPullToRefresh.podspec */,
+				22E0D91E1545EE5B00BB6BB5 /* Demo */,
+				22E0D9391545EE7600BB6BB5 /* SVPullToRefresh */,
+				22E0D9171545EE5B00BB6BB5 /* Frameworks */,
+				22E0D9151545EE5B00BB6BB5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		22E0D9151545EE5B00BB6BB5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				22E0D9141545EE5B00BB6BB5 /* SVPullToRefreshDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		22E0D9171545EE5B00BB6BB5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				22E0D9401545EE9000BB6BB5 /* QuartzCore.framework */,
+				22E0D9181545EE5B00BB6BB5 /* UIKit.framework */,
+				22E0D91A1545EE5B00BB6BB5 /* Foundation.framework */,
+				22E0D91C1545EE5B00BB6BB5 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		22E0D91E1545EE5B00BB6BB5 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				22E0D9271545EE5B00BB6BB5 /* SVAppDelegate.h */,
+				22E0D9281545EE5B00BB6BB5 /* SVAppDelegate.m */,
+				22E0D92A1545EE5B00BB6BB5 /* SVViewController.h */,
+				22E0D92B1545EE5B00BB6BB5 /* SVViewController.m */,
+				22E0D92D1545EE5B00BB6BB5 /* SVViewController.xib */,
+				22E0D91F1545EE5B00BB6BB5 /* Supporting Files */,
+			);
+			name = Demo;
+			path = SVPullToRefreshDemo;
+			sourceTree = "<group>";
+		};
+		22E0D91F1545EE5B00BB6BB5 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				22FDEC961639082E00DB53A8 /* Default-568h@2x.png */,
+				22E0D9201545EE5B00BB6BB5 /* SVPullToRefreshDemo-Info.plist */,
+				22E0D9211545EE5B00BB6BB5 /* InfoPlist.strings */,
+				22E0D9241545EE5B00BB6BB5 /* main.m */,
+				22E0D9261545EE5B00BB6BB5 /* SVPullToRefreshDemo-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		22E0D9391545EE7600BB6BB5 /* SVPullToRefresh */ = {
+			isa = PBXGroup;
+			children = (
+				226989041639F55E00FCBB3B /* SVPullToRefresh.h */,
+				22E0D93A1545EE7600BB6BB5 /* UIScrollView+SVPullToRefresh.h */,
+				22E0D93B1545EE7600BB6BB5 /* UIScrollView+SVPullToRefresh.m */,
+				2288145F16047C06005C6461 /* UIScrollView+SVInfiniteScrolling.h */,
+				2288146016047C06005C6461 /* UIScrollView+SVInfiniteScrolling.m */,
+			);
+			name = SVPullToRefresh;
+			path = ../SVPullToRefresh;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		22E0D9131545EE5B00BB6BB5 /* SVPullToRefreshDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 22E0D9321545EE5B00BB6BB5 /* Build configuration list for PBXNativeTarget "SVPullToRefreshDemo" */;
+			buildPhases = (
+				22E0D9101545EE5B00BB6BB5 /* Sources */,
+				22E0D9111545EE5B00BB6BB5 /* Frameworks */,
+				22E0D9121545EE5B00BB6BB5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SVPullToRefreshDemo;
+			productName = SVPullToRefreshDemo;
+			productReference = 22E0D9141545EE5B00BB6BB5 /* SVPullToRefreshDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		22E0D90B1545EE5B00BB6BB5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = SV;
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = Home;
+			};
+			buildConfigurationList = 22E0D90E1545EE5B00BB6BB5 /* Build configuration list for PBXProject "SVPullToRefreshDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 22E0D9091545EE5B00BB6BB5;
+			productRefGroup = 22E0D9151545EE5B00BB6BB5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				22E0D9131545EE5B00BB6BB5 /* SVPullToRefreshDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		22E0D9121545EE5B00BB6BB5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22E0D9231545EE5B00BB6BB5 /* InfoPlist.strings in Resources */,
+				22E0D92F1545EE5B00BB6BB5 /* SVViewController.xib in Resources */,
+				22E0D94B1545F63300BB6BB5 /* README.md in Resources */,
+				22FDEC971639082E00DB53A8 /* Default-568h@2x.png in Resources */,
+				2214365616B48FD70057C96E /* SVPullToRefresh.podspec in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		22E0D9101545EE5B00BB6BB5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22E0D9251545EE5B00BB6BB5 /* main.m in Sources */,
+				22E0D9291545EE5B00BB6BB5 /* SVAppDelegate.m in Sources */,
+				22E0D92C1545EE5B00BB6BB5 /* SVViewController.m in Sources */,
+				22E0D93D1545EE7600BB6BB5 /* UIScrollView+SVPullToRefresh.m in Sources */,
+				22FDEC9D16390CC800DB53A8 /* UIScrollView+SVInfiniteScrolling.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		22E0D9211545EE5B00BB6BB5 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				22E0D9221545EE5B00BB6BB5 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		22E0D92D1545EE5B00BB6BB5 /* SVViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				22E0D92E1545EE5B00BB6BB5 /* en */,
+			);
+			name = SVViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		22E0D9301545EE5B00BB6BB5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				ONLY_ACTIVE_ARCH = YES;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		22E0D9311545EE5B00BB6BB5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		22E0D9331545EE5B00BB6BB5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SVPullToRefreshDemo/SVPullToRefreshDemo-Prefix.pch";
+				INFOPLIST_FILE = "SVPullToRefreshDemo/SVPullToRefreshDemo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		22E0D9341545EE5B00BB6BB5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SVPullToRefreshDemo/SVPullToRefreshDemo-Prefix.pch";
+				INFOPLIST_FILE = "SVPullToRefreshDemo/SVPullToRefreshDemo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		22E0D90E1545EE5B00BB6BB5 /* Build configuration list for PBXProject "SVPullToRefreshDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				22E0D9301545EE5B00BB6BB5 /* Debug */,
+				22E0D9311545EE5B00BB6BB5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		22E0D9321545EE5B00BB6BB5 /* Build configuration list for PBXNativeTarget "SVPullToRefreshDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				22E0D9331545EE5B00BB6BB5 /* Debug */,
+				22E0D9341545EE5B00BB6BB5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 22E0D90B1545EE5B00BB6BB5 /* Project object */;
+}

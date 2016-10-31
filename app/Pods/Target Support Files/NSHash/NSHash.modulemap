@@ -1,0 +1,6 @@
+framework module NSHash {
+  umbrella header "NSHash-umbrella.h"
+
+  export *
+  module * { export * }
+}

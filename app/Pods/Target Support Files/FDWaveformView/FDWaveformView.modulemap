@@ -1,0 +1,6 @@
+framework module FDWaveformView {
+  umbrella header "FDWaveformView-umbrella.h"
+
+  export *
+  module * { export * }
+}

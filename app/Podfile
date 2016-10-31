@@ -1,0 +1,46 @@
+use_frameworks!
+
+target 'Jasonette' do
+  pod 'UICKeyChainStore'
+  pod 'TWMessageBarManager'
+  pod 'AFNetworking'
+  pod 'SWTableViewCell', :git => "https://github.com/gliechtenstein/SWTableViewCell.git"
+  pod 'APAddressBook'
+  pod 'TTTAttributedLabel'
+  pod 'BBBadgeBarButtonItem'
+  pod 'IQAudioRecorderController', :git => 'https://github.com/hackiftekhar/IQAudioRecorderController.git'
+  pod 'REMenu'
+  pod 'JDStatusBarNotification'
+  pod 'HMSegmentedControl'
+  pod "SWFrameButton"
+  pod 'libPhoneNumber-iOS'
+  pod "NSGIF", "~> 1.0"
+  pod 'INTULocationManager'
+  pod "AHKActionSheet"
+  pod 'TDOAuth'
+  pod "AFOAuth2Manager"
+  pod "CYRTextView"
+  pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
+  pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git"
+  pod 'SZTextView'
+  pod 'SBJson'
+  pod 'DHSmartScreenshot'
+  pod 'NSHash'
+  pod 'JSCoreBom', '~> 1.1.1'
+  pod "RMDateSelectionViewController"
+  pod 'DTCoreText'
+  pod 'PBJVision'
+  pod 'PHFComposeBarView'
+  pod 'DAKeyboardControl'
+  pod 'SVPullToRefresh', :git => 'https://github.com/samvermette/SVPullToRefresh.git', :branch => 'master'
+
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ""
+        config.build_settings['CODE_SIGNING_REQUIRED'] = "NO"
+        config.build_settings['CODE_SIGNING_ALLOWED'] = "NO"
+      end
+    end
+  end
+end

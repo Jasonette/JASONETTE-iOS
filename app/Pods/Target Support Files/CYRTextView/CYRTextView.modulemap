@@ -1,0 +1,6 @@
+framework module CYRTextView {
+  umbrella header "CYRTextView-umbrella.h"
+
+  export *
+  module * { export * }
+}

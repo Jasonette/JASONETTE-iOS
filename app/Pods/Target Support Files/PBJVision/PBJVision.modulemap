@@ -1,0 +1,6 @@
+framework module PBJVision {
+  umbrella header "PBJVision-umbrella.h"
+
+  export *
+  module * { export * }
+}

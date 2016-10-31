@@ -1,0 +1,69 @@
+use_frameworks!
+
+pod 'UICKeyChainStore'
+pod 'DateTools'
+pod 'TWMessageBarManager'
+pod 'RMUniversalAlert'
+pod 'AFNetworking'
+pod 'SWTableViewCell'
+pod 'DGActivityIndicatorView'
+pod 'Fabric'
+pod 'Crashlytics'
+pod 'TwitterCore'
+pod 'TwitterKit'
+pod 'APAddressBook'
+pod 'TTTAttributedLabel'
+pod 'JSQMessagesViewController'  
+pod 'LGPlusButtonsView'
+pod 'BBBadgeBarButtonItem'
+pod 'TOCropViewController'
+pod 'SGImageCache'
+pod 'JGProgressHUD'
+pod 'DZNEmptyDataSet'
+pod 'AFBlurSegue'
+pod 'TDBadgedCell'
+pod 'XLForm'
+pod 'MSCellAccessory', :git => "https://github.com/bitmapdata/MSCellAccessory.git"
+pod 'IQAudioRecorderController', :git => "https://github.com/kornhulio/IQAudioRecorderController.git"
+pod 'REMenu'
+pod 'JDStatusBarNotification'
+pod 'HMSegmentedControl'
+pod 'DateTools'
+pod "SWFrameButton"
+pod "AYVibrantButton"
+pod 'libPhoneNumber-iOS'
+pod 'CountryPicker'
+pod 'SinchVerification'
+pod 'RHAddressBook'
+pod 'Onboard'
+pod 'Branch'
+pod 'UIImage-Helpers'
+pod 'IDMPhotoBrowser'
+pod 'Flurry-iOS-SDK/FlurrySDK'
+pod 'Intercom'
+pod 'WebViewProxy'
+pod 'MWPhotoBrowser'
+#pod "OAuth.io", :git => "https://github.com/polaski/oauth-ios.git", :branch => 'master'
+pod 'SVPullToRefresh'
+pod "NSGIF", "~> 1.0"
+pod 'INTULocationManager'
+pod "NSLogger/NoStrip"
+pod "AHKActionSheet"
+
+pod 'TDOAuth'
+#pod 'Box', :head
+#pod 'SimpleAuth'
+#pod 'SimpleAuth/Twitter'
+
+pod "AFOAuth2Manager"
+pod "CYRTextView"
+pod 'DZNWebViewController', :git => "https://github.com/kornhulio/DZNWebViewController.git"
+pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
+pod 'SDWebImage'
+pod 'UITableViewController+KYSelfSizingPushFix'
+pod 'SZTextView'
+#pod "UIViewController-KeyboardAdditions"
+#pod "MLPAutoCompleteTextField", :git => "https://github.com/EddyBorja/MLPAutoCompleteTextField.git"
+pod 'PBJVideoPlayer'
+pod 'AFDropdownNotification'
+pod 'SBJson'
