@@ -762,6 +762,13 @@
     }
     return [newKeys copy];
 }
+- (NSDictionary *)getEnv{
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    NSURL *file = [[NSBundle mainBundle] URLForResource:@"Info" withExtension:@"plist"];
+    NSDictionary *info_plist = [NSDictionary dictionaryWithContentsOfURL:file];
+    dict[@"url_scheme"] = info_plist[@"CFBundleURLTypes"][0][@"CFBundleURLSchemes"][0];
+    return dict;
+}
 - (NSDictionary *)variables{
     NSMutableDictionary *data_stub = [[NSMutableDictionary alloc] init];    
     if(VC.data){
@@ -796,6 +803,10 @@
             data_stub[@"$keys"] = @{};
         }
     }
+    
+    NSDictionary *env = [self getEnv];
+    data_stub[@"$env"] = env;
+    
     if(VC.current_cache){
         if(VC.current_cache.count > 0){
             data_stub[@"$cache"] = VC.current_cache;
