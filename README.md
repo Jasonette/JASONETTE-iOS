@@ -10,7 +10,7 @@ Create your own native iOS app with nothing but JSON. Then send it over the Inte
 
 ![json](https://raw.githubusercontent.com/gliechtenstein/images/master/json.png)
 
-##★ And self-constructs into the following app, in realtime:
+##★ And self-constructs into the following native app, in realtime:
 
 ![instagram](https://github.com/Jasonette/Instagram-UI-example/blob/master/images/instagram.gif)
 
@@ -18,6 +18,7 @@ Create your own native iOS app with nothing but JSON. Then send it over the Inte
 
 #Cool things about Jasonette
 
+- **100% NATIVE**: Jasonette maps JSON into native components and native function calls. There is no gimmick. There is no magic.
 - **App loads over HTTP**: Your app exists 100% as JSON, and loads from the cloud. No more hard-coding.
 - **An app in 30 minutes**: No kidding, build an app in 30 minutes.
 - **Lowest possible learning curve**: No programming experience required. There's only one thing you need to know: JSON. Which means you can build an app without "becoming a programmer".

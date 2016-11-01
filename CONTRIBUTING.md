@@ -1,6 +1,6 @@
 # How to contribute to Jasonette
 
-## **Can you help with documentation?**
+## **Want to help with documentation?**
 
 If you would like to contribute to the [documentation](https://jasonette.github.io/documentation/), let's discuss on the [documentation repository](https://github.com/Jasonette/documentation/issues).
 
@@ -14,6 +14,8 @@ If you would like to contribute to the [documentation](https://jasonette.github.
 ## **Did you write a patch that fixes a bug?**
 
 * Open a new GitHub pull request with the patch.
+
+* Don't fork `master` branch. **Fork `develop` branch and send a pull request to `develop`.
 
 * Ensure the PR description clearly describes the problem and solution. Include the relevant issue number if applicable.
 
