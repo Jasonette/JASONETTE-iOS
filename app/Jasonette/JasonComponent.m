@@ -159,7 +159,8 @@
             }
         }
         
-        if([el isKindOfClass:[UILabel class]]){
+        if([el isKindOfClass:[UILabel class]] && [el respondsToSelector:@selector(textInsets)]){
+
             if(style[@"padding"]){
                 // Padding Handling
                 NSString *padding_left;
