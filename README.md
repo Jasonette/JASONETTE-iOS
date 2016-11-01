@@ -30,6 +30,11 @@ Visit [the website](http://www.jasonette.com) to get started.
 
 <br>
 
+# Download
+Latest release: [ver0.1.0](https://jasonette.github.io/documentation)
+
+<br>
+
 # More Examples
 Try playing these on Jasonette and watch them turn into native apps in front of your eyes!
 
