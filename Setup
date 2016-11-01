@@ -35,8 +35,6 @@ EOF
 
 infoplist(){
 # same as bundleidentifier()
-new_bundle_id=(`echo -n $2 | openssl sha1`)
-new_bundle_id="J${new_bundle_id}"
 
 cat > app/Jasonette/Info.plist <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -78,7 +76,7 @@ cat > app/Jasonette/Info.plist <<EOF
       <string></string>
       <key>CFBundleURLSchemes</key>
       <array>
-        <string>$new_bundle_id</string>
+        <string>$3</string>
       </array>
     </dict>
   </array>
@@ -330,10 +328,14 @@ then
   read -p "[NAME] App name: " name
 
   read -p "[NAME] HOME JSON URL if you have one: (or press Enter to create one): " url
+
+  url_scheme=(`echo -n $url | openssl sha1`)
+  url_scheme="J${url_scheme}"
+
   if [ ${#url} -gt 0 ]
   then
     settingsplist "$url"
-    infoplist "$name" "$url"
+    infoplist "$name" "$url" "$url_scheme"
     bundleidentifier "$url"
   else
     echo ""
@@ -348,7 +350,7 @@ then
       read -p "[URL] Enter the JSON URL: " url
     done
     settingsplist "$url"
-    infoplist "$name" "$url"
+    infoplist "$name" "$url" "$url_scheme"
     bundleidentifier "$url"
   fi
 
@@ -356,6 +358,9 @@ then
   for file in icon/*.{jpg,jpeg,JPG,JPEG,png,PNG}; do
     [ -e "$file" ] && generate_iconset "$file" && break
   done
+
+  echo "${GREEN}* URL Scheme: ${url_scheme}://"
+  echo "* OAuth redirect uri: ${url_scheme}://oauth${GREEN}"
 
   echo "Opening XCode workspace. Please wait..."
   open app/Jasonette.xcworkspace
