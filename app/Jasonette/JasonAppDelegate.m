@@ -23,6 +23,13 @@
     
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey]){
         // launched with url. so wait until openURL is called.
+    } else if(launchOptions && launchOptions.count > 0 && [launchOptions objectForKey: UIApplicationLaunchOptionsRemoteNotificationKey]){
+        UILocalNotification *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        if(notification){
+            if(notification.userInfo && notification.userInfo[@"href"]){
+                [[Jason client] go:notification.userInfo[@"href"]];
+            }
+        }
     } else {
         [[Jason client] start];
     }
