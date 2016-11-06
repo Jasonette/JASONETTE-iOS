@@ -1771,12 +1771,33 @@
     VC.contentLoaded = YES;
 }
 - (void)onForeground{
+    // Clear the app icon badge
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events){
         if(events[@"$foreground"]){
             [self call:events[@"$foreground"]];
         }
     }
+}
+- (void)onRemoteNotification: (NSDictionary *)payload{
+    NSDictionary *events = [VC valueForKey:@"events"];
+    if(events){
+        if(events[@"$notification.remote"]){
+            [self call:events[@"$notification.remote"] with: @{@"$jason": payload}];
+        }
+    }
+}
+
+- (void)onRemoteNotificationDeviceRegistered: (NSString *)device_token{
+    NSDictionary *events = [VC valueForKey:@"events"];
+    if(events){
+        if(events[@"$notification.registered"]){
+            [self call:events[@"$notification.registered"] with: @{@"$jason": @{@"device_token": device_token}}];
+        }
+    }
+
 }
 
 # pragma mark - View Linking

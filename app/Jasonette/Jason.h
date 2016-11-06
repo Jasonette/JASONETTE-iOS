@@ -59,4 +59,7 @@
 
 - (void)start;
 
+- (void)onRemoteNotification: (NSDictionary *)payload;
+- (void)onRemoteNotificationDeviceRegistered: (NSString *)device_token;
+
 @end
