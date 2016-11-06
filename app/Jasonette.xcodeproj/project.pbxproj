@@ -60,6 +60,7 @@
 		5E3177A61D1F28C100D87778 /* JasonTimerAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3177A01D1F28C100D87778 /* JasonTimerAction.m */; };
 		5E3177A71D1F28C100D87778 /* JasonUtilAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3177A21D1F28C100D87778 /* JasonUtilAction.m */; };
 		5E3840751D3A3D2200D1C421 /* placeholderr@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3840741D3A3D2200D1C421 /* placeholderr@2x.png */; };
+		5E9862691DCF1F640084CA4A /* JasonNotificationAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E9862681DCF1F640084CA4A /* JasonNotificationAction.m */; };
 		5EBFBB511D563ABD0074B805 /* UIView+JasonComponentPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EBFBB501D563ABD0074B805 /* UIView+JasonComponentPayload.m */; };
 		5EDF644E1DB0480500C5E403 /* JasonSessionAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EDF644D1DB0480500C5E403 /* JasonSessionAction.m */; };
 		5EE85B6A1DA444770049EACE /* JasonMapComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B691DA444770049EACE /* JasonMapComponent.m */; };
@@ -162,6 +163,8 @@
 		5E3177A11D1F28C100D87778 /* JasonUtilAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonUtilAction.h; sourceTree = "<group>"; };
 		5E3177A21D1F28C100D87778 /* JasonUtilAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonUtilAction.m; sourceTree = "<group>"; };
 		5E3840741D3A3D2200D1C421 /* placeholderr@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "placeholderr@2x.png"; sourceTree = "<group>"; };
+		5E9862671DCF1F640084CA4A /* JasonNotificationAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonNotificationAction.h; sourceTree = "<group>"; };
+		5E9862681DCF1F640084CA4A /* JasonNotificationAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonNotificationAction.m; sourceTree = "<group>"; };
 		5EBFBB4F1D563ABD0074B805 /* UIView+JasonComponentPayload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+JasonComponentPayload.h"; sourceTree = "<group>"; };
 		5EBFBB501D563ABD0074B805 /* UIView+JasonComponentPayload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+JasonComponentPayload.m"; sourceTree = "<group>"; };
 		5EDF644C1DB0480500C5E403 /* JasonSessionAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSessionAction.h; sourceTree = "<group>"; };
@@ -317,6 +320,7 @@
 				5E31778C1D1F208A00D87778 /* $geo */,
 				5E31778B1D1F208500D87778 /* $media */,
 				5E31778E1D1F20A400D87778 /* $network */,
+				5E98626A1DCF1F6A0084CA4A /* $notification */,
 				5EDF644F1DB0480B00C5E403 /* $session */,
 				5E31778F1D1F20AB00D87778 /* $oauth */,
 				5E3177AB1D1F297400D87778 /* $timer */,
@@ -492,6 +496,15 @@
 				5E3177971D1F25A500D87778 /* Sound */,
 			);
 			name = Assets;
+			sourceTree = "<group>";
+		};
+		5E98626A1DCF1F6A0084CA4A /* $notification */ = {
+			isa = PBXGroup;
+			children = (
+				5E9862671DCF1F640084CA4A /* JasonNotificationAction.h */,
+				5E9862681DCF1F640084CA4A /* JasonNotificationAction.m */,
+			);
+			name = $notification;
 			sourceTree = "<group>";
 		};
 		5EDF644F1DB0480B00C5E403 /* $session */ = {
@@ -775,6 +788,7 @@
 				5E09563F1DA34F34007ADC78 /* JasonHtmlComponent.m in Sources */,
 				5EE85B7E1DA59D740049EACE /* JasonComponent.m in Sources */,
 				5E3177641D1E411F00D87778 /* JasonPortraitPicker.m in Sources */,
+				5E9862691DCF1F640084CA4A /* JasonNotificationAction.m in Sources */,
 				5E31771D1D1E411F00D87778 /* JasonVerticalSectionItem.m in Sources */,
 				5E3177A71D1F28C100D87778 /* JasonUtilAction.m in Sources */,
 				5E0956421DA34F4D007ADC78 /* JasonSpaceComponent.m in Sources */,
