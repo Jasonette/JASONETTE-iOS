@@ -58,7 +58,7 @@ Here's a brief walkthrough of how the project is structured:
     - **Layer**: Implements [layers](https://jasonette.github.io/documentation/document/#bodylayers)
     - **Section**: Implements [sections](https://jasonette.github.io/documentation/document/#bodysections)
     - **Layout**: Implements [vertical and horizontal layouts](https://jasonette.github.io/documentation/layout/) that can be used inside [sections](https://jasonette.github.io/documentation/document/#bodysections)
-    - **Component**: Implements [componenets](https://jasonette.github.io/documentation/components/), following [the convention described here](https://jasonette.github.io/documentation/advanced/#1-extend-ui-components).
+    - **Component**: Implements [components](https://jasonette.github.io/documentation/components/), following [the convention described here](https://jasonette.github.io/documentation/advanced/#1-extend-ui-components).
       - To build your own component extension, just create your own group here and write your classes.
   - **Helper**
     - Various helper class methods used across various classes.
