@@ -11,14 +11,14 @@
 @implementation JasonLogAction
 - (void)info {
     if(self.options){
-        NSString *message = self.options[@"message"];
+        NSString *message = self.options[@"text"];
         asl_log(NULL, NULL, ASL_LEVEL_INFO, "%s", [message UTF8String]);
     }
     [[Jason client] success];
 }
 - (void)debug {
     if(self.options){
-        NSString *message = self.options[@"message"];
+        NSString *message = self.options[@"text"];
         asl_log(NULL, NULL, ASL_LEVEL_DEBUG, "%s", [message UTF8String]);
         NSLog(@"DEBUG: %@", message);
     }
@@ -26,7 +26,7 @@
 }
 - (void)error {
     if(self.options){
-        NSString *message = self.options[@"message"];
+        NSString *message = self.options[@"text"];
         asl_log(NULL, NULL, ASL_LEVEL_ERR, "%s", [message UTF8String]);
         NSLog(@"ERROR: %@", message);
     }
