@@ -114,7 +114,9 @@
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
     
-    // NOTHING FOR NOW
+    if(response.notification.request.content.userInfo && response.notification.request.content.userInfo[@"href"]){
+        [[Jason client] go:response.notification.request.content.userInfo[@"href"]];
+    }
     
     completionHandler();
 }
