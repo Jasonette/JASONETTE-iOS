@@ -69,6 +69,7 @@
 		5EE85B7E1DA59D740049EACE /* JasonComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B7D1DA59D740049EACE /* JasonComponent.m */; };
 		5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B801DA5C0080049EACE /* JasonLayer.m */; };
 		5EEE3E6D1DBAE6DA00DE7ABD /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE3E6C1DBAE6DA00DE7ABD /* parser.js */; };
+		BFDEFE801DD0CD4A00ACEA15 /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = BFDEFE7F1DD0CD4A00ACEA15 /* JasonLogAction.m */; };
 		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
 /* End PBXBuildFile section */
 
@@ -182,6 +183,8 @@
 		5EE85B801DA5C0080049EACE /* JasonLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonLayer.m; sourceTree = "<group>"; };
 		5EEE3E6C1DBAE6DA00DE7ABD /* parser.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = parser.js; sourceTree = "<group>"; };
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
+		BFDEFE7E1DD0CD2800ACEA15 /* JasonLogAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonLogAction.h; sourceTree = "<group>"; };
+		BFDEFE7F1DD0CD4A00ACEA15 /* JasonLogAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonLogAction.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -324,6 +327,7 @@
 				5EDF644F1DB0480B00C5E403 /* $session */,
 				5E31778F1D1F20AB00D87778 /* $oauth */,
 				5E3177AB1D1F297400D87778 /* $timer */,
+				BFDEFE7D1DD0CCFC00ACEA15 /* $log */,
 				5E3177AA1D1F296300D87778 /* $util */,
 			);
 			name = Action;
@@ -616,6 +620,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		BFDEFE7D1DD0CCFC00ACEA15 /* $log */ = {
+			isa = PBXGroup;
+			children = (
+				BFDEFE7E1DD0CD2800ACEA15 /* JasonLogAction.h */,
+				BFDEFE7F1DD0CD4A00ACEA15 /* JasonLogAction.m */,
+			);
+			name = $log;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -794,6 +807,7 @@
 				5E0956421DA34F4D007ADC78 /* JasonSpaceComponent.m in Sources */,
 				5E3177701D1E411F00D87778 /* UIBarButtonItem+Badge.m in Sources */,
 				5E0956361DA34EFC007ADC78 /* JasonTextareaComponent.m in Sources */,
+				BFDEFE801DD0CD4A00ACEA15 /* JasonLogAction.m in Sources */,
 				5E3177A31D1F28C100D87778 /* JasonCacheAction.m in Sources */,
 				5E31765E1D1E400C00D87778 /* main.m in Sources */,
 				5EBFBB511D563ABD0074B805 /* UIView+JasonComponentPayload.m in Sources */,
@@ -904,6 +918,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = Jasonette/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasonette.seed;
@@ -919,6 +937,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = Jasonette/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasonette.seed;
