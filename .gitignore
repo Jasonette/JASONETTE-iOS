@@ -1,6 +1,9 @@
 # Mac OS X Finder and whatnot
 .DS_Store
 
+# .idea files
+.idea/
+
 # XCode (and ancestors) per-user config (very noisy, and not relevant)
 *.mode1
 *.mode1v3
