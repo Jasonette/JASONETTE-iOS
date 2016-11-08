@@ -46,6 +46,7 @@ PODS:
   - JDStatusBarNotification (1.5.3)
   - JSCoreBom (1.1.1)
   - libPhoneNumber-iOS (0.8.13)
+  - MicrosoftAzureMobile (3.2.0)
   - NSGIF (1.2)
   - NSHash (1.1.0)
   - OMGHTTPURLRQ/UserAgent (3.1.2)
@@ -90,6 +91,7 @@ DEPENDENCIES:
   - JDStatusBarNotification
   - JSCoreBom (~> 1.1.1)
   - libPhoneNumber-iOS
+  - MicrosoftAzureMobile (from `https://github.com/nexiles/azure-mobile-apps-ios-client.git`, branch `issue-73-webkit-link-error`)
   - NSGIF (~> 1.0)
   - NSHash
   - PBJVision
@@ -112,6 +114,9 @@ EXTERNAL SOURCES:
     :git: https://github.com/muhku/FreeStreamer.git
   IQAudioRecorderController:
     :git: https://github.com/hackiftekhar/IQAudioRecorderController.git
+  MicrosoftAzureMobile:
+    :branch: issue-73-webkit-link-error
+    :git: https://github.com/nexiles/azure-mobile-apps-ios-client.git
   SDWebImage:
     :git: https://github.com/rs/SDWebImage.git
   SVPullToRefresh:
@@ -127,6 +132,9 @@ CHECKOUT OPTIONS:
   IQAudioRecorderController:
     :commit: b9254355ceac0f4b1b5293cf74270a76c4d6ae10
     :git: https://github.com/hackiftekhar/IQAudioRecorderController.git
+  MicrosoftAzureMobile:
+    :commit: 4382f5801194a19874886e07367525651b8afce0
+    :git: https://github.com/nexiles/azure-mobile-apps-ios-client.git
   SDWebImage:
     :commit: c012fc9bb2e5b1775a8a4a847938352187496a05
     :git: https://github.com/rs/SDWebImage.git
@@ -156,6 +164,7 @@ SPEC CHECKSUMS:
   JDStatusBarNotification: 29413865af11c862c17180610b0f46a21118b412
   JSCoreBom: 712590b897ecd74d9fa9cb0f16857491411c932b
   libPhoneNumber-iOS: 3a37004baf779b4262ab29a31a87d2ae668159d4
+  MicrosoftAzureMobile: a0fdf826be42c647917a1606e7b80800845c6a82
   NSGIF: 73b435330174a9d04db9886a232c605a3e8139b5
   NSHash: 61d598c6d48957c5557f1eef0aeafd6ef5ec5fb7
   OMGHTTPURLRQ: 38316b56d88125c600bcdb16df8329147da2b0ee
@@ -166,7 +175,7 @@ SPEC CHECKSUMS:
   REMenu: 30dad195930adf6c5eeb8041e3257aa60bf9fa49
   RMActionController: b83653e7452ed51492094d65dc82151c36443c03
   RMDateSelectionViewController: 354a0f1fe40bac01054528b7a8735f2973bbd813
-  SBJson: c18691cc18375b14664ff0fec841f8c4faef1934
+  SBJson: 16404e557ff6346b506e9e12f2d83e6782f37f6f
   SCSiriWaveformView: b8b2756af42addcd31900c3945f24edafefb5395
   SDWebImage: 35f9627a3e44b4f292a8a8ce6a531fa488239b91
   SVPullToRefresh: ba2e718695a43253d8bea6852d2960097dc15d8c
@@ -178,6 +187,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
 
-PODFILE CHECKSUM: 226831943552daf815657ba0193f39cf2bf445c7
+PODFILE CHECKSUM: 5854f2f2b58b1df7c5d61cba87df84c9fea3ccfe
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.1.1
