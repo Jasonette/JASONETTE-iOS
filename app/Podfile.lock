@@ -91,7 +91,7 @@ DEPENDENCIES:
   - JDStatusBarNotification
   - JSCoreBom (~> 1.1.1)
   - libPhoneNumber-iOS
-  - MicrosoftAzureMobile (from `https://github.com/nexiles/azure-mobile-apps-ios-client.git`, branch `issue-73-webkit-link-error`)
+  - MicrosoftAzureMobile (from `https://github.com/Azure/azure-mobile-apps-ios-client.git`, branch `master`)
   - NSGIF (~> 1.0)
   - NSHash
   - PBJVision
@@ -115,8 +115,8 @@ EXTERNAL SOURCES:
   IQAudioRecorderController:
     :git: https://github.com/hackiftekhar/IQAudioRecorderController.git
   MicrosoftAzureMobile:
-    :branch: issue-73-webkit-link-error
-    :git: https://github.com/nexiles/azure-mobile-apps-ios-client.git
+    :branch: master
+    :git: https://github.com/Azure/azure-mobile-apps-ios-client.git
   SDWebImage:
     :git: https://github.com/rs/SDWebImage.git
   SVPullToRefresh:
@@ -133,8 +133,8 @@ CHECKOUT OPTIONS:
     :commit: b9254355ceac0f4b1b5293cf74270a76c4d6ae10
     :git: https://github.com/hackiftekhar/IQAudioRecorderController.git
   MicrosoftAzureMobile:
-    :commit: 4382f5801194a19874886e07367525651b8afce0
-    :git: https://github.com/nexiles/azure-mobile-apps-ios-client.git
+    :commit: 6523404f5fe7239ed6e23eeb53c58e4a1c2d9f62
+    :git: https://github.com/Azure/azure-mobile-apps-ios-client.git
   SDWebImage:
     :commit: c012fc9bb2e5b1775a8a4a847938352187496a05
     :git: https://github.com/rs/SDWebImage.git
@@ -187,6 +187,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
 
-PODFILE CHECKSUM: 5854f2f2b58b1df7c5d61cba87df84c9fea3ccfe
+PODFILE CHECKSUM: c56b778b599d7fdcb4bfcc481838a0e69a39099f
 
 COCOAPODS: 1.1.1
