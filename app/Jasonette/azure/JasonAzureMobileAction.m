@@ -46,8 +46,7 @@
     return self;
 }
 
-#pragma marg Action methods
-
+#pragma mark -- Azure Mobile Table Actions
 
 /**
  Query a table and return results.  Optionally pass a query string.
@@ -155,6 +154,28 @@
     }
     [[Jason client] success];
     
+}
+
+#pragma mark -- APNS Push Related
+
+-(void)registerDeviceToken {
+    if(self.options) {
+        NSData *token = self.options[@"device_token"];
+        if (!token) {
+            NSLog(@"Error: AzureMobile: registerDeviceToken: no token.");
+            [[Jason client] error];
+            return;
+        }
+        
+        [client.push registerDeviceToken:token completion:^(NSError *error) {
+            if (error) {
+                [[Jason client] error: error];
+            } else {
+                [[Jason client] success];
+            }
+        }];
+        
+    }
 }
 
 @end
