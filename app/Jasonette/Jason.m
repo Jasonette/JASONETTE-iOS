@@ -36,6 +36,7 @@
 - (id)init {
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onForeground) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
         self.searchMode = NO;
     }
     return self;
@@ -1769,6 +1770,14 @@
     // so that $show will be triggered even if $load doesn't exit
     [self onShow];
     VC.contentLoaded = YES;
+}
+- (void)onBackground{
+    NSDictionary *events = [VC valueForKey:@"events"];
+    if(events){
+        if(events[@"$background"]){
+            [self call:events[@"$background"]];
+        }
+    }
 }
 - (void)onForeground{
     // Clear the app icon badge
