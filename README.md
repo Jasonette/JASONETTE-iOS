@@ -26,7 +26,7 @@ Create your own native iOS app with nothing but JSON. Then send it over the Inte
 <br>
 
 # [Quickstart](https://www.jasonette.com)
-Visit [the website](http://www.jasonette.com) to get started.
+Visit [Getting started](https://jasonette.github.io/documentation/) guide.
 
 <br>
 
