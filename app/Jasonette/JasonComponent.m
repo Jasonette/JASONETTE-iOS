@@ -77,6 +77,14 @@
             component.layer.cornerRadius = 0;
         }
         
+        // border width
+        if(style[@"border_width"]){
+            CGFloat borderWidth = [style[@"border_width"] floatValue];
+            component.layer.borderWidth = borderWidth;
+        } else {
+            component.layer.borderWidth = 0;
+        }
+        
         // text styling
     }
     [self stylize:json text:component];
