@@ -1594,12 +1594,18 @@
         if(style[@"color"]){
             UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
             [tabController.tabBar setTintColor:c];
+            [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : c }
+                                                     forState:UIControlStateSelected];
+            
         }
         if(style[@"color:disabled"]){
             UIColor *c = [JasonHelper colorwithHexString:style[@"color:disabled"] alpha:1.0];
             [[UIView appearanceWhenContainedInInstancesOfClasses:@[[UITabBar class]]] setTintColor:c];
+            [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : c }
+                                                     forState:UIControlStateNormal];
+            
         }
-
+        
         if(style[@"background"]){
             [tabController.tabBar setClipsToBounds:YES];
             tabController.tabBar.shadowImage = [[UIImage alloc] init];
