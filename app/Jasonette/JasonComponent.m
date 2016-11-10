@@ -85,6 +85,14 @@
             component.layer.borderWidth = 0;
         }
         
+        // border color
+        if(style[@"border_color"]){
+            UIColor *color = [JasonHelper colorwithHexString:style[@"border_color"] alpha:1.0];
+            component.layer.borderColor = color.CGColor;
+        } else {
+            component.layer.borderColor = nil;
+        }
+        
         // text styling
     }
     [self stylize:json text:component];
