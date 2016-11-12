@@ -1,0 +1,153 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Jasopedia",
+      "styles": {
+        "bold": {
+          "font": "HelveticaNeue-CondensedBold",
+          "size": "15"
+        },
+        "padded": {
+          "padding": "10"
+        },
+        "normal": {
+          "font": "HelveticaNeue",
+          "size": "12"
+        }
+      },
+      "actions": {
+        "$foreground": {
+          "type": "$reload"
+        }
+      }
+    },
+    "body": {
+      "header": {
+        "title": "Jasonpedia",
+        "style": {
+          "background": "#8bb92d",
+          "color": "#ffffff",
+          "font": "AvenirNext-Bold",
+          "size": "14"
+        },
+        "menu": {
+          "text": "View JSON",
+          "href": {
+            "url": "https://github.com/Jasonette/Jasonpedia/blob/gh-pages/demo.json",
+            "view": "web"
+          }
+        }
+      },
+      "sections": [
+        {
+          "items": [
+            {
+              "type": "vertical",
+              "style": {
+                "background": "rgba(14,122,254,0.1)",
+                "padding": "20"
+              },
+              "href": {
+                "url": "mailto:?subject=Documentation&body=https://jasonette.github.io/documentation",
+                "view": "app"
+              },
+              "components": [
+                {
+                  "type": "label",
+                  "text": "Send yourself Documentation",
+                  "class": "bold",
+                  "style": {
+                    "color": "rgb(14,122,254)"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "header": {
+            "type": "vertical",
+            "style": {
+              "background": "#ebebeb"
+            },
+            "components": [{
+              "type": "label",
+              "class": "bold",
+              "text": "Tutorial"
+            }, {
+              "type": "label",
+              "class": "normal",
+              "text": "Simple demos to demonstrate how each module works. Also used for testing purposes."
+            }]
+          },
+          "items": [
+            {
+              "type": "label",
+              "text": "Core",
+              "class": "bold padded",
+              "href": {
+                "url": "https://jasonette.github.io/Jasonpedia/core/index.json"
+              }
+            },
+            {
+              "type": "label",
+              "text": "View",
+              "class": "bold padded",
+              "href": {
+                "url": "https://jasonette.github.io/Jasonpedia/view/index.json"
+              }
+            },
+            {
+              "type": "label",
+              "text": "Action",
+              "class": "bold padded",
+              "href": {
+                "url": "https://jasonette.github.io/Jasonpedia/action/index.json"
+              }
+            },
+            {
+              "type": "label",
+              "text": "Template",
+              "class": "bold padded",
+              "href": {
+                "url": "https://jasonette.github.io/Jasonpedia/template/index.json"
+              }
+            }
+          ]
+        },
+        {
+          "header": {
+            "type": "vertical",
+            "style": {
+              "background": "#ebebeb"
+            },
+            "components": [{
+              "type": "label",
+              "class": "bold",
+              "text": "Showcase"
+            }, {
+              "type": "label",
+              "class": "normal",
+              "text": "Wrote a cool/useful JSON markup? Send a pull request to https://github.com/Jasonette/Jasonpedia"
+            }]
+          },
+          "items": [{
+            "type": "label",
+            "text": "Instagram",
+            "href": {
+              "url": "https://raw.githubusercontent.com/Jasonette/Instagram-UI-example/master/home.json",
+              "transition": "modal"
+            }
+          }, {
+            "type": "label",
+            "text": "Twitter",
+            "href": {
+              "url": "https://raw.githubusercontent.com/Jasonette/Twitter-UI-example/master/home.json",
+              "transition": "modal"
+            }
+          }]
+        }
+      ]
+    }
+  }
+}
