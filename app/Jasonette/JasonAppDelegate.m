@@ -13,9 +13,19 @@
 #define SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 @implementation JasonAppDelegate
-
+@synthesize webServer; 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	
+  NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
+         NSString *newPath = [resourcePath stringByAppendingPathComponent:@"webroot"];        
+         //NSLog(@"resourcePath is %@ and newPath is %@", resourcePath, newPath);
+         
+ 				webServer = [[GCDWebServer alloc] init];
+       [webServer addGETHandlerForBasePath:@"/" directoryPath:newPath indexFilename:nil cacheAge:0 allowRangeRequests:YES];
+     [webServer startWithPort:8080 bonjourName:nil];
+		
+		 
     [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"registerNotification" object:nil];
