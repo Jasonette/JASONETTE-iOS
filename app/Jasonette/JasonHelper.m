@@ -379,7 +379,8 @@
         } else {
             url = [NSString stringWithFormat:@"http://%@", url];
         }
-        url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        url = [url stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet illegalCharacterSet] invertedSet]];
+
     }
     return url;
 }
