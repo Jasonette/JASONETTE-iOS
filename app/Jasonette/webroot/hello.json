@@ -71,9 +71,24 @@
                 "font": "HelveticaNeue",
                 "size": "12"
               },
-              "text": "Check out Live DEMO",
+              "text": "Check out LOCAL DEMO",
               "href": {
-                "url": "https://jasonette.github.io/Jasonpedia/demo.json",
+                "url": "http://local.web/demo.json",
+                "fresh": "true"
+              }
+            },
+            {
+              "type": "label",
+              "style": {
+                "align": "right",
+                "padding": "10",
+                "color": "#000000",
+                "font": "HelveticaNeue",
+                "size": "12"
+              },
+              "text": "Check out LOCAL INSTAGRAM",
+              "href": {
+                "url": "http://local.web/instagram.json",
                 "fresh": "true"
               }
             },
