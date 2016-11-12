@@ -18,6 +18,8 @@
     UIBarButtonItem *rightButtonItem;
     PBJVision *vision;
     NSString *ROOT_URL;
+    NSString *LOCALWEB_URL;
+		
 }
 @end
 
@@ -41,6 +43,23 @@
     }
     return self;
 }
+
+- (NSString *)parseLocalURL: (NSString *)url{
+	NSString *loc = @"http://local.web/";
+	//NSString *surl = [url absoluteString];
+	if([[url lowercaseString] hasPrefix:loc]) {
+		
+		NSString *nurl = [[url lowercaseString] stringByReplacingOccurrencesOfString:loc
+                                     withString:LOCALWEB_URL];
+		
+		NSLog(@"LOCALWEB parseLocalURL - %@", nurl);
+		return nurl;
+		//return [NSURL URLWithString:nurl];
+	}
+	
+	return url;
+}
+
 - (void)start{
     /**************************************************
      *
@@ -51,8 +70,14 @@
     JasonAppDelegate *app = (JasonAppDelegate *)[[UIApplication sharedApplication] delegate];
     NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
     NSDictionary *plist = [NSDictionary dictionaryWithContentsOfURL:file];
-    ROOT_URL = plist[@"url"];
+		LOCALWEB_URL = [app.webServer.serverURL absoluteString];
+		
+		ROOT_URL = [self parseLocalURL:plist[@"url"]];
     
+		
+		
+		NSLog(@"LOCALWEB ROOT_URL - %@", ROOT_URL);
+    NSLog(@"LOCALWEB LOCALWEB_URL - %@", LOCALWEB_URL);
     
     JasonViewController *vc = [[JasonViewController alloc] init];
     vc.url = ROOT_URL;
@@ -1817,6 +1842,8 @@
 
 # pragma mark - View Linking
 - (void)go:(NSDictionary *)href{
+	NSLog(@"LOCALWEB href url is %@", href[@"url"]);
+	NSLog(@"LOCALWEB GO LOCALWEB_URL is %@", LOCALWEB_URL);
     /*******************************
      *
      * Linking View to another View
@@ -1826,6 +1853,7 @@
         NSString *view = href[@"view"];
         NSString *transition = href[@"transition"];
         NSString *fresh = href[@"fresh"];
+				NSString *hrefURL = [self parseLocalURL:href[@"url"]];
         JasonMemory *memory = [JasonMemory client];
         if([transition isEqualToString:@"root"]){
             [self start];
@@ -1838,7 +1866,7 @@
              * WebView using SFSafariViewController
              *
              ***************************************/
-            NSString *encoded_url = [JasonHelper linkify:href[@"url"]];
+            NSString *encoded_url = [JasonHelper linkify:hrefURL];
             NSURL *URL = [NSURL URLWithString:encoded_url];
             [self unlock];
             SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:URL];
@@ -1881,7 +1909,7 @@
 
                     if(href){
                         if(href[@"url"]){
-                            NSString *url = [JasonHelper linkify:href[@"url"]];
+                            NSString *url = [JasonHelper linkify:hrefURL];
                             VC.url = url;
                         }
                         if(href[@"options"]){
@@ -1927,7 +1955,7 @@
                     }
                     if(href){
                         if(href[@"url"]){
-                            NSString *url = [JasonHelper linkify:href[@"url"]];
+                            NSString *url = [JasonHelper linkify:hrefURL];
                             if([vc respondsToSelector:@selector(url)]) vc.url = url;
                         }
                         if([vc respondsToSelector: @selector(options)]) vc.options = href[@"options"];
@@ -1956,7 +1984,7 @@
                     UIViewController<RussianDollView> *vc = [[v alloc] init];
                     if(href){
                         if(href[@"url"]){
-                            NSString *url = [JasonHelper linkify:href[@"url"]];
+                            NSString *url = [JasonHelper linkify:hrefURL];
                             vc.url = url;
                         }
                         if(href[@"options"]){
