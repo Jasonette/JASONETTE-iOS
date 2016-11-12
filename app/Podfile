@@ -33,7 +33,8 @@ target 'Jasonette' do
   pod 'PHFComposeBarView'
   pod 'DAKeyboardControl'
   pod 'SVPullToRefresh', :git => 'https://github.com/samvermette/SVPullToRefresh.git', :branch => 'master'
-
+	pod "GCDWebServer", "~> 3.0"
+	
   post_install do |installer|
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
