@@ -44,7 +44,7 @@
 
 - (void) loadViewByFile: (NSString *)url{
 	
-	if([url hasPrefix:@"local://"] || [url hasPrefix:@"http://local://"]){
+	if([url hasPrefix:@"local://"] && [url hasSuffix:@".json"]){
 	  
 		
 		
@@ -52,15 +52,11 @@
 		NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
 	  NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@"localfiles"];  
 		
-		if([url hasPrefix:@"http://local://"]) {
 			NSString *loc = @"http://local:/";
 			
 			NSString *jsonFile = [[url lowercaseString] stringByReplacingOccurrencesOfString:loc
 		                                     withString:webrootPath];
-		
-			NSLog(@"LOCALWEB jsonFile is %@", jsonFile);	
-	
-	
+			NSLog(@"LOCALFILES jsonFile is %@", jsonFile);	
 			NSError *error = nil;
 			NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
 			[inputStream open];
@@ -69,28 +65,7 @@
 			                                                          error:&error];
 			[self drawViewFromJason: VC.original];
 			[inputStream close];	
-		} else {
-			NSString *loc = @"local:/";
-			
-			NSString *jsonFile = [[url lowercaseString] stringByReplacingOccurrencesOfString:loc
-		                                     withString:webrootPath];
-			
-			NSLog(@"LOCALWEB jsonFile is %@", jsonFile);	
-	
-	
-			NSError *error = nil;
-			NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
-			[inputStream open];
-			VC.original = [NSJSONSerialization JSONObjectWithStream: inputStream
-			                                                        options:kNilOptions
-			                                                          error:&error];
-			[self drawViewFromJason: VC.original];
-			[inputStream close];	
-		
-		}   
-		
-		
-	}
+		} 
 }
 
 - (void)start{
@@ -966,11 +941,11 @@
             NSError* error;
             VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
             [self drawViewFromJason: VC.original];
-        } else if([VC.url hasPrefix:@"local://"] || [VC.url hasPrefix:@"http://local://"]){
-					            // if data uri, parse it into NSData
-										NSLog(@"LOCALWEB reload VC.url %@", VC.url);
-										[self loadViewByFile: VC.url];
-					 }
+        } else if([VC.url hasPrefix:@"local://"]) {
+	         
+						NSLog(@"LOCALFILES reload VC.url %@", VC.url);
+						[self loadViewByFile: VC.url];
+				}
         
         /**************************************************
          * Normally urls are not in data-uri.
