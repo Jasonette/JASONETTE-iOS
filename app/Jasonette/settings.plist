@@ -7,6 +7,6 @@
 	<key>client_secret</key>
 	<string></string>
 	<key>url</key>
-	<string>https://jasonette.github.io/Jasonpedia/hello.json</string>
+	<string>local://hello.json</string>
 </dict>
 </plist>
