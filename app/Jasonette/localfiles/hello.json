@@ -86,9 +86,9 @@
                 "font": "HelveticaNeue",
                 "size": "12"
               },
-              "text": "Check out LOCAL INSTAGRAM",
+              "text": "Check out LOCAL FILE INSTAGRAM",
               "href": {
-                "url": "http://local.web/instagram.json",
+                "url": "local://instagram.json",
                 "fresh": "true"
               }
             },
