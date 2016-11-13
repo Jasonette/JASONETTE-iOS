@@ -52,7 +52,7 @@
 		NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
 	  NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@"localfiles"];  
 		
-			NSString *loc = @"http://local:/";
+			NSString *loc = @"local:/";
 			
 			NSString *jsonFile = [[url lowercaseString] stringByReplacingOccurrencesOfString:loc
 		                                     withString:webrootPath];
@@ -604,7 +604,11 @@
     navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
     tabController = navigationController.tabBarController;
     
-		if([VC.url hasPrefix:@"local://"]) {
+		NSLog(@"LOCALFILES attach VC.url %@", VC.url);
+		
+		if([VC.url hasPrefix:@"http://local://"]) {
+			NSString *url = [VC.url substringFromIndex:[@"http://" length]];
+			VC.url = url;
 			[self loadViewByFile: VC.url];
 		} else {
 	    VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
