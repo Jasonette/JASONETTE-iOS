@@ -50,7 +50,7 @@
 		
 		  
 		NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-	  NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@"webroot"];  
+	  NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@"localfiles"];  
 		
 		if([url hasPrefix:@"http://local://"]) {
 			NSString *loc = @"http://local:/";
