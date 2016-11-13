@@ -1580,11 +1580,9 @@
 - (void)setupTabBar: (NSDictionary *)t{
     
     if(!t){
-        VC.extendedLayoutIncludesOpaqueBars = YES;
         tabController.tabBar.hidden = YES;
         return;
     } else {
-        VC.extendedLayoutIncludesOpaqueBars = NO;
         tabController.tabBar.hidden = NO;
     }
    
