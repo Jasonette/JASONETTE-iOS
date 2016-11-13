@@ -51,7 +51,14 @@
     JasonAppDelegate *app = (JasonAppDelegate *)[[UIApplication sharedApplication] delegate];
     NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
     NSDictionary *plist = [NSDictionary dictionaryWithContentsOfURL:file];
+#if DEBUG
+    if ([plist[@"use_main"] boolValue]) {
+        ROOT_URL = [[[NSBundle mainBundle] URLForResource:@"main" withExtension:@"json"] absoluteString];
+    }
+    if (!ROOT_URL.length) ROOT_URL = plist[@"url"];
+#else
     ROOT_URL = plist[@"url"];
+#endif
     
     
     JasonViewController *vc = [[JasonViewController alloc] init];
