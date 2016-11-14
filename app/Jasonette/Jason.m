@@ -1874,6 +1874,11 @@
                      * Replace the current view
                      *
                      ****************************************************************************/
+                    
+                    // Get the index of the current view controller within the view stack, we will replace this index later
+                    NSMutableArray *view_stack = [NSMutableArray arrayWithArray:navigationController.viewControllers];
+                    NSInteger index = [view_stack indexOfObject:VC];
+                    
                     Class v = NSClassFromString(viewClass);
                     VC = [[v alloc] init];
 
@@ -1895,14 +1900,15 @@
                         VC.fresh = NO;
                     }
                     
-                    [navigationController popViewControllerAnimated:NO];
+                    [view_stack replaceObjectAtIndex:index withObject:VC];
                     [UIView transitionWithView:navigationController.view
                                       duration:0.2
                                        options:UIViewAnimationOptionTransitionCrossDissolve
                                     animations:^{
-                                        [navigationController pushViewController:VC animated:NO];
-                                    } 
+                                        [navigationController setViewControllers:view_stack animated:NO];
+                                    }
                                     completion:nil];
+                    
                 } else if([transition isEqualToString:@"modal"]){
                     /****************************************************************************
                      *
