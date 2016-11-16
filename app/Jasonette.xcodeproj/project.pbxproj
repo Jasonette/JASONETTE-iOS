@@ -71,7 +71,6 @@
 		5EEE3E6D1DBAE6DA00DE7ABD /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE3E6C1DBAE6DA00DE7ABD /* parser.js */; };
 		5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF904351DD10F6E00C8A94E /* JasonLogAction.m */; };
 		BF08F7471DD11E7C00A8EDBB /* JasonAzureMobileAction.m in Sources */ = {isa = PBXBuildFile; fileRef = BF08F7451DD11E7C00A8EDBB /* JasonAzureMobileAction.m */; };
-		BF08F74A1DD11F8800A8EDBB /* WindowsAzureMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF08F7481DD11F8800A8EDBB /* WindowsAzureMessaging.framework */; };
 		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
 /* End PBXBuildFile section */
 
@@ -189,7 +188,6 @@
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
 		BF08F7441DD11E7C00A8EDBB /* JasonAzureMobileAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JasonAzureMobileAction.h; path = azure/JasonAzureMobileAction.h; sourceTree = "<group>"; };
 		BF08F7451DD11E7C00A8EDBB /* JasonAzureMobileAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JasonAzureMobileAction.m; path = azure/JasonAzureMobileAction.m; sourceTree = "<group>"; };
-		BF08F7481DD11F8800A8EDBB /* WindowsAzureMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = WindowsAzureMessaging.framework; sourceTree = "<group>"; };
 		BFAE68011DD25AAF00721A9B /* Jasonette.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Jasonette.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -200,7 +198,6 @@
 			files = (
 				5EE85B6C1DA45F8F0049EACE /* MapKit.framework in Frameworks */,
 				F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */,
-				BF08F74A1DD11F8800A8EDBB /* WindowsAzureMessaging.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -631,7 +628,6 @@
 		7CC63D0148253F040E828E0E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BF08F7481DD11F8800A8EDBB /* WindowsAzureMessaging.framework */,
 				5EE85B7A1DA595A20049EACE /* UIKit.framework */,
 				5EE85B6B1DA45F8F0049EACE /* MapKit.framework */,
 				2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */,
