@@ -70,6 +70,8 @@
 		5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B801DA5C0080049EACE /* JasonLayer.m */; };
 		5EEE3E6D1DBAE6DA00DE7ABD /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE3E6C1DBAE6DA00DE7ABD /* parser.js */; };
 		5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF904351DD10F6E00C8A94E /* JasonLogAction.m */; };
+		BF08F7471DD11E7C00A8EDBB /* JasonAzureMobileAction.m in Sources */ = {isa = PBXBuildFile; fileRef = BF08F7451DD11E7C00A8EDBB /* JasonAzureMobileAction.m */; };
+		BF08F74A1DD11F8800A8EDBB /* WindowsAzureMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF08F7481DD11F8800A8EDBB /* WindowsAzureMessaging.framework */; };
 		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
 /* End PBXBuildFile section */
 
@@ -185,6 +187,10 @@
 		5EF904341DD10F6E00C8A94E /* JasonLogAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonLogAction.h; sourceTree = "<group>"; };
 		5EF904351DD10F6E00C8A94E /* JasonLogAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonLogAction.m; sourceTree = "<group>"; };
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
+		BF08F7441DD11E7C00A8EDBB /* JasonAzureMobileAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JasonAzureMobileAction.h; path = azure/JasonAzureMobileAction.h; sourceTree = "<group>"; };
+		BF08F7451DD11E7C00A8EDBB /* JasonAzureMobileAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JasonAzureMobileAction.m; path = azure/JasonAzureMobileAction.m; sourceTree = "<group>"; };
+		BF08F7481DD11F8800A8EDBB /* WindowsAzureMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = WindowsAzureMessaging.framework; sourceTree = "<group>"; };
+		BFAE68011DD25AAF00721A9B /* Jasonette.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Jasonette.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -194,6 +200,7 @@
 			files = (
 				5EE85B6C1DA45F8F0049EACE /* MapKit.framework in Frameworks */,
 				F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */,
+				BF08F74A1DD11F8800A8EDBB /* WindowsAzureMessaging.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,6 +290,7 @@
 		5E31765B1D1E400C00D87778 /* Jasonette */ = {
 			isa = PBXGroup;
 			children = (
+				BFAE68011DD25AAF00721A9B /* Jasonette.entitlements */,
 				5E0956291DA3112C007ADC78 /* Launcher */,
 				5E0F0B911D20FFE2009291BE /* Config */,
 				5E31777D1D1F1A8300D87778 /* Core */,
@@ -317,6 +325,7 @@
 				5EE85B761DA5803F0049EACE /* JasonActionProtocol.h */,
 				5EE85B771DA582930049EACE /* JasonAction.h */,
 				5EE85B781DA582930049EACE /* JasonAction.m */,
+				BF08F73E1DD11C4800A8EDBB /* $azure */,
 				5E31778D1D1F209000D87778 /* $audio */,
 				5E3177A81D1F291200D87778 /* $cache */,
 				5E3177A91D1F294C00D87778 /* $convert */,
@@ -622,11 +631,21 @@
 		7CC63D0148253F040E828E0E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF08F7481DD11F8800A8EDBB /* WindowsAzureMessaging.framework */,
 				5EE85B7A1DA595A20049EACE /* UIKit.framework */,
 				5EE85B6B1DA45F8F0049EACE /* MapKit.framework */,
 				2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BF08F73E1DD11C4800A8EDBB /* $azure */ = {
+			isa = PBXGroup;
+			children = (
+				BF08F7441DD11E7C00A8EDBB /* JasonAzureMobileAction.h */,
+				BF08F7451DD11E7C00A8EDBB /* JasonAzureMobileAction.m */,
+			);
+			name = $azure;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -636,12 +655,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5E3176701D1E400C00D87778 /* Build configuration list for PBXNativeTarget "Jasonette" */;
 			buildPhases = (
+				08F08C5CAD91F7628C21EA57 /* [CP] Check Pods Manifest.lock */,
 				2358BCC5070D5513080379E3 /* [CP] Check Pods Manifest.lock */,
 				5E3176551D1E400C00D87778 /* Sources */,
 				5E3176561D1E400C00D87778 /* Frameworks */,
 				5E3176571D1E400C00D87778 /* Resources */,
 				63FB79939C3EFA5C13310B2B /* [CP] Embed Pods Frameworks */,
 				4838282BA327C039BDB24767 /* [CP] Copy Pods Resources */,
+				86D1251BE989B61845150AD8 /* 📦 Embed Pods Frameworks */,
+				6E76B444770BD72B5BDEAAA1 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -668,6 +690,9 @@
 								enabled = 0;
 							};
 							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+							com.apple.Push = {
 								enabled = 1;
 							};
 						};
@@ -725,6 +750,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		08F08C5CAD91F7628C21EA57 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 		2358BCC5070D5513080379E3 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -770,6 +810,36 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		6E76B444770BD72B5BDEAAA1 /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		86D1251BE989B61845150AD8 /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -799,6 +869,7 @@
 				5E3177A41D1F28C100D87778 /* JasonConvertAction.m in Sources */,
 				5E0956331DA34EEA007ADC78 /* JasonButtonComponent.m in Sources */,
 				5E09563F1DA34F34007ADC78 /* JasonHtmlComponent.m in Sources */,
+				BF08F7471DD11E7C00A8EDBB /* JasonAzureMobileAction.m in Sources */,
 				5EE85B7E1DA59D740049EACE /* JasonComponent.m in Sources */,
 				5E3177641D1E411F00D87778 /* JasonPortraitPicker.m in Sources */,
 				5E9862691DCF1F640084CA4A /* JasonNotificationAction.m in Sources */,
@@ -916,8 +987,13 @@
 			baseConfigurationReference = BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Jasonette/Jasonette.entitlements;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = Jasonette/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasonette.seed;
@@ -931,8 +1007,14 @@
 			baseConfigurationReference = 1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Jasonette/Jasonette.entitlements;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 23BX9MWDBN;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = Jasonette/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasonette.seed;
