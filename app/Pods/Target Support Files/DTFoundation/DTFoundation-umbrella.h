@@ -1,4 +1,6 @@
+#ifdef __OBJC__
 #import <UIKit/UIKit.h>
+#endif
 
 #import "DTBase64Coding.h"
 #import "DTBlockFunctions.h"

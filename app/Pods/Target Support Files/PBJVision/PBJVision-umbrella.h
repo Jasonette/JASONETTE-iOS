@@ -1,4 +1,6 @@
+#ifdef __OBJC__
 #import <UIKit/UIKit.h>
+#endif
 
 #import "PBJGLProgram.h"
 #import "PBJMediaWriter.h"
