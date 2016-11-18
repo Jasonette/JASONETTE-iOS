@@ -24,7 +24,7 @@
 @implementation Jason
 
 
-#pragma mark - Jason Core API (USE ONLY THESE METHODS TO ACCESS Jason Core!)
+#pragma mark - Jason Core initializers
 + (Jason*)client {
     static dispatch_once_t predicate = 0;
     static id sharedObject = nil;
@@ -37,9 +37,40 @@
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onForeground) name:UIApplicationDidBecomeActiveNotification object:nil];
         self.searchMode = NO;
+        
+        // Add observers for public API
+        [[NSNotificationCenter defaultCenter]
+                addObserver:self
+         selector:@selector(notifySuccess:)
+                       name:@"Jason.success"
+                     object:nil];
+
+        [[NSNotificationCenter defaultCenter]
+            addObserver:self
+               selector:@selector(notifyError:)
+                   name:@"Jason.error"
+                 object:nil];
+
     }
     return self;
 }
+
+#pragma mark - Jason Core API Notifications
+- (void)notifySuccess:(NSNotification *)notification {
+    NSDictionary *args = notification.object;
+    NSLog(@"JasonCore: notifySuccess: %@", args);
+    [[Jason client] success:args];
+}
+
+- (void)notifyError:(NSNotification *)notification {
+    NSDictionary *args = notification.object;
+    NSLog(@"JasonCore: notifyError: %@", args);
+    [[Jason client] error:args];
+}
+
+
+#pragma mark - Jason Core API (USE ONLY THESE METHODS TO ACCESS Jason Core!)
+
 - (void)start{
     /**************************************************
      *
@@ -2254,24 +2285,29 @@
                     
                     // skip prefix to get module path
                     NSString *plugin_path = [type substringFromIndex:1];
+                    NSLog(@"Plugin: plugin path: %@", plugin_path);
                     
                     // The module name is the plugin path w/o the last part
                     // e.g. "MyModule.MyClass.demo" -> "MyModule.MyClass"
                     //      "MyClass.demo" -> "MyClass"
                     NSArray *mod_tokens = [plugin_path componentsSeparatedByString:@"."];
                     if (mod_tokens.count > 1) {
-                        NSString *module_name = [[mod_tokens subarrayWithRange:NSMakeRange(1, mod_tokens.count -1)] componentsJoinedByString:@"."];
+                        NSString *module_name = [[mod_tokens subarrayWithRange:NSMakeRange(0, mod_tokens.count -1)] componentsJoinedByString:@"."];
                         NSString *action_name = [mod_tokens lastObject];
+                        
+                        NSLog(@"Plugin: module name: %@", module_name);
+                        NSLog(@"Plugin: action name: %@", action_name);
                         
                         Class PluginClass = NSClassFromString(module_name);
                         if (PluginClass) {
+                            NSLog(@"Plugin: class: %@", PluginClass);
                             
                             // Initialize Plugin
                             module = [[PluginClass alloc] init];  // could go away if we had some sort of plug in registration
                             
                             [[NSNotificationCenter defaultCenter]
                                     postNotificationName:plugin_path
-                                                  object:@{@"vc": VC, @"options": [self options]}];
+                                                  object:@{@"vc": VC, @"action_name": action_name, @"options": [self options]}];
                             
                         } else {
                             [[Jason client] call:@{@"type": @"$util.banner",
