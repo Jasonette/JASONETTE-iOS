@@ -2267,13 +2267,11 @@
                         if (PluginClass) {
                             
                             // Initialize Plugin
-                            module = [[PluginClass alloc] init];
-                            if([module respondsToSelector:NSSelectorFromString(@"VC")])       [module setValue:VC forKey:@"VC"];
-                            if([module respondsToSelector:NSSelectorFromString(@"options")])  [module setValue:[self options] forKey:@"options"];
-                        
-                            // fire and hope for the best
-                            [module performSelector:NSSelectorFromString(action_name)];
+                            module = [[PluginClass alloc] init];  // could go away if we had some sort of plug in registration
                             
+                            [[NSNotificationCenter defaultCenter]
+                                    postNotificationName:plugin_path
+                                                  object:@{@"vc": VC, @"options": [self options]}];
                             
                         } else {
                             [[Jason client] call:@{@"type": @"$util.banner",
