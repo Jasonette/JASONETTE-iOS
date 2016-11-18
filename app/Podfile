@@ -34,6 +34,8 @@ target 'Jasonette' do
   pod 'DAKeyboardControl'
   pod 'SVPullToRefresh', :git => 'https://github.com/samvermette/SVPullToRefresh.git', :branch => 'master'
 
+  pod 'JasonetteDemoAction', :git => 'git@github.com:seletz/JasonetteDemoAction.git', :branch => 'master'
+
   post_install do |installer|
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
