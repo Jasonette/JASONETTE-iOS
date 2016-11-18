@@ -1824,9 +1824,12 @@
              *
              ***************************************/
             NSString *encoded_url = [JasonHelper linkify:href[@"url"]];
+            NSString *reader_mode = href[@"reader_mode"];
+            
             NSURL *URL = [NSURL URLWithString:encoded_url];
             [self unlock];
-            SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:URL];
+            SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:URL
+                                                                         entersReaderIfAvailable:[reader_mode boolValue]];
             
             if([transition isEqualToString:@"modal"]){
                 UINavigationController *newNav = [[UINavigationController alloc]initWithRootViewController:vc];
