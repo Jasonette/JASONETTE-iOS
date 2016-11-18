@@ -2225,6 +2225,68 @@
                         self.options = [self options];
                         [self performSelector:method];
                     }
+                } else if ([type hasPrefix:@"@"]) {
+                    /*
+                     * Call a 'plug in method'.  We now take the full type w/o the '@‘ prefix
+                     * and try to load that class.  This gives us more freedom with class names
+                     * and allows for implementations in Swift -- Swift "classes" always have their
+                     * module name compiled in.
+                     *
+                     * Examples:
+                     *
+                     * {
+                     *    "type": "@MyActionClass.demo",
+                     *    "options": {
+                     *        "foo": "42"
+                     *    }
+                     * }
+                     *
+                     * Or for Swift:
+                     *
+                     * {
+                     *    "type": "@MyActionModule.SomeClassName.demo",
+                     *    "options": {
+                     *        "foo": "42"
+                     *    }
+                     * }
+                     *
+                     */
+                    
+                    // skip prefix to get module path
+                    NSString *plugin_path = [type substringFromIndex:1];
+                    
+                    // The module name is the plugin path w/o the last part
+                    // e.g. "MyModule.MyClass.demo" -> "MyModule.MyClass"
+                    //      "MyClass.demo" -> "MyClass"
+                    NSArray *mod_tokens = [plugin_path componentsSeparatedByString:@"."];
+                    if (mod_tokens.count > 1) {
+                        NSString *module_name = [[mod_tokens subarrayWithRange:NSMakeRange(1, mod_tokens.count -1)] componentsJoinedByString:@"."];
+                        NSString *action_name = [mod_tokens lastObject];
+                        
+                        Class PluginClass = NSClassFromString(module_name);
+                        if (PluginClass) {
+                            
+                            // Initialize Plugin
+                            module = [[PluginClass alloc] init];
+                            if([module respondsToSelector:NSSelectorFromString(@"VC")])       [module setValue:VC forKey:@"VC"];
+                            if([module respondsToSelector:NSSelectorFromString(@"options")])  [module setValue:[self options] forKey:@"options"];
+                        
+                            // fire and hope for the best
+                            [module performSelector:NSSelectorFromString(action_name)];
+                            
+                            
+                        } else {
+                            [[Jason client] call:@{@"type": @"$util.banner",
+                                                   @"options": @{
+                                                           @"title": @"Error",
+                                                           @"description":
+                                                               [NSString stringWithFormat:@"Plugin class '%@' doesn't exist.", module_name]
+                                                           }}];
+                            
+                        }
+                    } else {
+                        // ignore error: "@ModuleName" -> missing action name
+                    }
                 }
                 
                 // Module actions: "$CLASS.METHOD" format => Calls other classes
