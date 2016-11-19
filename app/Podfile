@@ -33,6 +33,9 @@ target 'Jasonette' do
   pod 'PHFComposeBarView'
   pod 'DAKeyboardControl'
   pod 'SVPullToRefresh', :git => 'https://github.com/samvermette/SVPullToRefresh.git', :branch => 'master'
+  
+  pod 'MicrosoftAzureMobile', :git => 'https://github.com/Azure/azure-mobile-apps-ios-client.git', :branch => 'master'
+  
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|
