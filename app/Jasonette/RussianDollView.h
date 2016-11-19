@@ -15,6 +15,7 @@
 @property (nonatomic, strong) NSDictionary *callback;
 @property (nonatomic, strong) NSDictionary *nav;
 @property (strong, nonatomic) NSDictionary *current_cache;
+@property (nonatomic, strong) NSDictionary *json;
 
 @property (strong, nonatomic) UIView *background;
 

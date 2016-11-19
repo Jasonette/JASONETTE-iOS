@@ -843,7 +843,11 @@
 # pragma mark - View rendering (high level)
 - (void)reload{
     VC.data = nil;
-    if(VC.url){
+    
+    
+    if(VC.json){
+        [self drawViewFromJason: VC.json];
+    } else if(VC.url){
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.operationQueue cancelAllOperations];
         NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
@@ -1835,6 +1839,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *view = href[@"view"];
         NSString *transition = href[@"transition"];
+        NSDictionary *data = href[@"data"];
         NSString *fresh = href[@"fresh"];
         JasonMemory *memory = [JasonMemory client];
         if([transition isEqualToString:@"root"]){
@@ -1895,10 +1900,13 @@
                     VC = [[v alloc] init];
 
                     if(href){
-                        if(href[@"url"]){
+                        if(href[@"data"]){
+                            VC.json = href[@"data"];
+                        } else if(href[@"url"]){
                             NSString *url = [JasonHelper linkify:href[@"url"]];
                             VC.url = url;
                         }
+                        
                         if(href[@"options"]){
                             VC.options = [JasonHelper parse:memory._register with:href[@"options"]];
                         }
@@ -1942,11 +1950,15 @@
                         vc.fresh = NO;
                     }
                     if(href){
-                        if(href[@"url"]){
+                        if(href[@"data"]){
+                            VC.json = href[@"data"];
+                        } else if(href[@"url"]){
                             NSString *url = [JasonHelper linkify:href[@"url"]];
                             if([vc respondsToSelector:@selector(url)]) vc.url = url;
                         }
-                        if([vc respondsToSelector: @selector(options)]) vc.options = href[@"options"];
+                        if(href[@"options"]){
+                            vc.options = [JasonHelper parse:memory._register with:href[@"options"]];
+                        }                        
                         [self unlock];
                     }
                     
@@ -1971,7 +1983,9 @@
                     Class v = NSClassFromString(viewClass);
                     UIViewController<RussianDollView> *vc = [[v alloc] init];
                     if(href){
-                        if(href[@"url"]){
+                        if(href[@"data"]){
+                            VC.json = href[@"data"];
+                        } else if(href[@"url"]){
                             NSString *url = [JasonHelper linkify:href[@"url"]];
                             vc.url = url;
                         }

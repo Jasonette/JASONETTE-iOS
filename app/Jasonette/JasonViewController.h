@@ -37,6 +37,7 @@
 @property (nonatomic, strong) NSMutableArray *log;
 @property (nonatomic, strong) NSMutableArray *playing;
 @property (nonatomic, strong) UIView *background;
+@property (nonatomic, strong) NSDictionary *json;
 
 @property (strong, nonatomic) NSDictionary *parser;
 @property (nonatomic, strong) NSDictionary *data;
