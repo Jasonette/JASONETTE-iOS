@@ -208,6 +208,18 @@
 }
 
 # pragma mark - Jason public API (Can be accessed by calling {"type": "$(METHOD_NAME)"}
+- (void)parse{
+    NSDictionary *options = [self options];
+    if(options[@"data"] && options[@"template"]){
+        id data = options[@"data"];
+        NSString *template_name = options[@"template"];
+        id template = VC.parser[template_name];
+        id result = [JasonHelper parse:data with:template];
+        [self success:result];
+    } else {
+        [self error:@{@"message": @"Need to pass both data and template"}];
+    }
+}
 - (void)href{
     JasonMemory *memory = [JasonMemory client];
     NSDictionary *href = [self options];
