@@ -24,7 +24,7 @@
 @implementation Jason
 
 
-#pragma mark - Jason Core API (USE ONLY THESE METHODS TO ACCESS Jason Core!)
+#pragma mark - Jason Core initializers
 + (Jason*)client {
     static dispatch_once_t predicate = 0;
     static id sharedObject = nil;
@@ -38,9 +38,40 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onForeground) name:UIApplicationDidBecomeActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
         self.searchMode = NO;
+
+        // Add observers for public API
+        [[NSNotificationCenter defaultCenter]
+                addObserver:self
+                   selector:@selector(notifySuccess:)
+                       name:@"Jason.success"
+                     object:nil];
+
+        [[NSNotificationCenter defaultCenter]
+            addObserver:self
+               selector:@selector(notifyError:)
+                   name:@"Jason.error"
+                 object:nil];
+
     }
     return self;
 }
+
+#pragma mark - Jason Core API Notifications
+- (void)notifySuccess:(NSNotification *)notification {
+    NSDictionary *args = notification.object;
+    NSLog(@"JasonCore: notifySuccess: %@", args);
+    [[Jason client] success:args];
+}
+
+- (void)notifyError:(NSNotification *)notification {
+    NSDictionary *args = notification.object;
+    NSLog(@"JasonCore: notifyError: %@", args);
+    [[Jason client] error:args];
+}
+
+
+#pragma mark - Jason Core API (USE ONLY THESE METHODS TO ACCESS Jason Core!)
+
 - (void)start{
     /**************************************************
      *
@@ -2256,8 +2287,80 @@
                         self.options = [self options];
                         [self performSelector:method];
                     }
+                } else if ([type hasPrefix:@"@"]) {
+                    /*
+                     * Call a 'plug in method'.  We now take the full type w/o the '@‘ prefix
+                     * and try to load that class.  This gives us more freedom with class names
+                     * and allows for implementations in Swift -- Swift "classes" always have their
+                     * module name compiled in.
+                     *
+                     * Examples:
+                     *
+                     * {
+                     *    "type": "@MyActionClass.demo",
+                     *    "options": {
+                     *        "foo": "42"
+                     *    }
+                     * }
+                     *
+                     * Or for Swift:
+                     *
+                     * {
+                     *    "type": "@MyActionModule.SomeClassName.demo",
+                     *    "options": {
+                     *        "foo": "42"
+                     *    }
+                     * }
+                     *
+                     */
+
+                    // skip prefix to get module path
+                    NSString *plugin_path = [type substringFromIndex:1];
+                    NSLog(@"Plugin: plugin path: %@", plugin_path);
+
+                    // The module name is the plugin path w/o the last part
+                    // e.g. "MyModule.MyClass.demo" -> "MyModule.MyClass"
+                    //      "MyClass.demo" -> "MyClass"
+                    NSArray *mod_tokens = [plugin_path componentsSeparatedByString:@"."];
+                    if (mod_tokens.count > 1) {
+                        NSString *module_name = [[mod_tokens subarrayWithRange:NSMakeRange(0, mod_tokens.count -1)]
+                                                  componentsJoinedByString:@"."];
+                        NSString *action_name = [mod_tokens lastObject];
+
+                        NSLog(@"Plugin: module name: %@", module_name);
+                        NSLog(@"Plugin: action name: %@", action_name);
+
+                        Class PluginClass = NSClassFromString(module_name);
+                        if (PluginClass) {
+                            NSLog(@"Plugin: class: %@", PluginClass);
+
+                            // Initialize Plugin
+                            module = [[PluginClass alloc] init];  // could go away if we had some sort of plug in registration
+
+                            [[NSNotificationCenter defaultCenter]
+                                    postNotificationName:plugin_path
+                                                  object:self
+                                                  userInfo:@{
+                                      @"vc": VC,
+                                      @"plugin_path": plugin_path,
+                                      @"action_name": action_name,
+                                      @"options": [self options]
+                                  }];
+
+                        } else {
+                            [[Jason client] call:@{@"type": @"$util.banner",
+                                                   @"options": @{
+                                                           @"title": @"Error",
+                                                           @"description":
+                                                               [NSString stringWithFormat:@"Plugin class '%@' doesn't exist.", module_name]
+                                                           }}];
+
+                        }
+                    } else {
+                        // ignore error: "@ModuleName" -> missing action name
+                    }
                 }
-                
+
                 // Module actions: "$CLASS.METHOD" format => Calls other classes
                 else
                 {
