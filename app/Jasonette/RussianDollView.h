@@ -11,6 +11,7 @@
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) NSDictionary *data;
 @property (nonatomic, strong) NSDictionary *options;
+@property (nonatomic, strong) NSMutableDictionary *modules;
 @property (nonatomic, strong) NSDictionary *parser;
 @property (nonatomic, strong) NSDictionary *callback;
 @property (nonatomic, strong) NSDictionary *nav;

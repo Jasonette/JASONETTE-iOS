@@ -40,6 +40,7 @@
 
 @property (strong, nonatomic) NSDictionary *parser;
 @property (nonatomic, strong) NSDictionary *data;
+@property (strong, nonatomic) NSMutableDictionary *modules;
 
 @property (nonatomic, strong) NSMutableArray *sections;
 @property (nonatomic, strong) NSArray *rows;
