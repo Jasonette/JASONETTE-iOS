@@ -13,6 +13,7 @@
     NSMutableDictionary *set = [[NSMutableDictionary alloc] init];
     [[NSUserDefaults standardUserDefaults] setObject:set forKey:normalized_url];
     [[NSUserDefaults standardUserDefaults] synchronize];
+    self.VC.current_cache = set;
     [[Jason client] success: set];
     
 }

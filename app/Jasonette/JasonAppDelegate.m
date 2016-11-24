@@ -18,11 +18,18 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
     
+    
+#ifdef PUSH
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"registerNotification" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registerNotification) name:@"registerNotification" object:nil];
+#else
+    NSLog(@"Push notification turned off by default. If you'd like to suport push, uncomment the #define statement in Constants.h and turn on the push notification feature from the capabilities tab.");
+#endif
     
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey]){
         // launched with url. so wait until openURL is called.
+        
+#ifdef PUSH
     } else if(launchOptions && launchOptions.count > 0 && [launchOptions objectForKey: UIApplicationLaunchOptionsRemoteNotificationKey]){
         UILocalNotification *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
         if(notification){
@@ -30,6 +37,9 @@
                 [[Jason client] go:notification.userInfo[@"href"]];
             }
         }
+#endif
+        
+        
     } else {
         [[Jason client] start];
     }
@@ -63,7 +73,17 @@
     return YES;
 }
 
+
+
+
+
+
+
 // PUSH RELATED
+// The "PUSH" constant is defined in Constants.h
+// By default PUSH is disabled. To turn it on, go to Constants.h and uncomment the #define statement, and then go to the capabilities tab and switch the push notification feature on.
+
+#ifdef PUSH
 
 - (void)registerNotification {
     if(SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(@"10.0")) {
@@ -95,7 +115,7 @@
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-     [[Jason client] onRemoteNotification:userInfo];
+    [[Jason client] onRemoteNotification:userInfo];
 }
 
 -(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -108,7 +128,7 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
     
     [[Jason client] onRemoteNotification:notification.request.content.userInfo];
-
+    
     completionHandler(UNNotificationPresentationOptionNone);
 }
 
@@ -120,6 +140,6 @@
     
     completionHandler();
 }
-
+#endif
 
 @end

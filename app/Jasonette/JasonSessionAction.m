@@ -42,13 +42,30 @@
 - (void)reset{
     if(self.options){
         if(self.options[@"type"] && [self.options[@"type"] isEqualToString:@"html"]){
-            NSString *url = self.options[@"url"];
-            NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL: [NSURL URLWithString:url]];
-            for (NSHTTPCookie *cookie in cookies)
-            {
-                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
+            
+            NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+            
+            if(self.options[@"domain"]){
+                // Delete cookies for the entire domain
+                NSString *domain = self.options[@"domain"];
+                NSHTTPCookie *cookie;
+                for(cookie in [cookieStorage cookies]) {
+                    if([[cookie domain] rangeOfString:domain].location != NSNotFound) {
+                        [cookieStorage deleteCookie:cookie];
+                    }
+                }
+            } else if(self.options[@"url"]){
+                // Delete cookies for the url
+                NSString *url = [JasonHelper prependProtocolToUrl:self.options[@"url"]];
+                NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL: [NSURL URLWithString:url]];
+                for (NSHTTPCookie *cookie in cookies)
+                {
+                    [cookieStorage deleteCookie:cookie];
+                }
             }
-            NSData *cookiesData = [NSKeyedArchiver archivedDataWithRootObject: [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
+
+            
+            NSData *cookiesData = [NSKeyedArchiver archivedDataWithRootObject: [cookieStorage cookies]];
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject: cookiesData forKey: @"sessionCookies"];
             [defaults synchronize];
