@@ -7,6 +7,6 @@
 	<key>client_secret</key>
 	<string></string>
 	<key>url</key>
-	<string>local://hello.json</string>
+	<string>file://hello.json</string>
 </dict>
 </plist>
