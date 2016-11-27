@@ -7,7 +7,8 @@
 #import "JasonMapComponent.h"
 
 @implementation JasonMapComponent
-+ (UIView *)build:(NSDictionary *)json intoElement:(MKMapView*)component withOptions:(NSDictionary *)options{
++ (UIView *)build: (MKMapView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
+
     if(!component){
         component = [[MKMapView alloc] init];
     }

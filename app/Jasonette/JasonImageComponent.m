@@ -7,7 +7,7 @@
 #import "JasonImageComponent.h"
 
 @implementation JasonImageComponent
-+ (UIView *)build:(NSDictionary *)json intoElement:(UIImageView*)component withOptions:(NSDictionary *)options{
++ (UIView *)build: (UIImageView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
     if(!component){
         UIImage *placeholder = [UIImage imageNamed:@"placeholder"];
         component = [[UIImageView alloc] initWithImage:placeholder];

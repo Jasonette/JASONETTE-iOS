@@ -7,7 +7,7 @@
 #import "JasonComponent.h"
 
 @implementation JasonComponent
-+ (UIView *)build: (NSDictionary *)json intoElement:(UIView*)component withOptions: (NSDictionary *)options{
++ (UIView *)build: (UIView*)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
     // Override this
     return [[UIView alloc] init];
 }

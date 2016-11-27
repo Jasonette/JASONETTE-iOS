@@ -132,8 +132,8 @@ static NSMutableDictionary *_stylesheet = nil;
                     el = [layout.arrangedSubviews objectAtIndex:index];
                 }
                 
-                UIView *component = [JasonComponentFactory build:child intoElement: el withOptions:options];
-                
+                UIView *component = [JasonComponentFactory build:el withJSON: child withOptions:options];
+
                 if([component isKindOfClass:[UIImageView class]]){
                     
                     if(child[@"style"] && (child[@"style"][@"width"] || child[@"style"][@"height"])){

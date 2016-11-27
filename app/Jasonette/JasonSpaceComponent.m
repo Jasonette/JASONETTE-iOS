@@ -7,7 +7,7 @@
 #import "JasonSpaceComponent.h"
 
 @implementation JasonSpaceComponent
-+ (UIView *)build:(NSDictionary *)json intoElement:(UIView*)component withOptions:(NSDictionary *)options{
++ (UIView *)build: (UIView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
     if(!component){
         component = [[UIView alloc] init];
     }

@@ -7,7 +7,7 @@
 #import "JasonSliderComponent.h"
 
 @implementation JasonSliderComponent
-+ (UIView *)build:(NSDictionary *)json intoElement:(UISlider*)component withOptions:(NSDictionary *)options{
++ (UIView *)build: (UISlider *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
     if(!component){
         CGRect frame = CGRectMake(0,0, [[UIScreen mainScreen] bounds].size.width-20, 20);
         component = [[UISlider alloc] initWithFrame:frame];

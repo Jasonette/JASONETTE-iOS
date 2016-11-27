@@ -7,7 +7,8 @@
 #import "JasonHtmlComponent.h"
 
 @implementation JasonHtmlComponent
-+ (UIView *)build:(NSDictionary *)json intoElement:(UILabel*)component withOptions:(NSDictionary *)options{
++ (UIView *)build: (UILabel *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
+
     if(!component){
         component = [[UILabel alloc] initWithFrame:CGRectZero];
     }

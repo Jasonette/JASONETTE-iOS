@@ -7,7 +7,7 @@
 #import "JasonLabelComponent.h"
 
 @implementation JasonLabelComponent
-+ (UIView *)build:(NSDictionary *)json intoElement: (TTTAttributedLabel *)component withOptions:(NSDictionary *)options{
++ (UIView *)build: (TTTAttributedLabel *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
     if(!component){
         component = (TTTAttributedLabel*)[[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
     }

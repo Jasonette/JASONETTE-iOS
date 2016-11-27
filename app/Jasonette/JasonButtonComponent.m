@@ -7,7 +7,7 @@
 #import "JasonButtonComponent.h"
 
 @implementation JasonButtonComponent
-+ (UIView *)build:(NSDictionary *)json intoElement:(UIButton *)component withOptions:(NSDictionary *)options{
++ (UIView *)build: (UIButton *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
     if(!component){
         component = [[UIButton alloc] init];
     }

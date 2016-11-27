@@ -7,7 +7,7 @@
 #import "JasonTextfieldComponent.h"
 
 @implementation JasonTextfieldComponent
-+ (UIView *)build:(NSDictionary *)json intoElement:(UITextField*)component withOptions:(NSDictionary *)options{
++ (UIView *)build: (UITextField *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
     if(!component){
         CGRect frame = CGRectMake(0,0,[[UIScreen mainScreen] bounds].size.width, 50);
         component = [[UITextField alloc] initWithFrame:frame];

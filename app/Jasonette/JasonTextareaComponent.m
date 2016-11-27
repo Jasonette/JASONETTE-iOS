@@ -7,7 +7,7 @@
 #import "JasonTextareaComponent.h"
 
 @implementation JasonTextareaComponent
-+ (UIView *)build:(NSDictionary *)json intoElement:(SZTextView*)component withOptions:(NSDictionary *)options{
++ (UIView *)build: (SZTextView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
     if(!component){
         CGRect frame = CGRectMake(0,0,[[UIScreen mainScreen] bounds].size.width, 50);
         component = [[SZTextView alloc] initWithFrame:frame];
