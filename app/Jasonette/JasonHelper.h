@@ -37,5 +37,5 @@
 + (CGFloat)pixelsInDirection: (NSString *)direction fromExpression: (NSString *)expression;
 + (UIImage *)takescreenshot;
 + (NSString*) UTF8StringFromData:(NSData*)data;
-
++ (NSString *)getSignature: (NSDictionary *)item;
 @end

@@ -7,8 +7,10 @@
 #import "JasonLabelComponent.h"
 
 @implementation JasonLabelComponent
-+ (UIView *)build:(NSDictionary *)json withOptions:(NSDictionary *)options{
-    TTTAttributedLabel  *component = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
++ (UIView *)build:(NSDictionary *)json intoElement: (TTTAttributedLabel *)component withOptions:(NSDictionary *)options{
+    if(!component){
+        component = (TTTAttributedLabel*)[[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+    }
     if(json){
         component.numberOfLines = 0;
         if(json[@"text"] && ![json[@"text"] isEqual:[NSNull null]]){

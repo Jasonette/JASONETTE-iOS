@@ -7,7 +7,7 @@
 #import "JasonComponent.h"
 
 @implementation JasonComponent
-+ (UIView *)build: (NSDictionary *)json withOptions: (NSDictionary *)options{
++ (UIView *)build: (NSDictionary *)json intoElement:(UIView*)component withOptions: (NSDictionary *)options{
     // Override this
     return [[UIView alloc] init];
 }
@@ -52,8 +52,30 @@
         if(style[@"width"]){
             NSString *widthStr = style[@"width"];
             CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
-            NSString *horizontal_vfl = [NSString stringWithFormat:@"[component(%f@%f)]", width, UILayoutPriorityRequired];
-            [component addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:horizontal_vfl options:NSLayoutFormatAlignAllCenterX metrics:nil views:@{@"component": component}]];
+
+            // Look for any width constraint
+            NSLayoutConstraint *constraint_to_update = nil;
+            for(NSLayoutConstraint *constraint in component.constraints){
+                if([constraint.identifier isEqualToString:@"width"]){
+                    constraint_to_update = constraint;
+                    break;
+                }
+            }
+            
+            // if the width constraint exists, we just update. Otherwise create and add.
+            if(constraint_to_update){
+                constraint_to_update.constant = width;
+            } else {
+                NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:component
+                                                                              attribute:NSLayoutAttributeWidth
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:nil
+                                                                              attribute:NSLayoutAttributeNotAnAttribute
+                                                                             multiplier:1.0
+                                                                               constant:width];
+                constraint.identifier = @"width";
+                [component addConstraint:constraint];
+            }
             [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
             [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
         }
@@ -62,8 +84,30 @@
         if(style[@"height"]){
             NSString * heightStr = style[@"height"];
             CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:heightStr];
-            NSString *vertical_vfl = [NSString stringWithFormat:@"V:[component(%f@%f)]", height, UILayoutPriorityRequired];
-            [component addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:vertical_vfl options:NSLayoutFormatAlignAllCenterY metrics:nil views:@{@"component": component}]];
+
+            // Look for any height constraint
+            NSLayoutConstraint *constraint_to_update = nil;
+            for(NSLayoutConstraint *constraint in component.constraints){
+                if([constraint.identifier isEqualToString:@"height"]){
+                    constraint_to_update = constraint;
+                    break;
+                }
+            }
+            
+            // if the height constraint exists, we just update. Otherwise create and add.
+            if(constraint_to_update){
+                constraint_to_update.constant = height;
+            } else {
+                NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:component
+                                                                              attribute:NSLayoutAttributeHeight
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:nil
+                                                                              attribute:NSLayoutAttributeNotAnAttribute
+                                                                             multiplier:1.0
+                                                                               constant:height];
+                constraint.identifier = @"height";
+                [component addConstraint:constraint];
+            }            
             [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
             [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
         }

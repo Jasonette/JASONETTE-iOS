@@ -11,15 +11,14 @@
 static NSMutableDictionary *_imageLoaded = nil;
 static NSMutableDictionary *_stylesheet = nil;
 
-+ (UIView *)build:(NSDictionary *)child withOptions:(NSDictionary *)options{
++ (UIView *)build:(NSDictionary *)child intoElement:(UIView *)component withOptions:(NSDictionary *)options{
     
     NSString *capitalizedType = [child[@"type"] capitalizedString];
     NSString *componentClassName = [NSString stringWithFormat:@"Jason%@Component", capitalizedType];
     if(componentClassName){
         Class<JasonComponentProtocol> ComponentClass = NSClassFromString(componentClassName);
         child = [self applyStylesheet:child];
-        UIView *generated_component = [ComponentClass build:child withOptions:options];
-        [generated_component sizeToFit];
+        UIView *generated_component = [ComponentClass build:child intoElement:component withOptions:options];
         [generated_component setNeedsLayout];
         [generated_component layoutIfNeeded];
         return generated_component;

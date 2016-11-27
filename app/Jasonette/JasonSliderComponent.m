@@ -7,9 +7,11 @@
 #import "JasonSliderComponent.h"
 
 @implementation JasonSliderComponent
-+ (UIView *)build:(NSDictionary *)json withOptions:(NSDictionary *)options{
-    CGRect frame = CGRectMake(0,0, [[UIScreen mainScreen] bounds].size.width-20, 20);
-    UISlider *component = [[UISlider alloc] initWithFrame:frame];
++ (UIView *)build:(NSDictionary *)json intoElement:(UISlider*)component withOptions:(NSDictionary *)options{
+    if(!component){
+        CGRect frame = CGRectMake(0,0, [[UIScreen mainScreen] bounds].size.width-20, 20);
+        component = [[UISlider alloc] initWithFrame:frame];
+    }
     component.continuous = YES;
     component.value = 0.5;
     if(options && options[@"value"] && [options[@"value"] length] > 0){

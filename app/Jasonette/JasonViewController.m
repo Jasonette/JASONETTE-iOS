@@ -54,8 +54,7 @@
     [self.view addSubview:self.tableView];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat: @"H:|[tableView]|" options:0 metrics:nil views:@{@"tableView": self.tableView}]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat: @"V:|[tableView]|" options:0 metrics:nil views:@{@"tableView": self.tableView}]];
- 
-    
+
     empty_view = [[UIView alloc] initWithFrame:CGRectZero];
 
     estimatedRowHeightCache = [[NSMutableDictionary alloc] init];
@@ -529,30 +528,31 @@
  ********************************/
 
 
-
 - (UITableViewCell*)getVerticalSectionItem:(NSDictionary *)item forTableView:(UITableView *)tableView atIndexPath:(NSIndexPath *)indexPath{
-    NSString *cellType = @"JasonVerticalSectionItem";
-    SWTableViewCell *cell = (SWTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellType];
-    if (cell == nil)
-    {
-        NSArray *nib = [[NSBundle mainBundle] loadNibNamed:cellType owner:self options:nil];
-        cell = [nib objectAtIndex:0];
-    }
-    
+
+    // "signature" => generate a unique signature to identify prototype items.
+    NSString *signature = [JasonHelper getSignature:item];
     item = [JasonComponentFactory applyStylesheet: item];
     
+    SWTableViewCell *cell = (SWTableViewCell *)[tableView dequeueReusableCellWithIdentifier:signature];
+    UIStackView *layout;
+    if (cell == nil)
+    {
+        cell = [[SWTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:signature];
+        layout = [[UIStackView alloc] init];
+        [cell.contentView addSubview:layout];
+
+        NSString *horizontal_vfl = [NSString stringWithFormat:@"|-0@%f-[layout]-0@%f-|", UILayoutPriorityRequired, UILayoutPriorityRequired];
+        NSString *vertical_vfl = [NSString stringWithFormat:@"V:|-0@%f-[layout]-0@%f-|", UILayoutPriorityRequired, UILayoutPriorityRequired];
+        [cell.contentView addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:horizontal_vfl options:NSLayoutFormatAlignAllCenterX metrics:nil views:@{@"layout": layout}]];
+        [cell.contentView addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:vertical_vfl options:NSLayoutFormatAlignAllCenterY metrics:nil views:@{@"layout": layout}]];
+    } else {
+        layout = cell.contentView.subviews.firstObject;
+    }
+    NSDictionary *layout_generator = [JasonLayout fill:layout with:item atIndexPath:indexPath withForm:self.form];
+
     // Build layout and add to cell
-    NSDictionary *layout_generator = [JasonLayout build:item atIndexPath:indexPath withForm:self.form];
     NSMutableDictionary *style = layout_generator[@"style"];
-    UIStackView *layout = layout_generator[@"layout"];
-    [cell.contentView addSubview:layout];
-    
-    // Padding Handling
-    NSString *horizontal_vfl = [NSString stringWithFormat:@"|-0@%f-[layout]-0@%f-|", UILayoutPriorityRequired, UILayoutPriorityRequired];
-    NSString *vertical_vfl = [NSString stringWithFormat:@"V:|-0@%f-[layout]-0@%f-|", UILayoutPriorityRequired, UILayoutPriorityRequired];
-    [cell.contentView addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:horizontal_vfl options:NSLayoutFormatAlignAllCenterX metrics:nil views:@{@"layout": layout}]];
-    [cell.contentView addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:vertical_vfl options:NSLayoutFormatAlignAllCenterY metrics:nil views:@{@"layout": layout}]];
-    
 
     // Z-index handling
     if(style[@"z_index"]){
