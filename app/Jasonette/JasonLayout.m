@@ -8,8 +8,13 @@
 
 @implementation JasonLayout
 static NSMutableDictionary *_stylesheet = nil;
-+ (NSDictionary *)build: (NSDictionary *)item atIndexPath: (NSIndexPath *)indexPath withForm: (NSDictionary *)form{
-    
+
+
+/**
+ * create a layout if it doesn't exist.
+ * reuse if it already exists
+ **/
++ (NSDictionary *)fill: (UIStackView *)layout with:(NSDictionary *)item atIndexPath: (NSIndexPath *)indexPath withForm: (NSDictionary *)form{
     item = [self applyStylesheet:item];
     
     /////////////////////////////////////////////////////////////
@@ -20,12 +25,12 @@ static NSMutableDictionary *_stylesheet = nil;
     NSMutableDictionary *style;
     if(form){
         style = [@{
-            @"padding": @"10"
-        } mutableCopy];
+                   @"padding": @"10"
+                   } mutableCopy];
     } else {
         style = [@{
-            @"padding": @"0"
-        } mutableCopy];
+                   @"padding": @"0"
+                   } mutableCopy];
     }
     
     
@@ -50,11 +55,11 @@ static NSMutableDictionary *_stylesheet = nil;
             style[key] = inline_style[key];
         }
     }
-    UIStackView *layout;
+    
     if([t isEqualToString:@"vertical"] || [t isEqualToString:@"horizontal"]){
         NSMutableDictionary *stylized_item = [item mutableCopy];
         stylized_item[@"style"] = style;
-        layout = [JasonLayout generateChildLayout:stylized_item atIndexPath:indexPath withForm:form];
+        layout = [JasonLayout fillChildLayout:layout with:stylized_item atIndexPath:indexPath withForm:form];
     } else {
         // This means it's a single element layout
         // And therefore needs to be wrapped inside a simple horizontal layout
@@ -62,7 +67,7 @@ static NSMutableDictionary *_stylesheet = nil;
                                       @"type": @"vertical",
                                       @"style": style,
                                       @"components": @[item]};
-        layout = [JasonLayout generateChildLayout:wrappedItem atIndexPath:indexPath withForm:form];
+        layout = [JasonLayout fillChildLayout:layout with:wrappedItem atIndexPath:indexPath withForm:form];
     }
     layout.translatesAutoresizingMaskIntoConstraints = false;
     [layout setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
@@ -71,45 +76,64 @@ static NSMutableDictionary *_stylesheet = nil;
     [layout setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
     
     return @{ @"style": style, @"layout": layout };
+
 }
-+ (UIStackView *)generateChildLayout: (NSDictionary *)item atIndexPath: (NSIndexPath *)indexPath withForm: (NSDictionary *)form{
-    
+
++ (UIStackView *)fillChildLayout: (UIStackView*)layout with:(NSDictionary *)item atIndexPath: (NSIndexPath *)indexPath withForm: (NSDictionary *)form{
     NSArray *children = item[@"components"];
     
-    UIStackView *layout = [[UIStackView alloc] init];
+    // isBuilding = YES means we're building this layout for the first time.
+    // Otherwise, we reuse the existing layout.
+    
+    BOOL isBuilding = YES;
+    if(layout.arrangedSubviews && layout.arrangedSubviews.count > 0){
+        isBuilding = NO;
+    }
+    NSInteger index = 0;
     for(NSDictionary *child in children){
         if(child && child.count > 0){
             NSString *type = child[@"type"];
             if([type isEqualToString:@"vertical"] || [type isEqualToString:@"horizontal"]){
-                UIStackView *el = [self generateChildLayout:child atIndexPath:indexPath withForm: form];
-                [layout addArrangedSubview:el];
+                if(isBuilding){
+                    UIStackView *el = [self fillChildLayout:[[UIStackView alloc] init] with:child atIndexPath:indexPath withForm: form];
+                    [layout addArrangedSubview:el];
+                } else {
+                    UIStackView *view_to_replace = (UIStackView *)[layout.arrangedSubviews objectAtIndex:index];
+                    [self fillChildLayout:view_to_replace with:child atIndexPath:indexPath withForm: form];
+                }
             } else {
                 NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
-
                 if ([child[@"type"] isEqualToString:@"image"]) {
                     options[@"indexPath"] = indexPath;
                 }
-
                 if (form && child[@"name"]) {
                     // get the form value first
                     NSString *value = form[child[@"name"]];
-                
+                    
                     // if the value doesn't exist but the 'value' attribute exists, use that one
                     if(!value && child[@"value"]) {
                         value = child[@"value"];
                     }
-                
+                    
                     // If after all this, the value is still nil, just use an empty string
                     if (!value) value = @"";
-
+                    
                     options[@"value"] = value;
                 }
-
                 options[@"parent"] = item[@"type"];
 
-                UIView *component = [JasonComponentFactory build:child withOptions:options];
-
+                UIView *el;
                 
+                // If we're building this layout, we pass in nil to JasonComponentFactory, and it will instantiate new components
+                // Otherwise we look up the relevant component and pass it to JasonComponentFactory instead.
+                if(isBuilding){
+                    el = nil;
+                } else {
+                    el = [layout.arrangedSubviews objectAtIndex:index];
+                }
+                
+                UIView *component = [JasonComponentFactory build:el withJSON: child withOptions:options];
+
                 if([component isKindOfClass:[UIImageView class]]){
                     
                     if(child[@"style"] && (child[@"style"][@"width"] || child[@"style"][@"height"])){
@@ -145,51 +169,48 @@ static NSMutableDictionary *_stylesheet = nil;
                             }
                             
                             
-                            if([item[@"type"] isEqualToString:@"vertical"]){
-                                NSLayoutConstraint *c =
-                                [NSLayoutConstraint constraintWithItem:component
-                                                             attribute:NSLayoutAttributeHeight
-                                                             relatedBy:NSLayoutRelationEqual
-                                                                toItem:component
-                                                             attribute:NSLayoutAttributeWidth
-                                                            multiplier:aspectRatioMult
-                                                              constant:0];
-                                [c setPriority:UILayoutPriorityRequired];
-                                [component addConstraint:c];
-                                
-                            } else if([item[@"type"] isEqualToString:@"horizontal"]){
-                                NSLayoutConstraint *c =
-                                [NSLayoutConstraint constraintWithItem:component
-                                                             attribute:NSLayoutAttributeHeight
-                                                             relatedBy:NSLayoutRelationEqual
-                                                                toItem:component
-                                                             attribute:NSLayoutAttributeWidth
-                                                            multiplier:1/aspectRatioMult
-                                                              constant:0];
-                                [c setPriority:UILayoutPriorityRequired];
-                                [component addConstraint:c];
+                            // The order is important
+                            // Step 1. Add constraint
+                            NSLayoutConstraint *new_constraint;
+                            new_constraint = [NSLayoutConstraint constraintWithItem:component
+                                                                          attribute:NSLayoutAttributeHeight
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:component
+                                                                          attribute:NSLayoutAttributeWidth
+                                                                         multiplier:aspectRatioMult
+                                                                           constant:0];
+                            [new_constraint setPriority:UILayoutPriorityRequired];
+                            [component addConstraint:new_constraint];
+                            
+                            // Step 2. remove all constraints with "ratio" identifier
+                            for(NSLayoutConstraint *constraint in component.constraints){
+                                if([constraint.identifier isEqualToString:@"ratio"]){
+                                    [component removeConstraint:constraint];
+                                }
                             }
+                            
+                            // Step 3. Set the new_constraint's identifier "ratio"
+                            new_constraint.identifier = @"ratio";
+                            [component setNeedsLayout];
                         }
-
+                        
                     }
                     
-
+                    
                 }
-                
-                
-                
-                [layout addArrangedSubview:component];
+                if(isBuilding){
+                    [layout addArrangedSubview:component];
+                }
             }
         }
+        index++;
     }
+    
     if([item[@"type"] isEqualToString:@"vertical"]){
         [layout setAxis:UILayoutConstraintAxisVertical];
     }else if([item[@"type"] isEqualToString:@"horizontal"]){
         [layout setAxis:UILayoutConstraintAxisHorizontal];
     }
-    
-    
-    
     
     NSDictionary *default_style = item[@"style"];
     
@@ -220,7 +241,7 @@ static NSMutableDictionary *_stylesheet = nil;
     }
     
     
-        
+    
     NSDictionary *alignment_map = @{
                                     @"fill": @(UIStackViewAlignmentFill),
                                     @"firstbaseline": @(UIStackViewAlignmentFirstBaseline),
@@ -262,7 +283,7 @@ static NSMutableDictionary *_stylesheet = nil;
         padding_right = padding;
         padding_bottom = padding;
     }
-
+    
     if(style[@"padding_left"]) padding_left = style[@"padding_left"];
     if(style[@"padding_right"]) padding_right = style[@"padding_right"];
     if(style[@"padding_top"]) padding_top = style[@"padding_top"];
@@ -276,13 +297,10 @@ static NSMutableDictionary *_stylesheet = nil;
     } else {
         layout.alpha = 1.0;
     }
-
+    
     
     return layout;
 }
-
-
-
 
 + (NSMutableDictionary *)stylesheet{
     if(_stylesheet == nil){

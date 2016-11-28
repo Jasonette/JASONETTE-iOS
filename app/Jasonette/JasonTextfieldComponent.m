@@ -7,9 +7,11 @@
 #import "JasonTextfieldComponent.h"
 
 @implementation JasonTextfieldComponent
-+ (UIView *)build:(NSDictionary *)json withOptions:(NSDictionary *)options{
-    CGRect frame = CGRectMake(0,0,[[UIScreen mainScreen] bounds].size.width, 50);
-    UITextField *component = [[UITextField alloc] initWithFrame:frame];
++ (UIView *)build: (UITextField *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
+    if(!component){
+        CGRect frame = CGRectMake(0,0,[[UIScreen mainScreen] bounds].size.width, 50);
+        component = [[UITextField alloc] initWithFrame:frame];
+    }
     if(options && options[@"value"]){
         component.text = options[@"value"];
     }

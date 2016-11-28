@@ -7,8 +7,10 @@
 #import "JasonButtonComponent.h"
 
 @implementation JasonButtonComponent
-+ (UIView *)build:(NSDictionary *)json withOptions:(NSDictionary *)options{
-    UIButton *component = [[UIButton alloc] init];
++ (UIView *)build: (UIButton *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
+    if(!component){
+        component = [[UIButton alloc] init];
+    }
     [self stylize:json component:component];
     [component setTitle:json[@"text"] forState:UIControlStateNormal];
     if(json[@"action"]){

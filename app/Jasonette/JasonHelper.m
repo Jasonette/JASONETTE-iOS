@@ -528,6 +528,28 @@
     return dimension;
     
 }
++ (NSString *)getSignature: (NSDictionary *)item{
+    
+    NSError *error;
+    NSData * jsonData = [NSJSONSerialization dataWithJSONObject:item options:0 error:&error];
+    NSString * json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    
+    NSString *pattern = @"\"(url|text)\"[ ]*:[ ]*\"([^\"]+)\"";
+    
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:&error];
+    NSString *signature = [regex stringByReplacingMatchesInString:json
+                                                          options:0
+                                                            range:NSMakeRange(0, [json length])
+                                                     withTemplate:@"\"jason\":\"jason\""];
+    
+    
+    return signature;
+    
+}
+
 + (UIImage *)takescreenshot
 {
     CGSize imageSize = CGSizeZero;

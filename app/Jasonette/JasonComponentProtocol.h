@@ -9,7 +9,7 @@
 
 @protocol JasonComponentProtocol <NSObject>
 
-+ (UIView *)build: (NSDictionary *)json withOptions: (NSDictionary *)options;
++ (UIView *)build: (UIView*)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options;
 + (void)stylize: (NSDictionary *)json component: (UIView *)el;
 + (void)stylize: (NSDictionary *)json text: (UIView *)el;
 

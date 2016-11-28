@@ -7,9 +7,11 @@
 #import "JasonImageComponent.h"
 
 @implementation JasonImageComponent
-+ (UIView *)build:(NSDictionary *)json withOptions:(NSDictionary *)options{
-    UIImage *placeholder = [UIImage imageNamed:@"placeholder"];
-    UIImageView *component = [[UIImageView alloc] initWithImage:placeholder];
++ (UIView *)build: (UIImageView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
+    if(!component){
+        UIImage *placeholder = [UIImage imageNamed:@"placeholder"];
+        component = [[UIImageView alloc] initWithImage:placeholder];
+    }
     if(options && options[@"indexPath"]){
         NSString *url = (NSString *) [JasonHelper cleanNull:json[@"url"] type:@"string"];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"setupIndexPathsForImage" object:nil userInfo:@{@"url": url, @"indexPath": options[@"indexPath"]}];
@@ -26,13 +28,10 @@
         }];
     }
     
-    
-    // Apply Common Style
-    [self stylize:json component:component];
-    
-    // Apply Custom Style
-    NSDictionary *style = json[@"style"];
-    if(style){
+    // Before applying common styles, Update the style attribute based on the fetched image dimension (different from other components)
+    NSMutableDictionary *mutable_json = [json mutableCopy];
+    if(json[@"style"]){
+        NSMutableDictionary *style = [json[@"style"] mutableCopy];
         NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
         UIImageView *imageView = (UIImageView *)component;
         
@@ -61,19 +60,9 @@
             } else {
                 aspectRatioMult = (imageView.image.size.height / imageView.image.size.width);
             }
-            
-            
-            // Constrain the desired aspect ratio
-            NSLayoutConstraint *c =
-             [NSLayoutConstraint constraintWithItem:imageView
-                                          attribute:NSLayoutAttributeHeight
-                                          relatedBy:NSLayoutRelationEqual
-                                             toItem:imageView
-                                          attribute:NSLayoutAttributeWidth
-                                         multiplier:aspectRatioMult
-                                           constant:0];
-            [c setPriority:UILayoutPriorityRequired];
-            [imageView addConstraint:c];
+            NSString *widthStr = style[@"width"];
+            CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
+            style[@"height"] = [NSString stringWithFormat:@"%d", (int)(width * aspectRatioMult)];
         }
         if(style[@"height"] && !style[@"width"]){
             // Height is set but width is not
@@ -93,20 +82,14 @@
             } else {
                 aspectRatioMult = (imageView.image.size.width / imageView.image.size.height);
             }
-            
-            NSLayoutConstraint *c =
-             [NSLayoutConstraint constraintWithItem:imageView
-                                          attribute:NSLayoutAttributeWidth
-                                          relatedBy:NSLayoutRelationEqual
-                                             toItem:imageView
-                                          attribute:NSLayoutAttributeHeight
-                                         multiplier:aspectRatioMult
-                                           constant:0];
-            [c setPriority:UILayoutPriorityRequired];
-            [imageView addConstraint:c];
+            NSString *heightStr = style[@"height"];
+            CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:heightStr];
+            style[@"width"] = [NSString stringWithFormat:@"%d", (int)(height * aspectRatioMult)];
         }
+        mutable_json[@"style"] = style;
     }
-    
+    // Apply Common Style
+    [self stylize:mutable_json component:component];
     return component;
 }
 @end

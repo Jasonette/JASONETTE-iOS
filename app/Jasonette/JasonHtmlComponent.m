@@ -7,8 +7,11 @@
 #import "JasonHtmlComponent.h"
 
 @implementation JasonHtmlComponent
-+ (UIView *)build:(NSDictionary *)json withOptions:(NSDictionary *)options{
-    UILabel  *component = [[UILabel alloc] initWithFrame:CGRectZero];
++ (UIView *)build: (UILabel *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
+
+    if(!component){
+        component = [[UILabel alloc] initWithFrame:CGRectZero];
+    }
     if(json[@"text"] && ![[NSNull null] isEqual:json[@"text"]]){
         NSString *html = json[@"text"];
         if(json[@"css"]){

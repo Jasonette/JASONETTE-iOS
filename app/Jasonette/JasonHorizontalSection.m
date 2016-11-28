@@ -83,25 +83,27 @@
 - (UICollectionViewCell*)getItemCell:(NSDictionary *)item forCollectionView:(UICollectionView *)collectionView atIndexPath:(NSIndexPath *)indexPath{
     NSString *cellType = @"JasonHorizontalSectionItem";
     JasonHorizontalSectionItem *cell = (JasonHorizontalSectionItem *)[collectionView dequeueReusableCellWithReuseIdentifier:cellType forIndexPath:indexPath];
-    
-    if (cell == nil)
-    {
+
+    UIStackView *layout;
+
+    if(!cell){
         NSArray *nib = [[NSBundle mainBundle] loadNibNamed:cellType owner:self options:nil];
-        cell = [nib objectAtIndex:0];
+        cell = [nib objectAtIndex:0];        
     }
     
-    // Build layout and add to cell
-    NSDictionary *layout_generator = [JasonLayout build:item atIndexPath:indexPath withForm:nil];
+    if (cell.contentView.subviews.count == 0)
+    {
+        layout = [[UIStackView alloc] init];
+        [cell.contentView addSubview:layout];
+        NSString *horizontal_vfl = [NSString stringWithFormat:@"|-0@%f-[layout]-0@%f-|", UILayoutPriorityRequired, UILayoutPriorityRequired];
+        NSString *vertical_vfl = [NSString stringWithFormat:@"V:|-0@%f-[layout]-0@%f-|", UILayoutPriorityRequired, UILayoutPriorityRequired];
+        [cell.contentView addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:horizontal_vfl options:NSLayoutFormatAlignAllCenterX metrics:nil views:@{@"layout": layout}]];
+        [cell.contentView addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:vertical_vfl options:NSLayoutFormatAlignAllCenterY metrics:nil views:@{@"layout": layout}]];
+    } else {
+        layout = cell.contentView.subviews.firstObject;
+    }
+    NSDictionary *layout_generator = [JasonLayout fill:layout with:item atIndexPath:indexPath withForm:nil];
     NSMutableDictionary *style = layout_generator[@"style"];
-    UIStackView *layout = layout_generator[@"layout"];
-    [cell.contentView addSubview:layout];
-    
-    // Padding Handling
-    NSString *horizontal_vfl = [NSString stringWithFormat:@"|-0@%f-[layout]-0@%f-|", UILayoutPriorityRequired, UILayoutPriorityRequired];
-    NSString *vertical_vfl = [NSString stringWithFormat:@"V:|-0@%f-[layout]-0@%f-|", UILayoutPriorityRequired, UILayoutPriorityRequired];
-    [cell.contentView addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:horizontal_vfl options:NSLayoutFormatAlignAllCenterX metrics:nil views:@{@"layout": layout}]];
-    [cell.contentView addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:vertical_vfl options:NSLayoutFormatAlignAllCenterY metrics:nil views:@{@"layout": layout}]];
-    
 
     // Z-index handling
     if(style[@"z_index"]){

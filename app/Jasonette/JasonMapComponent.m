@@ -7,8 +7,11 @@
 #import "JasonMapComponent.h"
 
 @implementation JasonMapComponent
-+ (UIView *)build:(NSDictionary *)json withOptions:(NSDictionary *)options{
-    MKMapView *component = [[MKMapView alloc] init];
++ (UIView *)build: (MKMapView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
+
+    if(!component){
+        component = [[MKMapView alloc] init];
+    }
     [component setShowsUserLocation:YES];
     
     // Map Style
