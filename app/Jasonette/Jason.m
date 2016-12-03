@@ -1475,64 +1475,71 @@
     VC.navigationItem.leftBarButtonItem = leftBarButton;
     
     if(nav[@"title"]){
-        if([nav[@"title"] isKindOfClass:[NSDictionary class]]){
-            // Advanced title
-            NSDictionary *titleDict = nav[@"title"];
-            if(titleDict[@"type"]){
-                if([titleDict[@"type"] isEqualToString:@"image"]){
-                    NSString *url = titleDict[@"url"];
-                    NSDictionary *style = titleDict[@"style"];
-                    if(url){
-                        SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                        [manager downloadImageWithURL:[NSURL URLWithString:url]
-                                              options:0
-                                             progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                             }
-                                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                                if (image) {
-                                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                                        CGFloat width = 0;
-                                                        CGFloat height = 0;
-                                                        if(style && style[@"width"]){
-                                                            width = [((NSString *)style[@"width"]) floatValue];
-                                                        }
-                                                        if(style && style[@"height"]){
-                                                            height = [((NSString *)style[@"height"]) floatValue];
-                                                        }
-                                                        
-                                                        
-                                                        if(width == 0){
-                                                            width = image.size.width;
-                                                        }
-                                                        if(height == 0){
-                                                            height = image.size.height;
-                                                        }
-                                                        CGRect frame = CGRectMake(0, 0, width, height);
-                                                        
-                                                        UIView *logoView =[[UIView alloc] initWithFrame:frame];
-                                                        UIImageView *logoImageView = [[UIImageView alloc] initWithImage:image];
-                                                        logoImageView.frame = frame;
-                                                        
-                                                        [logoView addSubview:logoImageView];
-                                                        VC.navigationItem.titleView = logoView;
 
-                                                    });
-                                                }
-                                            }];
+        if(![[nav[@"title"] description] containsString:@"{{"] && ![[nav[@"title"] description] containsString:@"}}"]){
+            if([nav[@"title"] isKindOfClass:[NSDictionary class]]){
+                // Advanced title
+                NSDictionary *titleDict = nav[@"title"];
+                if(titleDict[@"type"]){
+                    if([titleDict[@"type"] isEqualToString:@"image"]){
+                        NSString *url = titleDict[@"url"];
+                        NSDictionary *style = titleDict[@"style"];
+                        if(url){
+                            SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                            [manager downloadImageWithURL:[NSURL URLWithString:url]
+                                                  options:0
+                                                 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                                 }
+                                                completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                    if (image) {
+                                                        dispatch_async(dispatch_get_main_queue(), ^{
+                                                            CGFloat width = 0;
+                                                            CGFloat height = 0;
+                                                            if(style && style[@"width"]){
+                                                                width = [((NSString *)style[@"width"]) floatValue];
+                                                            }
+                                                            if(style && style[@"height"]){
+                                                                height = [((NSString *)style[@"height"]) floatValue];
+                                                            }
+                                                            
+                                                            
+                                                            if(width == 0){
+                                                                width = image.size.width;
+                                                            }
+                                                            if(height == 0){
+                                                                height = image.size.height;
+                                                            }
+                                                            CGRect frame = CGRectMake(0, 0, width, height);
+                                                            
+                                                            UIView *logoView =[[UIView alloc] initWithFrame:frame];
+                                                            UIImageView *logoImageView = [[UIImageView alloc] initWithImage:image];
+                                                            logoImageView.frame = frame;
+                                                            
+                                                            [logoView addSubview:logoImageView];
+                                                            VC.navigationItem.titleView = logoView;
+                                                            
+                                                        });
+                                                    }
+                                                }];
+                        }
+                        
+                    } else if([titleDict[@"type"] isEqualToString:@"label"]) {
+                        VC.navigationItem.titleView = nil;
+                        VC.navigationItem.title = titleDict[@"text"];
                     }
-                    
-                } else if([titleDict[@"type"] isEqualToString:@"label"]) {
-                    VC.navigationItem.titleView = nil;
-                    VC.navigationItem.title = titleDict[@"text"];
                 }
+            } else if([nav[@"title"] isKindOfClass:[NSString class]]){
+                // Basic title (simple text)
+                VC.navigationItem.titleView = nil;
+                VC.navigationItem.title = nav[@"title"];
+            } else {
+                VC.navigationItem.titleView = nil;
             }
-        } else if([nav[@"title"] isKindOfClass:[NSString class]]){
-            // Basic title (simple text)
-            VC.navigationItem.titleView = nil;
-            VC.navigationItem.title = nav[@"title"];
+            
         } else {
             VC.navigationItem.titleView = nil;
         }
+
     } else {
         VC.navigationItem.titleView = nil;
     }
@@ -1554,6 +1561,9 @@
     navigationController.navigationBar.barTintColor = background;
     navigationController.navigationBar.tintColor = color;
     
+    navigationController.navigationBarHidden = YES;
+    navigationController.navigationBarHidden = NO;
+
 }
 - (void)setupMenuBadge: (BBBadgeBarButtonItem *)barButton forData: (NSDictionary *)badge_menu{
     if(badge_menu[@"badge"]){
