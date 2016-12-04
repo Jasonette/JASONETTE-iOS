@@ -34,12 +34,12 @@
                 [self.VC.audios[url] stop];
                 [self.VC.audios removeObjectForKey:url];
             }
-        } else {
-            for(NSString *audio_name in self.VC.audios){
-                FSAudioStream *audioStream = self.VC.audios[audio_name];
-                [audioStream stop];
-                [self.VC.audios removeObjectForKey:audio_name];
-            }
+        }
+    } else {
+        for(NSString *audio_name in self.VC.audios){
+            FSAudioStream *audioStream = self.VC.audios[audio_name];
+            [audioStream stop];
+            [self.VC.audios removeObjectForKey:audio_name];
         }
     }
     [[Jason client] success];
@@ -123,11 +123,11 @@
                 FSAudioStream *audioStream = self.VC.audios[url];
                 [audioStream pause];
             }
-        } else {
-            for(NSString *audio_name in self.VC.audios){
-                FSAudioStream *audioStream = self.VC.audios[audio_name];
-                [audioStream pause];
-            }
+        }
+    } else {
+        for(NSString *audio_name in self.VC.audios){
+            FSAudioStream *audioStream = self.VC.audios[audio_name];
+            [audioStream pause];
         }
     }
     [[Jason client] success];
