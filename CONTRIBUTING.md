@@ -23,11 +23,11 @@ If you would like to contribute to the [documentation](https://jasonette.github.
 
 Feel free to fork the project and [write your own extension](https://jasonette.github.io/documentation/advanced)
 
-If you wrote a cool extension, please share it with the community in the [slack channel](https://jasonette.herokuapp.com).
+If you wrote a cool extension, please share it with the community in the [slack channel](https://jasonette.now.sh).
 
 ## **Do you have other types of questions?**
 
-* Ask any question about how to use Jasonette on the [Jasonette Slack channel](https://jasonette.herokuapp.com).
+* Ask any question about how to use Jasonette on the [Jasonette Slack channel](https://jasonette.now.sh).
 
 ## **Project Structure**
 

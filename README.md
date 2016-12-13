@@ -93,9 +93,9 @@ Have a bug or a feature request regarding the Jasonette code itself? [Please ope
 <br>
 
 # Questions and Support
-For questions and support, please use the [Slack chatroom](https://jasonette.herokuapp.com)
+For questions and support, please use the [Slack chatroom](https://jasonette.now.sh)
 
-[![slack](https://raw.githubusercontent.com/gliechtenstein/images/master/slack.png)](https://jasonette.herokuapp.com)
+[![slack](https://raw.githubusercontent.com/gliechtenstein/images/master/slack.png)](https://jasonette.now.sh)
 
 <br>
 
@@ -103,7 +103,7 @@ For questions and support, please use the [Slack chatroom](https://jasonette.her
 To keep updated on latest releases and announcements,
 
 - Follow on Twitter [@jasonclient](https://twitter.com/jasonclient)
-- [join our slack](https://jasonette.herokuapp.com)
+- [join our slack](https://jasonette.now.sh)
 
 <br>
 
