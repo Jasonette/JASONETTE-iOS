@@ -27,14 +27,12 @@
     if(!self.VC.audios){
         self.VC.audios = [[NSMutableDictionary alloc] init];
     }
-    if(self.options){
-        NSString *url = self.options[@"url"];
-        if(url){
+    NSString *url = NULL;
+    if(self.options && (url = self.options[@"url"])){
             if(self.VC.audios[url]){
                 [self.VC.audios[url] stop];
                 [self.VC.audios removeObjectForKey:url];
             }
-        }
     } else {
         for(NSString *audio_name in self.VC.audios){
             FSAudioStream *audioStream = self.VC.audios[audio_name];
@@ -116,14 +114,12 @@
     if(!self.VC.audios){
         self.VC.audios = [[NSMutableDictionary alloc] init];
     }
-    if(self.options){
-        NSString *url = self.options[@"url"];
-        if(url){
-            if(self.VC.audios[url]){
+    NSString *url = NULL;
+    if(self.options && (url = self.options[@"url"])){
+        if(self.VC.audios[url]){
                 FSAudioStream *audioStream = self.VC.audios[url];
                 [audioStream pause];
             }
-        }
     } else {
         for(NSString *audio_name in self.VC.audios){
             FSAudioStream *audioStream = self.VC.audios[audio_name];
