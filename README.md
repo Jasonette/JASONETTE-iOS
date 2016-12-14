@@ -6,6 +6,8 @@
 
 Create your own native iOS app with nothing but JSON. Then send it over the Internet.
 
+Looking for an Android version? [See here](https://www.github.com/Jasonette/JASONETTE-Android)
+
 ##★ Jasonette fetches this JSON markup from a server:
 
 ![json](https://raw.githubusercontent.com/gliechtenstein/images/master/json.png)
@@ -93,17 +95,36 @@ Have a bug or a feature request regarding the Jasonette code itself? [Please ope
 <br>
 
 # Questions and Support
-For questions and support, please use the [Slack chatroom](https://jasonette.now.sh)
+Follow or join these channels for questions and support, and to keep updated on latest releases and announcements.
 
-[![slack](https://raw.githubusercontent.com/gliechtenstein/images/master/slack.png)](https://jasonette.now.sh)
-
-<br>
-
-# Stay in touch
-To keep updated on latest releases and announcements,
-
-- Follow on Twitter [@jasonclient](https://twitter.com/jasonclient)
-- [join our slack](https://jasonette.now.sh)
+<table class='equalwidth follow'>
+  <tr>
+		<td>
+			<a href='https://jasonette.now.sh'>
+        <b>Slack</b><br><br>
+        <img src='https://raw.githubusercontent.com/gliechtenstein/images/master/slack_smaller.png'>
+        <br>
+        <img src="https://jasonette.now.sh/badge.svg">
+      </a>
+		</td>
+		<td>
+			<a href='https://forum.jasonette.com'>
+        <b>Forum</b><br><br>
+				<img src='https://raw.githubusercontent.com/gliechtenstein/images/master/discourse_smaller.png'>
+        <br>
+        Visit >
+			</a>
+		</td>
+		<td>
+			<a href='https://www.twitter.com/jasonclient'>
+        <b>Twitter</b><br><br>
+				<img src='https://raw.githubusercontent.com/gliechtenstein/images/master/twitter_smaller.png'>
+        <br>
+        Follow >
+			</a>
+		</td>
+	</tr>
+</table>
 
 <br>
 
