@@ -376,6 +376,8 @@
             url = url;
         }else if ([[url lowercaseString] hasPrefix:@"http://"] || [[url lowercaseString] hasPrefix:@"https://"]) {
             url = url;
+        } else if([[url lowercaseString] hasPrefix:@"file://"]){
+            url = url;
         } else {
             url = [NSString stringWithFormat:@"http://%@", url];
         }
