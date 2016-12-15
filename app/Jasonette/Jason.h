@@ -62,4 +62,5 @@
 - (void)onRemoteNotification: (NSDictionary *)payload;
 - (void)onRemoteNotificationDeviceRegistered: (NSString *)device_token;
 
+- (void)loadViewByFile: (NSString *)url;
 @end
