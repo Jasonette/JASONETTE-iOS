@@ -69,6 +69,38 @@
     [[Jason client] error:args];
 }
 
+- (void) loadViewByFile: (NSString *)url{
+  
+    if ([url hasPrefix:@"file://"] && [url hasSuffix:@".json"]) {
+
+        NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+        NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];  
+        NSString *loc = @"file:/";
+
+        NSString *jsonFile = [[url lowercaseString] stringByReplacingOccurrencesOfString:loc withString:webrootPath];
+        NSLog(@"LOCALFILES jsonFile is %@", jsonFile);
+
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+
+        if ([fileManager fileExistsAtPath:jsonFile]) { 
+            NSError *error = nil;
+            NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
+            [inputStream open];
+            VC.original = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+            [self drawViewFromJason: VC.original];
+            [inputStream close];
+        } else {
+            NSLog(@"JASON FILE NOT FOUND: %@", jsonFile);
+            [self call:@{@"type": @"$util.banner", 
+                                  @"options": @{
+                                       @"title": @"Error",
+                                       @"description": [NSString stringWithFormat:@"JASON FILE NOT FOUND: %@", url]
+                                   }}];
+
+
+        }
+    }
+}
 
 #pragma mark - Jason Core API (USE ONLY THESE METHODS TO ACCESS Jason Core!)
 
@@ -619,9 +651,16 @@
     navigationController = viewController.navigationController;
     navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
     tabController = navigationController.tabBarController;
-        
-    VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
+    NSLog(@"LOCALFILES attach VC.url %@", VC.url);
+    if([VC.url hasPrefix:@"http://file://"]) {
+        NSString *url = [VC.url substringFromIndex:[@"http://" length]];
+        VC.url = url;
+        [self loadViewByFile: VC.url];
+    } else {
+        VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    }
+  
     // Set the stylesheet
     if(VC.style){
         JasonComponentFactory.stylesheet = [VC.style mutableCopy];
@@ -950,7 +989,11 @@
             NSError* error;
             VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
             [self drawViewFromJason: VC.original];
-        }
+        } else if([VC.url hasPrefix:@"file://"]) {
+	         
+						NSLog(@"LOCALFILES reload VC.url %@", VC.url);
+						[self loadViewByFile: VC.url];
+				}
         
         /**************************************************
          * Normally urls are not in data-uri.
