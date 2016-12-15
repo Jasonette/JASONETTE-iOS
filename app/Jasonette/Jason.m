@@ -52,6 +52,12 @@
                    name:@"Jason.error"
                  object:nil];
 
+        [[NSNotificationCenter defaultCenter]
+            addObserver:self
+               selector:@selector(notifyCall:)
+                   name:@"Jason.call"
+                 object:nil];
+
     }
     return self;
 }
@@ -67,6 +73,12 @@
     NSDictionary *args = notification.object;
     NSLog(@"JasonCore: notifyError: %@", args);
     [[Jason client] error:args];
+}
+
+- (void)notifyCall:(NSNotification *)notification {
+    NSDictionary *args = notification.object;
+    NSLog(@"JasonCore: notifyCall: %@", args);
+    [[Jason client] call:args];
 }
 
 
@@ -621,6 +633,8 @@
     tabController = navigationController.tabBarController;
         
     VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    VC.modules = [[NSMutableDictionary alloc] init];
     
     // Set the stylesheet
     if(VC.style){
@@ -2345,7 +2359,12 @@
                             NSLog(@"Plugin: class: %@", PluginClass);
 
                             // Initialize Plugin
-                            module = [[PluginClass alloc] init];  // could go away if we had some sort of plug in registration
+                            if(VC.modules && VC.modules[type]){
+                                module = modules[type];
+                            } else {
+                                module = [[PluginClass alloc] init];  // could go away if we had some sort of plug in registration
+                                VC.modules[type] = module;
+                            }
 
                             [[NSNotificationCenter defaultCenter]
                                     postNotificationName:plugin_path
@@ -2396,7 +2415,13 @@
                             NSString *methodName = tokens[1];
                             SEL method = NSSelectorFromString(methodName);
                             
-                            module = [[ActionClass alloc] init];
+                            if(VC.modules && VC.modules[type]){
+                                module = modules[type];
+                            } else {
+                                module = [[ActionClass alloc] init];  // could go away if we had some sort of plug in registration
+                                VC.modules[type] = module;
+                            }
+
                             if([module respondsToSelector:@selector(VC)]) [module setValue:VC forKey:@"VC"];
                             if([module respondsToSelector:@selector(options)]) [module setValue:[self options] forKey:@"options"];
                             [module performSelector:method];

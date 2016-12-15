@@ -85,6 +85,7 @@
     self.callback = [[NSDictionary alloc] init];
     self.sections = [[NSMutableArray alloc] init];
     self.rows = [[NSArray alloc] init];
+    self.modules = [[NSMutableDictionary alloc] init];
     
     self.form = [[NSMutableDictionary alloc] init];
     self.tableView.delaysContentTouches = false;
