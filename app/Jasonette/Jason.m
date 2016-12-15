@@ -652,14 +652,7 @@
     navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
     tabController = navigationController.tabBarController;
     
-    NSLog(@"LOCALFILES attach VC.url %@", VC.url);
-    if([VC.url hasPrefix:@"http://file://"]) {
-        NSString *url = [VC.url substringFromIndex:[@"http://" length]];
-        VC.url = url;
-        [self loadViewByFile: VC.url];
-    } else {
-        VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    }
+    VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
   
     // Set the stylesheet
     if(VC.style){
@@ -990,10 +983,8 @@
             VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
             [self drawViewFromJason: VC.original];
         } else if([VC.url hasPrefix:@"file://"]) {
-	         
-						NSLog(@"LOCALFILES reload VC.url %@", VC.url);
-						[self loadViewByFile: VC.url];
-				}
+			[self loadViewByFile: VC.url];
+        }
         
         /**************************************************
          * Normally urls are not in data-uri.
