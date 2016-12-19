@@ -14,6 +14,8 @@
     }
     if(options && options[@"value"]){
         component.text = options[@"value"];
+    } else if(json && json[@"value"]){
+        component.text = json[@"value"];
     }
     
     component.delegate = [self self];
