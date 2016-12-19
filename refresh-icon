@@ -1,0 +1,200 @@
+#!/bin/sh
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+cd "${DIR}"
+
+
+generate_iconset(){
+  local full_icon="$1"
+
+  local type=`file -b ${full_icon}`
+  if [[ $type =~ JPEG ]]
+  then
+    cp "$full_icon" Icon-20.jpg &> /dev/null
+    sips -z 29 29 Icon-20.jpg &> /dev/null
+    sips -s format png Icon-20.jpg --out Icon-20.png &> /dev/null
+
+    cp "$full_icon" Icon-Small.jpg &> /dev/null
+    sips -z 29 29 Icon-Small.jpg &> /dev/null
+    sips -s format png Icon-Small.jpg --out Icon-Small.png &> /dev/null
+
+    cp "$full_icon" Icon-Small@2x.jpg &> /dev/null
+    sips -z 58 58 Icon-Small@2x.jpg &> /dev/null
+    sips -s format png Icon-Small@2x.jpg --out Icon-Small@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-Small@3x.jpg &> /dev/null
+    sips -z 87 87 Icon-Small@3x.jpg &> /dev/null
+    sips -s format png Icon-Small@3x.jpg --out Icon-Small@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-Small-50.jpg &> /dev/null
+    sips -z 50 50 Icon-Small-50.jpg &> /dev/null
+    sips -s format png Icon-Small-50.jpg --out Icon-Small-50.png &> /dev/null
+
+    cp "$full_icon" Icon-Small-50@2x.jpg &> /dev/null
+    sips -z 100 100 Icon-Small-50@2x.jpg &> /dev/null
+    sips -s format png Icon-Small-50@2x.jpg --out Icon-Small-50@2x.png &> /dev/null
+
+    cp "$full_icon" Icon.jpg &> /dev/null
+    sips -z 57 57 Icon.jpg &> /dev/null
+    sips -s format png Icon.jpg --out Icon.png &> /dev/null
+
+    cp "$full_icon" Icon@2x.jpg &> /dev/null
+    sips -z 114 114 Icon@2x.jpg &> /dev/null
+    sips -s format png Icon@2x.jpg --out Icon@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-20@2x.jpg &> /dev/null
+    sips -z 40 40 Icon-20@2x.jpg &> /dev/null
+    sips -s format png Icon-20@2x.jpg --out Icon-20@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-40.jpg &> /dev/null
+    sips -z 40 40 Icon-40.jpg &> /dev/null
+    sips -s format png Icon-40.jpg --out Icon-40.png &> /dev/null
+
+    cp "$full_icon" Icon-20@3x.jpg &> /dev/null
+    sips -z 60 60 Icon-20@3x.jpg &> /dev/null
+    sips -s format png Icon-20@3x.jpg --out Icon-20@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-40@2x.jpg &> /dev/null
+    sips -z 80 80 Icon-40@2x.jpg &> /dev/null
+    sips -s format png Icon-40@2x.jpg --out Icon-40@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-40@3x.jpg &> /dev/null
+    sips -z 120 120 Icon-40@3x.jpg &> /dev/null
+    sips -s format png Icon-40@3x.jpg --out Icon-40@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-60@2x.jpg &> /dev/null
+    sips -z 120 120 Icon-60@2x.jpg &> /dev/null
+    sips -s format png Icon-60@2x.jpg --out Icon-60@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-60@3x.jpg &> /dev/null
+    sips -z 180 180 Icon-60@3x.jpg &> /dev/null
+    sips -s format png Icon-60@3x.jpg --out Icon-60@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-72.jpg &> /dev/null
+    sips -z 72 72 Icon-72.jpg &> /dev/null
+    sips -s format png Icon-72.jpg --out Icon-72.png &> /dev/null
+
+    cp "$full_icon" Icon-72@2x.jpg &> /dev/null
+    sips -z 144 144 Icon-72@2x.jpg &> /dev/null
+    sips -s format png Icon-72@2x.jpg --out Icon-72@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-76.jpg &> /dev/null
+    sips -z 76 76 Icon-76.jpg &> /dev/null
+    sips -s format png Icon-76.jpg --out Icon-76.png &> /dev/null
+
+    cp "$full_icon" Icon-76@2x.jpg &> /dev/null
+    sips -z 152 152 Icon-76@2x.jpg &> /dev/null
+    sips -s format png Icon-76@2x.jpg --out Icon-76@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-83.5@2x.jpg &> /dev/null
+    sips -z 167 167 Icon-83.5@2x.jpg &> /dev/null
+    sips -s format png Icon-83.5@2x.jpg --out Icon-83.5@2x.png &> /dev/null
+
+    rm Icon-20.jpg
+    rm Icon-20@2x.jpg
+    rm Icon-20@3x.jpg
+    rm Icon-Small.jpg
+    rm Icon-Small@2x.jpg
+    rm Icon-Small@3x.jpg
+    rm Icon-Small-50.jpg
+    rm Icon-Small-50@2x.jpg
+    rm Icon.jpg
+    rm Icon@2x.jpg
+    rm Icon-40.jpg
+    rm Icon-40@2x.jpg
+    rm Icon-40@3x.jpg
+    rm Icon-60@2x.jpg
+    rm Icon-60@3x.jpg
+    rm Icon-72.jpg
+    rm Icon-72@2x.jpg
+    rm Icon-76.jpg
+    rm Icon-76@2x.jpg
+    rm Icon-83.5@2x.jpg
+
+  else
+    cp "$full_icon" Icon-20.png &> /dev/null
+    sips -z 20 20 Icon-20.png &> /dev/null
+
+    cp "$full_icon" Icon-Small.png &> /dev/null
+    sips -z 29 29 Icon-Small.png &> /dev/null
+
+    cp "$full_icon" Icon-20@2x.png &> /dev/null
+    sips -z 40 40 Icon-20@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-Small@2x.png &> /dev/null
+    sips -z 58 58 Icon-Small@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-20@3x.png &> /dev/null
+    sips -z 60 60 Icon-20@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-Small@3x.png &> /dev/null
+    sips -z 87 87 Icon-Small@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-Small-50.png &> /dev/null
+    sips -z 50 50 Icon-Small-50.png &> /dev/null
+
+    cp "$full_icon" Icon-Small-50@2x.png &> /dev/null
+    sips -z 100 100 Icon-Small-50@2x.png &> /dev/null
+
+    cp "$full_icon" Icon.png &> /dev/null
+    sips -z 57 57 Icon.png &> /dev/null
+
+    cp "$full_icon" Icon@2x.png &> /dev/null
+    sips -z 114 114 Icon@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-40.png &> /dev/null
+    sips -z 40 40 Icon-40.png &> /dev/null
+
+    cp "$full_icon" Icon-40@2x.png &> /dev/null
+    sips -z 80 80 Icon-40@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-40@3x.png &> /dev/null
+    sips -z 120 120 Icon-40@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-60@2x.png &> /dev/null
+    sips -z 120 120 Icon-60@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-60@3x.png &> /dev/null
+    sips -z 180 180 Icon-60@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-72.png &> /dev/null
+    sips -z 72 72 Icon-72.png &> /dev/null
+
+    cp "$full_icon" Icon-72@2x.png &> /dev/null
+    sips -z 144 144 Icon-72@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-76.png &> /dev/null
+    sips -z 76 76 Icon-76.png &> /dev/null
+
+    cp "$full_icon" Icon-76@2x.png &> /dev/null
+    sips -z 152 152 Icon-76@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-83.5@2x.png &> /dev/null
+    sips -z 167 167 Icon-83.5@2x.png &> /dev/null
+  fi
+
+  mv Icon-20.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-20.png &> /dev/null
+  mv Icon-20@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-20@2x.png &> /dev/null
+  mv Icon-20@3x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-20@3x.png &> /dev/null
+  mv Icon-Small.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-Small.png &> /dev/null
+  mv Icon-Small@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-Small@2x.png &> /dev/null
+  mv Icon-Small@3x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-Small@3x.png &> /dev/null
+  mv Icon-Small-50.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-Small-50.png &> /dev/null
+  mv Icon-Small-50@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-Small-50@2x.png &> /dev/null
+  mv Icon.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon.png &> /dev/null
+  mv Icon@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon@2x.png &> /dev/null
+  mv Icon-40.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-40.png &> /dev/null
+  mv Icon-40@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-40@2x.png &> /dev/null
+  mv Icon-40@3x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-40@3x.png &> /dev/null
+  mv Icon-60@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-60@2x.png &> /dev/null
+  mv Icon-60@3x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-60@3x.png &> /dev/null
+  mv Icon-72.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-72.png &> /dev/null
+  mv Icon-72@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-72@2x.png &> /dev/null
+  mv Icon-76.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-76.png &> /dev/null
+  mv Icon-76@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-76@2x.png &> /dev/null
+  mv Icon-83.5@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-83.5@2x.png &> /dev/null
+
+}
+
+for file in icon/*.{jpg,jpeg,JPG,JPEG,png,PNG}; do
+    [ -e "$file" ] && generate_iconset "$file" && break
+done
