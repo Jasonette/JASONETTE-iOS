@@ -1703,13 +1703,16 @@
         [[UITabBar appearance] setBarStyle:UIBarStyleBlack];
     }
     if(tabs && tabs.count > 1){
-        if(tabController.viewControllers.count != tabs.count){
+        NSUInteger maxTabCount = tabs.count;
+        if(maxTabCount > 5)
+            maxTabCount = 5;
+        if(tabController.viewControllers.count != maxTabCount){
             NSMutableArray *tabs_array = [[NSMutableArray alloc] init];
             // if not yet initialized, tabController.tabs.count will be 1, since this is the only view
             // that was initialized with
             // In this case, initialize all tabs
             // Start from index 1 because the first one should already be instantiated via modal href
-            for(int i = 0 ; i < tabs.count ; i++){
+            for(int i = 0 ; i < maxTabCount ; i++){
                 NSDictionary *tab = tabs[i];
                 NSString *url = tab[@"url"];
                 
@@ -1725,14 +1728,14 @@
             
             tabController.viewControllers = tabs_array;
             
-            for(int i = 0 ; i < tabs.count ; i++){
+            for(int i = 0 ; i < maxTabCount ; i++){
                 NSDictionary *tab = tabs[i];
                 [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
             }
         } else {
             // In this case it's already been initialized, so only update the info inside
             // if they're different
-            for(int i = 0 ; i < tabs.count ; i++){
+            for(int i = 0 ; i < maxTabCount ; i++){
                 NSDictionary *tab = tabs[i];
                 NSString *url = tab[@"url"];
                 [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
