@@ -19,8 +19,15 @@
     UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
     NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
     
+    
+    SDWebImageDownloader *manager = [SDWebImageManager sharedManager].imageDownloader;
+    NSDictionary *session = [JasonHelper sessionForUrl:url];
+    if(session && session.count > 0 && session[@"header"]){
+        for(NSString *key in session[@"header"]){
+            [manager setValue:session[@"header"][key] forHTTPHeaderField:key];
+        }
+    }
     if(json[@"header"] && [json[@"header"] count] > 0){
-        SDWebImageDownloader *manager = [SDWebImageManager sharedManager].imageDownloader;
         for(NSString *key in json[@"header"]){
             [manager setValue:json[@"header"][key] forHTTPHeaderField:key];
         }
