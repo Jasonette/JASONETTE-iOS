@@ -18,6 +18,14 @@
     }
     UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
     NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
+    
+    if(json[@"header"] && [json[@"header"] count] > 0){
+        SDWebImageDownloader *manager = [SDWebImageManager sharedManager].imageDownloader;
+        for(NSString *key in json[@"header"]){
+            [manager setValue:json[@"header"][key] forHTTPHeaderField:key];
+        }
+    }
+    
     if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
         [component setIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [component setShowActivityIndicatorView:YES];
