@@ -186,7 +186,6 @@
      * When it returns with "success", the returned object will be automatically passed to the next action in the action call chain
      *
      **************************************************/
-    
     if(result){
         if([result isKindOfClass:[NSDictionary class]]){
             if(((NSDictionary *)result).count > 0){
@@ -201,6 +200,7 @@
         [JasonMemory client]._register = @{@"$jason": @{}};
     }
     
+    [self networkLoading:NO];
     [self next];
 }
 - (void)error{
@@ -267,6 +267,16 @@
         if([JDStatusBarNotification isVisible]){
             [JDStatusBarNotification dismissAnimated:YES];
         }
+    }
+}
+
+-(void)networkLoading:(BOOL)turnon{
+    
+    if(turnon){
+        [MBProgressHUD showHUDAddedTo:VC.view animated:true];
+    }
+    else{
+        [MBProgressHUD hideHUDForView:VC.view animated:true];
     }
 }
 
@@ -907,6 +917,7 @@
 - (void)reload{
     VC.data = nil;
     if(VC.url){
+       [self networkLoading:YES];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.operationQueue cancelAllOperations];
         NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
@@ -1156,6 +1167,7 @@
         
     }
     [self loading:NO];
+    [self networkLoading:NO];
 }
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
