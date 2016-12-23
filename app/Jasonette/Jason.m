@@ -18,6 +18,7 @@
     UIBarButtonItem *rightButtonItem;
     PBJVision *vision;
     NSString *ROOT_URL;
+    BOOL INITIAL_LOADING;
 }
 @end
 
@@ -115,10 +116,11 @@
     NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
     NSDictionary *plist = [NSDictionary dictionaryWithContentsOfURL:file];
     ROOT_URL = plist[@"url"];
-    
+    INITIAL_LOADING = plist[@"loading"];
     
     JasonViewController *vc = [[JasonViewController alloc] init];
     vc.url = ROOT_URL;
+    vc.loading = INITIAL_LOADING;
     vc.view.backgroundColor = [UIColor whiteColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
@@ -917,7 +919,7 @@
 - (void)reload{
     VC.data = nil;
     if(VC.url){
-       [self networkLoading:true with:nil];
+       [self networkLoading:VC.loading with:nil];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.operationQueue cancelAllOperations];
         NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
@@ -1986,6 +1988,9 @@
                             NSString *url = [JasonHelper linkify:href[@"url"]];
                             VC.url = url;
                         }
+                        if(href[@"loading"]){
+                            VC.loading = [href[@"loading"] boolValue];
+                        }
                         if(href[@"options"]){
                             VC.options = [JasonHelper parse:memory._register with:href[@"options"]];
                         }
@@ -2033,6 +2038,9 @@
                             NSString *url = [JasonHelper linkify:href[@"url"]];
                             if([vc respondsToSelector:@selector(url)]) vc.url = url;
                         }
+                        if(href[@"loading"]){
+                            vc.loading = [href[@"loading"] boolValue];
+                        }
                         if([vc respondsToSelector: @selector(options)]) vc.options = href[@"options"];
                         [self unlock];
                     }
@@ -2064,6 +2072,9 @@
                         }
                         if(href[@"options"]){
                             vc.options = [JasonHelper parse:memory._register with:href[@"options"]];
+                        }
+                        if(href[@"loading"]){
+                            vc.loading = [href[@"loading"] boolValue];
                         }
                         
                         if(fresh){
