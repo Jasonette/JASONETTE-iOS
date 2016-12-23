@@ -53,7 +53,7 @@
 - (void)call: (NSDictionary*)action with: (NSDictionary *)data;
 
 - (void)loading:(BOOL)turnon;
-- (void)networkLoading:(BOOL)turnon;
+- (void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;
 - (void)search;
 - (void)snapshot;
 

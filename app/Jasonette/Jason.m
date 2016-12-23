@@ -200,7 +200,7 @@
         [JasonMemory client]._register = @{@"$jason": @{}};
     }
     
-    [self networkLoading:NO];
+    [self networkLoading:NO with:nil];
     [self next];
 }
 - (void)error{
@@ -270,12 +270,12 @@
     }
 }
 
--(void)networkLoading:(BOOL)turnon{
+-(void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;{
     
-    if(turnon){
+    if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
         [MBProgressHUD showHUDAddedTo:VC.view animated:true];
     }
-    else{
+    else if(!turnon){
         [MBProgressHUD hideHUDForView:VC.view animated:true];
     }
 }
@@ -917,7 +917,7 @@
 - (void)reload{
     VC.data = nil;
     if(VC.url){
-       [self networkLoading:YES];
+       [self networkLoading:true with:nil];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.operationQueue cancelAllOperations];
         NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
@@ -1167,7 +1167,7 @@
         
     }
     [self loading:NO];
-    [self networkLoading:NO];
+    [self networkLoading:NO with:nil];
 }
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
