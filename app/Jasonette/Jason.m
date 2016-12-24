@@ -275,7 +275,9 @@
 -(void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;{
     
     if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
-        [MBProgressHUD showHUDAddedTo:VC.view animated:true];
+        MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
+        hud.animationType = MBProgressHUDAnimationFade;
+        
     }
     else if(!turnon){
         [MBProgressHUD hideHUDForView:VC.view animated:true];
