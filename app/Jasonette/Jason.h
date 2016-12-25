@@ -19,6 +19,7 @@
 #import <NSHash/NSString+NSHash.h>
 #import <FreeStreamer/FSAudioStream.h>
 #import <PBJVision/PBJVision.h>
+#import "MBProgressHud.h"
 @import MediaPlayer;
 
 @interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, PBJVisionDelegate>
@@ -52,6 +53,7 @@
 - (void)call: (NSDictionary*)action with: (NSDictionary *)data;
 
 - (void)loading:(BOOL)turnon;
+- (void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;
 - (void)search;
 - (void)snapshot;
 

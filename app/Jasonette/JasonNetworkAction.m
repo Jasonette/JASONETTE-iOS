@@ -17,6 +17,7 @@
 
     if(self.options){
         
+        [[Jason client] networkLoading:YES with:self.options];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
 
         
@@ -114,7 +115,9 @@
     }
 }
 - (void)unauth{
+    
     if(self.options){
+        [[Jason client] networkLoading:YES with:self.options];
         if(self.options[@"type"] && [self.options[@"type"] isEqualToString:@"html"]){
             NSString *url = self.options[@"url"];
             NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL: [NSURL URLWithString:url]];
@@ -165,6 +168,7 @@
     __weak typeof(self) weakSelf = self;
 
     if(self.options){
+        [[Jason client] networkLoading:YES with:self.options];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         NSString *url = self.options[@"url"];
         // Instantiate with session if needed
@@ -379,6 +383,7 @@
 }
 - (void)processError: (NSError *)error{
     NSLog(@"Error = %@", error);
+    [[Jason client] networkLoading:NO with:nil];
     [[Jason client] error];
 }
 
