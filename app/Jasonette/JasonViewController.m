@@ -1443,70 +1443,81 @@
 
 - (void)setupAds: (NSDictionary *)body
 {
-    if(body[@"ads"] && body[@"ads"][@"unitId"])
-    {
-        CGRect frame = CGRectMake(0, self.view.frame.size.height - GAD_SIZE_468x60.height, GAD_SIZE_468x60.width, GAD_SIZE_468x60.height);
+    if(body[@"ads"] && body[@"ads"][@"admob"]){
         
-        if(body[@"footer"])
-        {
-           frame = CGRectMake(0, self.view.frame.size.height - GAD_SIZE_468x60.height - self.tabBarController.tabBar.frame.size.height, GAD_SIZE_468x60.width, GAD_SIZE_468x60.height);
+        NSArray * admob = body[@"ads"][@"admob"];
+        if(admob.count > 0){
+            for (int i = 0 ; i < admob.count ; i++){
+                NSString * adType = [[admob objectAtIndex:i] objectForKey:@"type"];
+                NSString * adUnitId = [[admob objectAtIndex:i] objectForKey:@"unitId"];
+                
+                if([adType isEqualToString:@"banner"]){
+                    
+                    CGRect frame = CGRectMake(0, self.view.frame.size.height - GAD_SIZE_468x60.height, GAD_SIZE_468x60.width, GAD_SIZE_468x60.height);
+                    
+                    if(body[@"footer"]){
+                        frame = CGRectMake(0, self.view.frame.size.height - GAD_SIZE_468x60.height - self.tabBarController.tabBar.frame.size.height, GAD_SIZE_468x60.width, GAD_SIZE_468x60.height);
+                    }
+                    
+                    NSString * adUnitID = adUnitId;
+                    self.bannerAd = [[GADBannerView alloc] initWithFrame: frame];
+                    self.bannerAd.adUnitID = adUnitID; //Test Id: a14dccd0fb24d45
+                    self.bannerAd.rootViewController = self;
+                    self.bannerAd.delegate = self;
+                    [self.view addSubview:self.bannerAd];
+                    
+                    GADRequest * admobRequest = [[GADRequest alloc] init];
+                    admobRequest.testDevices = @[
+                                                 // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
+                                                 // the console when the app is launched.
+                                                 kGADSimulatorID
+                                                 ];
+                    [self.bannerAd loadRequest:admobRequest];
+                    
+                }
+                else if([adType isEqualToString:@"interstial"]){
+                    self.interestialAd = [[GADInterstitial alloc] initWithAdUnitID:adUnitId];
+                    self.interestialAd.delegate = self;
+                    GADRequest * admobRequest = [[GADRequest alloc] init];
+                    admobRequest.testDevices = @[
+                                                 // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
+                                                 // the console when the app is launched.
+                                                 kGADSimulatorID
+                                                 ];
+                    [self.interestialAd loadRequest:admobRequest];
+                    
+                    intrestialAdTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(showInterestialAd) userInfo:nil repeats:YES];
+                    
+                }
+                
+            }
+           
         }
-        
-        NSString * adUnitID = body[@"ads"][@"unitId"];
-        self.bannerAd = [[GADBannerView alloc] initWithFrame: frame];
-        self.bannerAd.adUnitID = adUnitID; //Test Id: a14dccd0fb24d45
-        self.bannerAd.rootViewController = self;
-        self.bannerAd.delegate = self;
-        [self.view addSubview:self.bannerAd];
-        
-        GADRequest * admobRequest = [[GADRequest alloc] init];
-        admobRequest.testDevices = @[
-                                     // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
-                                     // the console when the app is launched.
-                                     kGADSimulatorID
-                                     ];
-        [self.bannerAd loadRequest:admobRequest];
     }
     
-    self.interestialAd = [[GADInterstitial alloc] initWithAdUnitID:@"ca-app-pub-6606303247985815/7014816684"];
-    self.interestialAd.delegate = self;
-    GADRequest * admobRequest = [[GADRequest alloc] init];
-    admobRequest.testDevices = @[
-                                 // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
-                                 // the console when the app is launched.
-                                 kGADSimulatorID
-                                 ];
-    [self.interestialAd loadRequest:admobRequest];
-    
-    intrestialAdTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(showInterestialAd) userInfo:nil repeats:YES];
+   
 }
--(void) showInterestialAd
-{
-    if(self.interestialAd.isReady)
-    {
+-(void) showInterestialAd{
+    if(self.interestialAd.isReady){
         [intrestialAdTimer invalidate];
         intrestialAdTimer = nil;
         [self.interestialAd presentFromRootViewController:self];
     }
 }
-- (void) adView: (GADBannerView*) view didFailToReceiveAdWithError: (GADRequestError*) error
-{
+- (void) adView: (GADBannerView*) view didFailToReceiveAdWithError: (GADRequestError*) error{
     NSLog(@"Error on showing AD %@", error);
 }
-- (void) adViewDidReceiveAd: (GADBannerView*) view
-{
+- (void) adViewDidReceiveAd: (GADBannerView*) view{
     NSLog(@"Suucess on showing ad");
 }
 
-- (void)interstitialDidReceiveAd:(GADInterstitial *)ad
-{
+- (void)interstitialDidReceiveAd:(GADInterstitial *)ad{
      NSLog(@"--->Suucess on showing interestial ad");
 }
 
 /// Called when an interstitial ad request completed without an interstitial to
 /// show. This is common since interstitials are shown sparingly to users.
-- (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error
-{
+- (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error{
     NSLog(@" -->>Error on showing interestial AD %@", error);
 }
 
