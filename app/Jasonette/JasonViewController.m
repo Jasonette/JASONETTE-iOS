@@ -1444,8 +1444,15 @@
 {
     if(body[@"ads"] && body[@"ads"][@"unitId"])
     {
+        CGRect frame = CGRectMake(0, self.view.frame.size.height - GAD_SIZE_468x60.height, GAD_SIZE_468x60.width, GAD_SIZE_468x60.height);
+        
+        if(body[@"footer"])
+        {
+           frame = CGRectMake(0, self.view.frame.size.height - GAD_SIZE_468x60.height - self.tabBarController.tabBar.frame.size.height, GAD_SIZE_468x60.width, GAD_SIZE_468x60.height);
+        }
+        
         NSString * adUnitID = body[@"ads"][@"unitId"];
-        self.bannerAd = [[GADBannerView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - GAD_SIZE_468x60.height, GAD_SIZE_468x60.width, GAD_SIZE_468x60.height)];
+        self.bannerAd = [[GADBannerView alloc] initWithFrame: frame];
         self.bannerAd.adUnitID = adUnitID; //Test Id: a14dccd0fb24d45
         self.bannerAd.rootViewController = self;
         self.bannerAd.delegate = self;
