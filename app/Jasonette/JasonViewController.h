@@ -26,8 +26,9 @@
 #import "JasonLayer.h"
 #import "JasonComponentFactory.h"
 #import "JasonComponent.h"
+#import <GoogleMobileAds/GoogleMobileAds.h>
 
-@interface JasonViewController : UIViewController <TTTAttributedLabelDelegate, UISearchBarDelegate, RussianDollView, SWTableViewCellDelegate, UISearchResultsUpdating, PHFComposeBarViewDelegate, UITableViewDelegate, UITableViewDataSource>
+@interface JasonViewController : UIViewController <TTTAttributedLabelDelegate, UISearchBarDelegate, RussianDollView, SWTableViewCellDelegate, UISearchResultsUpdating, PHFComposeBarViewDelegate, UITableViewDelegate, UITableViewDataSource, GADBannerViewDelegate>
 
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) NSDictionary *options;
@@ -61,6 +62,8 @@
 @property (strong, nonatomic) UITableView *tableView;
 
 @property (strong, nonatomic) UISearchController *searchController;
+
+@property (strong, nonatomic) GADBannerView *bannerAd;
 - (void)reload: (NSDictionary *)res;
 
 @end

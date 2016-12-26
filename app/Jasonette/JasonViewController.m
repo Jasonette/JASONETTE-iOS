@@ -985,6 +985,8 @@
             [self setupLayers:body];
             [self setupFooter: body];
             [self setupSections:body];
+            [self setupAds:body];
+            
         
             if(self.isModal){
                 // Swipe down to dismiss modal
@@ -1062,8 +1064,8 @@
         }
     }
 }
-
 - (void)setupHeader: (NSDictionary *)body{
+    
     
     self.tableView.tableHeaderView = nil;
     // NAV (deprecated. See 'header' below)
@@ -1432,6 +1434,43 @@
         
     }
 }
+
+/********************************
+ * Google AdMob
+ ********************************/
+
+
+- (void)setupAds: (NSDictionary *)body
+{
+    if(body[@"ads"] && body[@"ads"][@"unitId"])
+    {
+        NSString * adUnitID = body[@"ads"][@"unitId"];
+        self.bannerAd = [[GADBannerView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - GAD_SIZE_468x60.height, GAD_SIZE_468x60.width, GAD_SIZE_468x60.height)];
+        self.bannerAd.adUnitID = adUnitID; //Test Id: a14dccd0fb24d45
+        self.bannerAd.rootViewController = self;
+        self.bannerAd.delegate = self;
+        [self.view addSubview:self.bannerAd];
+        
+        GADRequest * admobRequest = [[GADRequest alloc] init];
+        admobRequest.testDevices = @[
+                                     // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
+                                     // the console when the app is launched.
+                                     kGADSimulatorID
+                                     ];
+        [self.bannerAd loadRequest:admobRequest];
+    }
+}
+
+- (void) adView: (GADBannerView*) view didFailToReceiveAdWithError: (GADRequestError*) error
+{
+    NSLog(@"Error on showing AD %@", error);
+}
+- (void) adViewDidReceiveAd: (GADBannerView*) view
+{
+    NSLog(@"Suucess on showing ad");
+}
+
+/********************************/
 
 
 
