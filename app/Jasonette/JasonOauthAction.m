@@ -330,7 +330,7 @@
         
         if([[parameters allValues] containsObject:@"{{$oauth.token}}"]){
             // auth token contained in body
-            for(NSString *key in parameters){
+            for(NSString *key in [parameters allKeys]){
                 if([parameters[key] isEqualToString:@"{{$oauth.token}}"]){
                     parameters[key] = [credential accessToken];
                 }

@@ -33,6 +33,7 @@ target 'Jasonette' do
   pod 'PHFComposeBarView'
   pod 'DAKeyboardControl'
   pod 'SVPullToRefresh', :git => 'https://github.com/samvermette/SVPullToRefresh.git', :branch => 'master'
+  pod 'MBProgressHUD', '~> 1.0'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|

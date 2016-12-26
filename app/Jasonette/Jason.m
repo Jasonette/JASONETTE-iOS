@@ -18,6 +18,7 @@
     UIBarButtonItem *rightButtonItem;
     PBJVision *vision;
     NSString *ROOT_URL;
+    BOOL INITIAL_LOADING;
 }
 @end
 
@@ -115,10 +116,11 @@
     NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
     NSDictionary *plist = [NSDictionary dictionaryWithContentsOfURL:file];
     ROOT_URL = plist[@"url"];
-    
+    INITIAL_LOADING = plist[@"loading"];
     
     JasonViewController *vc = [[JasonViewController alloc] init];
     vc.url = ROOT_URL;
+    vc.loading = INITIAL_LOADING;
     vc.view.backgroundColor = [UIColor whiteColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
@@ -186,7 +188,6 @@
      * When it returns with "success", the returned object will be automatically passed to the next action in the action call chain
      *
      **************************************************/
-    
     if(result){
         if([result isKindOfClass:[NSDictionary class]]){
             if(((NSDictionary *)result).count > 0){
@@ -201,6 +202,7 @@
         [JasonMemory client]._register = @{@"$jason": @{}};
     }
     
+    [self networkLoading:NO with:nil];
     [self next];
 }
 - (void)error{
@@ -267,6 +269,18 @@
         if([JDStatusBarNotification isVisible]){
             [JDStatusBarNotification dismissAnimated:YES];
         }
+    }
+}
+
+-(void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;{
+    
+    if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
+        MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
+        hud.animationType = MBProgressHUDAnimationFade;
+        
+    }
+    else if(!turnon){
+        [MBProgressHUD hideHUDForView:VC.view animated:true];
     }
 }
 
@@ -907,6 +921,7 @@
 - (void)reload{
     VC.data = nil;
     if(VC.url){
+       [self networkLoading:VC.loading with:nil];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.operationQueue cancelAllOperations];
         NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
@@ -1156,6 +1171,7 @@
         
     }
     [self loading:NO];
+    [self networkLoading:NO with:nil];
 }
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1703,13 +1719,16 @@
         [[UITabBar appearance] setBarStyle:UIBarStyleBlack];
     }
     if(tabs && tabs.count > 1){
-        if(tabController.viewControllers.count != tabs.count){
+        NSUInteger maxTabCount = tabs.count;
+        if(maxTabCount > 5)
+            maxTabCount = 5;
+        if(tabController.viewControllers.count != maxTabCount){
             NSMutableArray *tabs_array = [[NSMutableArray alloc] init];
             // if not yet initialized, tabController.tabs.count will be 1, since this is the only view
             // that was initialized with
             // In this case, initialize all tabs
             // Start from index 1 because the first one should already be instantiated via modal href
-            for(int i = 0 ; i < tabs.count ; i++){
+            for(int i = 0 ; i < maxTabCount ; i++){
                 NSDictionary *tab = tabs[i];
                 NSString *url = tab[@"url"];
                 
@@ -1725,14 +1744,14 @@
             
             tabController.viewControllers = tabs_array;
             
-            for(int i = 0 ; i < tabs.count ; i++){
+            for(int i = 0 ; i < maxTabCount ; i++){
                 NSDictionary *tab = tabs[i];
                 [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
             }
         } else {
             // In this case it's already been initialized, so only update the info inside
             // if they're different
-            for(int i = 0 ; i < tabs.count ; i++){
+            for(int i = 0 ; i < maxTabCount ; i++){
                 NSDictionary *tab = tabs[i];
                 NSString *url = tab[@"url"];
                 [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
@@ -1974,6 +1993,9 @@
                             NSString *url = [JasonHelper linkify:href[@"url"]];
                             VC.url = url;
                         }
+                        if(href[@"loading"]){
+                            VC.loading = [href[@"loading"] boolValue];
+                        }
                         if(href[@"options"]){
                             VC.options = [JasonHelper parse:memory._register with:href[@"options"]];
                         }
@@ -2021,6 +2043,9 @@
                             NSString *url = [JasonHelper linkify:href[@"url"]];
                             if([vc respondsToSelector:@selector(url)]) vc.url = url;
                         }
+                        if(href[@"loading"]){
+                            vc.loading = [href[@"loading"] boolValue];
+                        }
                         if([vc respondsToSelector: @selector(options)]) vc.options = href[@"options"];
                         [self unlock];
                     }
@@ -2052,6 +2077,9 @@
                         }
                         if(href[@"options"]){
                             vc.options = [JasonHelper parse:memory._register with:href[@"options"]];
+                        }
+                        if(href[@"loading"]){
+                            vc.loading = [href[@"loading"] boolValue];
                         }
                         
                         if(fresh){
