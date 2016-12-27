@@ -183,10 +183,7 @@
 // Handling the updated frame when keyboard shows up
 - (void)keyboardDidHide{
     
-    if(chat_input && self.bannerAd != nil){
-        
-         self.bannerAd.frame = CGRectMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height, self.bannerAd.frame.size.width, self.bannerAd.frame.size.height);
-    }
+   [self adjustBannerPosition];
     isEditing = NO;
 }
 - (void)keyboardDidShow:(NSNotification *)notification {
@@ -210,15 +207,12 @@
             }
         }
     }
-    else if(chat_input && self.bannerAd != nil){
-        
-        self.bannerAd.frame = CGRectMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height, self.bannerAd.frame.size.width, self.bannerAd.frame.size.height);
-    }
     else {
         if(!top_aligned){
             [self scrollToBottom];
         }
     }
+    [self adjustBannerPosition];
     isEditing = YES;
     
 }
@@ -1475,6 +1469,13 @@
                                                      adPoint.y,
                                                      self.bannerAd.frame.size.width,
                                                      self.bannerAd.frame.size.height );
+                    
+                    self.bannerAd.autoresizingMask =
+                    UIViewAutoresizingFlexibleLeftMargin |
+                    UIViewAutoresizingFlexibleTopMargin |
+                    UIViewAutoresizingFlexibleWidth |
+                    UIViewAutoresizingFlexibleRightMargin;
+                    
                     self.bannerAd.adUnitID = adUnitID; //Test Id: a14dccd0fb24d45
                     self.bannerAd.rootViewController = self;
                     self.bannerAd.delegate = self;
@@ -1518,11 +1519,20 @@
         [self.interestialAd presentFromRootViewController:self];
     }
 }
+
+-(void) adjustBannerPosition
+{
+    if(chat_input && self.bannerAd != nil){
+        
+        self.bannerAd.frame = CGRectMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height, self.bannerAd.frame.size.width, self.bannerAd.frame.size.height);
+    }
+}
 - (void) adView: (GADBannerView*) view didFailToReceiveAdWithError: (GADRequestError*) error{
     NSLog(@"Error on showing AD %@", error);
 }
 - (void) adViewDidReceiveAd: (GADBannerView*) view{
     NSLog(@"Suucess on showing ad");
+    [self adjustBannerPosition];
 }
 
 - (void)interstitialDidReceiveAd:(GADInterstitial *)ad{
