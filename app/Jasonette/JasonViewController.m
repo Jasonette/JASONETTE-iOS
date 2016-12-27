@@ -1448,60 +1448,67 @@
 
 - (void)setupAds: (NSDictionary *)body
 {
-    if(body[@"ads"] && body[@"ads"][@"admob"]){
+    if(body[@"ads"]){
         
-        NSArray * admob = body[@"ads"][@"admob"];
-        if(admob.count > 0){
-            for (int i = 0 ; i < admob.count ; i++){
-                NSString * adType = [[admob objectAtIndex:i] objectForKey:@"type"];
-                NSString * adUnitId = [[admob objectAtIndex:i] objectForKey:@"unitId"];
+        NSArray * adData = body[@"ads"];
+        if(adData.count > 0){
+            for (int i = 0 ; i < adData.count ; i++){
+                NSDictionary *selectedAd = [adData objectAtIndex:i];
+                NSString * adType = selectedAd[@"type"];
+               
                 
-                if([adType isEqualToString:@"banner"]){
-                    self.bannerAd = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
-                    CGPoint adPoint = CGPointMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height);
-                   
-                    if(body[@"footer"]){
-                        adPoint = CGPointMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height);
+                if([adType isEqualToString:@"admob"] && selectedAd[@"options"] && selectedAd[@"options"][@"type"] && selectedAd[@"options"][@"unitId"]){
+                    
+                    NSDictionary *options = selectedAd[@"options"];
+                    NSString *adUnitId = options[@"unitId"];
+                    NSString *type = options[@"type"];
+                    if([type isEqualToString:@"banner"]){
+                        self.bannerAd = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
+                        CGPoint adPoint = CGPointMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height);
+                       
+                        if(body[@"footer"]){
+                            adPoint = CGPointMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height);
+                        }
+                        
+                        NSString * adUnitID = adUnitId;
+                        self.bannerAd.frame = CGRectMake( adPoint.x,
+                                                         adPoint.y,
+                                                         self.bannerAd.frame.size.width,
+                                                         self.bannerAd.frame.size.height );
+                        
+                        self.bannerAd.autoresizingMask =
+                        UIViewAutoresizingFlexibleLeftMargin |
+                        UIViewAutoresizingFlexibleTopMargin |
+                        UIViewAutoresizingFlexibleWidth |
+                        UIViewAutoresizingFlexibleRightMargin;
+                        
+                        self.bannerAd.adUnitID = adUnitID; //Test Id: a14dccd0fb24d45
+                        self.bannerAd.rootViewController = self;
+                        self.bannerAd.delegate = self;
+                        [self.view addSubview:self.bannerAd];
+                        
+                        GADRequest * admobRequest = [[GADRequest alloc] init];
+                        admobRequest.testDevices = @[
+                                                     // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
+                                                     // the console when the app is launched.
+                                                     kGADSimulatorID
+                                                     ];
+                        [self.bannerAd loadRequest:admobRequest];
                     }
-                    
-                    NSString * adUnitID = adUnitId;
-                    self.bannerAd.frame = CGRectMake( adPoint.x,
-                                                     adPoint.y,
-                                                     self.bannerAd.frame.size.width,
-                                                     self.bannerAd.frame.size.height );
-                    
-                    self.bannerAd.autoresizingMask =
-                    UIViewAutoresizingFlexibleLeftMargin |
-                    UIViewAutoresizingFlexibleTopMargin |
-                    UIViewAutoresizingFlexibleWidth |
-                    UIViewAutoresizingFlexibleRightMargin;
-                    
-                    self.bannerAd.adUnitID = adUnitID; //Test Id: a14dccd0fb24d45
-                    self.bannerAd.rootViewController = self;
-                    self.bannerAd.delegate = self;
-                    [self.view addSubview:self.bannerAd];
-                    
-                    GADRequest * admobRequest = [[GADRequest alloc] init];
-                    admobRequest.testDevices = @[
-                                                 // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
-                                                 // the console when the app is launched.
-                                                 kGADSimulatorID
-                                                 ];
-                    [self.bannerAd loadRequest:admobRequest];
-                    
-                }
-                else if([adType isEqualToString:@"interstial"]){ 
-                    self.interestialAd = [[GADInterstitial alloc] initWithAdUnitID:adUnitId];
-                    self.interestialAd.delegate = self;
-                    GADRequest * admobRequest = [[GADRequest alloc] init];
-                    admobRequest.testDevices = @[
-                                                 // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
-                                                 // the console when the app is launched.
-                                                 kGADSimulatorID
-                                                 ];
-                    [self.interestialAd loadRequest:admobRequest];
-                    
-                    intrestialAdTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(showInterestialAd) userInfo:nil repeats:YES];
+                    else if([type isEqualToString:@"interstial"]){
+                        self.interestialAd = [[GADInterstitial alloc] initWithAdUnitID:adUnitId];
+                        self.interestialAd.delegate = self;
+                        GADRequest * admobRequest = [[GADRequest alloc] init];
+                        admobRequest.testDevices = @[
+                                                     // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
+                                                     // the console when the app is launched.
+                                                     kGADSimulatorID
+                                                     ];
+                        [self.interestialAd loadRequest:admobRequest];
+                        
+                        intrestialAdTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(showInterestialAd) userInfo:nil repeats:YES];
+                        
+                    }
                     
                 }
                 
