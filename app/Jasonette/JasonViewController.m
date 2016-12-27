@@ -182,13 +182,19 @@
 
 // Handling the updated frame when keyboard shows up
 - (void)keyboardDidHide{
+    
+    if(chat_input && self.bannerAd != nil){
+        
+         self.bannerAd.frame = CGRectMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height, self.bannerAd.frame.size.width, self.bannerAd.frame.size.height);
+    }
     isEditing = NO;
 }
 - (void)keyboardDidShow:(NSNotification *)notification {
+    NSDictionary* info = [notification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
     if(need_to_adjust_frame){
         // Only for 'textarea' type
-        NSDictionary* info = [notification userInfo];
-        CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
         UIEdgeInsets contentInsets = UIEdgeInsetsMake(self.tableView.contentInset.top, self.tableView.contentInset.left, kbSize.height, self.tableView.contentInset.right);
         self.tableView.contentInset = contentInsets;
         self.tableView.scrollIndicatorInsets = contentInsets;
@@ -203,7 +209,12 @@
                 });
             }
         }
-    } else {
+    }
+    else if(chat_input && self.bannerAd != nil){
+        
+        self.bannerAd.frame = CGRectMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height, self.bannerAd.frame.size.width, self.bannerAd.frame.size.height);
+    }
+    else {
         if(!top_aligned){
             [self scrollToBottom];
         }
@@ -1452,15 +1463,18 @@
                 NSString * adUnitId = [[admob objectAtIndex:i] objectForKey:@"unitId"];
                 
                 if([adType isEqualToString:@"banner"]){
-                    
-                    CGRect frame = CGRectMake(0, self.view.frame.size.height - GAD_SIZE_468x60.height, GAD_SIZE_468x60.width, GAD_SIZE_468x60.height);
-                    
+                    self.bannerAd = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
+                    CGPoint adPoint = CGPointMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height);
+                   
                     if(body[@"footer"]){
-                        frame = CGRectMake(0, self.view.frame.size.height - GAD_SIZE_468x60.height - self.tabBarController.tabBar.frame.size.height, GAD_SIZE_468x60.width, GAD_SIZE_468x60.height);
+                        adPoint = CGPointMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height);
                     }
                     
                     NSString * adUnitID = adUnitId;
-                    self.bannerAd = [[GADBannerView alloc] initWithFrame: frame];
+                    self.bannerAd.frame = CGRectMake( adPoint.x,
+                                                     adPoint.y,
+                                                     self.bannerAd.frame.size.width,
+                                                     self.bannerAd.frame.size.height );
                     self.bannerAd.adUnitID = adUnitID; //Test Id: a14dccd0fb24d45
                     self.bannerAd.rootViewController = self;
                     self.bannerAd.delegate = self;
@@ -1475,7 +1489,7 @@
                     [self.bannerAd loadRequest:admobRequest];
                     
                 }
-                else if([adType isEqualToString:@"interstial"]){
+                else if([adType isEqualToString:@"interstial"]){ 
                     self.interestialAd = [[GADInterstitial alloc] initWithAdUnitID:adUnitId];
                     self.interestialAd.delegate = self;
                     GADRequest * admobRequest = [[GADRequest alloc] init];
