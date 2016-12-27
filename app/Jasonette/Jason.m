@@ -1351,10 +1351,17 @@
                 navigationController.hidesBarsOnSwipe = NO;
             }
             
-            if(headStyle[@"hide"]){
-                [navigationController setNavigationBarHidden:YES];
+            
+            if(headStyle[@"hide"] && [headStyle[@"hide"] boolValue]){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                     [navigationController setNavigationBarHidden:YES];
+                });
+               
             } else {
-                [navigationController setNavigationBarHidden:NO];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [navigationController setNavigationBarHidden:NO];
+                });
+                
             }
             
             NSString *font_name = @"HelveticaNeue-CondensedBold";
