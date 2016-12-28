@@ -36,6 +36,9 @@
     CGFloat original_bottom_inset;
     BOOL need_to_adjust_frame;
     UIView *currently_focused;
+    #ifdef ADS
+    NSTimer *intrestialAdTimer;
+    #endif
 }
 @end
 
@@ -181,13 +184,18 @@
 
 // Handling the updated frame when keyboard shows up
 - (void)keyboardDidHide{
+    
+    #ifdef ADS
+        [self adjustBannerPosition];
+    #endif
     isEditing = NO;
 }
 - (void)keyboardDidShow:(NSNotification *)notification {
+    NSDictionary* info = [notification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
     if(need_to_adjust_frame){
         // Only for 'textarea' type
-        NSDictionary* info = [notification userInfo];
-        CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
         UIEdgeInsets contentInsets = UIEdgeInsetsMake(self.tableView.contentInset.top, self.tableView.contentInset.left, kbSize.height, self.tableView.contentInset.right);
         self.tableView.contentInset = contentInsets;
         self.tableView.scrollIndicatorInsets = contentInsets;
@@ -202,11 +210,15 @@
                 });
             }
         }
-    } else {
+    }
+    else {
         if(!top_aligned){
             [self scrollToBottom];
         }
     }
+#ifdef ADS
+    [self adjustBannerPosition];
+#endif
     isEditing = YES;
     
 }
@@ -985,6 +997,10 @@
             [self setupLayers:body];
             [self setupFooter: body];
             [self setupSections:body];
+            #ifdef ADS
+            [self setupAds:body];
+            #endif
+            
         
             if(self.isModal){
                 // Swipe down to dismiss modal
@@ -1062,8 +1078,8 @@
         }
     }
 }
-
 - (void)setupHeader: (NSDictionary *)body{
+    
     
     self.tableView.tableHeaderView = nil;
     // NAV (deprecated. See 'header' below)
@@ -1432,6 +1448,121 @@
         
     }
 }
+
+/********************************
+ * Google AdMob
+ ********************************/
+
+#ifdef ADS
+- (void)setupAds: (NSDictionary *)body
+{
+    if(body[@"ads"]){
+        
+        NSArray * adData = body[@"ads"];
+        if(adData.count > 0){
+            for (int i = 0 ; i < adData.count ; i++){
+                NSDictionary *selectedAd = [adData objectAtIndex:i];
+                NSString * adType = selectedAd[@"type"];
+               
+                
+                if([adType isEqualToString:@"admob"] && selectedAd[@"options"] && selectedAd[@"options"][@"type"] && selectedAd[@"options"][@"unitId"]){
+                    
+                    NSDictionary *options = selectedAd[@"options"];
+                    NSString *adUnitId = options[@"unitId"];
+                    NSString *type = options[@"type"];
+                    if([type isEqualToString:@"banner"]){
+                        self.bannerAd = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
+                        CGPoint adPoint = CGPointMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height);
+                       
+                        if(body[@"footer"]){
+                            adPoint = CGPointMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height);
+                        }
+                        
+                        NSString * adUnitID = adUnitId;
+                        self.bannerAd.frame = CGRectMake( adPoint.x,
+                                                         adPoint.y,
+                                                         self.bannerAd.frame.size.width,
+                                                         self.bannerAd.frame.size.height );
+                        
+                        self.bannerAd.autoresizingMask =
+                        UIViewAutoresizingFlexibleLeftMargin |
+                        UIViewAutoresizingFlexibleTopMargin |
+                        UIViewAutoresizingFlexibleWidth |
+                        UIViewAutoresizingFlexibleRightMargin;
+                        
+                        self.bannerAd.adUnitID = adUnitID; //Test Id: a14dccd0fb24d45
+                        self.bannerAd.rootViewController = self;
+                        self.bannerAd.delegate = self;
+                        [self.view addSubview:self.bannerAd];
+                        
+                        GADRequest * admobRequest = [[GADRequest alloc] init];
+                        admobRequest.testDevices = @[
+                                                     // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
+                                                     // the console when the app is launched.
+                                                     kGADSimulatorID
+                                                     ];
+                        [self.bannerAd loadRequest:admobRequest];
+                    }
+                    else if([type isEqualToString:@"interstial"]){
+                        self.interestialAd = [[GADInterstitial alloc] initWithAdUnitID:adUnitId];
+                        self.interestialAd.delegate = self;
+                        GADRequest * admobRequest = [[GADRequest alloc] init];
+                        admobRequest.testDevices = @[
+                                                     // TODO: Add your device/simulator test identifiers here. Your device identifier is printed to
+                                                     // the console when the app is launched.
+                                                     kGADSimulatorID
+                                                     ];
+                        [self.interestialAd loadRequest:admobRequest];
+                        
+                        intrestialAdTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(showInterestialAd) userInfo:nil repeats:YES];
+                        
+                    }
+                    
+                }
+                
+            }
+           
+        }
+    }
+
+   
+}
+-(void) showInterestialAd{
+    if(self.interestialAd.isReady){
+        [intrestialAdTimer invalidate];
+        intrestialAdTimer = nil;
+        [self.interestialAd presentFromRootViewController:self];
+    }
+}
+
+-(void) adjustBannerPosition
+{
+    if(chat_input && self.bannerAd != nil){
+        
+        self.bannerAd.frame = CGRectMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height, self.bannerAd.frame.size.width, self.bannerAd.frame.size.height);
+    }
+}
+- (void) adView: (GADBannerView*) view didFailToReceiveAdWithError: (GADRequestError*) error{
+    NSLog(@"Error on showing AD %@", error);
+}
+- (void) adViewDidReceiveAd: (GADBannerView*) view{
+    NSLog(@"Suucess on showing ad");
+    [self adjustBannerPosition];
+}
+
+- (void)interstitialDidReceiveAd:(GADInterstitial *)ad{
+     NSLog(@"--->Suucess on showing interestial ad");
+}
+
+/// Called when an interstitial ad request completed without an interstitial to
+/// show. This is common since interstitials are shown sparingly to users.
+- (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error{
+    NSLog(@" -->>Error on showing interestial AD %@", error);
+}
+
+#endif
+
+/********************************/
 
 
 
