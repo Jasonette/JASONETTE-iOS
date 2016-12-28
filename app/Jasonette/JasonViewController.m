@@ -183,7 +183,9 @@
 // Handling the updated frame when keyboard shows up
 - (void)keyboardDidHide{
     
-   [self adjustBannerPosition];
+    #ifdef ADS
+        [self adjustBannerPosition];
+    #endif
     isEditing = NO;
 }
 - (void)keyboardDidShow:(NSNotification *)notification {
@@ -212,7 +214,9 @@
             [self scrollToBottom];
         }
     }
+#ifdef ADS
     [self adjustBannerPosition];
+#endif
     isEditing = YES;
     
 }
@@ -991,7 +995,9 @@
             [self setupLayers:body];
             [self setupFooter: body];
             [self setupSections:body];
+            #ifdef ADS
             [self setupAds:body];
+            #endif
             
         
             if(self.isModal){
@@ -1445,7 +1451,7 @@
  * Google AdMob
  ********************************/
 
-
+#ifdef ADS
 - (void)setupAds: (NSDictionary *)body
 {
     if(body[@"ads"]){
@@ -1516,7 +1522,7 @@
            
         }
     }
-    
+
    
 }
 -(void) showInterestialAd{
@@ -1551,6 +1557,8 @@
 - (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error{
     NSLog(@" -->>Error on showing interestial AD %@", error);
 }
+
+#endif
 
 /********************************/
 
