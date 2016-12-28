@@ -956,76 +956,74 @@
         
         [self.VC.navigationController dismissViewControllerAnimated:YES completion:nil];
         
-        NSString *client_id = self.options[@"access"][@"client_id"];
-        NSString *client_secret = self.options[@"access"][@"client_secret"];
+        NSURL *url = notification.userInfo[@"url"];
+        // extract parameters
+        NSArray *returnValues = [self extractQueryParams:url.absoluteString];
         
-        NSDictionary *access_options = self.options[@"access"];
-        if(!access_options || access_options.count == 0){
-            [[Jason client] error];
+        // Exception case (Dropbox) where authorize returns access_token directly, in which case we don't need to go forward with the next step of requesting access_token again
+        NSString *access_token = [self valueForKey:@"access_token" fromQueryItems:returnValues];
+
+        if(access_token){
+            NSString *client_id = self.options[@"authorize"][@"client_id"];
+            
+            NSString *token_type = [self valueForKey:@"token_type" fromQueryItems:returnValues];
+            AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:access_token tokenType:token_type];
+            [AFOAuthCredential storeCredential:credential withIdentifier:client_id];
+            [[Jason client] success];
         } else {
-            if(!access_options[@"scheme"] || [access_options[@"scheme"] length] == 0
+            NSDictionary *access_options = self.options[@"access"];
+            
+            // Setup access params
+            NSMutableDictionary *access_data;
+            
+            if(access_options[@"data"]){
+                access_data = [access_options[@"data"] mutableCopy];
+            }
+            
+            NSString *client_id = self.options[@"access"][@"client_id"];
+            NSString *client_secret = self.options[@"access"][@"client_secret"];
+            
+            NSString *code = [self valueForKey:@"code" fromQueryItems:returnValues];
+            
+            if(!access_options || access_options.count == 0
+               || !access_options[@"scheme"] || [access_options[@"scheme"] length] == 0
                || !access_options[@"host"] || [access_options[@"host"] length] == 0
                || !access_options[@"path"] || [access_options[@"path"] length] == 0){
                 [[Jason client] error];
             } else {
-                // Setup access params
-                NSMutableDictionary *access_data;
-                
-                if(access_options[@"data"]){
-                    access_data = [access_options[@"data"] mutableCopy];
-                }
-                
-                NSURL *url = notification.userInfo[@"url"];
-                // extract parameters
-                NSArray *returnValues = [self extractQueryParams:url.absoluteString];
-                NSString *code = [self valueForKey:@"code" fromQueryItems:returnValues];
-                
-                // Exception case (Dropbox) where authorize returns access_token directly, in which case we don't need to go forward with the next step of requesting access_token again
-                NSString *access_token = [self valueForKey:@"access_token" fromQueryItems:returnValues];
-                if(access_token){
-                    NSString *token_type = [self valueForKey:@"token_type" fromQueryItems:returnValues];
-                    AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:access_token tokenType:token_type];
-                    [AFOAuthCredential storeCredential:credential withIdentifier:client_id];
-                    [[Jason client] success];
+                NSString *urlString = [NSString stringWithFormat:@"%@://%@", access_options[@"scheme"], access_options[@"host"]];
+                NSURL *baseURL = [NSURL URLWithString:urlString];
                     
-                } else {
-                    NSString *urlString = [NSString stringWithFormat:@"%@://%@", access_options[@"scheme"], access_options[@"host"]];
-                    NSURL *baseURL = [NSURL URLWithString:urlString];
-                    
-                    
-                    AFOAuth2Manager *OAuth2Manager = [[AFOAuth2Manager alloc] initWithBaseURL:baseURL
+                
+                AFOAuth2Manager *OAuth2Manager = [[AFOAuth2Manager alloc] initWithBaseURL:baseURL
                                                     clientID:client_id
                                                    secret:client_secret];
                     
-                    // In most cases oauth endpoints don't use basic auth (although it's more secure to use basic auth)
-                    // So the default is 'non basic auth'
+                // In most cases oauth endpoints don't use basic auth (although it's more secure to use basic auth)
+                // So the default is 'non basic auth'
                     
-                    if(access_options[@"basic"]){
-                        [OAuth2Manager setUseHTTPBasicAuthentication:YES];
-                    } else {
-                        [OAuth2Manager setUseHTTPBasicAuthentication:NO];
-                    }
-                    access_data[@"code"] = code;
-                    
-                    [OAuth2Manager authenticateUsingOAuthWithURLString:access_options[@"path"]
-                                                            parameters:access_data success:^(AFOAuthCredential *credential) {
-                                                                [AFOAuthCredential storeCredential:credential
-                                                                                    withIdentifier:client_id];
-                                                                [[Jason client] success];
-
-                                                            }
-                                                           failure:^(NSError *error) {
-                                                               NSLog(@"Error: %@", error);
-                                                               NSString* ErrorResponse = [[NSString alloc] initWithData:(NSData *)error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] encoding:NSUTF8StringEncoding];
-                                                               NSLog(@"#ncoded = %@",ErrorResponse);
-
-                                                               [[Jason client] error];
-                                                           }];
+                if(access_options[@"basic"]){
+                    [OAuth2Manager setUseHTTPBasicAuthentication:YES];
+                } else {
+                    [OAuth2Manager setUseHTTPBasicAuthentication:NO];
                 }
+                access_data[@"code"] = code;
+                
+                [OAuth2Manager authenticateUsingOAuthWithURLString:access_options[@"path"]
+                                                        parameters:access_data success:^(AFOAuthCredential *credential) {
+                                                            [AFOAuthCredential storeCredential:credential withIdentifier:client_id];
+                                                            
+                                                            [[Jason client] success];
+                                                        }
+                                                        failure:^(NSError *error) {
+                                                            NSLog(@"Error: %@", error);
+                                                            NSString* ErrorResponse = [[NSString alloc] initWithData:(NSData *)error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] encoding:NSUTF8StringEncoding];
+                                                            NSLog(@"#ncoded = %@",ErrorResponse);
+
+                                                            [[Jason client] error];
+                                                        }];
             }
         }
-
-        
     }
     
 }
