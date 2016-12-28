@@ -36,7 +36,9 @@
     CGFloat original_bottom_inset;
     BOOL need_to_adjust_frame;
     UIView *currently_focused;
+    #ifdef ADS
     NSTimer *intrestialAdTimer;
+    #endif
 }
 @end
 
