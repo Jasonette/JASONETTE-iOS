@@ -1011,10 +1011,9 @@
                 
                 [OAuth2Manager authenticateUsingOAuthWithURLString:access_options[@"path"]
                                                         parameters:access_data success:^(AFOAuthCredential *credential) {
-                                                                [AFOAuthCredential storeCredential:credential
-                                                                                    withIdentifier:client_id];
+                                                            [AFOAuthCredential storeCredential:credential withIdentifier:client_id];
+                                                            
                                                             [[Jason client] success];
-
                                                         }
                                                         failure:^(NSError *error) {
                                                             NSLog(@"Error: %@", error);
