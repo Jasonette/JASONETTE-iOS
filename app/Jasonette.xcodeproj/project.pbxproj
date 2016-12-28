@@ -72,7 +72,6 @@
 		5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B801DA5C0080049EACE /* JasonLayer.m */; };
 		5EEE3E6D1DBAE6DA00DE7ABD /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE3E6C1DBAE6DA00DE7ABD /* parser.js */; };
 		5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF904351DD10F6E00C8A94E /* JasonLogAction.m */; };
-		860258911E10DC5A00015988 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 860258901E10DC5A00015988 /* GoogleMobileAds.framework */; };
 		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
 /* End PBXBuildFile section */
 
@@ -190,7 +189,6 @@
 		5EEE3E6C1DBAE6DA00DE7ABD /* parser.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = parser.js; sourceTree = "<group>"; };
 		5EF904341DD10F6E00C8A94E /* JasonLogAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonLogAction.h; sourceTree = "<group>"; };
 		5EF904351DD10F6E00C8A94E /* JasonLogAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonLogAction.m; sourceTree = "<group>"; };
-		860258901E10DC5A00015988 /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -199,7 +197,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				860258911E10DC5A00015988 /* GoogleMobileAds.framework in Frameworks */,
 				5EE85B6C1DA45F8F0049EACE /* MapKit.framework in Frameworks */,
 				F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */,
 			);
@@ -641,7 +638,6 @@
 		7CC63D0148253F040E828E0E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				860258901E10DC5A00015988 /* GoogleMobileAds.framework */,
 				5EE85B7A1DA595A20049EACE /* UIKit.framework */,
 				5EE85B6B1DA45F8F0049EACE /* MapKit.framework */,
 				2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */,
