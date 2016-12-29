@@ -11,13 +11,14 @@
     if(!component){
         component = [[UIButton alloc] init];
     }
+    NSMutableDictionary *mutable_json = [json mutableCopy];
     if(json[@"url"]){
         
         if(options && options[@"indexPath"]){
             NSString *url = (NSString *) [JasonHelper cleanNull:json[@"url"] type:@"string"];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"setupIndexPathsForImage" object:nil userInfo:@{@"url": url, @"indexPath": options[@"indexPath"]}];
         }
-
+        
         
         UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
         [component setBackgroundImage:placeholder_image forState:UIControlStateNormal];
@@ -50,7 +51,6 @@
         [component setTitle:@"" forState:UIControlStateNormal];
         
         // Before applying common styles, Update the style attribute based on the fetched image dimension (different from other components)
-        NSMutableDictionary *mutable_json = [json mutableCopy];
         if(json[@"style"]){
             NSMutableDictionary *style = [json[@"style"] mutableCopy];
             NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
@@ -113,9 +113,10 @@
     }
     else{
         [component setBackgroundImage:nil forState:UIControlStateNormal];
-        [component setTitle:json[@"text"] forState:UIControlStateNormal];
+        if(json[@"text"]){
+            [component setTitle:json[@"text"] forState:UIControlStateNormal];
+        }
     }
-    [self stylize:json component:component];
     
     if(json[@"action"]){
         component.payload = [@{@"action": json[@"action"]} mutableCopy];
@@ -125,20 +126,28 @@
     
     
     // 1. Apply Common Style
-    [self stylize:json component:component];
+    [self stylize:mutable_json component:component];
     
     // 2. Custom Style
     NSDictionary *style = json[@"style"];
     if(style){
-        [self stylize:json text:component.titleLabel];
-        
-        if(style[@"color"]){
-            NSString *colorHex = style[@"color"];
-            component.tintColor = [JasonHelper colorwithHexString:colorHex alpha:1.0];
-            UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
-            [component setTitleColor:c forState:UIControlStateNormal];
-        } else {
-            component.tintColor = [UIColor whiteColor];
+        if(json[@"text"]){
+            // text button
+            [self stylize:json text:component.titleLabel];
+            
+            if(!style[@"background"]){
+                component.backgroundColor = [JasonHelper colorwithHexString:@"#007AFF" alpha:1.0];
+            }
+            
+            if(style[@"color"]){
+                NSString *colorHex = style[@"color"];
+                component.tintColor = [JasonHelper colorwithHexString:colorHex alpha:1.0];
+                UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
+                [component setTitleColor:c forState:UIControlStateNormal];
+            } else {
+                component.tintColor = [UIColor whiteColor];
+            }
+            
         }
     }
     [component setSelected:NO];

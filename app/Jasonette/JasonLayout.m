@@ -76,7 +76,7 @@ static NSMutableDictionary *_stylesheet = nil;
     [layout setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
     
     return @{ @"style": style, @"layout": layout };
-
+    
 }
 
 + (UIStackView *)fillChildLayout: (UIStackView*)layout with:(NSDictionary *)item atIndexPath: (NSIndexPath *)indexPath withForm: (NSDictionary *)form{
@@ -104,6 +104,11 @@ static NSMutableDictionary *_stylesheet = nil;
             } else {
                 NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
                 if ([child[@"type"] isEqualToString:@"image"]) {
+                    // image component
+                    options[@"indexPath"] = indexPath;
+                }
+                if ([child[@"type"] isEqualToString:@"button"] && child[@"url"]){
+                    // image button
                     options[@"indexPath"] = indexPath;
                 }
                 if (form && child[@"name"]) {
@@ -121,7 +126,7 @@ static NSMutableDictionary *_stylesheet = nil;
                     options[@"value"] = value;
                 }
                 options[@"parent"] = item[@"type"];
-
+                
                 UIView *el;
                 
                 // If we're building this layout, we pass in nil to JasonComponentFactory, and it will instantiate new components
@@ -133,7 +138,7 @@ static NSMutableDictionary *_stylesheet = nil;
                 }
                 
                 UIView *component = [JasonComponentFactory build:el withJSON: child withOptions:options];
-
+                
                 if([component isKindOfClass:[UIImageView class]]){
                     
                     if(child[@"style"] && (child[@"style"][@"width"] || child[@"style"][@"height"])){
