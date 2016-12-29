@@ -1503,7 +1503,7 @@
                                                      ];
                         [self.bannerAd loadRequest:admobRequest];
                     }
-                    else if([type isEqualToString:@"interstial"]){
+                    else if([type isEqualToString:@"interstitial"]){
                         self.interestialAd = [[GADInterstitial alloc] initWithAdUnitID:adUnitId];
                         self.interestialAd.delegate = self;
                         GADRequest * admobRequest = [[GADRequest alloc] init];
@@ -1514,7 +1514,7 @@
                                                      ];
                         [self.interestialAd loadRequest:admobRequest];
                         
-                        intrestialAdTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(showInterestialAd) userInfo:nil repeats:YES];
+                        intrestialAdTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(showInterstitialAd) userInfo:nil repeats:YES];
                         
                     }
                     
@@ -1527,7 +1527,7 @@
 
    
 }
--(void) showInterestialAd{
+-(void) showInterstitialAd{
     if(self.interestialAd.isReady){
         [intrestialAdTimer invalidate];
         intrestialAdTimer = nil;
@@ -1551,13 +1551,13 @@
 }
 
 - (void)interstitialDidReceiveAd:(GADInterstitial *)ad{
-     NSLog(@"--->Suucess on showing interestial ad");
+     NSLog(@"--->Suucess on showing interstitial ad");
 }
 
 /// Called when an interstitial ad request completed without an interstitial to
 /// show. This is common since interstitials are shown sparingly to users.
 - (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error{
-    NSLog(@" -->>Error on showing interestial AD %@", error);
+    NSLog(@" -->>Error on showing interstitial AD %@", error);
 }
 
 #endif
