@@ -78,7 +78,7 @@
         NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];  
         NSString *loc = @"file:/";
 
-        NSString *jsonFile = [[url lowercaseString] stringByReplacingOccurrencesOfString:loc withString:webrootPath];
+        NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
         NSLog(@"LOCALFILES jsonFile is %@", jsonFile);
 
         NSFileManager *fileManager = [NSFileManager defaultManager];
