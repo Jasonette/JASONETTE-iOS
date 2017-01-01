@@ -78,7 +78,7 @@
         NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];  
         NSString *loc = @"file:/";
 
-        NSString *jsonFile = [[url lowercaseString] stringByReplacingOccurrencesOfString:loc withString:webrootPath];
+        NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
         NSLog(@"LOCALFILES jsonFile is %@", jsonFile);
 
         NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -113,8 +113,7 @@
      *
      **************************************************/
     JasonAppDelegate *app = (JasonAppDelegate *)[[UIApplication sharedApplication] delegate];
-    NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
-    NSDictionary *plist = [NSDictionary dictionaryWithContentsOfURL:file];
+    NSDictionary *plist = [self getSettings];
     ROOT_URL = plist[@"url"];
     INITIAL_LOADING = plist[@"loading"];
     
@@ -837,8 +836,7 @@
     *
     ********************************************************************************************************/
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-    NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
-    NSDictionary *plist = [NSDictionary dictionaryWithContentsOfURL:file];
+    NSDictionary *plist = [self getSettings];
     for(NSString *key in plist){
         if(![key isEqualToString:@"url"]){
             NSString *new_key = [NSString stringWithFormat:@"$keys.%@", key];
@@ -851,6 +849,16 @@
         [newKeys addObject:@{@"key": key, @"val": dict[key]}];
     }
     return [newKeys copy];
+}
+-(NSDictionary*)getSettings{
+    NSDictionary * infoPlistSettings = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"settings"];
+    if(infoPlistSettings != nil){//target's info.plist file contains customized settings
+        return infoPlistSettings;
+    }else{//settings not found in target's Info.plist - get from file 
+        NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
+        NSDictionary *settingsPlistSettings = [NSDictionary dictionaryWithContentsOfURL:file];
+        return settingsPlistSettings;
+    }
 }
 - (NSDictionary *)getEnv{
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
