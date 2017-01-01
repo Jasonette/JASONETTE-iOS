@@ -22583,7 +22583,7 @@ var json = function(template, data, json){
 		try{
 			template_object = JSON.parse(template);
 		} catch (error){
-			template_object - template;
+			template_object = template;
 		}
 		try{
 			data_object = JSON.parse(data);
