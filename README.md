@@ -27,13 +27,13 @@ Looking for an Android version? [See here](https://www.github.com/Jasonette/JASO
 
 <br>
 
-# [Quickstart](https://www.jasonette.com)
-Visit [the website](http://www.jasonette.com) to get started.
+# [Quickstart](https://jasonette.github.io/documentation/#quickstart)
+Visit [the website](http://www.jasonette.com) to get started, or visit [the docs](https://jasonette.github.io/documentation) to learn more about how to use Jasonette.
 
 <br>
 
 # Download
-Latest release: [ver0.1.0](https://jasonette.github.io/documentation)
+Latest release: [ver0.1.0](https://github.com/Jasonette/JASONETTE-iOS/archive/v0.1.0.zip)
 
 <br>
 
