@@ -33,7 +33,7 @@ Visit [the website](http://www.jasonette.com) to get started, or visit [the docs
 <br>
 
 # Download
-Latest release: [ver0.1.0](https://github.com/Jasonette/JASONETTE-iOS/archive/v0.1.0.zip)
+Latest release: [latest version](https://github.com/Jasonette/JASONETTE-iOS/archive/master.zip)
 
 <br>
 
