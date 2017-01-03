@@ -181,6 +181,20 @@
             headers = self.options[@"headers"];
         }
         
+        
+        // setting content_type
+        NSString *contentType = self.options[@"contentType"]; // contentType is deprecated. Use content_type
+        if(!contentType){
+            contentType = self.options[@"content_type"];
+        }
+        
+        if(contentType){
+            if([contentType isEqualToString:@"json"]){
+                manager.requestSerializer = [AFJSONRequestSerializer serializer];
+            }
+        }
+        
+        
         if(headers && headers.count > 0){
             for(NSString *key in headers){
                 [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
@@ -221,17 +235,6 @@
             [jsonAcceptableContentTypes addObject:@"text/plain"];
             jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
             manager.responseSerializer = jsonResponseSerializer;
-        }
-        
-        NSString *contentType = self.options[@"contentType"]; // contentType is deprecated. Use content_type
-        if(!contentType){
-            contentType = self.options[@"content_type"];
-        }
-        
-        if(contentType){
-            if([contentType isEqualToString:@"json"]){
-                manager.requestSerializer = [AFJSONRequestSerializer serializer];
-            }
         }
         
     
