@@ -1,5 +1,6 @@
 [![logo](https://raw.githubusercontent.com/gliechtenstein/images/master/jasonette.png)](http://www.jasonette.com)
-
+[![Code Climate](https://codeclimate.com/github/Jasonette/JASONETTE-iOS/badges/gpa.svg)](https://codeclimate.com/github/Jasonette/JASONETTE-iOS)
+[![Issue Count](https://codeclimate.com/github/Jasonette/JASONETTE-iOS/badges/issue_count.svg)](https://codeclimate.com/github/Jasonette/JASONETTE-iOS)
 # [Jasonette](https://www.jasonette.com)
 
 [https://www.jasonette.com](https://www.jasonette.com)
