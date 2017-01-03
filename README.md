@@ -1,5 +1,6 @@
 [![logo](https://raw.githubusercontent.com/gliechtenstein/images/master/jasonette.png)](http://www.jasonette.com)
-
+[![Code Climate](https://codeclimate.com/github/Jasonette/JASONETTE-iOS/badges/gpa.svg)](https://codeclimate.com/github/Jasonette/JASONETTE-iOS)
+[![Issue Count](https://codeclimate.com/github/Jasonette/JASONETTE-iOS/badges/issue_count.svg)](https://codeclimate.com/github/Jasonette/JASONETTE-iOS)
 # [Jasonette](https://www.jasonette.com)
 
 [https://www.jasonette.com](https://www.jasonette.com)
@@ -27,13 +28,13 @@ Looking for an Android version? [See here](https://www.github.com/Jasonette/JASO
 
 <br>
 
-# [Quickstart](https://www.jasonette.com)
-Visit [the website](http://www.jasonette.com) to get started.
+# [Quickstart](https://jasonette.github.io/documentation/#quickstart)
+Visit [the website](http://www.jasonette.com) to get started, or visit [the docs](https://jasonette.github.io/documentation) to learn more about how to use Jasonette.
 
 <br>
 
 # Download
-Latest release: [ver0.1.0](https://jasonette.github.io/documentation)
+Latest release: [latest version](https://github.com/Jasonette/JASONETTE-iOS/archive/master.zip)
 
 <br>
 
