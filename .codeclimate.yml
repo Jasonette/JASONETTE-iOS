@@ -2,7 +2,7 @@ engines:
   fixme:
     enabled: true
   tailor:
-    enabled: true
+    enabled: false
 ratings:
   paths:
   - "**.swift"
