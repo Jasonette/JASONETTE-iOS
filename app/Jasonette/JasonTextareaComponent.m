@@ -21,12 +21,21 @@
     
     NSDictionary *style = json[@"style"];
     
-    NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
-    if(json[@"name"]){
-        payload[@"name"] = json[@"name"];
+    NSMutableDictionary *mutated_json = [json mutableCopy];
+    if(style){
+        if(!style[@"height"]){
+           mutated_json[@"style"][@"height"] = @"100";
+        }
+    } else {
+        mutated_json[@"style"] = @{@"height": @"100"};
     }
-    if(json[@"action"]){
-        payload[@"action"] = json[@"action"];
+    
+    NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+    if(mutated_json[@"name"]){
+        payload[@"name"] = mutated_json[@"name"];
+    }
+    if(mutated_json[@"action"]){
+        payload[@"action"] = mutated_json[@"action"];
     }
     component.payload = payload;
     
@@ -34,12 +43,12 @@
     
     
     // 1. Apply Common Style
-    [self stylize:json component:component];
+    [self stylize:mutated_json component:component];
     
     // 2. Custom Style
-    if(json[@"placeholder"]){
+    if(mutated_json[@"placeholder"]){
         UIColor *placeholder_color;
-        NSString *placeholder_raw_str = json[@"placeholder"];
+        NSString *placeholder_raw_str = mutated_json[@"placeholder"];
         
         // Color
         if(style[@"placeholder_color"]){
