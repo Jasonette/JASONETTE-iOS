@@ -36,6 +36,14 @@
     
     // 2. Custom Style
     NSDictionary *style = json[@"style"];
+    
+    if(style[@"padding"]){
+        int padding = [style[@"padding"] intValue];
+        component.layer.sublayerTransform = CATransform3DMakeTranslation(padding, 0, 0);
+    }
+ 
+    
+    
     if(style){
         if(style[@"secure"] && [style[@"secure"] boolValue]){
             ((UITextField *)component).secureTextEntry = YES;

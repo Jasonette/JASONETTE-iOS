@@ -46,6 +46,14 @@
     [self stylize:mutated_json component:component];
     
     // 2. Custom Style
+    
+    if(style[@"padding"]){
+        int padding = [style[@"padding"] intValue];
+        int lineFragmentPadding = component.textContainer.lineFragmentPadding;
+
+        component.textContainerInset = UIEdgeInsetsMake(padding, padding-lineFragmentPadding, padding, padding-lineFragmentPadding);
+    }
+    
     if(mutated_json[@"placeholder"]){
         UIColor *placeholder_color;
         NSString *placeholder_raw_str = mutated_json[@"placeholder"];
@@ -90,8 +98,6 @@
         }
         UIFont *f = [UIFont fontWithName:font size:size];
         [placeholderStr addAttribute:NSFontAttributeName value:f range:NSMakeRange(0, placeholderStr.length)];
-        
-        
         component.attributedPlaceholder = placeholderStr;
     }
     
