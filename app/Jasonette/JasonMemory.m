@@ -20,6 +20,7 @@
     if (self = [super init]) {
         self._register = [[NSDictionary alloc] init];
         self._stack = [[NSDictionary alloc] init];
+        self._caller = [[NSDictionary alloc] init];
         self.locked = NO;
     }
     return self;

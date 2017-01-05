@@ -434,6 +434,237 @@
     }
     
 }
+- (void)lambda{
+    
+    /*
+     
+    # LAMBDA - Functional Programming for Actions
+    #  Call an action by name, with arguments. Wait for it to finish. And continue on with its return value.
+
+    # How it works
+    1. Calls another action by name
+    2. Can also pass arguments via `options`, which will be interpreted as `$jason` in the callee action
+    2. Waits for the callee action to return via `$return.success` or `$return.error`
+    3. The Callee action can return using the `$return.success` or `$return.error` actions.
+    4. `$return.success` calls the caller action's `success` action with return value. The caller action picks up where it left off and continues walking down the `success` action call chain.
+    4. `$return.error` calls the caller action's `error` action with return value. The caller action picks up where it left off and continues walking down the `error` action call chain.
+
+    # Example 1: Basic lambda (Same as trigger)
+    {
+        "type": "$lambda",
+        "options": {
+            "name": "fetch"
+        }
+    }
+
+
+    # Example 2: Basic lambda with success/error handlers
+    {
+        "type": "$lambda",
+        "options": {
+            "name": "fetch"
+        }
+        "success": {
+            "type": "$render"
+        },
+        "error": {
+            "type": "$util.toast",
+            "options": {
+                "text": "Error"
+            }
+        }
+    }
+
+
+    # Example 3: Passing arguments
+    {
+        "type": "$lambda",
+        "options": {
+            "name": "fetch",
+            "options": {
+                "url": "https://www.jasonbase.com/things/73g"
+            }
+        },
+        "success": {
+            "type": "$render"
+        },
+        "error": {
+            "type": "$util.toast",
+            "options": {
+                "text": "Error"
+            }
+        }
+    }
+
+    # Example 4: Using the previous action's return value
+
+    {
+        "type": "$network.request",
+        "options": {
+            "url": "https://www.jasonbase.com/things/73g"
+        },
+        "success": {
+            "type": "$lambda",
+            "options": {
+                "name": "draw"
+            },
+            "success": {
+                "type": "$render"
+            },
+            "error": {
+                "type": "$util.toast",
+                "options": {
+                    "text": "Error"
+                }
+            }
+        }
+    }
+
+    # Example 5: Using the previous action's return value as well as custom options
+
+    {
+        "type": "$network.request",
+        "options": {
+            "url": "https://www.jasonbase.com/things/73g"
+        },
+        "success": {
+            "type": "$lambda",
+            "options": {
+                "name": "draw",
+                "options": {
+                    "p1": "another param",
+                    "p2": "yet another param"
+                }
+            },
+            "success": {
+                "type": "$render"
+            },
+            "error": {
+                "type": "$util.toast",
+                "options": {
+                    "text": "Error"
+                }
+            }
+        }
+    }
+
+     */
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
+    # Example:
+     {
+        "type": "$lambda",
+        "options": {
+            "name": "draw",
+            "options": {
+                "p1": "another param",
+                "p2": "yet another param"
+            }
+        },
+        "success": {
+            "type": "$render"
+        },
+        "error": {
+            "type": "$util.toast",
+            "options": {
+                "text": "Error"
+            }
+        }
+    }
+     
+     */
+    
+    NSDictionary *options = [self options];
+    /*
+         options = {
+            "name": "draw",
+            "options": {
+                "p1": "another param",
+                "p2": "yet another param"
+            }
+         }
+     */
+    
+    
+    NSString *name = options[@"name"];
+    /*
+     name = "draw"
+    */
+    
+    if(name){
+        // options can be an array or an object
+        id args = options[@"options"];
+        /* 
+         args = {
+            "p1": "another param",
+            "p2": "yet another param"
+         }
+         */
+        JasonMemory *memory = [JasonMemory client];
+        
+        
+        // set register
+        if(args){
+            args =  [self filloutTemplate: args withData: memory._register];
+            memory._register = @{@"$jason": args};
+        } else {
+            // do nothing. keep the register and propgate
+        }
+        
+        
+        id lambda = [[VC valueForKey:@"events"] valueForKey:name];
+        /*
+         lambda = [{
+            "{{#if $jason.items}}: {
+                "type": "$render",
+                "options": {
+                    "data": "{{$jason.items}}"
+                }
+            }
+         }, {
+            "{{#else}}": {
+                "type": "$util.toast",
+                 "options": {
+                    "text": "Nothing to render"
+                 }
+             }  
+         }]
+         */
+        
+        NSDictionary *resolved_lambda;
+        if([lambda isKindOfClass:[NSArray class]]){
+            resolved_lambda = [self filloutTemplate:lambda withData:memory._register];
+        } else {
+            resolved_lambda = lambda;
+        }
+        /*
+         resolved_lambda = {
+            "type": "$render"
+         }
+         */
+        
+        // set current stack as the caller (before overwriting the stack)
+        memory._caller = [memory._stack copy];
+        
+        // set stack
+        memory._stack = resolved_lambda;
+        
+        // exec
+        [self exec];
+        
+    } else {
+        [self error];
+    }
+
+
+}
 - (void)render{
     NSDictionary *stack = [JasonMemory client]._stack;
     
@@ -2333,31 +2564,90 @@
                 memory._stack = [self filloutTemplate: memory._stack withData: memory._register];
             }
             
-            
             NSString *trigger = memory._stack[@"trigger"];
             NSString *type = memory._stack[@"type"];
             
             // Type 1. Action Call by name (trigger)
             if(trigger)
             {
-                NSString *action_name = memory._stack[@"trigger"];
-                id triggered_action = [[VC valueForKey:@"events"] valueForKey:action_name];
-                NSDictionary *action;
-                if([triggered_action isKindOfClass:[NSArray class]]){
-                    action = [self filloutTemplate:triggered_action withData:memory._register];
+                
+                /****************************************************************************************
+                // "trigger" is a syntactic sugar for calling `$lambda` action
+                 
+                The syntax is as follows:
+
+                {
+                    "trigger": "twitter.get",
+                    "options": {
+                        "endpoint": "timeline"
+                    },
+                    "success": {
+                        "type": "$render"
+                    },
+                    "error": {
+                        "type": "$util.toast",
+                        "options": {
+                            "text": "Uh oh. Something went wrong"
+                         }
+                    }
+                }
+
+                Above is a syntactic sugar for the below "$lambda" type action call:
+
+                $lambda action is a special purpose action that triggers another action by name and waits until it returns.
+                This way we can define a huge size action somewhere and simply call them as a subroutine and wait for its return value.
+                When the subroutine (the lambda action that was triggered by name) returns via `"type": "$return.success"` action,
+                the $lambda action picks up where it left off and starts executing its "success" action with the value returned from the subroutine.
+
+                Notice that:
+                1. we get rid of the "trigger" field and turn it into a regular action of `"type": "$lambda"`.
+                2. the "trigger" value (`"twitter.get"`) gets mapped to "options.name"
+                3. the "options" value (`{"endpoint": "timeline"}`) gets mapped to "options.options"
+
+
+                {
+                    "type": "$lambda",
+                    "options": {
+                        "name": "twitter.get",
+                        "options": {
+                            "endpoint": "timeline"
+                        }
+                    },
+                    "success": {
+                        "type": "$render"
+                    },
+                    "error": {
+                        "type": "$util.toast",
+                        "options": {
+                            "text": "Uh oh. Something went wrong"
+                         }
+                    }
+                }
+
+                The success / error actions get executed AFTER the triggered action has finished and returns with a return value.
+
+                ****************************************************************************************/
+
+                // Construct a new JSON from the trigger JSON
+                NSString *lambda_name = memory._stack[@"trigger"];
+                NSMutableDictionary *lambda = [[NSMutableDictionary alloc] init];
+                lambda[@"type"] = @"$lambda";
+                
+                if(memory._stack[@"options"]){
+                    lambda[@"options"] = @{@"name": lambda_name, @"options": memory._stack[@"options"]};
                 } else {
-                    action = triggered_action;
+                    lambda[@"options"] = @{@"name": lambda_name};
                 }
                 
-                if(action && action.count > 0){
-                    NSDictionary *options = [self options];
-                    if(options){
-                        memory._stack = [JasonHelper parse: options with:action];
-                    } else {
-                        memory._stack = action;
-                    }
-                    [self exec];
+                if(memory._stack[@"success"]){
+                    lambda[@"success"] = memory._stack[@"success"];
                 }
+                if(memory._stack[@"error"]){
+                    lambda[@"error"] = memory._stack[@"error"];
+                }
+                
+                [self call:lambda with:memory._register];
+                
             }
             
             // Type 2. Action Call by type (normal)
