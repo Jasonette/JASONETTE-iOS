@@ -252,7 +252,7 @@
         if(url){
             result = @{@"file_url": url, @"data_uri": dataURI, @"data": mediaData , @"content_type": contentType};
         } else {
-            result = @{@"data": mediaData , @"content_type": contentType};
+            result = @{@"data": mediaData , @"data_uri": dataURI, @"content_type": contentType};
         }
         [[Jason client] success: result];
     }
