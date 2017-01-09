@@ -65,4 +65,5 @@
 - (void)onRemoteNotificationDeviceRegistered: (NSString *)device_token;
 
 - (void)loadViewByFile: (NSString *)url;
+- (NSDictionary *)variables;
 @end
