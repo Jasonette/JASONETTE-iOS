@@ -2478,11 +2478,32 @@
                             if([module respondsToSelector:@selector(options)]) [module setValue:[self options] forKey:@"options"];
                             [module performSelector:method];
                         } else {
-                            [[Jason client] call:@{@"type": @"$util.banner",
-                                                   @"options": @{
-                                                       @"title": @"Error",
-                                                       @"description": [NSString stringWithFormat:@"%@ class doesn't exist.", className]
-                                                   }}];
+                            // Try looking up $[ActionName].json
+                            NSFileManager *fileManager = [NSFileManager defaultManager];
+                            NSString *json_path = [NSString stringWithFormat:@"%@", tokens[0]];
+                            NSString *filename = [[NSBundle mainBundle] pathForResource: json_path ofType: @"json"];
+                            if ([fileManager fileExistsAtPath:filename]) {
+                                NSError *error = nil;
+                                NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:filename];
+                                [inputStream open];
+                                NSDictionary *jr = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+                                [inputStream close];
+                                
+                                if(jr[@"classname"]){
+                                    Class ActionClass = NSClassFromString(jr[@"classname"]);
+                                    NSString *methodName = tokens[1];
+                                    SEL method = NSSelectorFromString(methodName);
+                                    
+                                    module = [[ActionClass alloc] init];
+                                    if([module respondsToSelector:@selector(VC)]) [module setValue:VC forKey:@"VC"];
+                                    if([module respondsToSelector:@selector(options)]) [module setValue:[self options] forKey:@"options"];
+                                    [module performSelector:method];
+                                } else {
+                                    [self bannerWithTitle:@"Error" withDescription:[NSString stringWithFormat:@"%@ class doesn't exist.", jr[@"classname"]]];
+                                }
+                            } else {
+                                [self bannerWithTitle:@"Error" withDescription:[NSString stringWithFormat:@"%@ class doesn't exist.", className]];
+                            }
                         }
                     }
                 }
@@ -2514,6 +2535,12 @@
         [self call:@{@"type": @"$util.banner", @"options": @{@"title": @"Error", @"description": @"Something went wrong. Please try again"}}];
         [self finish];
     }
+}
+- (void)bannerWithTitle: (NSString *)banner_title withDescription: (NSString*)banner_description{
+    [self call:@{@"type": @"$util.banner", @"options": @{
+       @"title": banner_title,
+       @"description": banner_description
+   }}];
 }
 - (void)exception{
     [[JasonMemory client] exception];
