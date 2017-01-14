@@ -2451,23 +2451,42 @@
                 // Module actions: "$CLASS.METHOD" format => Calls other classes
                 else
                 {
-                    /*
-                     
-                     CLASS name Needs to follow the following convention:
-                     
-                     "Jason[CLASSNAME]Action"
-                     
-                     example: JasonMediaAction, JasonAudioAction, JasonNetworkAction, etc.
-                     
-                     */
                     
                     NSString *className = tokens[0];
-                    if(className.length > 1 && [className hasPrefix:@"$"]){
+                    
+                    // first take a look at the json file to resolve classname
+                    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+                    NSString *jrjson_filename=[NSString stringWithFormat:@"%@/%@.json", resourcePath, className];
+                    NSFileManager *fileManager = [NSFileManager defaultManager];
+                    NSString *resolved_classname = nil;
+                    if ([fileManager fileExistsAtPath:jrjson_filename]) {
+                        NSError *error;
+                        NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jrjson_filename];
+                        [inputStream open];
+                        NSDictionary *json = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+                        [inputStream close];
+                        if(json[@"classname"]){
+                            resolved_classname = json[@"classname"];
+                        }
+                    } else {
+                        if(className.length > 1 && [className hasPrefix:@"$"]){
+                            resolved_classname = [[className substringFromIndex:1] capitalizedString];
+                            /*
+                             
+                             CLASS name Needs to follow the following convention:
+                             
+                             "Jason[CLASSNAME]Action"
+                             
+                             example: JasonMediaAction, JasonAudioAction, JasonNetworkAction, etc.
+                             
+                             */
 
-                        className = [[className substringFromIndex:1] capitalizedString];
-                        className = [NSString stringWithFormat:@"Jason%@Action", className];
-                        
-                        Class ActionClass = NSClassFromString(className);
+                            resolved_classname = [NSString stringWithFormat:@"Jason%@Action", resolved_classname];
+                        }
+                    }
+                    
+                    if(resolved_classname){
+                        Class ActionClass = NSClassFromString(resolved_classname);
                         if(ActionClass){
                             // This means I have implemented this already
                             NSString *methodName = tokens[1];
@@ -2481,7 +2500,7 @@
                             [[Jason client] call:@{@"type": @"$util.banner",
                                                    @"options": @{
                                                        @"title": @"Error",
-                                                       @"description": [NSString stringWithFormat:@"%@ class doesn't exist.", className]
+                                                       @"description": [NSString stringWithFormat:@"%@ class doesn't exist.", resolved_classname]
                                                    }}];
                         }
                     }

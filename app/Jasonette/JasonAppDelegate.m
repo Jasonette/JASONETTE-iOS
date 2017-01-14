@@ -14,10 +14,35 @@
 
 @implementation JasonAppDelegate
 
+- (void)init_extensions{
+    // 1. Find json files that start with $
+    // 2. For each file, see if the class contains an "initialize" class method
+    // 3. If so, run them one by one.
+    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSArray *dirFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:resourcePath error:nil];
+    NSArray *jrs = [dirFiles filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"(self ENDSWITH[c] '.json') AND (self BEGINSWITH[c] '$')"]];
+    
+    NSError *error = nil;
+    for(int i = 0 ; i < jrs.count; i++){
+        NSString *filename = jrs[i];
+        NSString *absolute_path = [NSString stringWithFormat:@"%@/%@", resourcePath, filename];
+        NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:absolute_path];
+        [inputStream open];
+        NSDictionary *json = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+        [inputStream close];
+        if(json[@"classname"]){
+            Class ExtensionClass = NSClassFromString(json[@"classname"]);
+            [ExtensionClass performSelector: @selector(initialize)];
+        }
+    }
+}
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
     
+    // Run "initialize" method for all extensions
+    [self init_extensions];
     
 #ifdef PUSH
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"registerNotification" object:nil];
