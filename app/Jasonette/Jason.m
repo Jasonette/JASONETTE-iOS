@@ -114,11 +114,10 @@
      **************************************************/
     JasonAppDelegate *app = (JasonAppDelegate *)[[UIApplication sharedApplication] delegate];
     NSDictionary *plist = [self getSettings];
-    ROOT_URL = plist[@"url"];
     INITIAL_LOADING = plist[@"loading"];
     
     JasonViewController *vc = [[JasonViewController alloc] init];
-    vc.url = ROOT_URL;
+    vc.url = [self getRootUrl];
     vc.loading = INITIAL_LOADING;
     vc.view.backgroundColor = [UIColor whiteColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
@@ -849,6 +848,23 @@
         [newKeys addObject:@{@"key": key, @"val": dict[key]}];
     }
     return [newKeys copy];
+}
+-(NSString*)getRootUrl{
+    NSDictionary *plist = [self getSettings];
+    
+    NSArray *preferredLocalizations = [NSLocale preferredLanguages];
+    for (__strong NSString *loc in preferredLocalizations) {//try getting localized root url for one of the preferred localizations
+        loc = [[loc substringToIndex:2] uppercaseString];
+        NSString *localizedUrl = [@"url" stringByAppendingString:loc];
+        if(plist[localizedUrl]){
+            ROOT_URL = plist[localizedUrl];
+            break;
+        }
+    }
+    if(ROOT_URL == nil){//set default root url if nothing was set
+        ROOT_URL = plist[@"url"];
+    }
+    return ROOT_URL;
 }
 -(NSDictionary*)getSettings{
     NSDictionary * infoPlistSettings = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"settings"];
