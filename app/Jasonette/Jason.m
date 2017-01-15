@@ -19,6 +19,7 @@
     PBJVision *vision;
     NSString *ROOT_URL;
     BOOL INITIAL_LOADING;
+    BOOL isForeground;
 }
 @end
 
@@ -1897,6 +1898,7 @@
     VC.contentLoaded = YES;
 }
 - (void)onBackground{
+    isForeground = NO;
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events){
         if(events[@"$background"]){
@@ -1908,12 +1910,16 @@
     // Clear the app icon badge
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     
-    NSDictionary *events = [VC valueForKey:@"events"];
-    if(events){
-        if(events[@"$foreground"]){
-            [self call:events[@"$foreground"]];
+    // Don't trigger if the view has already come foreground once (because this can be triggered by things like push notification / geolocation alerts)
+    if(!isForeground){
+        NSDictionary *events = [VC valueForKey:@"events"];
+        if(events){
+            if(events[@"$foreground"]){
+                [self call:events[@"$foreground"]];
+            }
         }
     }
+    isForeground = YES;
 }
 - (void)onRemoteNotification: (NSDictionary *)payload{
     NSDictionary *events = [VC valueForKey:@"events"];
