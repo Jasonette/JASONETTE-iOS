@@ -32,7 +32,7 @@
     // store the payload to the component so that it can be accessed later
     // (example inside the mapViewDidFinishLoadingMap delegate)
     
-    component.payload = json;
+    component.payload = [json mutableCopy];
     component.delegate = self;
     
     // Apply Common Style
@@ -41,13 +41,18 @@
     return component;
 }
 + (void)mapViewDidFinishLoadingMap:(MKMapView *)component{
-    // Region
-    [self setRegion: component];
     
-    // Pins
-    NSArray *pins = component.payload[@"pins"];
-    if(pins && pins.count > 0){
-        [self addPins: pins toMapView: component];
+    // if already finished rendering, don't set the region or add pins
+    if(!component.payload[@"finished"]){
+        // Region
+        [self setRegion: component];
+        
+        // Pins
+        NSArray *pins = component.payload[@"pins"];
+        if(pins && pins.count > 0){
+            [self addPins: pins toMapView: component];
+        }
+        component.payload[@"finished"] = @YES;
     }
 }
 
