@@ -29,25 +29,28 @@
         }
     }
     
-    // Map Region
-    // 1. If 'coord' exists, set the center. Otherwise, use the current location
-    // 2. use 'width' and 'height' to create the visible area
-    NSDictionary *region = json[@"region"];
-    if(region){
-        component.payload = [@{@"region": region} mutableCopy];
-    }
-    [self setRegion: component];
+    // store the payload to the component so that it can be accessed later
+    // (example inside the mapViewDidFinishLoadingMap delegate)
     
-    // Pins
-    if(json[@"pins"]){
-        [self addPins: json[@"pins"] toMapView: component];
-    }
+    component.payload = json;
+    component.delegate = self;
     
     // Apply Common Style
     [self stylize:json component:component];
     
     return component;
 }
++ (void)mapViewDidFinishLoadingMap:(MKMapView *)component{
+    // Region
+    [self setRegion: component];
+    
+    // Pins
+    NSArray *pins = component.payload[@"pins"];
+    if(pins && pins.count > 0){
+        [self addPins: pins toMapView: component];
+    }
+}
+
 + (void)addPins: (NSArray *)pins toMapView: (MKMapView *)mapView{
     for(int i = 0 ; i < pins.count ; i++){
         NSDictionary *pin = pins[i];
@@ -100,6 +103,9 @@
     return location;
 }
 + (void)setRegion:(MKMapView *)mapView{
+    // Map Region
+    // 1. If 'coord' exists, set the center. Otherwise, use the current location
+    // 2. use 'width' and 'height' to create the visible area
     
     // Default location is current location
     CLLocation *location;
