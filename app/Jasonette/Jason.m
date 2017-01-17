@@ -188,6 +188,7 @@
      * When it returns with "success", the returned object will be automatically passed to the next action in the action call chain
      *
      **************************************************/
+    
     if(result){
         if([result isKindOfClass:[NSDictionary class]]){
             if(((NSDictionary *)result).count > 0){
@@ -223,6 +224,7 @@
      *  [[Jason client] error: result] ==> 'result' can be accessed in the error handling action using the variable '$jason'
      *
      **************************************************/
+    
     if(result){
         if([result isKindOfClass:[NSDictionary class]]){
             if(((NSDictionary *)result).count > 0){
@@ -677,8 +679,10 @@
     
     JasonMemory *memory = [JasonMemory client];
     
-    // Check if there's any action left in the action call chain. If there is, execute it.
-    if(memory.need_to_exec){
+    if(memory.executing){
+        // if an action is currently executing, don't do anything
+    } else if(memory.need_to_exec){
+        // Check if there's any action left in the action call chain. If there is, execute it.
         
         // If there's a callback waiting to be executing for the current VC, set it as stack
         if(VC.callback)
@@ -2328,6 +2332,11 @@
 - (void)exec{
     @try{
         JasonMemory *memory = [JasonMemory client];
+        
+        // need to set the 'executing' state to NO initially
+        // until it actually starts executing
+        memory.executing = NO;
+        
         if(memory._stack && memory._stack.count > 0){
             
             /****************************************************
@@ -2378,6 +2387,10 @@
                         NSString *actionName = [type substringFromIndex:1];
                         SEL method = NSSelectorFromString(actionName);
                         self.options = [self options];
+                        
+                        // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
+                        memory.executing = YES;
+                        
                         [self performSelector:method];
                     }
                 } else if ([type hasPrefix:@"@"]) {
@@ -2501,6 +2514,10 @@
                             module = [[ActionClass alloc] init];
                             if([module respondsToSelector:@selector(VC)]) [module setValue:VC forKey:@"VC"];
                             if([module respondsToSelector:@selector(options)]) [module setValue:[self options] forKey:@"options"];
+                            
+                            // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
+                            memory.executing = YES;
+                            
                             [module performSelector:method];
                         } else {
                             [[Jason client] call:@{@"type": @"$util.banner",
