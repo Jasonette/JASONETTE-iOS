@@ -304,6 +304,7 @@
     NSDictionary *href = [self options];
     VC.callback = href[@"success"];     // Preserve callback so when the view returns it will continue executing the next action from where it left off.
     memory._stack = @{}; // empty stack before visiting
+    memory.executing = NO;
     [self go:href];
 }
 - (void)search{
