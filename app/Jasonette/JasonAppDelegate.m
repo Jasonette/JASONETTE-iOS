@@ -66,7 +66,7 @@
         
         
     } else {
-        [[Jason client] start];
+        [[Jason client] start:nil];
     }
     return YES;
 }
@@ -93,7 +93,7 @@
         [[Jason client] go:href];
     } else {
         // Only start if we're not going through an oauth auth process
-        [[Jason client] start];
+        [[Jason client] start:nil];
     }
     return YES;
 }

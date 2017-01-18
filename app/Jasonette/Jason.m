@@ -106,7 +106,7 @@
 
 #pragma mark - Jason Core API (USE ONLY THESE METHODS TO ACCESS Jason Core!)
 
-- (void)start{
+- (void)start: (NSDictionary *) href{
     /**************************************************
      *
      * Public API for initializing Jason
@@ -119,8 +119,20 @@
     INITIAL_LOADING = plist[@"loading"];
     
     JasonViewController *vc = [[JasonViewController alloc] init];
-    vc.url = ROOT_URL;
-    vc.loading = INITIAL_LOADING;
+    if(href){
+        if(href[@"url"]){
+            vc.url = href[@"url"];
+        }
+        if(href[@"options"]){
+            vc.options = href[@"options"];
+        }
+        if(href[@"loading"]){
+            vc.loading = href[@"loading"];
+        }
+    } else {
+        vc.url = ROOT_URL;
+        vc.loading = INITIAL_LOADING;
+    }
     vc.view.backgroundColor = [UIColor whiteColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
@@ -1958,7 +1970,7 @@
         NSString *fresh = href[@"fresh"];
         JasonMemory *memory = [JasonMemory client];
         if([transition isEqualToString:@"root"]){
-            [self start];
+            [self start: nil];
             return;
         }
         
@@ -2006,43 +2018,20 @@
                      * Replace the current view
                      *
                      ****************************************************************************/
-                    
-                    // Get the index of the current view controller within the view stack, we will replace this index later
-                    NSMutableArray *view_stack = [NSMutableArray arrayWithArray:navigationController.viewControllers];
-                    NSInteger index = [view_stack indexOfObject:VC];
-                    
-                    Class v = NSClassFromString(viewClass);
-                    VC = [[v alloc] init];
-
+                    [self unlock];
                     if(href){
+                        NSString *new_url;
+                        NSDictionary *new_options;
                         if(href[@"url"]){
-                            NSString *url = [JasonHelper linkify:href[@"url"]];
-                            VC.url = url;
-                        }
-                        if(href[@"loading"]){
-                            VC.loading = [href[@"loading"] boolValue];
+                            new_url = [JasonHelper linkify:href[@"url"]];
                         }
                         if(href[@"options"]){
-                            VC.options = [JasonHelper parse:memory._register with:href[@"options"]];
+                            new_options = [JasonHelper parse:memory._register with:href[@"options"]];
+                        } else {
+                            new_options = @{};
                         }
+                        [self start:@{@"url": new_url, @"loading": @YES, @"options": new_options}];
                     }
-                    [self unlock];
-                    VC.contentLoaded = NO;
-                    VC.rendered = nil;
-                    if(fresh){
-                        VC.fresh = YES;
-                    } else {
-                        VC.fresh = NO;
-                    }
-                    
-                    [view_stack replaceObjectAtIndex:index withObject:VC];
-                    [UIView transitionWithView:navigationController.view
-                                      duration:0.2
-                                       options:UIViewAnimationOptionTransitionCrossDissolve
-                                    animations:^{
-                                        [navigationController setViewControllers:view_stack animated:NO];
-                                    }
-                                    completion:nil];
                     
                 } else if([transition isEqualToString:@"modal"]){
                     /****************************************************************************
