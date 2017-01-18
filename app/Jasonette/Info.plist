@@ -39,6 +39,10 @@
 	<string>used to access microphone api</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>used to access photo library</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

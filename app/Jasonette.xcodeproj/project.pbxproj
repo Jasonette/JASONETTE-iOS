@@ -671,6 +671,9 @@
 					5E3176581D1E400C00D87778 = {
 						CreatedOnToolsVersion = 7.3;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.Keychain = {
 								enabled = 0;
 							};
