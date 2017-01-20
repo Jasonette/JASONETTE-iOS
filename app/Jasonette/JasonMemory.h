@@ -12,6 +12,7 @@
 @property (nonatomic, strong) NSDictionary *_caller;
 @property (nonatomic, assign) BOOL locked;
 @property (nonatomic, assign) BOOL need_to_exec;
+@property (nonatomic, assign) BOOL executing;
 + (JasonMemory*)client;
 - (void)pop;
 - (void)exception;

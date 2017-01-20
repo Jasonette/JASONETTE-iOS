@@ -59,10 +59,11 @@
 
 - (void)reload;
 
-- (void)start;
+- (void)start:(NSDictionary *)href;
 
 - (void)onRemoteNotification: (NSDictionary *)payload;
 - (void)onRemoteNotificationDeviceRegistered: (NSString *)device_token;
 
 - (void)loadViewByFile: (NSString *)url;
+- (NSDictionary *)variables;
 @end

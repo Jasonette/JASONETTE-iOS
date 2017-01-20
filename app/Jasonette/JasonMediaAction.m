@@ -210,7 +210,7 @@
             NSString* dataString = [NSString stringWithFormat:dataFormatString, [mediaData base64EncodedStringWithOptions:0]];
             NSURL* dataURI = [NSURL URLWithString:dataString];
              
-            NSDictionary *result = @{@"file_url": url, @"data_uri": dataURI, @"data": mediaData , @"content_type": contentType};
+            NSDictionary *result = @{@"file_url": url, @"data_uri": dataURI.absoluteString, @"data": mediaData , @"content_type": contentType};
             [[Jason client] success: result];
          }];
     } else if(isImage){
@@ -250,9 +250,9 @@
         
         NSDictionary *result;
         if(url){
-            result = @{@"file_url": url, @"data_uri": dataURI, @"data": mediaData , @"content_type": contentType};
+            result = @{@"file_url": url, @"data_uri": dataURI.absoluteString, @"data": mediaData , @"content_type": contentType};
         } else {
-            result = @{@"data": mediaData , @"content_type": contentType};
+            result = @{@"data": mediaData , @"data_uri": dataURI.absoluteString, @"content_type": contentType};
         }
         [[Jason client] success: result];
     }

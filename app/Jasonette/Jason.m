@@ -19,6 +19,7 @@
     PBJVision *vision;
     NSString *ROOT_URL;
     BOOL INITIAL_LOADING;
+    BOOL isForeground;
 }
 @end
 
@@ -105,7 +106,7 @@
 
 #pragma mark - Jason Core API (USE ONLY THESE METHODS TO ACCESS Jason Core!)
 
-- (void)start{
+- (void)start: (NSDictionary *) href{
     /**************************************************
      *
      * Public API for initializing Jason
@@ -118,8 +119,20 @@
     INITIAL_LOADING = plist[@"loading"];
     
     JasonViewController *vc = [[JasonViewController alloc] init];
-    vc.url = ROOT_URL;
-    vc.loading = INITIAL_LOADING;
+    if(href){
+        if(href[@"url"]){
+            vc.url = href[@"url"];
+        }
+        if(href[@"options"]){
+            vc.options = href[@"options"];
+        }
+        if(href[@"loading"]){
+            vc.loading = href[@"loading"];
+        }
+    } else {
+        vc.url = ROOT_URL;
+        vc.loading = INITIAL_LOADING;
+    }
     vc.view.backgroundColor = [UIColor whiteColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
@@ -187,6 +200,7 @@
      * When it returns with "success", the returned object will be automatically passed to the next action in the action call chain
      *
      **************************************************/
+    
     if(result){
         if([result isKindOfClass:[NSDictionary class]]){
             if(((NSDictionary *)result).count > 0){
@@ -222,6 +236,7 @@
      *  [[Jason client] error: result] ==> 'result' can be accessed in the error handling action using the variable '$jason'
      *
      **************************************************/
+    
     if(result){
         if([result isKindOfClass:[NSDictionary class]]){
             if(((NSDictionary *)result).count > 0){
@@ -301,6 +316,7 @@
     NSDictionary *href = [self options];
     VC.callback = href[@"success"];     // Preserve callback so when the view returns it will continue executing the next action from where it left off.
     memory._stack = @{}; // empty stack before visiting
+    memory.executing = NO;
     [self go:href];
 }
 - (void)search{
@@ -907,8 +923,10 @@
     
     JasonMemory *memory = [JasonMemory client];
     
-    // Check if there's any action left in the action call chain. If there is, execute it.
-    if(memory.need_to_exec){
+    if(memory.executing){
+        // if an action is currently executing, don't do anything
+    } else if(memory.need_to_exec){
+        // Check if there's any action left in the action call chain. If there is, execute it.
         
         // If there's a callback waiting to be executing for the current VC, set it as stack
         if(VC.callback)
@@ -2128,6 +2146,7 @@
     VC.contentLoaded = YES;
 }
 - (void)onBackground{
+    isForeground = NO;
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events){
         if(events[@"$background"]){
@@ -2139,12 +2158,16 @@
     // Clear the app icon badge
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     
-    NSDictionary *events = [VC valueForKey:@"events"];
-    if(events){
-        if(events[@"$foreground"]){
-            [self call:events[@"$foreground"]];
+    // Don't trigger if the view has already come foreground once (because this can be triggered by things like push notification / geolocation alerts)
+    if(!isForeground){
+        NSDictionary *events = [VC valueForKey:@"events"];
+        if(events){
+            if(events[@"$foreground"]){
+                [self call:events[@"$foreground"]];
+            }
         }
     }
+    isForeground = YES;
 }
 - (void)onRemoteNotification: (NSDictionary *)payload{
     NSDictionary *events = [VC valueForKey:@"events"];
@@ -2178,7 +2201,7 @@
         NSString *fresh = href[@"fresh"];
         JasonMemory *memory = [JasonMemory client];
         if([transition isEqualToString:@"root"]){
-            [self start];
+            [self start: nil];
             return;
         }
         
@@ -2226,43 +2249,20 @@
                      * Replace the current view
                      *
                      ****************************************************************************/
-                    
-                    // Get the index of the current view controller within the view stack, we will replace this index later
-                    NSMutableArray *view_stack = [NSMutableArray arrayWithArray:navigationController.viewControllers];
-                    NSInteger index = [view_stack indexOfObject:VC];
-                    
-                    Class v = NSClassFromString(viewClass);
-                    VC = [[v alloc] init];
-
+                    [self unlock];
                     if(href){
+                        NSString *new_url;
+                        NSDictionary *new_options;
                         if(href[@"url"]){
-                            NSString *url = [JasonHelper linkify:href[@"url"]];
-                            VC.url = url;
-                        }
-                        if(href[@"loading"]){
-                            VC.loading = [href[@"loading"] boolValue];
+                            new_url = [JasonHelper linkify:href[@"url"]];
                         }
                         if(href[@"options"]){
-                            VC.options = [JasonHelper parse:memory._register with:href[@"options"]];
+                            new_options = [JasonHelper parse:memory._register with:href[@"options"]];
+                        } else {
+                            new_options = @{};
                         }
+                        [self start:@{@"url": new_url, @"loading": @YES, @"options": new_options}];
                     }
-                    [self unlock];
-                    VC.contentLoaded = NO;
-                    VC.rendered = nil;
-                    if(fresh){
-                        VC.fresh = YES;
-                    } else {
-                        VC.fresh = NO;
-                    }
-                    
-                    [view_stack replaceObjectAtIndex:index withObject:VC];
-                    [UIView transitionWithView:navigationController.view
-                                      duration:0.2
-                                       options:UIViewAnimationOptionTransitionCrossDissolve
-                                    animations:^{
-                                        [navigationController setViewControllers:view_stack animated:NO];
-                                    }
-                                    completion:nil];
                     
                 } else if([transition isEqualToString:@"modal"]){
                     /****************************************************************************
@@ -2553,6 +2553,11 @@
 - (void)exec{
     @try{
         JasonMemory *memory = [JasonMemory client];
+        
+        // need to set the 'executing' state to NO initially
+        // until it actually starts executing
+        memory.executing = NO;
+        
         if(memory._stack && memory._stack.count > 0){
             
             /****************************************************
@@ -2662,6 +2667,10 @@
                         NSString *actionName = [type substringFromIndex:1];
                         SEL method = NSSelectorFromString(actionName);
                         self.options = [self options];
+                        
+                        // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
+                        memory.executing = YES;
+                        
                         [self performSelector:method];
                     }
                 } else if ([type hasPrefix:@"@"]) {
@@ -2741,23 +2750,42 @@
                 // Module actions: "$CLASS.METHOD" format => Calls other classes
                 else
                 {
-                    /*
-                     
-                     CLASS name Needs to follow the following convention:
-                     
-                     "Jason[CLASSNAME]Action"
-                     
-                     example: JasonMediaAction, JasonAudioAction, JasonNetworkAction, etc.
-                     
-                     */
                     
                     NSString *className = tokens[0];
-                    if(className.length > 1 && [className hasPrefix:@"$"]){
+                    
+                    // first take a look at the json file to resolve classname
+                    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+                    NSString *jrjson_filename=[NSString stringWithFormat:@"%@/%@.json", resourcePath, className];
+                    NSFileManager *fileManager = [NSFileManager defaultManager];
+                    NSString *resolved_classname = nil;
+                    if ([fileManager fileExistsAtPath:jrjson_filename]) {
+                        NSError *error;
+                        NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jrjson_filename];
+                        [inputStream open];
+                        NSDictionary *json = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+                        [inputStream close];
+                        if(json[@"classname"]){
+                            resolved_classname = json[@"classname"];
+                        }
+                    } else {
+                        if(className.length > 1 && [className hasPrefix:@"$"]){
+                            resolved_classname = [[className substringFromIndex:1] capitalizedString];
+                            /*
+                             
+                             CLASS name Needs to follow the following convention:
+                             
+                             "Jason[CLASSNAME]Action"
+                             
+                             example: JasonMediaAction, JasonAudioAction, JasonNetworkAction, etc.
+                             
+                             */
 
-                        className = [[className substringFromIndex:1] capitalizedString];
-                        className = [NSString stringWithFormat:@"Jason%@Action", className];
-                        
-                        Class ActionClass = NSClassFromString(className);
+                            resolved_classname = [NSString stringWithFormat:@"Jason%@Action", resolved_classname];
+                        }
+                    }
+                    
+                    if(resolved_classname){
+                        Class ActionClass = NSClassFromString(resolved_classname);
                         if(ActionClass){
                             // This means I have implemented this already
                             NSString *methodName = tokens[1];
@@ -2766,12 +2794,16 @@
                             module = [[ActionClass alloc] init];
                             if([module respondsToSelector:@selector(VC)]) [module setValue:VC forKey:@"VC"];
                             if([module respondsToSelector:@selector(options)]) [module setValue:[self options] forKey:@"options"];
+                            
+                            // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
+                            memory.executing = YES;
+                            
                             [module performSelector:method];
                         } else {
                             [[Jason client] call:@{@"type": @"$util.banner",
                                                    @"options": @{
                                                        @"title": @"Error",
-                                                       @"description": [NSString stringWithFormat:@"%@ class doesn't exist.", className]
+                                                       @"description": [NSString stringWithFormat:@"%@ class doesn't exist.", resolved_classname]
                                                    }}];
                         }
                     }
