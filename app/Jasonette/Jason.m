@@ -698,6 +698,12 @@
     } else {
         data_stub = [[NSMutableDictionary alloc] init];
     }
+    
+    NSDictionary *kv = [self variables];
+    for(NSString *key in kv){
+        data_stub[key] = kv[key];
+    }
+
     if(stack[@"options"]){
         if(!stack[@"options"][@"html"]){
             if(stack[@"options"][@"data"]){
@@ -723,11 +729,10 @@
                  * In this case, we override whatever data gets passed in from the register with the data object that's manually passed in.
                  *
                  **************************************************/
-                data_stub = [self filloutTemplate:stack[@"options"][@"data"] withData:nil];
+                data_stub = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
             }
         }
     }
-    NSDictionary *kv = [self variables];
     for(NSString *key in kv){
         data_stub[key] = kv[key];
     }
@@ -872,6 +877,198 @@
 
 
 # pragma mark - View initialization & teardown
+
+- (void)require: (id)json andCompletionHandler:(void(^)(id obj))callback{
+    
+    NSString *j = [json description];
+    
+    // 1. Extract "+": "path@URL" patterns and create an array from the URLs
+    // 2. Make concurrent requests to each item in the array
+    // 3. Store each result under "+[URL]" key
+    // 4. Whenever we need to process JSON and encouter the "+" : "path@URL" pattern, we look into the "+[URL]" value and parse it using path (if it exists)
+    NSError* regexError = nil;
+    NSString *pattern = @"\"\\+\"[ ]*=[ ]*\"([^\"@]+@)?([^\"]+)\"";
+    NSMutableSet *urlSet = [[NSMutableSet alloc] init];
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
+    if (!regexError) {
+        NSArray *matches = [regex matchesInString:j options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, j.length)];
+        for(int i = 0; i<matches.count; i++){
+            NSTextCheckingResult* match = matches[i];
+            NSString* matchText = [j substringWithRange:[match range]];
+            //NSLog(@"match: %@", matchText);
+            NSRange group1 = [match rangeAtIndex:1];
+            NSRange group2 = [match rangeAtIndex:2];
+            if(group1.length > 0){
+                //NSLog(@"group1: %@", [j substringWithRange:group1]);
+            }
+            if(group2.length > 0){
+                //NSLog(@"group2: %@", [j substringWithRange:group2]);
+                NSString *url = [j substringWithRange:group2];
+                if(!VC.requires[url]){
+                    [urlSet addObject:url];
+                }
+                
+            }
+        }
+    }
+    
+    // 1. Create a dispatch_group
+    if(urlSet.count > 0){
+        dispatch_group_t requireGroup = dispatch_group_create();
+        for(NSString *url in urlSet){
+            NSLog(@"Fetching url: %@", url);
+            NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:@"\\$document" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
+            if (!regexError) {
+                NSArray *matches = [document_regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
+                NSDictionary *resolved;
+                if(matches.count == 0){
+                    // 2. Enter dispatch_group
+                    dispatch_group_enter(requireGroup);
+                    
+                    // 3. Setup networking
+                    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+                    AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+                    NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                    [jsonAcceptableContentTypes addObject:@"text/plain"];
+                    jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+                    manager.responseSerializer = jsonResponseSerializer;
+                    
+                    // 4. Start request
+                    [manager GET:url parameters: nil progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                        // 5. Set require variable
+                        VC.requires[url] = responseObject;
+                        NSLog(@"received Result");
+                        dispatch_group_leave(requireGroup);
+                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                        NSLog(@"Error");
+                        dispatch_group_leave(requireGroup);
+                    }];
+                    
+                }
+            }
+            
+        }
+        
+        NSLog(@"Start waiting");
+        dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
+            NSLog(@"Finished waiting");
+            id resolved_json = [self resolve_require:json];
+            VC.original = resolved_json;
+            [self require:resolved_json andCompletionHandler:callback];
+        });
+    } else {
+        callback(json);
+    }
+    
+}
+- (id)resolve_require:(id)obj{
+    NSString *pattern = @"^([^\"@]+@)?([^\"]+)";
+    if([obj isKindOfClass:[NSArray class]]){
+        NSMutableArray *arr = [[NSMutableArray alloc] init];
+        for(int i=0; i<[obj count]; i++){
+            [arr addObject:[self resolve_require:obj[i]]];
+        }
+        return arr;
+    } else if([obj isKindOfClass:[NSDictionary class]]){
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+       
+        if(obj[@"+"]){
+            // First, check for "+" => Because this should be the default and may need to be overwritten by custom objects that follow
+            // if obj[key] is string
+            NSString *key = @"+";
+            if([obj[key] isKindOfClass:[NSString class]]){
+                
+                // full_url_to_resolve looks something like this:
+                //  "head.title@https://www.jasonbase.com/things/s3n.json"
+                
+                // The path_addr part is 'head.title'
+                // The remote_addr part is 'https://www.jasonbase.com/things/s3n.json"
+                
+                NSString *full_url_to_resolve = obj[key];
+                NSError* regexError = nil;
+                NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
+                if (!regexError) {
+                    NSArray *matches = [regex matchesInString:full_url_to_resolve options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, full_url_to_resolve.length)];
+                    if(matches.count > 0){
+                        NSTextCheckingResult* match = matches[0]; // only use the first match (assuming there will be only one match)
+                        NSRange path_addr = [match rangeAtIndex:1];
+                        NSRange remote_addr = [match rangeAtIndex:2];
+                        
+                        if(remote_addr.length > 0){
+                            NSString *urlStr = [full_url_to_resolve substringWithRange:remote_addr];
+
+                            // if the url required url is $document.[path], refer to VC.original
+                            NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:@"\\$document" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
+                            if (!regexError) {
+                                NSArray *matches = [document_regex matchesInString:urlStr options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, urlStr.length)];
+                                NSDictionary *resolved;
+                                if(matches.count > 0){
+                                    // If it matches $document, it means the remote_addr was actually path_addr
+                                    resolved = @{@"$document": VC.original};
+                                    NSArray *paths = [urlStr componentsSeparatedByString:@"."];
+                                    for(int i = 0; i<paths.count; i++){
+                                        resolved = resolved[paths[i]];
+                                    }
+                                } else {
+                                    resolved = VC.requires[urlStr];
+                                    if(path_addr.length > 0){
+                                        // contains path
+                                        NSString *pathStr = [full_url_to_resolve substringWithRange:path_addr];
+                                        pathStr = [pathStr substringToIndex:[pathStr length]-1]; // strip last character (@)
+                                        NSArray *paths = [pathStr componentsSeparatedByString:@"."];
+                                        for(int i = 0; i<paths.count; i++){
+                                            resolved = resolved[paths[i]];
+                                        }
+                                    }
+                                }
+                                
+                                //resolved can be array,dictionary,string
+                                if([resolved isKindOfClass:[NSDictionary class]]){
+                                    for(NSString *key in resolved){
+                                        dict[key] = resolved[key];
+                                    }
+                                } else if([resolved isKindOfClass:[NSArray class]]){
+                                    // array.
+                                    // In this case, we stop here and return immediately, since this will be mapped to a string, and can never be an object or an array
+                                    return resolved;
+                                } else {
+                                    // string.
+                                    // In this case, we stop here and return immediately, since this will be mapped to a string, and can never be an object or an array
+                                    return resolved;
+                                }
+                                            
+                            }
+                            
+                        }
+                    }
+                }
+            }
+            // if obj[key] is array
+            else if([obj[key] isKindOfClass:[NSArray class]]){
+                
+            }
+            
+        }
+        
+        for(NSString *key in obj){
+            // if key is "+", resolve
+            if([key isEqualToString:@"+"]){
+                // "+" was handled above, so ignore.
+            }
+            // else, go deeper
+            else {
+                dict[key] = [self resolve_require:obj[key]];
+            }
+        }
+            
+        return dict;
+        
+    } else {
+        // string
+        return obj;
+    }
+}
+
 - (Jason *)detach:(UIViewController<RussianDollView>*)viewController{
     // Need to clean up before leaving the view
     VC = (UIViewController<RussianDollView>*)viewController;
@@ -1278,7 +1475,10 @@
                 // Ignore if the url is different
                  if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
                  VC.original = responseObject;
-                [self drawViewFromJason: responseObject];
+                 [self require:responseObject andCompletionHandler:^(id res){
+                     VC.original = res;
+                    [self drawViewFromJason: res];
+                 }];
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 [self call:@{@"type": @"$util.toast", @"options": @{@"text": @"offline mode"}, @"success": @{@"type": @"$unlock"}}];
             }];
