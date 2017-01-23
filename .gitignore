@@ -11,6 +11,7 @@
 *.perspective
 *.perspectivev3
 *.pbxuser
+*.xcscmblueprint
 xccheckout
 xcuserdata/
 project.xcworkspace/
