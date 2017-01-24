@@ -22232,7 +22232,7 @@ var fillout = function(options){
         var func;
 
 				// Attach $root to each node so that we can reference it from anywhere
-				data["$root"] = root;
+        data["$root"] = root;
 
         // If the pattern ends with a return statement, but is NOT wrapped inside another function ([^}]*$), it's a function expression
         if(/\breturn [^;]+;?[ ]*$/.test(slot) && /return[^}]*$/.test(slot)){
@@ -22574,6 +22574,8 @@ var html = function(template, data, json){
 }
 var json = function(template, data, json){
 	root = data;
+  String.prototype.$root = root;
+  Array.prototype.$root = root;
   if(json) {
 		// Exception handling
 		// => the template expression itself can look like JSON object, so we need to handle this is na special manner
