@@ -22573,9 +22573,6 @@ var html = function(template, data, json){
   }
 }
 var json = function(template, data, json){
-	root = data;
-  String.prototype.$root = root;
-  Array.prototype.$root = root;
   if(json) {
 		// Exception handling
 		// => the template expression itself can look like JSON object, so we need to handle this is na special manner
@@ -22592,9 +22589,14 @@ var json = function(template, data, json){
 		} catch (error){
 			data_object = data;
 		}
-
+    root = data_object;
+    String.prototype.$root = root;
+    Array.prototype.$root = root;
     return JSON.stringify(run(template_object, data_object));
   } else {
+    root = data;
+    String.prototype.$root = root;
+    Array.prototype.$root = root;
     return run(template, data);
   }
 }
