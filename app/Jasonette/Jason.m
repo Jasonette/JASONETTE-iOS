@@ -1746,6 +1746,7 @@
         NSUInteger maxTabCount = tabs.count;
         if(maxTabCount > 5) maxTabCount = 5;
         BOOL firstTime;
+        BOOL tabFound = NO; // at least one tab item with the same url as the current VC should exist.
         NSMutableArray *tabs_array;
         // if not yet initialized, tabController.tabs.count will be 1, since this is the only view
         // that was initialized with
@@ -1772,6 +1773,7 @@
             
             if(firstTime){
                 if([VC.url isEqualToString:url] && i==indexOfTab){
+                    tabFound = YES;
                     // if the tab URL is same as the currently visible VC's url
                     [tabs_array addObject:navigationController];
                 } else {
@@ -1784,6 +1786,7 @@
             } else {
                 if([VC.url isEqualToString:url]){
                     // Do nothing
+                    tabFound = YES;
                 } else {
                     UINavigationController *nav = tabController.viewControllers[i];
                     UIViewController<RussianDollView> *vc = [[nav viewControllers] firstObject];
@@ -1800,6 +1803,13 @@
         for(int i = 0 ; i < maxTabCount ; i++){
             NSDictionary *tab = tabs[i];
             [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
+        }
+        
+        
+        // Warn that at least one of the tab bar items should contain the same URL as the currently visible URL
+        if(!tabFound){
+            [[Jason client] call:@{@"type": @"$util.alert",
+                                   @"options": @{ @"title": @"Warning", @"description": @"The tab bar should contain at least one item with the same URL as the currently visible view" }}];
         }
         
         tabController.tabBar.hidden = NO;
