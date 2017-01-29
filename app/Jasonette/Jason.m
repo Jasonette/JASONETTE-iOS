@@ -316,7 +316,6 @@
     NSDictionary *href = [self options];
     VC.callback = href[@"success"];     // Preserve callback so when the view returns it will continue executing the next action from where it left off.
     memory._stack = @{}; // empty stack before visiting
-    memory.executing = NO;
     [self go:href];
 }
 - (void)search{
@@ -880,34 +879,37 @@
 
 - (void)require: (id)json andCompletionHandler:(void(^)(id obj))callback{
     
-    NSString *j = [json description];
+//    NSString *j = [JasonHelper idToJson:json];
+    NSString *j = [JasonHelper stringify:json];
     
     // 1. Extract "+": "path@URL" patterns and create an array from the URLs
     // 2. Make concurrent requests to each item in the array
     // 3. Store each result under "+[URL]" key
     // 4. Whenever we need to process JSON and encouter the "+" : "path@URL" pattern, we look into the "+[URL]" value and parse it using path (if it exists)
     NSError* regexError = nil;
-    NSString *pattern = @"\"\\+\"[ ]*=[ ]*\"([^\"@]+@)?([^\"]+)\"";
+    
+    NSString *pattern = @"\"(\\+)\"[ ]*:[ ]*\"([^\"@]+@)?([^\"]+)\"";
+    
     NSMutableSet *urlSet = [[NSMutableSet alloc] init];
     NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
-    if (!regexError) {
-        NSArray *matches = [regex matchesInString:j options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, j.length)];
-        for(int i = 0; i<matches.count; i++){
-            NSTextCheckingResult* match = matches[i];
-            NSString* matchText = [j substringWithRange:[match range]];
-            //NSLog(@"match: %@", matchText);
-            NSRange group1 = [match rangeAtIndex:1];
-            NSRange group2 = [match rangeAtIndex:2];
-            if(group1.length > 0){
-                //NSLog(@"group1: %@", [j substringWithRange:group1]);
-            }
-            if(group2.length > 0){
-                //NSLog(@"group2: %@", [j substringWithRange:group2]);
-                NSString *url = [j substringWithRange:group2];
-                if(!VC.requires[url]){
-                    [urlSet addObject:url];
-                }
-                
+    
+    NSArray *matches = [regex matchesInString:j options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, j.length)];
+    for(int i = 0; i<matches.count; i++){
+        NSTextCheckingResult* match = matches[i];
+        NSRange group1 = [match rangeAtIndex:1];
+        NSRange group2 = [match rangeAtIndex:2];
+        NSRange group3 = [match rangeAtIndex:3];
+        if(group1.length > 0){
+            
+        }
+        if(group2.length > 0){
+            // Group2 is for path
+        }
+        if(group3.length > 0){
+            // Group2 is for the URL
+            NSString *url = [j substringWithRange:group3];
+            if(!VC.requires[url]){
+                [urlSet addObject:url];
             }
         }
     }
@@ -918,58 +920,94 @@
         for(NSString *url in urlSet){
             NSLog(@"Fetching url: %@", url);
             NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:@"\\$document" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
-            if (!regexError) {
-                NSArray *matches = [document_regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
-                NSDictionary *resolved;
-                if(matches.count == 0){
-                    // 2. Enter dispatch_group
-                    dispatch_group_enter(requireGroup);
-                    
-                    // 3. Setup networking
-                    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-                    AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
-                    NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
-                    [jsonAcceptableContentTypes addObject:@"text/plain"];
-                    jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
-                    manager.responseSerializer = jsonResponseSerializer;
-                    
-                    // 4. Start request
-                    [manager GET:url parameters: nil progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                        // 5. Set require variable
-                        VC.requires[url] = responseObject;
-                        NSLog(@"received Result");
-                        dispatch_group_leave(requireGroup);
-                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        NSLog(@"Error");
-                        dispatch_group_leave(requireGroup);
-                    }];
-                    
-                }
+            NSArray *matches = [document_regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
+            if(matches.count == 0){
+                // 2. Enter dispatch_group
+                dispatch_group_enter(requireGroup);
+                
+                // 3. Setup networking
+                AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+                AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+                NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                [jsonAcceptableContentTypes addObject:@"text/plain"];
+                jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+                manager.responseSerializer = jsonResponseSerializer;
+                
+                // 4. Start request
+                [manager GET:url parameters: nil progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                    // 5. Set require variable
+                    VC.requires[url] = responseObject;
+                    NSLog(@"received Result");
+                    dispatch_group_leave(requireGroup);
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    NSLog(@"Error");
+                    dispatch_group_leave(requireGroup);
+                }];
             }
-            
         }
         
-        NSLog(@"Start waiting");
         dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
-            NSLog(@"Finished waiting");
-            id resolved_json = [self resolve_require:json];
-            VC.original = resolved_json;
-            [self require:resolved_json andCompletionHandler:callback];
+            id resolved = [self resolve_reference: j];
+            [self require:resolved andCompletionHandler:callback];
         });
     } else {
         callback(json);
     }
     
 }
+
+- (id)resolve_reference: (NSString *)json{
+    NSError *error;
+    
+    // convert {"+": "$document.blah.blah"} (object)
+    // to "{{#include $root.$document.blah.blah}}" (string)
+    NSString *local_pattern = @"\\{\"\\+\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"\\}";
+    NSRegularExpression* local_regex = [NSRegularExpression regularExpressionWithPattern:local_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+    NSString *converted = [local_regex stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include $1}}\""];
+    
+    // convert "+": "blah.blah@https://www.google.com"
+    // to "{{#include blah.blah}}": "https://www.google.com"
+    NSString *remote_pattern = @"\"(\\+)\"[ ]*:[ ]*\"(([^\"@]+)(@))?([^\"]+)\"";
+    NSRegularExpression* remote_regex = [NSRegularExpression regularExpressionWithPattern:remote_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+    converted = [remote_regex stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include $3}}\": \"$5\""];
+    
+    
+    /*
+    // Resolve $document and replace it with the root document JSON
+    NSString *document_pattern = @"(\\{\\{[ ]*#include[^\\}]*\\}\\}\"[ ]*:[ ]*)\"(\\$document[^\"]*)\"";
+    NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:document_pattern options:NSRegularExpressionCaseInsensitive error:&error];
+    converted = [document_regex stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:[NSString stringWithFormat:@"$1%@", stringified]];
+     */
+    
+    
+    // For each required URL, replace with its corresponding fetched JSON
+    for(NSString *ref in VC.requires){
+        NSString *url_pattern = [NSString stringWithFormat:@"(\\{\\{[ ]*#include[^\\}]*\\}\\}\"[ ]*:[ ]*)(\"%@\")", ref];
+        NSRegularExpression* url_regex = [NSRegularExpression regularExpressionWithPattern:url_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+        id replacement = VC.requires[ref];
+        NSString *stringified = [JasonHelper stringify:replacement];
+        converted = [url_regex stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:[NSString stringWithFormat:@"$1%@", stringified]];
+    }
+    
+    id tpl = [JasonHelper objectify:converted];
+    NSLog(@"VC.original = %@", VC.original);
+    id include_resolved = [JasonParser parse:@{@"$document": VC.original} with:tpl];
+    VC.original = include_resolved;
+    return include_resolved;
+}
+
 - (id)resolve_require:(id)obj{
     NSString *pattern = @"^([^\"@]+@)?([^\"]+)";
     if([obj isKindOfClass:[NSArray class]]){
+        // If it's an array, need to resolve all children and reconstruct an array from it.
         NSMutableArray *arr = [[NSMutableArray alloc] init];
         for(int i=0; i<[obj count]; i++){
             [arr addObject:[self resolve_require:obj[i]]];
         }
         return arr;
     } else if([obj isKindOfClass:[NSDictionary class]]){
+        
+        // If it's an object, 
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
        
         if(obj[@"+"]){
@@ -1476,8 +1514,10 @@
                  if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
                  VC.original = responseObject;
                  [self require:responseObject andCompletionHandler:^(id res){
-                     VC.original = res;
-                    [self drawViewFromJason: res];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        VC.original = @{@"$jason": res[@"$jason"]};
+                        [self drawViewFromJason: VC.original];
+                    });
                  }];
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 [self call:@{@"type": @"$util.toast", @"options": @{@"text": @"offline mode"}, @"success": @{@"type": @"$unlock"}}];
@@ -2400,6 +2440,7 @@
         NSString *transition = href[@"transition"];
         NSString *fresh = href[@"fresh"];
         JasonMemory *memory = [JasonMemory client];
+        memory.executing = NO;
         if([transition isEqualToString:@"root"]){
             [self start: nil];
             return;

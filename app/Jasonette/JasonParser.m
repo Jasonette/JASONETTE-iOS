@@ -119,7 +119,8 @@
         }
     } else {
        // default: json
-        if(data && [data count] > 0){
+//        if(data && [data count] > 0){
+        if(data){
             NSString *path = [[NSBundle mainBundle] pathForResource:@"parser" ofType:@"js"];
             NSStringEncoding encoding;
             NSError *error = nil;
