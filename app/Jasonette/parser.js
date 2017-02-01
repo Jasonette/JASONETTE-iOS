@@ -22663,27 +22663,30 @@ var include = function(template, data){
 };
 
 
-/*
-ramen(template).select(function(key, value){
-  return key=='type' && value=='label'; // return all the objects with "type": "label"
-}).object();
-
-ramen(template).select(function(key, value){
-  return /class/.test(key);  // return all objects that contains the key 'class'
-}).object();
-
-ramen(template).select(function(key, value){
-  return /\{\{#include\}\}/.test(key);  // return all objects that contains the key '{{#include}}'
-}).objects();
-
-ramen(template).select(function(key, value){
-  return /\{\{#include\}\}/.test(key);  // selects the object, and then returns the value of the selected object
-}).values();
-
-ramen(template).select(function(key, value){
-  return /\{\{#include\}\}/.test(key);  // return all objects that contains the key '{{#include}}'
-}).keys();
-*/
+/******************************************************************************************************************
+*    # USAGE
+*
+*    ramen(template).select(function(key, value){
+*      return key=='type' && value=='label'; // return all the objects with "type": "label"
+*    }).object();
+*
+*    ramen(template).select(function(key, value){
+*      return /class/.test(key);  // return all objects that contains the key 'class'
+*    }).object();
+*
+*    ramen(template).select(function(key, value){
+*      return /\{\{#include\}\}/.test(key);  // return all objects that contains the key '{{#include}}'
+*    }).objects();
+*
+*    ramen(template).select(function(key, value){
+*      return /\{\{#include\}\}/.test(key);  // selects the object, and then returns the value of the selected object
+*    }).values();
+*
+*    ramen(template).select(function(key, value){
+*      return /\{\{#include\}\}/.test(key);  // return all objects that contains the key '{{#include}}'
+*    }).keys();
+*
+******************************************************************************************************************/
 
 var resolve = function(o, path, new_val){
   // 1. takes any object

@@ -704,7 +704,7 @@
     }
 
     if(stack[@"options"]){
-        if(!stack[@"options"][@"html"]){
+        if(!stack[@"options"][@"type"] || [stack[@"options"][@"type"] isEqualToString:@"json"]){
             if(stack[@"options"][@"data"]){
                 /**************************************************
                  *
@@ -728,12 +728,9 @@
                  * In this case, we override whatever data gets passed in from the register with the data object that's manually passed in.
                  *
                  **************************************************/
-                data_stub = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
+                data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
             }
         }
-    }
-    for(NSString *key in kv){
-        data_stub[key] = kv[key];
     }
     VC.data = data_stub;
     
@@ -879,16 +876,15 @@
 
 - (void)require: (id)json andCompletionHandler:(void(^)(id obj))callback{
     
-//    NSString *j = [JasonHelper idToJson:json];
     NSString *j = [JasonHelper stringify:json];
     
-    // 1. Extract "+": "path@URL" patterns and create an array from the URLs
+    // 1. Extract "@": "path@URL" patterns and create an array from the URLs
     // 2. Make concurrent requests to each item in the array
-    // 3. Store each result under "+[URL]" key
-    // 4. Whenever we need to process JSON and encouter the "+" : "path@URL" pattern, we look into the "+[URL]" value and parse it using path (if it exists)
+    // 3. Store each result under "[URL]" key
+    // 4. Whenever we need to process JSON and encouter the "@" : "path@URL" pattern, we look into the "[URL]" value and parse it using path (if it exists)
     NSError* regexError = nil;
     
-    NSString *pattern = @"\"(\\+)\"[ ]*:[ ]*\"([^\"@]+@)?([^\"]+)\"";
+    NSString *pattern = @"\"(@)\"[ ]*:[ ]*\"([^\"@]+@)?([^\"]+)\"";
     
     NSMutableSet *urlSet = [[NSMutableSet alloc] init];
     NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
@@ -918,7 +914,6 @@
     if(urlSet.count > 0){
         dispatch_group_t requireGroup = dispatch_group_create();
         for(NSString *url in urlSet){
-            NSLog(@"Fetching url: %@", url);
             NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:@"\\$document" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
             NSArray *matches = [document_regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
             if(matches.count == 0){
@@ -933,11 +928,23 @@
                 jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
                 manager.responseSerializer = jsonResponseSerializer;
                 
-                // 4. Start request
-                [manager GET:url parameters: nil progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                    // 5. Set require variable
+                // 4. Attach session
+                NSDictionary *session = [JasonHelper sessionForUrl:url];
+                if(session && session.count > 0 && session[@"header"]){
+                    for(NSString *key in session[@"header"]){
+                        [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                    }
+                }
+                NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+                if(session && session.count > 0 && session[@"body"]){
+                    for(NSString *key in session[@"body"]){
+                        parameters[key] = session[@"body"][key];
+                    }
+                }
+                
+                // 5. Start request
+                [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     VC.requires[url] = responseObject;
-                    NSLog(@"received Result");
                     dispatch_group_leave(requireGroup);
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     NSLog(@"Error");
@@ -959,153 +966,29 @@
 - (id)resolve_reference: (NSString *)json{
     NSError *error;
     
-    // convert {"+": "$document.blah.blah"} (object)
-    // to "{{#include $root.$document.blah.blah}}" (string)
-    NSString *local_pattern = @"\\{\"\\+\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"\\}";
+    // Local - convert "@": "$document.blah.blah" to "{{#include $root.$document.blah.blah}}": {}
+    NSString *local_pattern = @"\"@\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"";
     NSRegularExpression* local_regex = [NSRegularExpression regularExpressionWithPattern:local_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
-    NSString *converted = [local_regex stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include $1}}\""];
+    NSString *converted = [local_regex stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root.$1}}\": {}"];
     
-    // convert "+": "blah.blah@https://www.google.com"
-    // to "{{#include blah.blah}}": "https://www.google.com"
-    NSString *remote_pattern = @"\"(\\+)\"[ ]*:[ ]*\"(([^\"@]+)(@))?([^\"]+)\"";
-    NSRegularExpression* remote_regex = [NSRegularExpression regularExpressionWithPattern:remote_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
-    converted = [remote_regex stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include $3}}\": \"$5\""];
+    // Remote url with path - convert "@": "blah.blah@https://www.google.com" to "{{#include $root[\"https://www.google.com\"].blah.blah}}": {}
+    NSString *remote_pattern_with_path = @"\"(@)\"[ ]*:[ ]*\"(([^\"@]+)(@))([^\"]+)\"";
+    NSRegularExpression* remote_regex_with_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_with_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+    converted = [remote_regex_with_path stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include \\$root[\\\\\"$5\\\\\"].$3}}\": {}"];
     
-    
-    /*
-    // Resolve $document and replace it with the root document JSON
-    NSString *document_pattern = @"(\\{\\{[ ]*#include[^\\}]*\\}\\}\"[ ]*:[ ]*)\"(\\$document[^\"]*)\"";
-    NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:document_pattern options:NSRegularExpressionCaseInsensitive error:&error];
-    converted = [document_regex stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:[NSString stringWithFormat:@"$1%@", stringified]];
-     */
-    
-    
-    // For each required URL, replace with its corresponding fetched JSON
-    for(NSString *ref in VC.requires){
-        NSString *url_pattern = [NSString stringWithFormat:@"(\\{\\{[ ]*#include[^\\}]*\\}\\}\"[ ]*:[ ]*)(\"%@\")", ref];
-        NSRegularExpression* url_regex = [NSRegularExpression regularExpressionWithPattern:url_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
-        id replacement = VC.requires[ref];
-        NSString *stringified = [JasonHelper stringify:replacement];
-        converted = [url_regex stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:[NSString stringWithFormat:@"$1%@", stringified]];
-    }
+    // Remote url without path - convert "@": "https://www.google.com" to "{{#include $root[\"https://www.google.com\"]}}": {}
+    NSString *remote_pattern_without_path = @"\"(@)\"[ ]*:[ ]*\"([^\"]+)\"";
+    NSRegularExpression* remote_regex_without_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_without_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+    converted = [remote_regex_without_path stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include \\$root[\\\\\"$2\\\\\"]}}\": {}"];
     
     id tpl = [JasonHelper objectify:converted];
-    NSLog(@"VC.original = %@", VC.original);
-    id include_resolved = [JasonParser parse:@{@"$document": VC.original} with:tpl];
+    NSMutableDictionary *refs = [VC.requires mutableCopy];
+    refs[@"$document"] = VC.original;
+    id include_resolved = [JasonParser parse:refs with:tpl];
     VC.original = include_resolved;
     return include_resolved;
 }
 
-- (id)resolve_require:(id)obj{
-    NSString *pattern = @"^([^\"@]+@)?([^\"]+)";
-    if([obj isKindOfClass:[NSArray class]]){
-        // If it's an array, need to resolve all children and reconstruct an array from it.
-        NSMutableArray *arr = [[NSMutableArray alloc] init];
-        for(int i=0; i<[obj count]; i++){
-            [arr addObject:[self resolve_require:obj[i]]];
-        }
-        return arr;
-    } else if([obj isKindOfClass:[NSDictionary class]]){
-        
-        // If it's an object, 
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-       
-        if(obj[@"+"]){
-            // First, check for "+" => Because this should be the default and may need to be overwritten by custom objects that follow
-            // if obj[key] is string
-            NSString *key = @"+";
-            if([obj[key] isKindOfClass:[NSString class]]){
-                
-                // full_url_to_resolve looks something like this:
-                //  "head.title@https://www.jasonbase.com/things/s3n.json"
-                
-                // The path_addr part is 'head.title'
-                // The remote_addr part is 'https://www.jasonbase.com/things/s3n.json"
-                
-                NSString *full_url_to_resolve = obj[key];
-                NSError* regexError = nil;
-                NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
-                if (!regexError) {
-                    NSArray *matches = [regex matchesInString:full_url_to_resolve options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, full_url_to_resolve.length)];
-                    if(matches.count > 0){
-                        NSTextCheckingResult* match = matches[0]; // only use the first match (assuming there will be only one match)
-                        NSRange path_addr = [match rangeAtIndex:1];
-                        NSRange remote_addr = [match rangeAtIndex:2];
-                        
-                        if(remote_addr.length > 0){
-                            NSString *urlStr = [full_url_to_resolve substringWithRange:remote_addr];
-
-                            // if the url required url is $document.[path], refer to VC.original
-                            NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:@"\\$document" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
-                            if (!regexError) {
-                                NSArray *matches = [document_regex matchesInString:urlStr options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, urlStr.length)];
-                                NSDictionary *resolved;
-                                if(matches.count > 0){
-                                    // If it matches $document, it means the remote_addr was actually path_addr
-                                    resolved = @{@"$document": VC.original};
-                                    NSArray *paths = [urlStr componentsSeparatedByString:@"."];
-                                    for(int i = 0; i<paths.count; i++){
-                                        resolved = resolved[paths[i]];
-                                    }
-                                } else {
-                                    resolved = VC.requires[urlStr];
-                                    if(path_addr.length > 0){
-                                        // contains path
-                                        NSString *pathStr = [full_url_to_resolve substringWithRange:path_addr];
-                                        pathStr = [pathStr substringToIndex:[pathStr length]-1]; // strip last character (@)
-                                        NSArray *paths = [pathStr componentsSeparatedByString:@"."];
-                                        for(int i = 0; i<paths.count; i++){
-                                            resolved = resolved[paths[i]];
-                                        }
-                                    }
-                                }
-                                
-                                //resolved can be array,dictionary,string
-                                if([resolved isKindOfClass:[NSDictionary class]]){
-                                    for(NSString *key in resolved){
-                                        dict[key] = resolved[key];
-                                    }
-                                } else if([resolved isKindOfClass:[NSArray class]]){
-                                    // array.
-                                    // In this case, we stop here and return immediately, since this will be mapped to a string, and can never be an object or an array
-                                    return resolved;
-                                } else {
-                                    // string.
-                                    // In this case, we stop here and return immediately, since this will be mapped to a string, and can never be an object or an array
-                                    return resolved;
-                                }
-                                            
-                            }
-                            
-                        }
-                    }
-                }
-            }
-            // if obj[key] is array
-            else if([obj[key] isKindOfClass:[NSArray class]]){
-                
-            }
-            
-        }
-        
-        for(NSString *key in obj){
-            // if key is "+", resolve
-            if([key isEqualToString:@"+"]){
-                // "+" was handled above, so ignore.
-            }
-            // else, go deeper
-            else {
-                dict[key] = [self resolve_require:obj[key]];
-            }
-        }
-            
-        return dict;
-        
-    } else {
-        // string
-        return obj;
-    }
-}
 
 - (Jason *)detach:(UIViewController<RussianDollView>*)viewController{
     // Need to clean up before leaving the view
