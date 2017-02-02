@@ -22611,10 +22611,12 @@ var json = function(template, data, json){
 		// "{{$jason}}" => This is not a JSON object and needs to be treated as such
 		var template_object;
 		var data_object;
+    var template_is_string = false;
 		try{
 			template_object = JSON.parse(template);
 		} catch (error){
 			template_object = template;
+      template_is_string = true;
 		}
 		try{
 			data_object = JSON.parse(data);
@@ -22625,7 +22627,7 @@ var json = function(template, data, json){
     String.prototype.$root = root;
     Array.prototype.$root = root;
 
-    if(typeof template == "string"){
+    if(template_is_string){
       // if string, just parse
       return JSON.stringify(run(template_object, data_object));
     } else {
@@ -22657,7 +22659,7 @@ var json = function(template, data, json){
 }
 
 var include = function(template, data){
-  return ramen(template).select(function(key, value){
+  return manipulator(template).select(function(key, value){
     return /#include/.test(key) || /#include/.test(value);
   }).parse(data).root();
 };
@@ -22666,23 +22668,23 @@ var include = function(template, data){
 /******************************************************************************************************************
 *    # USAGE
 *
-*    ramen(template).select(function(key, value){
+*    manipulator(template).select(function(key, value){
 *      return key=='type' && value=='label'; // return all the objects with "type": "label"
 *    }).object();
 *
-*    ramen(template).select(function(key, value){
+*    manipulator(template).select(function(key, value){
 *      return /class/.test(key);  // return all objects that contains the key 'class'
 *    }).object();
 *
-*    ramen(template).select(function(key, value){
+*    manipulator(template).select(function(key, value){
 *      return /\{\{#include\}\}/.test(key);  // return all objects that contains the key '{{#include}}'
 *    }).objects();
 *
-*    ramen(template).select(function(key, value){
+*    manipulator(template).select(function(key, value){
 *      return /\{\{#include\}\}/.test(key);  // selects the object, and then returns the value of the selected object
 *    }).values();
 *
-*    ramen(template).select(function(key, value){
+*    manipulator(template).select(function(key, value){
 *      return /\{\{#include\}\}/.test(key);  // return all objects that contains the key '{{#include}}'
 *    }).keys();
 *
@@ -22702,7 +22704,7 @@ var resolve = function(o, path, new_val){
   }
 }
 
-var ramen = function(template){
+var manipulator = function(template){
   var tpl = template;
 
   // current: currently accessed object
@@ -22761,7 +22763,7 @@ var ramen = function(template){
     },
     parse: function(data){
 
-      // ramen(template).select("{{#include}}").parse(data).values();
+      // manipulator(template).select("{{#include}}").parse(data).values();
 
       o.$parsed = [];
 
@@ -22787,8 +22789,6 @@ var ramen = function(template){
         // apply the result to root
         o.$template_root = resolve(o.$template_root, "", parsed_object);
       } else {
-
-        console.log("o.selected = ", o.$selected);
         o.$selected.sort(function(a, b){
           // sort by path length, so that deeper level items will be replaced first
           // TODO: may need to look into edge cases
@@ -22856,7 +22856,7 @@ module.exports = {
   run: json,
   resolve: resolve,
   include: include,
-  ramen: ramen
+  manipulator: manipulator
 };
 
 },{"cheerio":1}],68:[function(require,module,exports){

@@ -874,7 +874,7 @@
 
 # pragma mark - View initialization & teardown
 
-- (void)require: (id)json andCompletionHandler:(void(^)(id obj))callback{
+- (void)include: (id)json andCompletionHandler:(void(^)(id obj))callback{
     
     NSString *j = [JasonHelper stringify:json];
     
@@ -955,12 +955,100 @@
         
         dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
             id resolved = [self resolve_reference: j];
-            [self require:resolved andCompletionHandler:callback];
+            [self include:resolved andCompletionHandler:callback];
         });
     } else {
         callback(json);
     }
     
+}
+
+- (void)require{
+    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
+    hud.animationType = MBProgressHUDAnimationFade;
+    
+    /*
+     
+     {
+        "type": "$require",
+        "options": {
+            "items": ["https://...", "https://...", ....],
+            "item": "https://...."
+        }
+     }
+     
+     Crawl all the items in the array and assign it to the key
+     
+     */
+    
+    NSMutableSet *urlSet = [[NSMutableSet alloc] init];
+    for(NSString *key in self.options){
+        if([self.options[key] isKindOfClass:[NSArray class]]){
+            [urlSet addObjectsFromArray:self.options[key]];
+        } else if([self.options[key] isKindOfClass:[NSString class]]){
+            [urlSet addObject:self.options[key]];
+        }
+    }
+    
+    NSError *regexError;
+    NSMutableDictionary *return_value = [[NSMutableDictionary alloc] init];
+    dispatch_group_t requireGroup = dispatch_group_create();
+    for(NSString *url in urlSet){
+        NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:@"\\$document" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
+        NSArray *matches = [document_regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
+        if(matches.count == 0){
+            // 2. Enter dispatch_group
+            dispatch_group_enter(requireGroup);
+            
+            // 3. Setup networking
+            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+            AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+            NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+            [jsonAcceptableContentTypes addObject:@"text/plain"];
+            jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+            manager.responseSerializer = jsonResponseSerializer;
+            
+            // 4. Attach session
+            NSDictionary *session = [JasonHelper sessionForUrl:url];
+            if(session && session.count > 0 && session[@"header"]){
+                for(NSString *key in session[@"header"]){
+                    [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                }
+            }
+            NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+            if(session && session.count > 0 && session[@"body"]){
+                for(NSString *key in session[@"body"]){
+                    parameters[key] = session[@"body"][key];
+                }
+            }
+            
+            // 5. Start request
+            [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                return_value[url] = responseObject;
+                dispatch_group_leave(requireGroup);
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                NSLog(@"Error");
+                dispatch_group_leave(requireGroup);
+            }];
+        }
+    }
+    
+    dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+        for(NSString *key in self.options){
+            if([self.options[key] isKindOfClass:[NSArray class]]){
+                NSMutableArray *items = [[NSMutableArray alloc] init];
+                for(NSString *url in self.options[key]){
+                    [items addObject:return_value[url]];
+                }
+                dict[key] = items;
+            } else if([self.options[key] isKindOfClass:[NSString class]]){
+                dict[key] = return_value[self.options[key]];
+            }
+        }
+        [self success:dict];
+        [MBProgressHUD hideHUDForView:VC.view animated:true];
+    });
 }
 
 - (id)resolve_reference: (NSString *)json{
@@ -1396,7 +1484,7 @@
                 // Ignore if the url is different
                  if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
                  VC.original = responseObject;
-                 [self require:responseObject andCompletionHandler:^(id res){
+                 [self include:responseObject andCompletionHandler:^(id res){
                     dispatch_async(dispatch_get_main_queue(), ^{
                         VC.original = @{@"$jason": res[@"$jason"]};
                         [self drawViewFromJason: VC.original];
