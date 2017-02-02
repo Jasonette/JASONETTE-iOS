@@ -1117,6 +1117,7 @@
     navigationController = viewController.navigationController;
     navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
     tabController = navigationController.tabBarController;
+    tabController.delegate = self;
     
     VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
   
@@ -1497,7 +1498,7 @@
     }
 }
 - (void)drawViewFromJason: (NSDictionary *)jason{
-
+    
     // Step 0. In case there are passed parameters, we need to fill them in first.
     if([VC respondsToSelector:@selector(options)]){
         if([[VC valueForKey:@"options"] count] > 0){
@@ -1508,6 +1509,7 @@
             }
         }
     }
+
     NSDictionary *head = jason[@"$jason"][@"head"];
     if(!head)return;
     
@@ -2195,45 +2197,72 @@
     }
     if(tabs && tabs.count > 1){
         NSUInteger maxTabCount = tabs.count;
-        if(maxTabCount > 5)
-            maxTabCount = 5;
+        if(maxTabCount > 5) maxTabCount = 5;
+        BOOL firstTime;
+        BOOL tabFound = NO; // at least one tab item with the same url as the current VC should exist.
+        NSMutableArray *tabs_array;
+        // if not yet initialized, tabController.tabs.count will be 1, since this is the only view
+        // that was initialized with
+        // In this case, initialize all tabs
+        // Start from index 1 because the first one should already be instantiated via modal href
         if(tabController.viewControllers.count != maxTabCount){
-            NSMutableArray *tabs_array = [[NSMutableArray alloc] init];
-            // if not yet initialized, tabController.tabs.count will be 1, since this is the only view
-            // that was initialized with
-            // In this case, initialize all tabs
-            // Start from index 1 because the first one should already be instantiated via modal href
-            for(int i = 0 ; i < maxTabCount ; i++){
-                NSDictionary *tab = tabs[i];
-                NSString *url = tab[@"url"];
-                
-                if(i == 0){
+            firstTime = YES;
+            tabs_array = [[NSMutableArray alloc] init];
+        } else {
+            firstTime = NO;
+        }
+        NSUInteger indexOfTab = [tabController.viewControllers indexOfObject:navigationController];
+        
+        for(int i = 0 ; i < maxTabCount ; i++){
+            NSDictionary *tab = tabs[i];
+            NSString *url;
+            NSDictionary *options = @{};
+            if(tab[@"href"]){
+                url = tab[@"href"][@"url"];
+                options = tab[@"href"][@"options"];
+            } else {
+                url = tab[@"url"];
+            }
+            
+            if(firstTime){
+                if([VC.url isEqualToString:url] && i==indexOfTab){
+                    tabFound = YES;
+                    // if the tab URL is same as the currently visible VC's url
                     [tabs_array addObject:navigationController];
                 } else {
                     JasonViewController *vc = [[JasonViewController alloc] init];
                     vc.url = url;
+                    vc.options = options;
                     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
                     [tabs_array addObject:nav];
                 }
+            } else {
+                if([VC.url isEqualToString:url]){
+                    // Do nothing
+                    tabFound = YES;
+                } else {
+                    UINavigationController *nav = tabController.viewControllers[i];
+                    UIViewController<RussianDollView> *vc = [[nav viewControllers] firstObject];
+                    vc.url = url;
+                    vc.options = options;
+                }
             }
-            
+        }
+        
+        if(firstTime){
             tabController.viewControllers = tabs_array;
-            
-            for(int i = 0 ; i < maxTabCount ; i++){
-                NSDictionary *tab = tabs[i];
-                [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
-            }
-        } else {
-            // In this case it's already been initialized, so only update the info inside
-            // if they're different
-            for(int i = 0 ; i < maxTabCount ; i++){
-                NSDictionary *tab = tabs[i];
-                NSString *url = tab[@"url"];
-                [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
-                UINavigationController *nav = tabController.viewControllers[i];
-                UIViewController<RussianDollView> *vc = [[nav viewControllers] firstObject];
-                vc.url = url;
-            }
+        }
+        
+        for(int i = 0 ; i < maxTabCount ; i++){
+            NSDictionary *tab = tabs[i];
+            [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
+        }
+        
+        
+        // Warn that at least one of the tab bar items should contain the same URL as the currently visible URL
+        if(!tabFound){
+            [[Jason client] call:@{@"type": @"$util.alert",
+                                   @"options": @{ @"title": @"Warning", @"description": @"The tab bar should contain at least one item with the same URL as the currently visible view" }}];
         }
         
         tabController.tabBar.hidden = NO;
@@ -2241,10 +2270,46 @@
         tabController.tabBar.hidden = YES;
     }
 }
+
+- (BOOL)tabBarController:(UITabBarController *)theTabBarController shouldSelectViewController:(UIViewController *)viewController{
+   
+    NSUInteger indexOfTab = [theTabBarController.viewControllers indexOfObject:viewController];
+    if(VC.rendered && VC.rendered[@"footer"] && VC.rendered[@"footer"][@"tabs"] && VC.rendered[@"footer"][@"tabs"][@"items"]){
+        NSArray *tabs = VC.rendered[@"footer"][@"tabs"][@"items"];
+        NSDictionary *selected_tab = tabs[indexOfTab];
+        
+        if(selected_tab[@"href"]){
+            NSString *transition = selected_tab[@"href"][@"transition"];
+            NSString *view = selected_tab[@"href"][@"view"];
+            if(transition){
+                if([transition isEqualToString:@"modal"]){
+                    [self go: selected_tab[@"href"]];
+                    return NO;
+                }
+            }
+            if(view){
+                if([view isEqualToString:@"web"] || [view isEqualToString:@"app"]){
+                    [self go: selected_tab[@"href"]];
+                    return NO;
+                }
+            }
+        } else if(selected_tab[@"action"]){
+            [self call:selected_tab[@"action"]];
+            return NO;
+        }
+    }
+    
+    return YES;
+}
+
 - (void)tabBarController:(UITabBarController *)theTabBarController didSelectViewController:(UIViewController *)viewController {
+   
+    
+    // 2. Then go on to updating the nav and VC
     // For updating tabbar whenever user taps on an item (The view itself won't reload)
     navigationController = (UINavigationController *) viewController;
     VC = navigationController.viewControllers.lastObject;
+    
     if(VC.parser){
         NSDictionary *body_parser = VC.parser[@"body"];
         if(body_parser){
@@ -3003,9 +3068,11 @@
                             NSString *methodName = tokens[1];
                             SEL method = NSSelectorFromString(methodName);
                             
+                            NSDictionary *options = [self options];
+                            
                             module = [[ActionClass alloc] init];
                             if([module respondsToSelector:@selector(VC)]) [module setValue:VC forKey:@"VC"];
-                            if([module respondsToSelector:@selector(options)]) [module setValue:[self options] forKey:@"options"];
+                            if([module respondsToSelector:@selector(options)]) [module setValue:options forKey:@"options"];
                             
                             // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
                             memory.executing = YES;
