@@ -1028,7 +1028,6 @@
                 dispatch_group_leave(requireGroup);
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 NSLog(@"Error");
-                return_value[url] = @{};
                 dispatch_group_leave(requireGroup);
             }];
         }
@@ -1040,11 +1039,19 @@
             if([self.options[key] isKindOfClass:[NSArray class]]){
                 NSMutableArray *items = [[NSMutableArray alloc] init];
                 for(NSString *url in self.options[key]){
-                    [items addObject:return_value[url]];
+                    if(return_value[url]){
+                        [items addObject:return_value[url]];
+                    } else {
+                        [items addObject:@{}];
+                    }
                 }
                 dict[key] = items;
             } else if([self.options[key] isKindOfClass:[NSString class]]){
-                dict[key] = return_value[self.options[key]];
+                if(return_value[self.options[key]]){
+                    dict[key] = return_value[self.options[key]];
+                } else {
+                    dict[key] = @{};
+                }
             }
         }
         [self success:dict];
