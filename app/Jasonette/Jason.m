@@ -1028,6 +1028,7 @@
                 dispatch_group_leave(requireGroup);
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 NSLog(@"Error");
+                return_value[url] = @{};
                 dispatch_group_leave(requireGroup);
             }];
         }
