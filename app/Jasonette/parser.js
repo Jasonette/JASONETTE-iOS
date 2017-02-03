@@ -22236,7 +22236,7 @@ var fillout = function(options){
         // If the pattern ends with a return statement, but is NOT wrapped inside another function ([^}]*$), it's a function expression
         if(/\breturn [^;]+;?[ ]*$/.test(slot) && /return[^}]*$/.test(slot)){
           // Function expression with explicit "return" expression
-          func = Function("with(this){return (function(){" + slot + "})()}").bind(data);
+          func = Function("with(this){" + slot + "}").bind(data);
         } else {
           // Function expression with explicit "return" expression
           // Ordinary simple expression that 
