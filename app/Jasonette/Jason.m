@@ -1042,7 +1042,7 @@
                     if(return_value[url]){
                         [items addObject:return_value[url]];
                     } else {
-                        [items addObject:@{}];
+                        [items addObject:@""];
                     }
                 }
                 dict[key] = items;
@@ -1050,7 +1050,7 @@
                 if(return_value[self.options[key]]){
                     dict[key] = return_value[self.options[key]];
                 } else {
-                    dict[key] = @{};
+                    dict[key] = @"";
                 }
             }
         }
