@@ -725,10 +725,38 @@
                  *        }
                  *   }
                  *
-                 * In this case, we override whatever data gets passed in from the register with the data object that's manually passed in.
+                 * 1. In this case we override the $jason value with the value inside `data`.
                  *
-                 **************************************************/
-                data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
+		             * In above example, The $jason value at the point of rendering becomes:
+		             *
+		             *   $jason = {
+		             *     "results": [{
+                 *       "id": "1",
+                 *       "name": "tom"
+                 *     }, {
+                 *       "id": "2",
+                 *       "name": "kat"
+                 *     }]
+		             *   }
+		             *
+		             * 2. The `data` can also be a template expression, in which case it will parse whatever data is being passed in to `$render` before using it as the data.
+		             *
+		             *   {
+                 *     "type": "$render",
+                 *     "options": {
+                 *       "data": {
+                 *         "results": {
+		             *		       "{{#each $jason}}": {
+                 *             "id": "{{id}}",
+                 *             "name": "{{name}}"
+                 *           }
+		             *	       }
+                 *       }
+                 *     }
+                 *   }
+		             *
+		             **************************************************/
+		             data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
             }
         }
     }
