@@ -31,6 +31,7 @@
 @property (strong, nonatomic) NSDictionary *original;
 @property (strong, nonatomic) NSMutableDictionary *menu;
 @property (strong, nonatomic) NSMutableDictionary *form;
+@property (strong, nonatomic) NSMutableDictionary *requires;
 @property (strong, nonatomic) NSMutableDictionary *timers;
 @property (strong, nonatomic) NSMutableDictionary *audios;
 @property (nonatomic, strong) NSMutableArray *log;

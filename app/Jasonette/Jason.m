@@ -316,7 +316,6 @@
     NSDictionary *href = [self options];
     VC.callback = href[@"success"];     // Preserve callback so when the view returns it will continue executing the next action from where it left off.
     memory._stack = @{}; // empty stack before visiting
-    memory.executing = NO;
     [self go:href];
 }
 - (void)search{
@@ -450,6 +449,237 @@
     }
     
 }
+- (void)lambda{
+    
+    /*
+     
+    # LAMBDA - Functional Programming for Actions
+    #  Call an action by name, with arguments. Wait for it to finish. And continue on with its return value.
+
+    # How it works
+    1. Calls another action by name
+    2. Can also pass arguments via `options`, which will be interpreted as `$jason` in the callee action
+    2. Waits for the callee action to return via `$return.success` or `$return.error`
+    3. The Callee action can return using the `$return.success` or `$return.error` actions.
+    4. `$return.success` calls the caller action's `success` action with return value. The caller action picks up where it left off and continues walking down the `success` action call chain.
+    4. `$return.error` calls the caller action's `error` action with return value. The caller action picks up where it left off and continues walking down the `error` action call chain.
+
+    # Example 1: Basic lambda (Same as trigger)
+    {
+        "type": "$lambda",
+        "options": {
+            "name": "fetch"
+        }
+    }
+
+
+    # Example 2: Basic lambda with success/error handlers
+    {
+        "type": "$lambda",
+        "options": {
+            "name": "fetch"
+        }
+        "success": {
+            "type": "$render"
+        },
+        "error": {
+            "type": "$util.toast",
+            "options": {
+                "text": "Error"
+            }
+        }
+    }
+
+
+    # Example 3: Passing arguments
+    {
+        "type": "$lambda",
+        "options": {
+            "name": "fetch",
+            "options": {
+                "url": "https://www.jasonbase.com/things/73g"
+            }
+        },
+        "success": {
+            "type": "$render"
+        },
+        "error": {
+            "type": "$util.toast",
+            "options": {
+                "text": "Error"
+            }
+        }
+    }
+
+    # Example 4: Using the previous action's return value
+
+    {
+        "type": "$network.request",
+        "options": {
+            "url": "https://www.jasonbase.com/things/73g"
+        },
+        "success": {
+            "type": "$lambda",
+            "options": {
+                "name": "draw"
+            },
+            "success": {
+                "type": "$render"
+            },
+            "error": {
+                "type": "$util.toast",
+                "options": {
+                    "text": "Error"
+                }
+            }
+        }
+    }
+
+    # Example 5: Using the previous action's return value as well as custom options
+
+    {
+        "type": "$network.request",
+        "options": {
+            "url": "https://www.jasonbase.com/things/73g"
+        },
+        "success": {
+            "type": "$lambda",
+            "options": {
+                "name": "draw",
+                "options": {
+                    "p1": "another param",
+                    "p2": "yet another param"
+                }
+            },
+            "success": {
+                "type": "$render"
+            },
+            "error": {
+                "type": "$util.toast",
+                "options": {
+                    "text": "Error"
+                }
+            }
+        }
+    }
+
+     */
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
+    # Example:
+     {
+        "type": "$lambda",
+        "options": {
+            "name": "draw",
+            "options": {
+                "p1": "another param",
+                "p2": "yet another param"
+            }
+        },
+        "success": {
+            "type": "$render"
+        },
+        "error": {
+            "type": "$util.toast",
+            "options": {
+                "text": "Error"
+            }
+        }
+    }
+     
+     */
+    
+    NSDictionary *options = [self options];
+    /*
+         options = {
+            "name": "draw",
+            "options": {
+                "p1": "another param",
+                "p2": "yet another param"
+            }
+         }
+     */
+    
+    
+    NSString *name = options[@"name"];
+    /*
+     name = "draw"
+    */
+    
+    if(name){
+        // options can be an array or an object
+        id args = options[@"options"];
+        /* 
+         args = {
+            "p1": "another param",
+            "p2": "yet another param"
+         }
+         */
+        JasonMemory *memory = [JasonMemory client];
+        
+        
+        // set register
+        if(args){
+            args =  [self filloutTemplate: args withData: memory._register];
+            memory._register = @{@"$jason": args};
+        } else {
+            // do nothing. keep the register and propgate
+        }
+        
+        
+        id lambda = [[VC valueForKey:@"events"] valueForKey:name];
+        /*
+         lambda = [{
+            "{{#if $jason.items}}: {
+                "type": "$render",
+                "options": {
+                    "data": "{{$jason.items}}"
+                }
+            }
+         }, {
+            "{{#else}}": {
+                "type": "$util.toast",
+                 "options": {
+                    "text": "Nothing to render"
+                 }
+             }  
+         }]
+         */
+        
+        NSDictionary *resolved_lambda;
+        if([lambda isKindOfClass:[NSArray class]]){
+            resolved_lambda = [self filloutTemplate:lambda withData:memory._register];
+        } else {
+            resolved_lambda = lambda;
+        }
+        /*
+         resolved_lambda = {
+            "type": "$render"
+         }
+         */
+        
+        // set current stack as the caller (before overwriting the stack)
+        memory._caller = [memory._stack copy];
+        
+        // set stack
+        memory._stack = resolved_lambda;
+        
+        // exec
+        [self exec];
+        
+    } else {
+        [self error];
+    }
+
+
+}
 - (void)render{
     NSDictionary *stack = [JasonMemory client]._stack;
     
@@ -467,6 +697,12 @@
     } else {
         data_stub = [[NSMutableDictionary alloc] init];
     }
+    
+    NSDictionary *kv = [self variables];
+    for(NSString *key in kv){
+        data_stub[key] = kv[key];
+    }
+
     if(stack[@"options"]){
         if(!stack[@"options"][@"type"] || [stack[@"options"][@"type"] isEqualToString:@"json"]){
             if(stack[@"options"][@"data"]){
@@ -491,36 +727,36 @@
                  *
                  * 1. In this case we override the $jason value with the value inside `data`.
                  *
-		 * In above example, The $jason value at the point of rendering becomes:
-		 *
-		 *   $jason = {
-		 *     "results": [{
+		             * In above example, The $jason value at the point of rendering becomes:
+		             *
+		             *   $jason = {
+		             *     "results": [{
                  *       "id": "1",
                  *       "name": "tom"
                  *     }, {
                  *       "id": "2",
                  *       "name": "kat"
                  *     }]
-		 *   }
-		 *
-		 * 2. The `data` can also be a template expression, in which case it will parse whatever data is being passed in to `$render` before using it as the data.
-		 *
-		 *    {
-                 *        "type": "$render",
-                 *        "options": {
-                 *           "data": {
-                 *               "results": {
-		 *		   "{{#each $jason}}": {
-                 *                   "id": "{{id}}",
-                 *                   "name": "{{name}}"
-                 *                 }
-		 *	         }
-                 *            }
-                 *        }
+		             *   }
+		             *
+		             * 2. The `data` can also be a template expression, in which case it will parse whatever data is being passed in to `$render` before using it as the data.
+		             *
+		             *   {
+                 *     "type": "$render",
+                 *     "options": {
+                 *       "data": {
+                 *         "results": {
+		             *		       "{{#each $jason}}": {
+                 *             "id": "{{id}}",
+                 *             "name": "{{name}}"
+                 *           }
+		             *	       }
+                 *       }
+                 *     }
                  *   }
-		 *
-		 **************************************************/
-		data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
+		             *
+		             **************************************************/
+		             data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
             }
         }
     }
@@ -665,6 +901,219 @@
 
 
 # pragma mark - View initialization & teardown
+
+- (void)include: (id)json andCompletionHandler:(void(^)(id obj))callback{
+    
+    NSString *j = [JasonHelper stringify:json];
+    
+    // 1. Extract "@": "path@URL" patterns and create an array from the URLs
+    // 2. Make concurrent requests to each item in the array
+    // 3. Store each result under "[URL]" key
+    // 4. Whenever we need to process JSON and encouter the "@" : "path@URL" pattern, we look into the "[URL]" value and parse it using path (if it exists)
+    NSError* regexError = nil;
+    
+    NSString *pattern = @"\"(@)\"[ ]*:[ ]*\"([^\"@]+@)?([^\"]+)\"";
+    
+    NSMutableSet *urlSet = [[NSMutableSet alloc] init];
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
+    
+    NSArray *matches = [regex matchesInString:j options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, j.length)];
+    for(int i = 0; i<matches.count; i++){
+        NSTextCheckingResult* match = matches[i];
+        NSRange group1 = [match rangeAtIndex:1];
+        NSRange group2 = [match rangeAtIndex:2];
+        NSRange group3 = [match rangeAtIndex:3];
+        if(group1.length > 0){
+            
+        }
+        if(group2.length > 0){
+            // Group2 is for path
+        }
+        if(group3.length > 0){
+            // Group2 is for the URL
+            NSString *url = [j substringWithRange:group3];
+            if(!VC.requires[url]){
+                [urlSet addObject:url];
+            }
+        }
+    }
+    
+    // 1. Create a dispatch_group
+    if(urlSet.count > 0){
+        dispatch_group_t requireGroup = dispatch_group_create();
+        for(NSString *url in urlSet){
+            NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:@"\\$document" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
+            NSArray *matches = [document_regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
+            if(matches.count == 0){
+                // 2. Enter dispatch_group
+                dispatch_group_enter(requireGroup);
+                
+                // 3. Setup networking
+                AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+                AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+                NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                [jsonAcceptableContentTypes addObject:@"text/plain"];
+                jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+                manager.responseSerializer = jsonResponseSerializer;
+                
+                // 4. Attach session
+                NSDictionary *session = [JasonHelper sessionForUrl:url];
+                if(session && session.count > 0 && session[@"header"]){
+                    for(NSString *key in session[@"header"]){
+                        [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                    }
+                }
+                NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+                if(session && session.count > 0 && session[@"body"]){
+                    for(NSString *key in session[@"body"]){
+                        parameters[key] = session[@"body"][key];
+                    }
+                }
+                
+                // 5. Start request
+                [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                    VC.requires[url] = responseObject;
+                    dispatch_group_leave(requireGroup);
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    NSLog(@"Error");
+                    dispatch_group_leave(requireGroup);
+                }];
+            }
+        }
+        
+        dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
+            id resolved = [self resolve_reference: j];
+            [self include:resolved andCompletionHandler:callback];
+        });
+    } else {
+        callback(json);
+    }
+    
+}
+
+- (void)require{
+    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
+    hud.animationType = MBProgressHUDAnimationFade;
+    
+    /*
+     
+     {
+        "type": "$require",
+        "options": {
+            "items": ["https://...", "https://...", ....],
+            "item": "https://...."
+        }
+     }
+     
+     Crawl all the items in the array and assign it to the key
+     
+     */
+    
+    NSMutableSet *urlSet = [[NSMutableSet alloc] init];
+    for(NSString *key in self.options){
+        if([self.options[key] isKindOfClass:[NSArray class]]){
+            [urlSet addObjectsFromArray:self.options[key]];
+        } else if([self.options[key] isKindOfClass:[NSString class]]){
+            [urlSet addObject:self.options[key]];
+        }
+    }
+    
+    NSError *regexError;
+    NSMutableDictionary *return_value = [[NSMutableDictionary alloc] init];
+    dispatch_group_t requireGroup = dispatch_group_create();
+    for(NSString *url in urlSet){
+        NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:@"\\$document" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
+        NSArray *matches = [document_regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
+        if(matches.count == 0){
+            // 2. Enter dispatch_group
+            dispatch_group_enter(requireGroup);
+            
+            // 3. Setup networking
+            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+            AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+            NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+            [jsonAcceptableContentTypes addObject:@"text/plain"];
+            jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+            manager.responseSerializer = jsonResponseSerializer;
+            
+            // 4. Attach session
+            NSDictionary *session = [JasonHelper sessionForUrl:url];
+            if(session && session.count > 0 && session[@"header"]){
+                for(NSString *key in session[@"header"]){
+                    [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                }
+            }
+            NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+            if(session && session.count > 0 && session[@"body"]){
+                for(NSString *key in session[@"body"]){
+                    parameters[key] = session[@"body"][key];
+                }
+            }
+            
+            // 5. Start request
+            [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                return_value[url] = responseObject;
+                dispatch_group_leave(requireGroup);
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                NSLog(@"Error");
+                dispatch_group_leave(requireGroup);
+            }];
+        }
+    }
+    
+    dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+        for(NSString *key in self.options){
+            if([self.options[key] isKindOfClass:[NSArray class]]){
+                NSMutableArray *items = [[NSMutableArray alloc] init];
+                for(NSString *url in self.options[key]){
+                    if(return_value[url]){
+                        [items addObject:return_value[url]];
+                    } else {
+                        [items addObject:@""];
+                    }
+                }
+                dict[key] = items;
+            } else if([self.options[key] isKindOfClass:[NSString class]]){
+                if(return_value[self.options[key]]){
+                    dict[key] = return_value[self.options[key]];
+                } else {
+                    dict[key] = @"";
+                }
+            }
+        }
+        [self success:dict];
+        [MBProgressHUD hideHUDForView:VC.view animated:true];
+    });
+}
+
+- (id)resolve_reference: (NSString *)json{
+    NSError *error;
+    
+    // Local - convert "@": "$document.blah.blah" to "{{#include $root.$document.blah.blah}}": {}
+    NSString *local_pattern = @"\"@\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"";
+    NSRegularExpression* local_regex = [NSRegularExpression regularExpressionWithPattern:local_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+    NSString *converted = [local_regex stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root.$1}}\": {}"];
+    
+    // Remote url with path - convert "@": "blah.blah@https://www.google.com" to "{{#include $root[\"https://www.google.com\"].blah.blah}}": {}
+    NSString *remote_pattern_with_path = @"\"(@)\"[ ]*:[ ]*\"(([^\"@]+)(@))([^\"]+)\"";
+    NSRegularExpression* remote_regex_with_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_with_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+    converted = [remote_regex_with_path stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include \\$root[\\\\\"$5\\\\\"].$3}}\": {}"];
+    
+    // Remote url without path - convert "@": "https://www.google.com" to "{{#include $root[\"https://www.google.com\"]}}": {}
+    NSString *remote_pattern_without_path = @"\"(@)\"[ ]*:[ ]*\"([^\"]+)\"";
+    NSRegularExpression* remote_regex_without_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_without_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+    converted = [remote_regex_without_path stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include \\$root[\\\\\"$2\\\\\"]}}\": {}"];
+    
+    id tpl = [JasonHelper objectify:converted];
+    NSMutableDictionary *refs = [VC.requires mutableCopy];
+    refs[@"$document"] = VC.original;
+    id include_resolved = [JasonParser parse:refs with:tpl];
+    VC.original = include_resolved;
+    return include_resolved;
+}
+
+
 - (Jason *)detach:(UIViewController<RussianDollView>*)viewController{
     // Need to clean up before leaving the view
     VC = (UIViewController<RussianDollView>*)viewController;
@@ -1072,7 +1521,12 @@
                 // Ignore if the url is different
                  if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
                  VC.original = responseObject;
-                [self drawViewFromJason: responseObject];
+                 [self include:responseObject andCompletionHandler:^(id res){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        VC.original = @{@"$jason": res[@"$jason"]};
+                        [self drawViewFromJason: VC.original];
+                    });
+                 }];
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 [self call:@{@"type": @"$util.toast", @"options": @{@"text": @"offline mode"}, @"success": @{@"type": @"$unlock"}}];
             }];
@@ -2058,6 +2512,7 @@
         NSString *transition = href[@"transition"];
         NSString *fresh = href[@"fresh"];
         JasonMemory *memory = [JasonMemory client];
+        memory.executing = NO;
         if([transition isEqualToString:@"root"]){
             [self start: nil];
             return;
@@ -2427,31 +2882,90 @@
                 memory._stack = [self filloutTemplate: memory._stack withData: memory._register];
             }
             
-            
             NSString *trigger = memory._stack[@"trigger"];
             NSString *type = memory._stack[@"type"];
             
             // Type 1. Action Call by name (trigger)
             if(trigger)
             {
-                NSString *action_name = memory._stack[@"trigger"];
-                id triggered_action = [[VC valueForKey:@"events"] valueForKey:action_name];
-                NSDictionary *action;
-                if([triggered_action isKindOfClass:[NSArray class]]){
-                    action = [self filloutTemplate:triggered_action withData:memory._register];
+                
+                /****************************************************************************************
+                // "trigger" is a syntactic sugar for calling `$lambda` action
+                 
+                The syntax is as follows:
+
+                {
+                    "trigger": "twitter.get",
+                    "options": {
+                        "endpoint": "timeline"
+                    },
+                    "success": {
+                        "type": "$render"
+                    },
+                    "error": {
+                        "type": "$util.toast",
+                        "options": {
+                            "text": "Uh oh. Something went wrong"
+                         }
+                    }
+                }
+
+                Above is a syntactic sugar for the below "$lambda" type action call:
+
+                $lambda action is a special purpose action that triggers another action by name and waits until it returns.
+                This way we can define a huge size action somewhere and simply call them as a subroutine and wait for its return value.
+                When the subroutine (the lambda action that was triggered by name) returns via `"type": "$return.success"` action,
+                the $lambda action picks up where it left off and starts executing its "success" action with the value returned from the subroutine.
+
+                Notice that:
+                1. we get rid of the "trigger" field and turn it into a regular action of `"type": "$lambda"`.
+                2. the "trigger" value (`"twitter.get"`) gets mapped to "options.name"
+                3. the "options" value (`{"endpoint": "timeline"}`) gets mapped to "options.options"
+
+
+                {
+                    "type": "$lambda",
+                    "options": {
+                        "name": "twitter.get",
+                        "options": {
+                            "endpoint": "timeline"
+                        }
+                    },
+                    "success": {
+                        "type": "$render"
+                    },
+                    "error": {
+                        "type": "$util.toast",
+                        "options": {
+                            "text": "Uh oh. Something went wrong"
+                         }
+                    }
+                }
+
+                The success / error actions get executed AFTER the triggered action has finished and returns with a return value.
+
+                ****************************************************************************************/
+
+                // Construct a new JSON from the trigger JSON
+                NSString *lambda_name = memory._stack[@"trigger"];
+                NSMutableDictionary *lambda = [[NSMutableDictionary alloc] init];
+                lambda[@"type"] = @"$lambda";
+                
+                if(memory._stack[@"options"]){
+                    lambda[@"options"] = @{@"name": lambda_name, @"options": memory._stack[@"options"]};
                 } else {
-                    action = triggered_action;
+                    lambda[@"options"] = @{@"name": lambda_name};
                 }
                 
-                if(action && action.count > 0){
-                    NSDictionary *options = [self options];
-                    if(options){
-                        memory._stack = [JasonHelper parse: options with:action];
-                    } else {
-                        memory._stack = action;
-                    }
-                    [self exec];
+                if(memory._stack[@"success"]){
+                    lambda[@"success"] = memory._stack[@"success"];
                 }
+                if(memory._stack[@"error"]){
+                    lambda[@"error"] = memory._stack[@"error"];
+                }
+                
+                [self call:lambda with:memory._register];
+                
             }
             
             // Type 2. Action Call by type (normal)

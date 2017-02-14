@@ -90,6 +90,7 @@
     self.rows = [[NSArray alloc] init];
     
     self.form = [[NSMutableDictionary alloc] init];
+    self.requires = [[NSMutableDictionary alloc] init];
     self.tableView.delaysContentTouches = false;
 
     self.automaticallyAdjustsScrollViewInsets = YES;
