@@ -22153,7 +22153,7 @@ var getFunction = function(str){
   str = str.replace(re, "$1");
   // str : "#each $jason.items"
 
-  var tokens = str.split(" ");
+  var tokens = str.trim().split(" ");
   // => tokens: ['#each', '$jason.items']
 
   var func;
@@ -22174,7 +22174,6 @@ var getFunction = function(str){
 var getData = function(data, template, raw){
   // Start with the template
   var replaced = template;
-
   // Run fillout() only if it's a template. Otherwise just return the original string
   if(isTemplate(template)){
     var re = /\{\{(.*?)\}\}/g;
@@ -22232,12 +22231,12 @@ var fillout = function(options){
         var func;
 
 				// Attach $root to each node so that we can reference it from anywhere
-				data["$root"] = root;
+        data["$root"] = root;
 
         // If the pattern ends with a return statement, but is NOT wrapped inside another function ([^}]*$), it's a function expression
         if(/\breturn [^;]+;?[ ]*$/.test(slot) && /return[^}]*$/.test(slot)){
           // Function expression with explicit "return" expression
-          func = Function("with(this){return (function(){" + slot + "})()}").bind(data);
+          func = Function("with(this){" + slot + "}").bind(data);
         } else {
           // Function expression with explicit "return" expression
           // Ordinary simple expression that 
@@ -22481,7 +22480,21 @@ var run = function(template, data){
   if(typeof template == "string"){
     // Leaf node, so call getData()
     if(isTemplate(template)){
-      result = getData(data, template);
+      var include_re = /\{\{([ ]*#include)[ ]*([^ ]*)\}\}/g
+      if(include_re.test(template)){
+        var fun = getFunction(template);
+        if(fun.expression) {
+          // if #include has arguments, evaluate it before attaching
+          result = getData(data, "{{" + fun.expression + "}}", true);
+        } else {
+          // shouldn't happen =>
+          // {"wrapper": "{{#include}}"}
+          result = template;
+        }
+      } else {
+        // non-#include
+        result = getData(data, template);
+      }
     } else {
       result = template;
     }
@@ -22502,15 +22515,34 @@ var run = function(template, data){
   } else {
     // template is an object
     result = {};
+
+    // ## Handling #include
+    // This needs to precede everything else since it's meant to be overwritten
+    // in case of collision
+    var include_re = /\{\{([ ]*#include)[ ]*(.*)\}\}/g
+    var include_keys = Object.keys(template).filter(function(key){return include_re.test(key);});
+    if(include_keys.length > 0){
+    // find the first key with #include
+			var fun = getFunction(include_keys[0]);
+			if(fun.expression) {
+        // if #include has arguments, evaluate it before attaching
+				result = getData(template[include_keys[0]], "{{" + fun.expression + "}}", true);
+			} else {
+        // no argument, simply attach the child
+				result = template[include_keys[0]];
+			}
+    }
+
+    var re = /\{\{(.+)\}\}/g;
     for(var key in template){
       // Checking to see if the key contains template..
-      // Currently the only case for this is "#each"
+      // Currently the only case for this are "#each" and "#include"
       if(isTemplate(key)){
-        var re = /\{\{(.+)\}\}/g;
         var fun = getFunction(key);
         if(fun){
-          if(fun.name == "#each"){
-
+          if(fun.name == "#include"){
+            // this was handled above (before the for loop) so just ignore
+          } else if(fun.name == "#each"){
             // newData will be filled with parsed results
             var newData = getData(data, "{{" + fun.expression + "}}", true);
 
@@ -22536,7 +22568,7 @@ var run = function(template, data){
             }
           } // end of #each
         } else { // end of if(fun)
-          // This shouldn't happen since the only supported function is #each currently.
+          // This shouldn't happen since the only supported functions are #each and #include currently.
           // But need to return the original template for debugging
           result = template;
         }
@@ -22573,53 +22605,259 @@ var html = function(template, data, json){
   }
 }
 var json = function(template, data, json){
-	root = data;
   if(json) {
 		// Exception handling
 		// => the template expression itself can look like JSON object, so we need to handle this is na special manner
 		// "{{$jason}}" => This is not a JSON object and needs to be treated as such
 		var template_object;
 		var data_object;
+    var template_is_string = false;
 		try{
 			template_object = JSON.parse(template);
 		} catch (error){
 			template_object = template;
+      template_is_string = true;
 		}
 		try{
 			data_object = JSON.parse(data);
 		} catch (error){
 			data_object = data;
 		}
+    root = data_object;
+    String.prototype.$root = root;
+    Array.prototype.$root = root;
 
-    return JSON.stringify(run(template_object, data_object));
+    if(template_is_string){
+      // if string, just parse
+      return JSON.stringify(run(template_object, data_object));
+    } else {
+      // otherwise
+      // if there's any "#include", resolve it instead of parsing
+      if(/#include/.test(template)) {
+        return JSON.stringify(include(template_object, data_object));
+      } else {
+        return JSON.stringify(run(template_object, data_object));
+      }
+    }
   } else {
-    return run(template, data);
+    root = data;
+    String.prototype.$root = root;
+    Array.prototype.$root = root;
+
+    if(typeof template == "string"){
+      // if string, just parse
+      return run(template, data);
+    } else {
+      // if there's any "#include", resolve it instead of parsing
+      if(/#include/.test(JSON.stringify(template))) {
+        return include(template, data);
+      } else {
+        return run(template, data);
+      }
+    }
   }
 }
 
+var include = function(template, data){
+  return manipulator(template).select(function(key, value){
+    return /#include/.test(key) || /#include/.test(value);
+  }).parse(data).root();
+};
 
 
-var DEBUG = false;
+/******************************************************************************************************************
+*    # USAGE
+*
+*    manipulator(template).select(function(key, value){
+*      return key=='type' && value=='label'; // return all the objects with "type": "label"
+*    }).object();
+*
+*    manipulator(template).select(function(key, value){
+*      return /class/.test(key);  // return all objects that contains the key 'class'
+*    }).object();
+*
+*    manipulator(template).select(function(key, value){
+*      return /\{\{#include\}\}/.test(key);  // return all objects that contains the key '{{#include}}'
+*    }).objects();
+*
+*    manipulator(template).select(function(key, value){
+*      return /\{\{#include\}\}/.test(key);  // selects the object, and then returns the value of the selected object
+*    }).values();
+*
+*    manipulator(template).select(function(key, value){
+*      return /\{\{#include\}\}/.test(key);  // return all objects that contains the key '{{#include}}'
+*    }).keys();
+*
+******************************************************************************************************************/
 
-if(DEBUG){
-  exports.getData = getData;
-  exports.getFunction = getFunction;
-  exports.isIf = isIf;
-  exports.runIf = runIf;
-  exports.run = json;
-  exports.xml = xml;
-  exports.html = html;
-  exports.json = json;
-} else {
-  module.exports = {
-    xml: xml,
-    html: html,
-    json: json
-  };
+var resolve = function(o, path, new_val){
+  // 1. takes any object
+  // 2. Finds thes subtree based on path
+  // 3. sets the value to new_val
+  // 4. returns the object;
+  if(path && path.length > 0){
+    func = Function('new_val', "with(this){this" + path + "=new_val; return this;}").bind(o);
+    return func(new_val);
+  } else {
+    o = new_val;
+    return o;
+  }
 }
 
-// #run
-// browserify parser.js --s parser > dist/parser.js
+var manipulator = function(template){
+  var tpl = template;
+
+  // current: currently accessed object
+  // path: the path leading to this item
+  // filter: The filter function to decide whether to select or not
+  var exec = function(current, path, filter){
+
+    // if current matches the pattern, put it in the selected array
+    if(typeof current == "string"){
+      // leaf node should be ignored
+      // we're lookin for keys only
+    } else if(isArray(current)){
+      for(var i=0; i<current.length; i++){
+        exec(current[i], path+"["+i+"]", filter);
+      }
+    } else {
+      // object
+      for(var key in current){
+        if(filter(key, current[key])){
+          o.$selected.push({
+            key: key,
+            path: path,
+            object: current,
+            value: current[key]
+          });
+        }
+        exec(current[key], path+"[\""+key+"\"]", filter);
+      }
+    }
+  };
+  var o = {
+    $val: null,
+    $selected: [],
+
+    // returns the object itself
+    select: function(filter){
+      // iterate '$selected'
+      // 
+      /*
+      o.$selected = [{
+        value {
+          "{{#include}}": {
+            "{{#each items}}": {
+              "type": "label",
+              "text": "{{name}}"
+            }
+          }
+        },
+        path: "$jason.head.actions.$load"
+        ...
+      }]
+      */
+      o.$selected = [];
+      exec(o.$template_root, '', filter);
+      return o;
+    },
+    parse: function(data){
+
+      // manipulator(template).select("{{#include}}").parse(data).values();
+
+      o.$parsed = [];
+
+      /*
+
+      'selected' is an array that contains items that looks like this:
+
+      {
+        key: The selected key,
+        path: The path leading down to the selected key,
+        object: The entire object that contains the currently selected key/val pair
+        value: The selected value
+      }
+
+      */
+      String.prototype.$root = data;
+      Array.prototype.$root = data;
+      root = data;
+
+      if(!o.$selected){
+        // means it's a root node
+        var parsed_object = run(template, data);
+        // apply the result to root
+        o.$template_root = resolve(o.$template_root, "", parsed_object);
+      } else {
+        o.$selected.sort(function(a, b){
+          // sort by path length, so that deeper level items will be replaced first
+          // TODO: may need to look into edge cases
+          return b.path.length - a.path.length;
+        }).forEach(function(selection){
+          // parse selected
+          var parsed_object = run(selection.object, data);
+          // apply the result to root
+          o.$template_root = resolve(o.$template_root, selection.path, parsed_object);
+        });
+      }
+      return o;
+    },
+
+    // Terminal methods
+    objects: function(){
+      if(o.$selected){
+        return o.$selected.map(function(item){ return item.object; });
+      } else {
+        return o.$selected;
+      }
+    },
+    keys: function(){
+      if(o.$selected){
+        return o.$selected.map(function(item){ return item.key; });
+      } else {
+        return o.$selected;
+      }
+    },
+    paths: function(){
+      if(o.$selected){
+        return o.$selected.map(function(item){ return item.path; });
+      } else {
+        return o.$selected;
+      }
+    },
+    values: function(){
+      if(o.$selected){
+        return o.$selected.map(function(item){ return item.value; });
+      } else {
+        return o.$selected;
+      }
+    },
+    root: function(){
+      return o.$template_root;
+    }
+  };
+  if(template){
+    o.$val = template;
+    o.$selected = null;
+    o.$template_root = template;
+  }
+  return o;
+};
+
+module.exports = {
+  xml: xml,
+  html: html,
+  json: json,
+  getData: getData,
+  getFunction: getFunction,
+  isIf: isIf,
+  runIf: runIf,
+  isArray: isArray,
+  run: json,
+  resolve: resolve,
+  include: include,
+  manipulator: manipulator
+};
 
 },{"cheerio":1}],68:[function(require,module,exports){
 'use strict'

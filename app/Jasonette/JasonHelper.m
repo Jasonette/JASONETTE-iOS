@@ -305,8 +305,19 @@
     NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
     return queryItem.value;
 }
++ (id)objectify:(NSString *)str{
+    NSString *converted = str;
+    NSError *error;
+    NSData *data = [converted dataUsingEncoding: NSUTF8StringEncoding];
+    id result = [NSJSONSerialization JSONObjectWithData: data options: 0 error: &error];
+    if (result == nil) {
+        NSLog(@"Error: %@", error.localizedDescription);
+        return nil;
+    }
+    return result;
+}
 
-+ (NSString *)stringify:(NSDictionary *)value{
++ (NSString *)stringify:(id)value{
     /*
     NSError *error;
     @try {
@@ -320,7 +331,8 @@
      */
     
     SBJson4Writer *writer = [[SBJson4Writer alloc] init];
-    writer.humanReadable = YES;
+//    writer.humanReadable = YES;
+    writer.humanReadable = NO;
     writer.sortKeys = YES;
     @try {
         NSString *ret = [writer stringWithObject:value];
@@ -332,7 +344,6 @@
     } @catch(NSException *exception){
         return [value description];
     }
-
 }
 + (NSDictionary *)sessionForUrl:(NSString *)url{
     NSString *domain = [[[NSURL URLWithString:url] host] lowercaseString];
@@ -872,4 +883,5 @@
   FlushBuffer();
   return resultData;
 }
+
 @end

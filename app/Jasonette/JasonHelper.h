@@ -24,7 +24,8 @@
 + (NSString *)mimeTypeForData:(NSData *)data;
 + (UIImage*)colorize: (UIImage *)image into:(UIColor*)color;
 + (NSString*)getParamValueFor:(NSString *)key fromUrl: (NSString *)url;
-+ (NSString *)stringify:(NSDictionary *)value;
++ (NSString *)stringify:(id)value;
++ (id)objectify:(NSString*)str;
 + (NSDictionary *)sessionForUrl:(NSString *)url;
 + (NSDictionary*)dictFromJSONFile:(NSString*)filename;
 + (NSDictionary *)jasonify:(NSString*)str;
