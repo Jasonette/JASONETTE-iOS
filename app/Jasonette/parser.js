@@ -22234,7 +22234,10 @@ var fillout = function(options){
         data["$root"] = root;
 
         // If the pattern ends with a return statement, but is NOT wrapped inside another function ([^}]*$), it's a function expression
-        if(/\breturn [^;]+;?[ ]*$/.test(slot) && /return[^}]*$/.test(slot)){
+        var match = /function\([ ]*\)[ ]*\{(.*)\}[ ]*$/g.exec(slot);
+        if(match){
+          func = Function("with(this){" + match[1] + "}").bind(data);
+        } else if(/\breturn [^;]+;?[ ]*$/.test(slot) && /return[^}]*$/.test(slot)){
           // Function expression with explicit "return" expression
           func = Function("with(this){" + slot + "}").bind(data);
         } else {
@@ -22605,6 +22608,22 @@ var html = function(template, data, json){
   }
 }
 var json = function(template, data, json){
+
+  var _stringify = JSON.stringify;
+  JSON.stringify = function(val){
+    if(isObject(val)){
+      if('$root' in val){
+        var clone = Object.assign({}, val);
+        delete clone["$root"];
+        return _stringify(clone);
+      } else {
+        return _stringify(val);
+      }
+    } else {
+      return _stringify(val);
+    }
+  };
+
   if(json) {
 		// Exception handling
 		// => the template expression itself can look like JSON object, so we need to handle this is na special manner
@@ -22656,6 +22675,10 @@ var json = function(template, data, json){
       }
     }
   }
+}
+
+function isObject(obj) {
+  return Object.prototype.toString.call(obj) == "[object Object]";
 }
 
 var include = function(template, data){
@@ -22781,6 +22804,22 @@ var manipulator = function(template){
       */
       String.prototype.$root = data;
       Array.prototype.$root = data;
+
+      var _stringify = JSON.stringify;
+      JSON.stringify = function(val){
+        if(isObject(val)){
+          if('$root' in val){
+            var clone = Object.assign({}, val);
+            delete clone["$root"];
+            return _stringify(clone);
+          } else {
+            return _stringify(val);
+          }
+        } else {
+          return _stringify(val);
+        }
+      };
+
       root = data;
 
       if(!o.$selected){

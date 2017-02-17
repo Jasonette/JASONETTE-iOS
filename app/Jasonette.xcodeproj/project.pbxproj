@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */; };
-		045E5F581E44E5180088D5E6 /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 045E5F571E44E5180088D5E6 /* parser.js */; };
+		04E375511E5741BC00F7A6B8 /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 04E375501E5741BC00F7A6B8 /* parser.js */; };
 		04EEDCFE1E02F5180023114F /* demo.json in Resources */ = {isa = PBXBuildFile; fileRef = 04EEDCFC1E02F5180023114F /* demo.json */; };
 		04EEDCFF1E02F5180023114F /* hello.json in Resources */ = {isa = PBXBuildFile; fileRef = 04EEDCFD1E02F5180023114F /* hello.json */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
@@ -76,7 +76,7 @@
 /* Begin PBXFileReference section */
 		045E5F3B1E3661060088D5E6 /* JasonReturnAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonReturnAction.h; sourceTree = "<group>"; };
 		045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonReturnAction.m; sourceTree = "<group>"; };
-		045E5F571E44E5180088D5E6 /* parser.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = parser.js; sourceTree = "<group>"; };
+		04E375501E5741BC00F7A6B8 /* parser.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = parser.js; sourceTree = "<group>"; };
 		04EEDCFC1E02F5180023114F /* demo.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = demo.json; sourceTree = "<group>"; };
 		04EEDCFD1E02F5180023114F /* hello.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hello.json; sourceTree = "<group>"; };
 		1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.release.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.release.xcconfig"; sourceTree = "<group>"; };
@@ -407,7 +407,7 @@
 			isa = PBXGroup;
 			children = (
 				5E31769B1D1E411E00D87778 /* csv.js */,
-				045E5F571E44E5180088D5E6 /* parser.js */,
+				04E375501E5741BC00F7A6B8 /* parser.js */,
 				5E3176F41D1E411E00D87778 /* rss.js */,
 			);
 			name = Lib;
@@ -728,7 +728,7 @@
 				04EEDCFE1E02F5180023114F /* demo.json in Resources */,
 				5E31771E1D1E411F00D87778 /* JasonVerticalSectionItem.xib in Resources */,
 				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
-				045E5F581E44E5180088D5E6 /* parser.js in Resources */,
+				04E375511E5741BC00F7A6B8 /* parser.js in Resources */,
 				5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */,
 				5E3177371D1E411F00D87778 /* icon-info.png in Resources */,
 				04EEDCFF1E02F5180023114F /* hello.json in Resources */,
