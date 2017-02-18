@@ -311,7 +311,41 @@ generate_iconset(){
 
 }
 
+checkXcodeVersion() {
+
+  xcodePath="/Applications/Xcode.app"
+
+  # Obtain the Current Xcode Version. Just the First Number.
+  xcodeVersion=(
+    `nohup cat ${xcodePath}/Contents/version.plist | 
+    grep CFBundleShortVersionString -A1 | 
+    grep string | 
+    awk -v FS="(<string>|</string>)" '{print $2}' |
+    awk '{split($0, a, "."); print a[1]}'`
+    )
+
+  RED="\033[0;31m"
+
+  # Empty String
+  if [[ -z "${xcodeVersion// }" ]]; then
+    echo "${RED}No Xcode Found in ${xcodePath} directory."
+    exit -1
+  fi
+
+  minimumXcodeVersion=8
+
+  if [ $xcodeVersion -lt $minimumXcodeVersion ];then
+    echo "${RED}Current Xcode.app version (${xcodeVersion})"\
+         "is lesser than the required minimum (${minimumXcodeVersion})."
+    echo "Please update your Xcode before using Jasonette :)."
+    exit -1
+  fi
+}
+
 clear
+
+checkXcodeVersion
+
 RED='\033[0;31m'
 GREEN='\033[1;32m'
 YELLOW='\033[1;33m'
