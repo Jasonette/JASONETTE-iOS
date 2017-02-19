@@ -810,15 +810,22 @@
         } else {
             rendered_page = [JasonHelper parse: data_stub with:body_parser];
         }
-        VC.rendered = rendered_page;
         
         if(rendered_page){
             // Deprecated
             if(rendered_page[@"nav"]) {
-                [self setupHeader:rendered_page[@"nav"]];
+                if(VC.rendered && [[VC.rendered[@"nav"] description] isEqualToString:[rendered_page[@"nav"] description]]){
+                    // Don' re-render since it's the same
+                } else {
+                    [self setupHeader:rendered_page[@"nav"]];
+                }
             } else if(rendered_page[@"header"]) {
                 // Use This
-                [self setupHeader:rendered_page[@"header"]];
+                if(VC.rendered && [[VC.rendered[@"header"] description] isEqualToString:[rendered_page[@"header"] description]]){
+                    // Don' re-render since it's the same
+                } else {
+                    [self setupHeader:rendered_page[@"header"]];
+                }
             } else {
                 [self setupHeader:nil];
             }
@@ -850,6 +857,7 @@
                 [self drawBackground:@"#ffffff"];
             }
         }
+        VC.rendered = rendered_page;
         
         if([VC respondsToSelector:@selector(reload:)]) [VC reload:rendered_page];
         
@@ -3174,7 +3182,6 @@
     
     // In case oauth was in process, set it back to No
     self.oauth_in_process = NO;
-
 }
 
 
