@@ -22585,7 +22585,12 @@ var run = function(template, data){
     }
   } else {
     // number, boolean, etc => Just turn them into string!
-    return run(template.toString(), data);
+		if(!template){
+			// null, undefined
+			return run(Object.prototype.toString.call(template), data);
+		} else {
+			return run(template.toString(), data);
+		}
   }
   return result;
 };
