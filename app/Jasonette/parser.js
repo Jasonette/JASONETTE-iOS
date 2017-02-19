@@ -22515,7 +22515,7 @@ var run = function(template, data){
         }
       }
     }
-  } else {
+  } else if(Object.prototype.toString.call(template) == "[object Object]"){
     // template is an object
     result = {};
 
@@ -22583,6 +22583,9 @@ var run = function(template, data){
         }
       }
     }
+  } else {
+    // number, boolean, etc => Just turn them into string!
+    return run(template.toString(), data);
   }
   return result;
 };
