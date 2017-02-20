@@ -22585,9 +22585,10 @@ var run = function(template, data){
     }
   } else {
     // number, boolean, etc => Just turn them into string!
-		if(!template){
-			// null, undefined
-			return run(Object.prototype.toString.call(template), data);
+		if(template === null){
+			return "null";
+		} else if(template === undefined){
+			return "undefined";
 		} else {
 			return run(template.toString(), data);
 		}
@@ -22618,19 +22619,21 @@ var html = function(template, data, json){
 var json = function(template, data, json){
 
   var _stringify = JSON.stringify;
-  JSON.stringify = function(val){
-    if(isObject(val)){
-      if('$root' in val){
-        var clone = Object.assign({}, val);
-        delete clone["$root"];
-        return _stringify(clone);
-      } else {
-        return _stringify(val);
-      }
-    } else {
-      return _stringify(val);
-    }
+  JSON.stringify = function(val, replacer, spaces){
+		if(!replacer){
+			return _stringify(val, function(key, val){
+				if(key == "$root"){
+					return undefined;
+				} else {
+					return val;
+				}
+			}, spaces);
+		} else {
+			return _stringify(val, replacer, spaces);
+		}
   };
+	
+	var res;
 
   if(json) {
 		// Exception handling
@@ -22656,14 +22659,14 @@ var json = function(template, data, json){
 
     if(template_is_string){
       // if string, just parse
-      return JSON.stringify(run(template_object, data_object));
+      res = JSON.stringify(run(template_object, data_object));
     } else {
       // otherwise
       // if there's any "#include", resolve it instead of parsing
       if(/#include/.test(template)) {
-        return JSON.stringify(include(template_object, data_object));
+        res = JSON.stringify(include(template_object, data_object));
       } else {
-        return JSON.stringify(run(template_object, data_object));
+        res = JSON.stringify(run(template_object, data_object));
       }
     }
   } else {
@@ -22673,16 +22676,18 @@ var json = function(template, data, json){
 
     if(typeof template == "string"){
       // if string, just parse
-      return run(template, data);
+      res = run(template, data);
     } else {
       // if there's any "#include", resolve it instead of parsing
       if(/#include/.test(JSON.stringify(template))) {
-        return include(template, data);
+        res = include(template, data);
       } else {
-        return run(template, data);
+        res =  run(template, data);
       }
     }
   }
+	return JSON.parse(JSON.stringify(res));
+	//return res;
 }
 
 function isObject(obj) {
@@ -22812,21 +22817,6 @@ var manipulator = function(template){
       */
       String.prototype.$root = data;
       Array.prototype.$root = data;
-
-      var _stringify = JSON.stringify;
-      JSON.stringify = function(val){
-        if(isObject(val)){
-          if('$root' in val){
-            var clone = Object.assign({}, val);
-            delete clone["$root"];
-            return _stringify(clone);
-          } else {
-            return _stringify(val);
-          }
-        } else {
-          return _stringify(val);
-        }
-      };
 
       root = data;
 
