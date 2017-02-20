@@ -5,6 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonParser.h"
+#define NSLog(FORMAT, ...) printf("%s\n", [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String]);
 
 @implementation JasonParser
 - (void)format{
@@ -132,6 +133,12 @@
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
                 NSLog(@"%@", value);
             }];
+            
+            [context evaluateScript:@"var console = {}"];
+            context[@"console"][@"log"] = ^(NSString *message) {
+                NSLog(@"Javascript log: %@",message);
+            };
+
 
             [context evaluateScript:js];
             JSValue *parse = context[@"parser"][@"json"];
