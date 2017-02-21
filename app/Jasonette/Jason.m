@@ -1844,50 +1844,56 @@
     [navigationController setNavigationBarHidden:NO];
     if(nav[@"style"]){
         NSDictionary *headStyle = nav[@"style"];
-        if(headStyle){
-            if(headStyle[@"background"]){
-                NSString *bg = headStyle[@"background"];
-                background = [JasonHelper colorwithHexString:bg alpha:1.0];
-            }
-            if(headStyle[@"color"]){
-                color = [JasonHelper colorwithHexString:headStyle[@"color"] alpha:1.0];
-            }
-            
-            if(headStyle[@"theme"]){
-                navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
-            } else {
-                navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-            }
-            
-            if(headStyle[@"shy"]){
-                navigationController.hidesBarsOnSwipe = YES;
-            } else {
-                navigationController.hidesBarsOnSwipe = NO;
-            }
-            
-            
-            if(headStyle[@"hide"] && [headStyle[@"hide"] boolValue]){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                     [navigationController setNavigationBarHidden:YES];
-                });
-               
-            } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [navigationController setNavigationBarHidden:NO];
-                });
-                
-            }
-            
-            NSString *font_name = @"HelveticaNeue-CondensedBold";
-            NSString *font_size = @"18";
-            if(headStyle[@"font"]){
-                font_name = headStyle[@"font"];
-            }
-            if(headStyle[@"size"]){
-                font_size = headStyle[@"size"];
-            }
-            navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
+        if(headStyle[@"background"]){
+            NSString *bg = headStyle[@"background"];
+            background = [JasonHelper colorwithHexString:bg alpha:1.0];
         }
+        if(headStyle[@"color"]){
+            color = [JasonHelper colorwithHexString:headStyle[@"color"] alpha:1.0];
+        }
+        
+        if(headStyle[@"theme"]){
+            navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
+        } else {
+            navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+        }
+        
+        if(headStyle[@"shy"]){
+            navigationController.hidesBarsOnSwipe = YES;
+        } else {
+            navigationController.hidesBarsOnSwipe = NO;
+        }
+        
+        
+        if(headStyle[@"hide"] && [headStyle[@"hide"] boolValue]){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                 [navigationController setNavigationBarHidden:YES];
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [navigationController setNavigationBarHidden:NO];
+            });
+            
+        }
+        
+        NSString *font_name = @"HelveticaNeue-CondensedBold";
+        NSString *font_size = @"18";
+        if(headStyle[@"font"]){
+            font_name = headStyle[@"font"];
+        }
+        if(headStyle[@"size"]){
+            font_size = headStyle[@"size"];
+        }
+        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
+    } else {
+        navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+        navigationController.hidesBarsOnSwipe = NO;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [navigationController setNavigationBarHidden:NO];
+        });
+        NSString *font_name = @"HelveticaNeue-CondensedBold";
+        NSString *font_size = @"18";
+        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
     }
 
 
@@ -2452,6 +2458,7 @@
     }
 }
 - (void)onLoad{
+    [JasonMemory client].executing = NO;
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events){
         if(events[@"$load"]){
@@ -2658,7 +2665,6 @@
                         [self unlock];
                     }
                     if(tabController.tabBar.hidden){
-                        vc.hidesBottomBarWhenPushed = YES;
                         vc.extendedLayoutIncludesOpaqueBars = YES;
                         tabController.tabBar.hidden = YES;
                     } else {
@@ -3176,6 +3182,7 @@
     [JasonMemory client]._stack = @{};
     [JasonMemory client]._register = @{};
     [JasonMemory client].locked = NO;
+    [JasonMemory client].executing = NO;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"finishRefreshing" object:nil];
     VC.view.userInteractionEnabled = YES;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"unlock" object:nil];
