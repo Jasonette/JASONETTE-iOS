@@ -237,6 +237,11 @@
     return self.navigationController.isNavigationBarHidden;
 }
 
+- (void)viewDidLayoutSubviews
+{
+    // fix for iOS7 bug in UITabBarController
+    self.extendedLayoutIncludesOpaqueBars = YES;
+}
 
 
 
