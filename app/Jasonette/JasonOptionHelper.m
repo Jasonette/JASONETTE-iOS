@@ -12,7 +12,7 @@
 
 #pragma mark - Private
 
-- (id) safeGet:(NSString *) key
+- (nullable id) safeGet:(nonnull NSString *) key
 {
     if (self.options)
     {
@@ -25,7 +25,7 @@
     return nil;
 }
 
-- (id) safeGetKeys:(NSArray<NSString *> *) keys
+- (nullable id) safeGetKeys:(nonnull NSArray<NSString *> *) keys
 {
     id result = nil;
     
@@ -38,6 +38,21 @@
     }
     
     return result;
+}
+
+- (nullable NSString *) emptyAsNil:(nullable NSString *) string
+{
+    NSString  * result = @"";
+    
+    if(string)
+    {
+        
+        result = [string
+                  stringByTrimmingCharactersInSet:[NSCharacterSet
+                                                   whitespaceAndNewlineCharacterSet]];
+    }
+    
+    return ([result isEqualToString:@""] ? nil : string);
 }
 
 #pragma mark - Public
@@ -87,9 +102,20 @@
     return (NSString *) [self safeGet:key];
 }
 
+- (nullable NSString *) getStringWithEmptyAsNil:(nonnull NSString *) key
+{
+    return [self emptyAsNil:[self getString:key]];
+}
+
+
 - (nullable NSString *) getStringWithKeyNames:(nonnull NSArray<NSString *> *) keys
 {
     return (NSString *) [self safeGetKeys:keys];
+}
+
+- (nullable NSString *) getStringWithKeyNamesWithEmptyAsNil:(nonnull NSArray<NSString *> *) keys
+{
+    return [self emptyAsNil:[self getStringWithKeyNames:keys]];
 }
 
 - (nullable NSDictionary *) getDict: (nonnull NSString *) key
@@ -111,4 +137,15 @@
 {
     return (NSNumber *) [self safeGetKeys:keys];
 }
+
+- (BOOL) getBoolean: (nonnull NSString *) key
+{
+    return [[self getNumber:key] boolValue];
+}
+
+- (BOOL) getBooleanWithKeyNames:(nonnull NSArray<NSString *> *) keys
+{
+    return [[self getNumberWithKeyNames:keys] boolValue];
+}
+
 @end
