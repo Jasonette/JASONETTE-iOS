@@ -1160,8 +1160,14 @@
     VC = (UIViewController<RussianDollView>*)viewController;
     navigationController = viewController.navigationController;
     navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
+    navigationController.navigationBar.shadowImage = [UIImage new];
+    [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     tabController = navigationController.tabBarController;
     tabController.delegate = self;
+    tabController.tabBar.barTintColor=[UIColor whiteColor];
+    tabController.tabBar.backgroundColor = [UIColor whiteColor];
+    tabController.tabBar.shadowImage = [[UIImage alloc] init];
+    [tabController.tabBar setClipsToBounds:YES];
     
     VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
   
@@ -2240,7 +2246,6 @@
             tabController.tabBar.translucent = NO;
             tabController.tabBar.backgroundColor =[JasonHelper colorwithHexString:style[@"background"] alpha:1.0];
             [tabController.tabBar setBarTintColor:[JasonHelper colorwithHexString:style[@"background"] alpha:1.0]];
-
         }
         [[UITabBar appearance] setTranslucent:NO];
         [[UITabBar appearance] setBarStyle:UIBarStyleBlack];
