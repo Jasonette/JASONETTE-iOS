@@ -229,13 +229,7 @@
     UIActivityViewController *controller = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
     
     // Exclude all activities except AirDrop.
-    NSArray *excludeActivities = @[UIActivityTypeAirDrop,
-                                   UIActivityTypePrint,
-                                   UIActivityTypeAssignToContact,
-                                   UIActivityTypeSaveToCameraRoll,
-                                   UIActivityTypeAddToReadingList,
-                                   UIActivityTypePostToFlickr,
-                                   UIActivityTypePostToVimeo];
+    NSArray *excludeActivities = @[UIActivityTypePostToFlickr, UIActivityTypePostToVimeo];
     controller.excludedActivityTypes = excludeActivities;
     if(controller.popoverPresentationController){
         controller.popoverPresentationController.sourceView = self.VC.view;
