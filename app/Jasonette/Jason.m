@@ -1287,6 +1287,8 @@
 }
 - (void)flush{
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    [[SDImageCache sharedImageCache]clearMemory];
+    [[SDImageCache sharedImageCache]clearDisk];
     [self success];
 }
 - (void)kill{
