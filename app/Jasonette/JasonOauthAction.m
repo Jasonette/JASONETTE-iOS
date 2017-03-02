@@ -983,6 +983,7 @@
             
             NSString *client_id = self.options[@"access"][@"client_id"];
             NSString *client_secret = self.options[@"access"][@"client_secret"];
+            if(!client_secret) client_secret = @"";
             
             NSString *code = [self valueForKey:@"code" fromQueryItems:returnValues];
             
