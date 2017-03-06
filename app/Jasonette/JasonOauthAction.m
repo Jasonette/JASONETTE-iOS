@@ -250,6 +250,7 @@
     NSString *path = self.options[@"path"];
     NSString *host = self.options[@"host"];
     NSString *scheme = self.options[@"scheme"];
+    if(!scheme) scheme = @"https";
     NSString *method = self.options[@"method"];
     if(!method) method = @"get";
     NSDictionary *params= self.options[@"data"];
@@ -274,7 +275,7 @@
                            consumerSecret:client_secret
                               accessToken:access_token
                               tokenSecret:access_secret
-                                   scheme:@"https"
+                                   scheme:scheme
                             requestMethod:method.uppercaseString
                              dataEncoding:TDOAuthContentTypeUrlEncodedForm
                              headerValues:nil
@@ -982,6 +983,7 @@
             
             NSString *client_id = self.options[@"access"][@"client_id"];
             NSString *client_secret = self.options[@"access"][@"client_secret"];
+            if(!client_secret) client_secret = @"";
             
             NSString *code = [self valueForKey:@"code" fromQueryItems:returnValues];
             
