@@ -156,7 +156,9 @@
         if (url){
             [[Jason client] loading:YES];
             [NSGIF optimalGIFfromURL:url loopCount:0 completion:^(NSURL *GifURL) {
-                NSDictionary *result = @{@"file_url": url, @"data": [NSData dataWithContentsOfURL:GifURL] , @"content_type": @"image/gif"};
+                NSData *d = [NSData dataWithContentsOfURL:GifURL];
+                NSString *base64 = [d base64EncodedStringWithOptions:0];
+                NSDictionary *result = @{@"file_url": url, @"data": base64 , @"content_type": @"image/gif"};
                 [[Jason client] success: result];
             }];
         }
@@ -205,12 +207,14 @@
          {
             NSString *contentType = @"video/mp4";
             NSData *mediaData = [NSData dataWithContentsOfURL:outputUrl];
+            NSString *base64 = [mediaData base64EncodedStringWithOptions:0];
              
             NSString *dataFormatString = @"data:video/mp4;base64,%@";
-            NSString* dataString = [NSString stringWithFormat:dataFormatString, [mediaData base64EncodedStringWithOptions:0]];
+            NSString* dataString = [NSString stringWithFormat:dataFormatString, base64];
             NSURL* dataURI = [NSURL URLWithString:dataString];
              
-            NSDictionary *result = @{@"file_url": url, @"data_uri": dataURI.absoluteString, @"data": mediaData , @"content_type": contentType};
+             
+            NSDictionary *result = @{@"file_url": url, @"data_uri": dataURI.absoluteString, @"data": base64 , @"content_type": contentType};
             [[Jason client] success: result];
          }];
     } else if(isImage){
@@ -245,14 +249,16 @@
             dataFormatString = @"data:image/png;base64,%@";
         }
         
-        NSString* dataString = [NSString stringWithFormat:dataFormatString, [mediaData base64EncodedStringWithOptions:0]];
+        NSString *base64 = [mediaData base64EncodedStringWithOptions:0];
+        
+        NSString* dataString = [NSString stringWithFormat:dataFormatString, base64];
         NSURL* dataURI = [NSURL URLWithString:dataString];
         
         NSDictionary *result;
         if(url){
-            result = @{@"file_url": url, @"data_uri": dataURI.absoluteString, @"data": mediaData , @"content_type": contentType};
+            result = @{@"file_url": url, @"data_uri": dataURI.absoluteString, @"data": base64 , @"content_type": contentType};
         } else {
-            result = @{@"data": mediaData , @"data_uri": dataURI.absoluteString, @"content_type": contentType};
+            result = @{@"data": base64 , @"data_uri": dataURI.absoluteString, @"content_type": contentType};
         }
         [[Jason client] success: result];
     }

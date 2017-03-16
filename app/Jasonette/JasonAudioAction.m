@@ -222,7 +222,9 @@
 -(void)audioRecorderController:(IQAudioRecorderViewController *)controller didFinishWithAudioAtPath:(NSString *)filePath
 {
     NSURL *fileUrl = [NSURL fileURLWithPath: filePath];
-    [[Jason client] success: @{@"url": fileUrl, @"data": [NSData dataWithContentsOfURL:fileUrl] , @"content_type": @"audio/m4a"}];
+    NSData *d = [NSData dataWithContentsOfURL:fileUrl];
+    NSString *base64 = [d base64EncodedStringWithOptions:0];
+    [[Jason client] success: @{@"url": fileUrl, @"data": base64 , @"content_type": @"audio/m4a"}];
 }
 
 -(void)audioRecorderControllerDidCancel:(IQAudioRecorderViewController *)controller

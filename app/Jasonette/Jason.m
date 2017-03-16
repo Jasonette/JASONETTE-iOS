@@ -901,9 +901,10 @@
         NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
         NSString *contentType = @"image/jpeg";
         NSString *dataFormatString = @"data:image/jpeg;base64,%@";
-        NSString* dataString = [NSString stringWithFormat:dataFormatString, [imageData base64EncodedStringWithOptions:0]];
+        NSString *base64data = [imageData base64EncodedStringWithOptions:0];
+        NSString* dataString = [NSString stringWithFormat:dataFormatString, base64data];
         NSURL* dataURI = [NSURL URLWithString:dataString];
-        [[Jason client] success:@{@"data": imageData, @"data_uri": dataURI.absoluteString, @"content_type" :contentType}];
+        [[Jason client] success:@{@"data": base64data, @"data_uri": dataURI.absoluteString, @"content_type" :contentType}];
     }
 }
 
@@ -3253,10 +3254,11 @@
     
     UIImage *image = [JasonHelper takescreenshot];
     NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
+    NSString *base64 = [imageData base64EncodedStringWithOptions:0];
     
-    NSString* dataString = [NSString stringWithFormat:dataFormatString, [imageData base64EncodedStringWithOptions:0]];
+    NSString* dataString = [NSString stringWithFormat:dataFormatString, base64];
     NSURL* dataURI = [NSURL URLWithString:dataString];
-    [[Jason client] success:@{@"data": imageData, @"data_uri": dataURI.absoluteString, @"metadata": metadata, @"content_type" :contentType}];
+    [[Jason client] success:@{@"data": base64, @"data_uri": dataURI.absoluteString, @"metadata": metadata, @"content_type" :contentType}];
 }
 
 @end

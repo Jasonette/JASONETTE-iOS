@@ -144,7 +144,7 @@
                 if([item[@"type"] isEqualToString:@"image"]){
                     NSString *url = item[@"url"];
                     NSString *file_url = item[@"file_url"];
-                    NSData *data = item[@"data"];
+                    NSData *data = [[NSData alloc] initWithBase64EncodedString:item[@"data"] options:0];
                     if(url){
                         SDWebImageManager *manager = [SDWebImageManager sharedManager];
                         [manager downloadImageWithURL:[NSURL URLWithString:url]

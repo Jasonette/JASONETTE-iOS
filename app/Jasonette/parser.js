@@ -22686,8 +22686,7 @@ var json = function(template, data, json){
       }
     }
   }
-	//return JSON.parse(JSON.stringify(res));
-	return res; // using JSON.parse(JSON.stringify(res)) gets rid of $root but messes up binary data because they're not string
+	return JSON.parse(JSON.stringify(res)); // get rid of $root since we're done
 }
 
 function isObject(obj) {
