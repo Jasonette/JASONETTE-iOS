@@ -1554,17 +1554,6 @@
 }
 - (void)drawViewFromJason: (NSDictionary *)jason{
     
-    // Step 0. In case there are passed parameters, we need to fill them in first.
-    if([VC respondsToSelector:@selector(options)]){
-        if([[VC valueForKey:@"options"] count] > 0){
-            NSDictionary *options = @{@"$params": [VC valueForKey:@"options"]};
-            NSDictionary *newres = [JasonHelper parse:options with:jason];
-            if(newres && newres.count > 0){
-                jason = newres;
-            }
-        }
-    }
-
     NSDictionary *head = jason[@"$jason"][@"head"];
     if(!head)return;
     
