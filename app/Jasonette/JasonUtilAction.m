@@ -144,7 +144,6 @@
                 if([item[@"type"] isEqualToString:@"image"]){
                     NSString *url = item[@"url"];
                     NSString *file_url = item[@"file_url"];
-                    NSData *data = [[NSData alloc] initWithBase64EncodedString:item[@"data"] options:0];
                     if(url){
                         SDWebImageManager *manager = [SDWebImageManager sharedManager];
                         [manager downloadImageWithURL:[NSURL URLWithString:url]
@@ -162,7 +161,8 @@
                         [share_items addObject:file_url];
                         counter--;
                         if(counter == 0) [self openShareWith:share_items];
-                    } else if(data){
+                    } else if(item[@"data"]){
+                        NSData *data = [[NSData alloc] initWithBase64EncodedString:item[@"data"] options:0];
                         UIImage *image = [UIImage imageWithData:data];
                         [share_items addObject:image];
                         counter--;
