@@ -2281,7 +2281,7 @@
                 } else {
                     JasonViewController *vc = [[JasonViewController alloc] init];
                     vc.url = url;
-                    vc.options = options;
+                    vc.options = [self filloutTemplate:options withData:[self variables]];
                     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
                     [tabs_array addObject:nav];
                 }
@@ -2293,7 +2293,7 @@
                     UINavigationController *nav = tabController.viewControllers[i];
                     UIViewController<RussianDollView> *vc = [[nav viewControllers] firstObject];
                     vc.url = url;
-                    vc.options = options;
+                    vc.options = [self filloutTemplate:options withData:[self variables]];
                 }
             }
         }
@@ -2332,13 +2332,13 @@
             NSString *view = selected_tab[@"href"][@"view"];
             if(transition){
                 if([transition isEqualToString:@"modal"]){
-                    [self go: selected_tab[@"href"]];
+                    [self go: [self filloutTemplate:selected_tab[@"href"] withData:[self variables]]];
                     return NO;
                 }
             }
             if(view){
                 if([view isEqualToString:@"web"] || [view isEqualToString:@"app"]){
-                    [self go: selected_tab[@"href"]];
+                    [self go: [self filloutTemplate:selected_tab[@"href"] withData:[self variables]]];
                     return NO;
                 }
             }
