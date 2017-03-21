@@ -88,8 +88,13 @@
             NSError *error = nil;
             NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
             [inputStream open];
-            VC.original = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
-            [self drawViewFromJason: VC.original];
+            id jsonResponseObject = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+            [self include:jsonResponseObject andCompletionHandler:^(id res){
+                dispatch_async(dispatch_get_main_queue(), ^{                    
+                    VC.original = @{@"$jason": res[@"$jason"]};
+                    [self drawViewFromJason: VC.original];                    
+                });
+            }];
             [inputStream close];
         } else {
             NSLog(@"JASON FILE NOT FOUND: %@", jsonFile);
@@ -956,37 +961,60 @@
             if(matches.count == 0){
                 // 2. Enter dispatch_group
                 dispatch_group_enter(requireGroup);
-                
-                // 3. Setup networking
-                AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-                AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
-                NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
-                [jsonAcceptableContentTypes addObject:@"text/plain"];
-                jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
-                manager.responseSerializer = jsonResponseSerializer;
-                
-                // 4. Attach session
-                NSDictionary *session = [JasonHelper sessionForUrl:url];
-                if(session && session.count > 0 && session[@"header"]){
-                    for(NSString *key in session[@"header"]){
-                        [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
-                    }
-                }
-                NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-                if(session && session.count > 0 && session[@"body"]){
-                    for(NSString *key in session[@"body"]){
-                        parameters[key] = session[@"body"][key];
-                    }
-                }
-                
-                // 5. Start request
-                [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                    VC.requires[url] = responseObject;
+                                
+                // 3. Check if local
+                if ([url hasPrefix:@"file://"]) {
+                    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+                    NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];  
+                    NSString *loc = @"file:/";
+                    
+                    NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
+                    
+                    NSFileManager *fileManager = [NSFileManager defaultManager];
+                    
+                    if ([fileManager fileExistsAtPath:jsonFile]) { 
+                        NSError *error = nil;
+                        NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
+                        [inputStream open];
+                        
+                        id jsonResponseObject = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+                        VC.requires[url] = jsonResponseObject;
+                        [inputStream close];                      
+                    } 
                     dispatch_group_leave(requireGroup);
-                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                    NSLog(@"Error");
-                    dispatch_group_leave(requireGroup);
-                }];
+                    
+                } else {                
+                    // 4. Setup networking
+                    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+                    AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+                    NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                    [jsonAcceptableContentTypes addObject:@"text/plain"];
+                    jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+                    manager.responseSerializer = jsonResponseSerializer;
+                    
+                    // 5. Attach session
+                    NSDictionary *session = [JasonHelper sessionForUrl:url];
+                    if(session && session.count > 0 && session[@"header"]){
+                        for(NSString *key in session[@"header"]){
+                            [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                        }
+                    }
+                    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+                    if(session && session.count > 0 && session[@"body"]){
+                        for(NSString *key in session[@"body"]){
+                            parameters[key] = session[@"body"][key];
+                        }
+                    }
+                    
+                    // 6. Start request
+                    [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                        VC.requires[url] = responseObject;
+                        dispatch_group_leave(requireGroup);
+                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                        NSLog(@"Error");
+                        dispatch_group_leave(requireGroup);
+                    }];                    
+                }
             }
         }
         
