@@ -2294,9 +2294,13 @@
             NSDictionary *tab = tabs[i];
             NSString *url;
             NSDictionary *options = @{};
+            BOOL loading = NO;
             if(tab[@"href"]){
                 url = tab[@"href"][@"url"];
                 options = tab[@"href"][@"options"];
+                if(tab[@"href"][@"loading"]){
+                    loading = YES;
+                }
             } else {
                 url = tab[@"url"];
             }
@@ -2310,6 +2314,7 @@
                     JasonViewController *vc = [[JasonViewController alloc] init];
                     vc.url = url;
                     vc.options = [self filloutTemplate:options withData:[self variables]];
+                    vc.loading = loading;
                     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
                     [tabs_array addObject:nav];
                 }
@@ -2322,6 +2327,7 @@
                     UIViewController<RussianDollView> *vc = [[nav viewControllers] firstObject];
                     vc.url = url;
                     vc.options = [self filloutTemplate:options withData:[self variables]];
+                    vc.loading = loading;
                 }
             }
         }
