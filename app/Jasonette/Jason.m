@@ -1718,40 +1718,48 @@
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *type = bg[@"type"];
-        if(type && [type isEqualToString:@"camera"]){
+        if(type) {
             if(VC.background){
                 [VC.background removeFromSuperview];
                 VC.background = nil;
             }
-            
             NSDictionary *options = bg[@"options"];
             
-            
-            AVCaptureVideoPreviewLayer *_previewLayer;
-            VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-            _previewLayer = [[PBJVision sharedInstance] previewLayer];
-            _previewLayer.frame = VC.background.bounds;
-            _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-            
-            [VC.background.layer addSublayer:_previewLayer];
-            
-            vision = [PBJVision sharedInstance];
-            vision.delegate = self;
-            if(options[@"mode"] && [options[@"mode"] isEqualToString:@"video"]){
-                vision.cameraMode = PBJCameraModeVideo;
-            } else {
-                vision.cameraMode = PBJCameraModePhoto;
+            if([type isEqualToString:@"camera"]){
+                
+                
+                AVCaptureVideoPreviewLayer *_previewLayer;
+                VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+                _previewLayer = [[PBJVision sharedInstance] previewLayer];
+                _previewLayer.frame = VC.background.bounds;
+                _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+                
+                [VC.background.layer addSublayer:_previewLayer];
+                
+                vision = [PBJVision sharedInstance];
+                vision.delegate = self;
+                if(options[@"mode"] && [options[@"mode"] isEqualToString:@"video"]){
+                    vision.cameraMode = PBJCameraModeVideo;
+                } else {
+                    vision.cameraMode = PBJCameraModePhoto;
+                }
+                vision.cameraOrientation = PBJCameraOrientationPortrait;
+                vision.focusMode = PBJFocusModeContinuousAutoFocus;
+                if(options[@"device"] && [options[@"device"] isEqualToString:@"back"]){
+                    vision.cameraDevice = PBJCameraDeviceBack;
+                } else {
+                    vision.cameraDevice = PBJCameraDeviceFront;
+                }
+                
+                [vision startPreview];
+                
+            } else if([type isEqualToString:@"html"]){
+                VC.background = [[UIWebView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+                if(options[@"text"]){
+                    NSString *html = options[@"text"];
+                    [((UIWebView*)VC.background) loadHTMLString:html baseURL:nil];
+                }
             }
-            vision.cameraOrientation = PBJCameraOrientationPortrait;
-            vision.focusMode = PBJFocusModeContinuousAutoFocus;
-            if(options[@"device"] && [options[@"device"] isEqualToString:@"back"]){
-                vision.cameraDevice = PBJCameraDeviceBack;
-            } else {
-                vision.cameraDevice = PBJCameraDeviceFront;
-            }
-            
-            [vision startPreview];
-            
             [VC.view addSubview:VC.background];
             [VC.view sendSubviewToBack:VC.background];
         }
