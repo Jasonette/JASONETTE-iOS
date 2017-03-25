@@ -274,13 +274,13 @@
                 header = [JasonComponentFactory applyStylesheet:header];
                 if(header[@"style"] && header[@"style"][@"height"]){
                     NSString *height = header[@"style"][@"height"];
-                    return [height integerValue];
+                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:height];
                 }
                 return 40.0f;
             } else {
                 header = [JasonComponentFactory applyStylesheet:header];
                 if(header[@"style"] && header[@"style"][@"height"]){
-                    return (CGFloat)[header[@"style"][@"height"] floatValue];
+                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:header[@"style"][@"height"]];
                 }
             }
             return UITableViewAutomaticDimension;
@@ -419,7 +419,7 @@
             if(style){
                 if(style[@"height"]){
                     NSString *height = style[@"height"];
-                    tabs_height = [height integerValue];
+                    tabs_height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:height];
                 }
                 if(style[@"tintColor"]){   // deprecated. use tint_color
                     tabs_selection_color = [JasonHelper colorwithHexString:style[@"tintColor"] alpha:1.0];
@@ -584,7 +584,8 @@
     // Currently background only at cell level (layouts don't have background)
     if(style[@"background"]){
         if([style[@"background"] hasPrefix:@"http"]){
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,cell.frame.size.width, [style[@"height"] floatValue])];
+            CGFloat h = [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,cell.frame.size.width, h)];
             cell.backgroundView = imageView;
             cell.backgroundView.backgroundColor = [UIColor clearColor];
             cell.backgroundView.opaque = NO;
@@ -665,7 +666,7 @@
                 section = [JasonComponentFactory applyStylesheet: section];
                 NSDictionary *style = section[@"style"];
                 if(style && style[@"height"]){
-                    return [style[@"height"] floatValue];
+                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
                 }
                 
                 
@@ -707,7 +708,7 @@
                 item = [JasonComponentFactory applyStylesheet:item];
                 NSDictionary *style = item[@"style"];
                 if(style && style[@"height"]){
-                    return (CGFloat)[style[@"height"] floatValue];
+                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
                 }
             } else {
                 return 0.0f;
@@ -727,7 +728,7 @@
             NSDictionary *style = s[@"style"];
             if(style){
                 if(style[@"height"]){
-                    return [style[@"height"] floatValue];
+                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
                 }
             }
             return 100.0f;
