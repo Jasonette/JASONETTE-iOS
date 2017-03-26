@@ -883,22 +883,6 @@
   FlushBuffer();
   return resultData;
 }
-+ (void)force_background: (NSString *) color intoView: (UIView *) view{
-    if([view isKindOfClass:[UIToolbar class]]){
-        [(UIToolbar *)view setBackgroundImage:[UIImage new]
-                      forToolbarPosition:UIToolbarPositionAny
-                              barMetrics:UIBarMetricsDefault];
-        [(UIToolbar *)view setBackgroundColor:[UIColor clearColor]];
-
-    } else {
-        view.backgroundColor = [JasonHelper colorwithHexString:color alpha:1.0];
-        if(view.subviews && view.subviews.count > 0){
-            for(UIView *v in view.subviews){
-                [JasonHelper force_background:color intoView:v];
-            }
-        }
-    }
-}
 + (NSArray *)childOf: (UIView *)view withClassName: (NSString *)className {
     NSMutableArray *f = [[NSMutableArray alloc] init];
     Class klass = NSClassFromString (className);

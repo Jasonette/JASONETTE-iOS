@@ -1436,6 +1436,12 @@
             }
             
             
+            // First set the background style. The order is important because we will override some background colors below
+            if(chat_input[@"style"]){
+                if(chat_input[@"style"][@"background"]){
+                    [self force_background:chat_input[@"style"][@"background"] intoView:composeBarView];
+                }
+            }
             
             // input field styling
             if(field[@"style"]){
@@ -1445,49 +1451,34 @@
                 for(UIView *v in composeBarView.subviews){
                     for(UIView *vv in v.subviews){
                         if([vv isKindOfClass:[UITextView class]]){
-                            
-                            // border color
-                            if(field[@"style"][@"border_color"]){
-                                vv.superview.layer.borderColor = [[JasonHelper colorwithHexString:field[@"style"][@"border_color"] alpha:1.0] CGColor];
+                            vv.superview.layer.borderWidth = 0;
+                            for(UIView *vvv in vv.superview.subviews){
+                                
+                                // textfield background
+                                if(field[@"style"][@"background"]){
+                                    vvv.backgroundColor = [JasonHelper colorwithHexString:field[@"style"][@"background"] alpha:1.0];
+                                }
+                                
+                                // placeholder color
+                                if([vvv isKindOfClass:[UILabel class]]){
+                                    // placeholder label
+                                    ((UILabel*)vvv).textColor = [JasonHelper colorwithHexString:field[@"style"][@"color:placeholder"] alpha:1.0];
+                                }
                             }
-                            
-                            // border width
-                            if(field[@"style"][@"border_width"]){
-                                vv.superview.layer.borderWidth = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:field[@"style"][@"border_width"]];
-                            }
-                            
-                            // corner radius
-                            if(field[@"style"][@"corner_radius"]){
-                                vv.superview.layer.cornerRadius = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:field[@"style"][@"corner_radius"]];
-                            }
-                            
                             break;
                         }
                     }
-                    
-                    // text color
-                    if(field[@"style"][@"color"]){
-                        composeBarView.textView.textColor = [JasonHelper colorwithHexString:field[@"style"][@"color"] alpha:1.0];
-                    }
-                    
-                    // TODO: placeholder color
-                    
-                    // textfield background
-                    if(field[@"style"][@"background"]){
-                        composeBarView.textView.backgroundColor = [JasonHelper colorwithHexString:field[@"style"][@"background"] alpha:1.0];
-                    }
                 }
                 
-                
+                // text color
+                if(field[@"style"][@"color"]){
+                    composeBarView.textView.textColor = [JasonHelper colorwithHexString:field[@"style"][@"color"] alpha:1.0];
+                }
+                    
             }
             
             if(field[@"placeholder"]){
                 [composeBarView setPlaceholder:field[@"placeholder"]];
-            }
-            if(chat_input[@"style"]){
-                if(chat_input[@"style"][@"background"]){
-                    [JasonHelper force_background:chat_input[@"style"][@"background"] intoView:composeBarView];
-                }
             }
             
             if(chat_input[@"left"]){
@@ -1526,7 +1517,7 @@
                     }
                      */
                     
-                    NSArray *buttons = [JasonHelper childOf:composeBarView withClassName:@"UIButton"];
+                    NSArray *buttons = [JasonHelper childOf:composeBarView withClassName:@"PHFComposeBarView_Button"];
                     for(UIButton *button in buttons){
                         if([button.subviews.firstObject isKindOfClass:[UILabel class]]){
                             
@@ -1559,6 +1550,23 @@
         }
         
         
+    }
+}
+- (void)force_background: (NSString *) color intoView: (UIView *) view{
+    if([view isKindOfClass:[UIToolbar class]]){
+        [(UIToolbar *)view setBackgroundImage:[UIImage new]
+                      forToolbarPosition:UIToolbarPositionAny
+                              barMetrics:UIBarMetricsDefault];
+        [(UIToolbar *)view setBackgroundColor:[UIColor clearColor]];
+    } else if([view isKindOfClass:[UITextView class]]){
+        // don't do anything
+    } else {
+        view.backgroundColor = [JasonHelper colorwithHexString:color alpha:1.0];
+        if(view.subviews && view.subviews.count > 0){
+            for(UIView *v in view.subviews){
+                [self force_background:color intoView:v];
+            }
+        }
     }
 }
 
