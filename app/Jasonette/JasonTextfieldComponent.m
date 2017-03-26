@@ -58,6 +58,8 @@
         // Color
         if(style[@"placeholder_color"]){
             placeholder_color = [JasonHelper colorwithHexString:style[@"placeholder_color"] alpha:1.0];
+        } else if(style[@"color:placeholder"]){
+            placeholder_color = [JasonHelper colorwithHexString:style[@"color:placeholder"] alpha:1.0];
         } else {
             placeholder_color = [UIColor grayColor];
         }

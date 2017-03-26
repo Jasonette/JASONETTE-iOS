@@ -1072,7 +1072,7 @@
 // CHAT INPUT RELATED
 - (void)composeBarViewDidPressButton:(PHFComposeBarView *)c{
     if(chat_input){
-        if(chat_input[@"name"]){
+        if(chat_input[@"name"] || chat_input[@"textfield"][@"name"]){
             [c setText:@""];
             [[Jason client] call:chat_input[@"right"][@"action"]];
         }
@@ -1080,7 +1080,7 @@
 }
 - (void)composeBarViewDidPressUtilityButton:(PHFComposeBarView *)c{
     if(chat_input){
-        if(chat_input[@"name"]){
+        if(chat_input[@"name"] || chat_input[@"textfield"][@"name"]){
             [[Jason client] call:chat_input[@"left"][@"action"]];
         }
     }
@@ -1395,6 +1395,8 @@
 - (void)setupFooter: (NSDictionary *)body{
     
     if(body[@"footer"] && body[@"footer"][@"input"]){
+        
+        
         chat_input = body[@"footer"][@"input"];
         if(chat_input){
             
@@ -1409,6 +1411,15 @@
                 weakSelf.view.frame = newViewFrame;
             }];
             
+            // textfield logic
+            
+            NSDictionary *field;
+            if(chat_input[@"textfield"]){
+                field = chat_input[@"textfield"];
+            } else {
+                field = chat_input; // to be deprecated
+            }
+            
             if(!composeBarView){
                 CGRect viewBounds = [self.view bounds];
                 CGRect frame = CGRectMake(0.0f,
@@ -1416,16 +1427,67 @@
                                           viewBounds.size.width,
                                           PHFComposeBarViewInitialHeight);
                 composeBarView = [[PHFComposeBarView alloc] initWithFrame:frame];
-                if(chat_input[@"name"]){
-                    composeBarView.textView.payload = [@{@"name": chat_input[@"name"]} mutableCopy];
+                if(field[@"name"]){
+                    composeBarView.textView.payload = [@{@"name": field[@"name"]} mutableCopy];
                 }
                 [composeBarView setDelegate:self];
                 [self.view addSubview:composeBarView];
                 [self.view bringSubviewToFront:composeBarView];
             }
             
-            if(chat_input[@"placeholder"]){
-                [composeBarView setPlaceholder:chat_input[@"placeholder"]];
+            
+            
+            // input field styling
+            if(field[@"style"]){
+                
+                //PHFComposeBarView hack to find relevant views and apply style
+                //[JasonHelper force_background:@"#000000" intoView:composeBarView];
+                for(UIView *v in composeBarView.subviews){
+                    for(UIView *vv in v.subviews){
+                        if([vv isKindOfClass:[UITextView class]]){
+                            
+                            // border color
+                            if(field[@"style"][@"border_color"]){
+                                vv.superview.layer.borderColor = [[JasonHelper colorwithHexString:field[@"style"][@"border_color"] alpha:1.0] CGColor];
+                            }
+                            
+                            // border width
+                            if(field[@"style"][@"border_width"]){
+                                vv.superview.layer.borderWidth = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:field[@"style"][@"border_width"]];
+                            }
+                            
+                            // corner radius
+                            if(field[@"style"][@"corner_radius"]){
+                                vv.superview.layer.cornerRadius = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:field[@"style"][@"corner_radius"]];
+                            }
+                            
+                            break;
+                        }
+                    }
+                    
+                    // text color
+                    if(field[@"style"][@"color"]){
+                        composeBarView.textView.textColor = [JasonHelper colorwithHexString:field[@"style"][@"color"] alpha:1.0];
+                    }
+                    
+                    // TODO: placeholder color
+                    
+                    // textfield background
+                    if(field[@"style"][@"background"]){
+                        composeBarView.textView.backgroundColor = [JasonHelper colorwithHexString:field[@"style"][@"background"] alpha:1.0];
+                    }
+                }
+                
+                
+            }
+            
+            if(field[@"placeholder"]){
+                [composeBarView setPlaceholder:field[@"placeholder"]];
+            }
+            if(chat_input[@"style"]){
+                if(chat_input[@"style"][@"background"]){
+                    [JasonHelper force_background:chat_input[@"style"][@"background"] intoView:composeBarView];
+                }
             }
             
             if(chat_input[@"left"]){
@@ -1438,6 +1500,13 @@
                                                  // progression tracking code
                                              }
                                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                
+                                                // colorize
+                                                if(chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
+                                                    UIColor *newColor = [JasonHelper colorwithHexString:chat_input[@"left"][@"style"][@"color"] alpha:1.0];
+                                                    image = [JasonHelper colorize:image into:newColor];
+                                                }
+                                                
                                                 UIImage *resizedImage = [JasonHelper scaleImage:image ToSize:CGSizeMake(30,30)];
                                                 dispatch_async(dispatch_get_main_queue(), ^{
                                                     [composeBarView setUtilityButtonImage:resizedImage];
@@ -1449,9 +1518,44 @@
             }
             if(chat_input[@"right"]){
                 if(chat_input[@"right"][@"text"]){
+                    
+                    /*
+                    // handle color
+                    if(chat_input[@"right"][@"style"] && chat_input[@"right"][@"style"][@"color"]){
+                        [composeBarView setButtonTintColor:[JasonHelper colorwithHexString:chat_input[@"right"][@"style"][@"color"] alpha:1.0]];
+                    }
+                     */
+                    
+                    NSArray *buttons = [JasonHelper childOf:composeBarView withClassName:@"UIButton"];
+                    for(UIButton *button in buttons){
+                        if([button.subviews.firstObject isKindOfClass:[UILabel class]]){
+                            
+                            // set "color"
+                            if(chat_input[@"right"][@"style"] && chat_input[@"right"][@"style"][@"color"]){
+                                [button setTitleColor:[JasonHelper colorwithHexString:chat_input[@"right"][@"style"][@"color"] alpha:1.0] forState:UIControlStateNormal];
+                            }
+                            
+                            // set "color:disabled"
+                            if(chat_input[@"right"][@"style"] && chat_input[@"right"][@"style"][@"color:disabled"]){
+                                [button setTitleColor:[JasonHelper colorwithHexString:chat_input[@"right"][@"style"][@"color:disabled"] alpha:1.0] forState:UIControlStateDisabled];
+                            } else {
+                                // default
+                                [button setTitleColor:[JasonHelper colorwithHexString:chat_input[@"right"][@"style"][@"color"] alpha:1.0] forState:UIControlStateDisabled];
+                            }
+                        }
+                    }
+                    
                     [composeBarView setButtonTitle:chat_input[@"right"][@"text"]];
                 }
             }
+            
+            // The background for the entire footer input
+            if(chat_input[@"style"]){
+                if(chat_input[@"style"][@"background"]){
+                    composeBarView.backgroundColor = [JasonHelper colorwithHexString:chat_input[@"style"][@"background"] alpha:1.0];
+                }
+            }
+
         }
         
         
