@@ -926,7 +926,8 @@
     // 4. Whenever we need to process JSON and encouter the "@" : "path@URL" pattern, we look into the "[URL]" value and parse it using path (if it exists)
     NSError* regexError = nil;
     
-    NSString *pattern = @"\"(@)\"[ ]*:[ ]*\"([^\"@]+@)?([^\"]+)\"";
+    // The pattern leaves out any url that starts with "$" because that will be handled by resolve_local_reference
+    NSString *pattern = @"\"(@)\"[ ]*:[ ]*\"([^$\"@]+@)?([^$\"]+)\"";
     
     NSMutableSet *urlSet = [[NSMutableSet alloc] init];
     NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
@@ -956,74 +957,71 @@
     if(urlSet.count > 0){
         dispatch_group_t requireGroup = dispatch_group_create();
         for(NSString *url in urlSet){
-            NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:@"\\$document" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
-            NSArray *matches = [document_regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
-            if(matches.count == 0){
-                // 2. Enter dispatch_group
-                dispatch_group_enter(requireGroup);
-                                
-                // 3. Check if local
-                if ([url hasPrefix:@"file://"]) {
-                    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-                    NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];  
-                    NSString *loc = @"file:/";
+            // 2. Enter dispatch_group
+            dispatch_group_enter(requireGroup);
+                            
+            // 3. Check if local
+            if ([url hasPrefix:@"file://"]) {
+                NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+                NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];  
+                NSString *loc = @"file:/";
+                
+                NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
+                
+                NSFileManager *fileManager = [NSFileManager defaultManager];
+                
+                if ([fileManager fileExistsAtPath:jsonFile]) { 
+                    NSError *error = nil;
+                    NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
+                    [inputStream open];
                     
-                    NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
-                    
-                    NSFileManager *fileManager = [NSFileManager defaultManager];
-                    
-                    if ([fileManager fileExistsAtPath:jsonFile]) { 
-                        NSError *error = nil;
-                        NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
-                        [inputStream open];
-                        
-                        id jsonResponseObject = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
-                        VC.requires[url] = jsonResponseObject;
-                        [inputStream close];                      
-                    } 
-                    dispatch_group_leave(requireGroup);
-                    
-                } else {                
-                    // 4. Setup networking
-                    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-                    AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
-                    NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
-                    [jsonAcceptableContentTypes addObject:@"text/plain"];
-                    jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
-                    manager.responseSerializer = jsonResponseSerializer;
-                    
-                    // 5. Attach session
-                    NSDictionary *session = [JasonHelper sessionForUrl:url];
-                    if(session && session.count > 0 && session[@"header"]){
-                        for(NSString *key in session[@"header"]){
-                            [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
-                        }
+                    id jsonResponseObject = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+                    VC.requires[url] = jsonResponseObject;
+                    [inputStream close];                      
+                } 
+                dispatch_group_leave(requireGroup);
+                
+            } else {                
+                // 4. Setup networking
+                AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+                AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+                NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                [jsonAcceptableContentTypes addObject:@"text/plain"];
+                jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+                manager.responseSerializer = jsonResponseSerializer;
+                
+                // 5. Attach session
+                NSDictionary *session = [JasonHelper sessionForUrl:url];
+                if(session && session.count > 0 && session[@"header"]){
+                    for(NSString *key in session[@"header"]){
+                        [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
                     }
-                    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-                    if(session && session.count > 0 && session[@"body"]){
-                        for(NSString *key in session[@"body"]){
-                            parameters[key] = session[@"body"][key];
-                        }
-                    }
-                    
-                    // 6. Start request
-                    [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                        VC.requires[url] = responseObject;
-                        dispatch_group_leave(requireGroup);
-                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        NSLog(@"Error");
-                        dispatch_group_leave(requireGroup);
-                    }];                    
                 }
+                NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+                if(session && session.count > 0 && session[@"body"]){
+                    for(NSString *key in session[@"body"]){
+                        parameters[key] = session[@"body"][key];
+                    }
+                }
+                
+                // 6. Start request
+                [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                    VC.requires[url] = responseObject;
+                    dispatch_group_leave(requireGroup);
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    NSLog(@"Error");
+                    dispatch_group_leave(requireGroup);
+                }];                    
             }
         }
         
         dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
-            id resolved = [self resolve_reference: j];
+            id resolved = [self resolve_remote_reference: j];
             [self include:resolved andCompletionHandler:callback];
         });
     } else {
-        callback(json);
+        id resolved = [self resolve_local_reference:j];
+        callback(resolved);
     }
     
 }
@@ -1124,21 +1122,18 @@
     });
 }
 
-- (id)resolve_reference: (NSString *)json{
+- (id)resolve_remote_reference: (NSString *)json{
     NSError *error;
     
-    // Local - convert "@": "$document.blah.blah" to "{{#include $root.$document.blah.blah}}": {}
-    NSString *local_pattern = @"\"@\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"";
-    NSRegularExpression* local_regex = [NSRegularExpression regularExpressionWithPattern:local_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
-    NSString *converted = [local_regex stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root.$1}}\": {}"];
-    
     // Remote url with path - convert "@": "blah.blah@https://www.google.com" to "{{#include $root[\"https://www.google.com\"].blah.blah}}": {}
-    NSString *remote_pattern_with_path = @"\"(@)\"[ ]*:[ ]*\"(([^\"@]+)(@))([^\"]+)\"";
+    // The pattern leaves out the pattern where it starts with "$" because that's a $document and will be resolved by resolve_local_reference
+    NSString *remote_pattern_with_path = @"\"(@)\"[ ]*:[ ]*\"(([^$\"@]+)(@))([^\"]+)\"";
     NSRegularExpression* remote_regex_with_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_with_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
-    converted = [remote_regex_with_path stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include \\$root[\\\\\"$5\\\\\"].$3}}\": {}"];
+    NSString *converted = [remote_regex_with_path stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root[\\\\\"$5\\\\\"].$3}}\": {}"];
     
     // Remote url without path - convert "@": "https://www.google.com" to "{{#include $root[\"https://www.google.com\"]}}": {}
-    NSString *remote_pattern_without_path = @"\"(@)\"[ ]*:[ ]*\"([^\"]+)\"";
+    // The pattern leaves out the pattern where it starts with "$" because that's a $document and will be resolved by resolve_local_reference
+    NSString *remote_pattern_without_path = @"\"(@)\"[ ]*:[ ]*\"([^$\"]+)\"";
     NSRegularExpression* remote_regex_without_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_without_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
     converted = [remote_regex_without_path stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include \\$root[\\\\\"$2\\\\\"]}}\": {}"];
     
@@ -1150,6 +1145,20 @@
     return include_resolved;
 }
 
+- (id)resolve_local_reference: (NSString *)json{
+    NSError *error;
+    
+    // Local - convert "@": "$document.blah.blah" to "{{#include $root.$document.blah.blah}}": {}
+    NSString *local_pattern = @"\"@\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"";
+    NSRegularExpression* local_regex = [NSRegularExpression regularExpressionWithPattern:local_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+    NSString *converted = [local_regex stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root.$1}}\": {}"];
+    id tpl = [JasonHelper objectify:converted];
+    NSMutableDictionary *refs = [VC.requires mutableCopy];
+    refs[@"$document"] = VC.original;
+    id include_resolved = [JasonParser parse:refs with:tpl];
+    VC.original = include_resolved;
+    return include_resolved;
+}
 
 - (Jason *)detach:(UIViewController<RussianDollView>*)viewController{
     // Need to clean up before leaving the view
