@@ -1688,7 +1688,7 @@
                 }
                 
                 // parse the data with the template to dynamically build the view
-                if(VC.data && VC.data.count > 0) rendered_page = [JasonHelper parse: VC.data with:body_parser];
+                rendered_page = [JasonHelper parse: VC.data with:body_parser];
             }
         }
         
