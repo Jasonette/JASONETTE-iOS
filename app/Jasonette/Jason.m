@@ -927,7 +927,7 @@
     NSError* regexError = nil;
     
     // The pattern leaves out any url that starts with "$" because that will be handled by resolve_local_reference
-    NSString *pattern = @"\"(@)\"[ ]*:[ ]*\"([^$\"@]+@)?([^$\"]+)\"";
+    NSString *pattern = @"\"([+@])\"[ ]*:[ ]*\"([^$\"@]+@)?([^$\"]+)\"";
     
     NSMutableSet *urlSet = [[NSMutableSet alloc] init];
     NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
@@ -1127,13 +1127,13 @@
     
     // Remote url with path - convert "@": "blah.blah@https://www.google.com" to "{{#include $root[\"https://www.google.com\"].blah.blah}}": {}
     // The pattern leaves out the pattern where it starts with "$" because that's a $document and will be resolved by resolve_local_reference
-    NSString *remote_pattern_with_path = @"\"(@)\"[ ]*:[ ]*\"(([^$\"@]+)(@))([^\"]+)\"";
+    NSString *remote_pattern_with_path = @"\"([+@])\"[ ]*:[ ]*\"(([^$\"@]+)(@))([^\"]+)\"";
     NSRegularExpression* remote_regex_with_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_with_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
     NSString *converted = [remote_regex_with_path stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root[\\\\\"$5\\\\\"].$3}}\": {}"];
     
     // Remote url without path - convert "@": "https://www.google.com" to "{{#include $root[\"https://www.google.com\"]}}": {}
     // The pattern leaves out the pattern where it starts with "$" because that's a $document and will be resolved by resolve_local_reference
-    NSString *remote_pattern_without_path = @"\"(@)\"[ ]*:[ ]*\"([^$\"]+)\"";
+    NSString *remote_pattern_without_path = @"\"([+@])\"[ ]*:[ ]*\"([^$\"]+)\"";
     NSRegularExpression* remote_regex_without_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_without_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
     converted = [remote_regex_without_path stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include \\$root[\\\\\"$2\\\\\"]}}\": {}"];
     
@@ -1149,7 +1149,7 @@
     NSError *error;
     
     // Local - convert "@": "$document.blah.blah" to "{{#include $root.$document.blah.blah}}": {}
-    NSString *local_pattern = @"\"@\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"";
+    NSString *local_pattern = @"\"[+@]\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"";
     NSRegularExpression* local_regex = [NSRegularExpression regularExpressionWithPattern:local_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
     NSString *converted = [local_regex stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root.$1}}\": {}"];
     id tpl = [JasonHelper objectify:converted];
