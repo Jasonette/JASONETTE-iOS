@@ -10,8 +10,7 @@
 #import "Jason.h"
 
 @interface JasonLayer : NSObject
-@property (class, nonatomic, strong) NSMutableArray *layers;
 @property (class, nonatomic, strong) NSMutableDictionary *stylesheet;
-+ (void)setupLayers: (NSDictionary *)body withView: (UIView *)rootView;
++ (NSArray *)setupLayers: (NSDictionary *)body withView: (UIView *)rootView;
 + (NSMutableDictionary *)applyStylesheet:(NSDictionary *)item;
 @end

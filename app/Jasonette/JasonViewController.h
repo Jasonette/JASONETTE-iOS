@@ -49,6 +49,7 @@
 @property (strong, nonatomic) NSDictionary *parser;
 @property (nonatomic, strong) NSDictionary *data;
 
+@property (nonatomic, strong) NSArray *layers;
 @property (nonatomic, strong) NSMutableArray *sections;
 @property (nonatomic, strong) NSArray *rows;
 @property (nonatomic, assign) BOOL isModal;

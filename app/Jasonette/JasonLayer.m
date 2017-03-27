@@ -7,28 +7,10 @@
 #import "JasonLayer.h"
 
 @implementation JasonLayer
-static NSMutableArray *_layers = nil;
 static NSMutableDictionary *_stylesheet = nil;
-+ (NSMutableArray *)layers{
-    if (_layers == nil) {
-        _layers = [[NSMutableArray alloc] init];
-    }
-    return _layers;
-}
-+ (void)setLayers:(NSMutableArray *)layers{
-    if (layers != _layers) {
-        _layers = [layers mutableCopy];
-    }
-}
-+ (void)setupLayers: (NSDictionary *)body withView: (UIView *)rootView{
++ (NSArray *)setupLayers: (NSDictionary *)body withView: (UIView *)rootView{
     NSArray *layer_items = body[@"layers"];
-    if(self.layers){
-        for(UIView *layerView in self.layers){
-            [layerView removeFromSuperview];
-        }
-    }
-    self.layers = [[NSMutableArray alloc] init];
-    
+    NSMutableArray *layers = [[NSMutableArray alloc] init];
     
     if(layer_items && layer_items.count > 0){
         for(int i = 0 ; i < layer_items.count ; i++){
@@ -77,7 +59,7 @@ static NSMutableDictionary *_stylesheet = nil;
                     }
                 }
                 [rootView addSubview:layerView];
-                [self.layers addObject:layerView];
+                [layers addObject:layerView];
             } else if(layer[@"type"] && [layer[@"type"] isEqualToString:@"label"] && layer[@"text"]){
                 TTTAttributedLabel *layerChild = [[TTTAttributedLabel alloc] initWithFrame:CGRectMake(0,0,0,0)];
                 if(layer[@"style"]){
@@ -114,10 +96,11 @@ static NSMutableDictionary *_stylesheet = nil;
                     }
                 }
                 [rootView addSubview:layerView];
-                [self.layers addObject:layerView];
+                [layers addObject:layerView];
             }
         }
     }
+    return layers;
 }
 
 + (void) addGestureRecognizersTo: (UIView *) view withStyle: (NSDictionary *)style{
@@ -252,7 +235,6 @@ static NSMutableDictionary *_stylesheet = nil;
     }
 }
 
-// Common
 + (NSMutableDictionary *)applyStylesheet:(NSDictionary *)item{
     NSMutableDictionary *new_style = [[NSMutableDictionary alloc] init];
     if(item[@"class"]){

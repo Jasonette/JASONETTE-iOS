@@ -11,7 +11,7 @@
     NSInteger selectedIndex;
     NSMutableArray *rowcount;
     NSMutableArray *headers;
-    NSMutableArray *layers;
+//    NSMutableArray *layers;
     NSString *search_url;
     NSString *search_field_name;
     NSString *back_url;
@@ -1290,7 +1290,10 @@
 }
 
 - (void)setupLayers: (NSDictionary *)body{
-    [JasonLayer setupLayers: body withView:self.view];
+    for(UIView *v in self.layers){
+        [v removeFromSuperview];
+    }
+    self.layers = [JasonLayer setupLayers: body withView:self.view];
 }
 - (void)setupSections:(NSDictionary *)body{
     
