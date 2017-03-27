@@ -314,7 +314,7 @@
     dateSelectionController.message = description;
     
     //Now just present the date selection controller using the standard iOS presentation method
-    [self.VC.navigationController presentViewController:dateSelectionController animated:YES completion:nil];
+    [self.VC.tabBarController presentViewController:dateSelectionController animated:YES completion:nil];
 
 }
 - (void)addressbook{
