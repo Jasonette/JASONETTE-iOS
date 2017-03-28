@@ -223,15 +223,6 @@
 			name = $return;
 			sourceTree = "<group>";
 		};
-		04EEDCFB1E02F5060023114F /* documents */ = {
-			isa = PBXGroup;
-			children = (
-				04EEDCFC1E02F5180023114F /* demo.json */,
-				04EEDCFD1E02F5180023114F /* hello.json */,
-			);
-			name = documents;
-			sourceTree = "<group>";
-		};
 		5E0956271DA30970007ADC78 /* Component */ = {
 			isa = PBXGroup;
 			children = (
@@ -473,13 +464,6 @@
 			name = Helper;
 			sourceTree = "<group>";
 		};
-		5E3177971D1F25A500D87778 /* Sound */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Sound;
-			sourceTree = "<group>";
-		};
 		5E3177A81D1F291200D87778 /* $cache */ = {
 			isa = PBXGroup;
 			children = (
@@ -519,9 +503,9 @@
 		5E3177AC1D1F2A8200D87778 /* file:// */ = {
 			isa = PBXGroup;
 			children = (
-				04EEDCFB1E02F5060023114F /* documents */,
+				04EEDCFC1E02F5180023114F /* demo.json */,
+				04EEDCFD1E02F5180023114F /* hello.json */,
 				5E31777B1D1F199D00D87778 /* Images */,
-				5E3177971D1F25A500D87778 /* Sound */,
 			);
 			name = "file://";
 			sourceTree = "<group>";
