@@ -68,11 +68,6 @@
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
     // Avoid gray background
-    self.view.backgroundColor = self.navigationController.navigationBar.backgroundColor;
-    self.tableView.backgroundColor = self.navigationController.navigationBar.backgroundColor;
-    self.tabBarController.tabBar.backgroundColor = self.navigationController.navigationBar.backgroundColor;
-    self.tabBarController.tabBar.barTintColor = self.navigationController.navigationBar.backgroundColor;
-    self.tabBarController.tabBar.translucent = NO;
     self.tableView.backgroundView = [UIView new];
 
     self.tableView.estimatedRowHeight = 30.0;

@@ -1198,10 +1198,14 @@
     
     VC = (UIViewController<RussianDollView>*)viewController;
     navigationController = viewController.navigationController;
+    navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
     navigationController.navigationBar.shadowImage = [UIImage new];
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     tabController = navigationController.tabBarController;
     tabController.delegate = self;
+    tabController.tabBar.barTintColor=[UIColor whiteColor];
+    tabController.tabBar.backgroundColor = [UIColor whiteColor];
+
     tabController.tabBar.shadowImage = [[UIImage alloc] init];
     [tabController.tabBar setClipsToBounds:YES];
     
@@ -2708,8 +2712,6 @@
                     vc.extendedLayoutIncludesOpaqueBars = YES;
                     root.tabBar.hidden = YES;
                     
-                    vc.navigationController.navigationBar.backgroundColor = navigationController.navigationBar.backgroundColor;
-                    
                     [root presentViewController:tab animated:YES completion:^{
                     }];
                     CFRunLoopWakeUp(CFRunLoopGetCurrent());
@@ -2751,7 +2753,6 @@
                             vc.hidesBottomBarWhenPushed = NO;
                         }
                     }
-                    vc.navigationController.navigationBar.backgroundColor = VC.navigationController.navigationBar.backgroundColor;
                     [navigationController pushViewController:vc animated:YES];
                 }
             }
