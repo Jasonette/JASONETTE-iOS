@@ -48,6 +48,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    
+    
     original_height = self.view.frame.size.height;
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -66,6 +68,11 @@
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
     // Avoid gray background
+    self.view.backgroundColor = self.navigationController.navigationBar.backgroundColor;
+    self.tableView.backgroundColor = self.navigationController.navigationBar.backgroundColor;
+    self.tabBarController.tabBar.backgroundColor = self.navigationController.navigationBar.backgroundColor;
+    self.tabBarController.tabBar.barTintColor = self.navigationController.navigationBar.backgroundColor;
+    self.tabBarController.tabBar.translucent = NO;
     self.tableView.backgroundView = [UIView new];
 
     self.tableView.estimatedRowHeight = 30.0;
@@ -95,7 +102,7 @@
 
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
-
+    
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"finishRefreshing" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishRefreshing) name:@"finishRefreshing" object:nil];
@@ -1298,6 +1305,10 @@
 - (void)setupSections:(NSDictionary *)body{
     
     raw_sections = body[@"sections"];
+    
+    if(!raw_sections){
+        [self.view sendSubviewToBack:self.tableView];
+    }
     
     JasonComponentFactory.imageLoaded = [[NSMutableDictionary alloc] init];
     

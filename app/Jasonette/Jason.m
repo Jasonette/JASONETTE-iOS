@@ -1027,8 +1027,9 @@
 }
 
 - (void)require{
-    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
-    hud.animationType = MBProgressHUDAnimationFade;
+    if(VC.loading){
+        [self networkLoading:YES with:nil];
+    }
     
     /*
      
@@ -1197,13 +1198,10 @@
     
     VC = (UIViewController<RussianDollView>*)viewController;
     navigationController = viewController.navigationController;
-    navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
     navigationController.navigationBar.shadowImage = [UIImage new];
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     tabController = navigationController.tabBarController;
     tabController.delegate = self;
-    tabController.tabBar.barTintColor=[UIColor whiteColor];
-    tabController.tabBar.backgroundColor = [UIColor whiteColor];
     tabController.tabBar.shadowImage = [[UIImage alloc] init];
     [tabController.tabBar setClipsToBounds:YES];
     
@@ -1688,7 +1686,9 @@
                 }
                 
                 // parse the data with the template to dynamically build the view
-                rendered_page = [JasonHelper parse: VC.data with:body_parser];
+                if(VC.data && VC.data.count > 0){
+                    rendered_page = [JasonHelper parse: VC.data with:body_parser];
+                }
             }
         }
         
@@ -1772,10 +1772,26 @@
                         VC.background = nil;
                     }
                     VC.background = [[UIWebView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+                    
+                    // Need to make the background transparent so that it doesn't flash white when first loading
+                    VC.background.opaque = NO;
+                    VC.background.backgroundColor = [UIColor clearColor];
                 }
                 if(bg[@"text"]){
                     NSString *html = bg[@"text"];
                     [((UIWebView*)VC.background) loadHTMLString:html baseURL:nil];
+                }
+                
+                // user interaction enable/disable => disabled by default
+                VC.background.userInteractionEnabled = NO;
+                if(bg[@"action"]){
+                    NSString *action_type = bg[@"action"][@"type"];
+                    if(action_type){
+                        if([action_type isEqualToString:@"$default"]){
+                            // enable input only when action type is $default
+                            VC.background.userInteractionEnabled = YES;
+                        }
+                    }
                 }
             }
             [VC.view addSubview:VC.background];
@@ -2692,6 +2708,8 @@
                     vc.extendedLayoutIncludesOpaqueBars = YES;
                     root.tabBar.hidden = YES;
                     
+                    vc.navigationController.navigationBar.backgroundColor = navigationController.navigationBar.backgroundColor;
+                    
                     [root presentViewController:tab animated:YES completion:^{
                     }];
                     CFRunLoopWakeUp(CFRunLoopGetCurrent());
@@ -2733,6 +2751,7 @@
                             vc.hidesBottomBarWhenPushed = NO;
                         }
                     }
+                    vc.navigationController.navigationBar.backgroundColor = VC.navigationController.navigationBar.backgroundColor;
                     [navigationController pushViewController:vc animated:YES];
                 }
             }

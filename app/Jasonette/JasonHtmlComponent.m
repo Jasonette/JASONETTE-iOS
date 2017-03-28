@@ -24,6 +24,10 @@
         component = [[UIWebView alloc] initWithFrame:frame];
     }
     
+    component.opaque = NO;
+    component.backgroundColor = [UIColor clearColor];
+
+    
     if(json[@"text"] && ![[NSNull null] isEqual:json[@"text"]]){
         NSString *html = json[@"text"];
         [((UIWebView*)component) loadHTMLString:html baseURL:nil];
@@ -32,6 +36,20 @@
         component.delegate = [self self];
         [self stylize:json component:component];
     }
+    
+    
+    // user interaction enable/disable => disabled by default
+    component.userInteractionEnabled = NO;
+    if(json[@"action"]){
+        NSString *type = json[@"action"][@"type"];
+        if(type){
+            if([type isEqualToString:@"$default"]){
+                // enable input only when action type is $default
+                component.userInteractionEnabled = YES;
+            }
+        }
+    }
+    
     return component;
 }
 
