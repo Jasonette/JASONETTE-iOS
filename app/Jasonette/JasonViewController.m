@@ -1183,7 +1183,6 @@
                     }
 
                     self.tableView.tableHeaderView = self.searchController.searchBar;
-                    self.definesPresentationContext = YES;
                     self.searchController.hidesNavigationBarDuringPresentation = NO;
 
                     [self.searchController.searchBar sizeToFit];
@@ -1277,7 +1276,6 @@
                     }
 
                     self.tableView.tableHeaderView = self.searchController.searchBar;
-                    self.definesPresentationContext = YES;
                     self.searchController.hidesNavigationBarDuringPresentation = NO;
 
                     [self.searchController.searchBar sizeToFit];
