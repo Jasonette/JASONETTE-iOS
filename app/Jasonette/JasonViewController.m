@@ -1001,7 +1001,7 @@
     
     @try{
         dispatch_async(dispatch_get_main_queue(), ^{
-            
+        
             [self setupHeader: body];
             [self setupLayers:body];
             [self setupFooter: body];
@@ -1112,8 +1112,9 @@
                     NSDictionary *stylized_component = [JasonComponentFactory applyStylesheet: component];
                     NSDictionary *style = stylized_component[@"style"];
                     
-                    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-                    
+                    if(!self.searchController){
+                        self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+                    }
                     // style
                     NSString *theme = style[@"theme"];
                     if([theme isEqualToString:@"light"]){
@@ -1213,8 +1214,9 @@
                     NSString *search_placeholder = component[@"placeholder"];
                     NSDictionary *style = component[@"style"];
                     
-                    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-                    
+                    if(!self.searchController){
+                        self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+                    }
                     // style
                     NSString *theme = style[@"theme"];
                     if([theme isEqualToString:@"light"]){
