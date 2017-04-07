@@ -412,7 +412,7 @@
                 // Custom Media Type exists,
                 // Which means it's been transformed by another module
                 // such as vidgif
-                mediaData = self.options[@"data"];
+                mediaData = [[NSData alloc] initWithBase64EncodedString:self.options[@"data"] options:0];
                 NSArray *tokens = [contentType componentsSeparatedByString:@"/"];
                 if(tokens && tokens.count > 1){
                     NSString *extension = [tokens lastObject];

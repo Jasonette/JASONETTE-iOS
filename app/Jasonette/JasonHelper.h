@@ -39,4 +39,5 @@
 + (UIImage *)takescreenshot;
 + (NSString*) UTF8StringFromData:(NSData*)data;
 + (NSString *)getSignature: (NSDictionary *)item;
++ (NSArray *)childOf: (UIView *)view withClassName: (NSString *)className;
 @end

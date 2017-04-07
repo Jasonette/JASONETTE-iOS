@@ -88,8 +88,13 @@
             NSError *error = nil;
             NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
             [inputStream open];
-            VC.original = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
-            [self drawViewFromJason: VC.original];
+            id jsonResponseObject = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+            [self include:jsonResponseObject andCompletionHandler:^(id res){
+                dispatch_async(dispatch_get_main_queue(), ^{                    
+                    VC.original = @{@"$jason": res[@"$jason"]};
+                    [self drawViewFromJason: VC.original];                    
+                });
+            }];
             [inputStream close];
         } else {
             NSLog(@"JASON FILE NOT FOUND: %@", jsonFile);
@@ -901,9 +906,10 @@
         NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
         NSString *contentType = @"image/jpeg";
         NSString *dataFormatString = @"data:image/jpeg;base64,%@";
-        NSString* dataString = [NSString stringWithFormat:dataFormatString, [imageData base64EncodedStringWithOptions:0]];
+        NSString *base64data = [imageData base64EncodedStringWithOptions:0];
+        NSString* dataString = [NSString stringWithFormat:dataFormatString, base64data];
         NSURL* dataURI = [NSURL URLWithString:dataString];
-        [[Jason client] success:@{@"data": imageData, @"data_uri": dataURI.absoluteString, @"content_type" :contentType}];
+        [[Jason client] success:@{@"data": base64data, @"data_uri": dataURI.absoluteString, @"content_type" :contentType}];
     }
 }
 
@@ -920,7 +926,8 @@
     // 4. Whenever we need to process JSON and encouter the "@" : "path@URL" pattern, we look into the "[URL]" value and parse it using path (if it exists)
     NSError* regexError = nil;
     
-    NSString *pattern = @"\"(@)\"[ ]*:[ ]*\"([^\"@]+@)?([^\"]+)\"";
+    // The pattern leaves out any url that starts with "$" because that will be handled by resolve_local_reference
+    NSString *pattern = @"\"([+@])\"[ ]*:[ ]*\"([^$\"@]+@)?([^$\"]+)\"";
     
     NSMutableSet *urlSet = [[NSMutableSet alloc] init];
     NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
@@ -950,13 +957,32 @@
     if(urlSet.count > 0){
         dispatch_group_t requireGroup = dispatch_group_create();
         for(NSString *url in urlSet){
-            NSRegularExpression* document_regex = [NSRegularExpression regularExpressionWithPattern:@"\\$document" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
-            NSArray *matches = [document_regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
-            if(matches.count == 0){
-                // 2. Enter dispatch_group
-                dispatch_group_enter(requireGroup);
+            // 2. Enter dispatch_group
+            dispatch_group_enter(requireGroup);
+                            
+            // 3. Check if local
+            if ([url hasPrefix:@"file://"]) {
+                NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+                NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];  
+                NSString *loc = @"file:/";
                 
-                // 3. Setup networking
+                NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
+                
+                NSFileManager *fileManager = [NSFileManager defaultManager];
+                
+                if ([fileManager fileExistsAtPath:jsonFile]) { 
+                    NSError *error = nil;
+                    NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
+                    [inputStream open];
+                    
+                    id jsonResponseObject = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+                    VC.requires[url] = jsonResponseObject;
+                    [inputStream close];                      
+                } 
+                dispatch_group_leave(requireGroup);
+                
+            } else {                
+                // 4. Setup networking
                 AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
                 AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
                 NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
@@ -964,7 +990,7 @@
                 jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
                 manager.responseSerializer = jsonResponseSerializer;
                 
-                // 4. Attach session
+                // 5. Attach session
                 NSDictionary *session = [JasonHelper sessionForUrl:url];
                 if(session && session.count > 0 && session[@"header"]){
                     for(NSString *key in session[@"header"]){
@@ -978,30 +1004,32 @@
                     }
                 }
                 
-                // 5. Start request
+                // 6. Start request
                 [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     VC.requires[url] = responseObject;
                     dispatch_group_leave(requireGroup);
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     NSLog(@"Error");
                     dispatch_group_leave(requireGroup);
-                }];
+                }];                    
             }
         }
         
         dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
-            id resolved = [self resolve_reference: j];
+            id resolved = [self resolve_remote_reference: j];
             [self include:resolved andCompletionHandler:callback];
         });
     } else {
-        callback(json);
+        id resolved = [self resolve_local_reference:j];
+        callback(resolved);
     }
     
 }
 
 - (void)require{
-    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
-    hud.animationType = MBProgressHUDAnimationFade;
+    if(VC.loading){
+        [self networkLoading:YES with:nil];
+    }
     
     /*
      
@@ -1095,21 +1123,18 @@
     });
 }
 
-- (id)resolve_reference: (NSString *)json{
+- (id)resolve_remote_reference: (NSString *)json{
     NSError *error;
     
-    // Local - convert "@": "$document.blah.blah" to "{{#include $root.$document.blah.blah}}": {}
-    NSString *local_pattern = @"\"@\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"";
-    NSRegularExpression* local_regex = [NSRegularExpression regularExpressionWithPattern:local_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
-    NSString *converted = [local_regex stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root.$1}}\": {}"];
-    
     // Remote url with path - convert "@": "blah.blah@https://www.google.com" to "{{#include $root[\"https://www.google.com\"].blah.blah}}": {}
-    NSString *remote_pattern_with_path = @"\"(@)\"[ ]*:[ ]*\"(([^\"@]+)(@))([^\"]+)\"";
+    // The pattern leaves out the pattern where it starts with "$" because that's a $document and will be resolved by resolve_local_reference
+    NSString *remote_pattern_with_path = @"\"([+@])\"[ ]*:[ ]*\"(([^$\"@]+)(@))([^\"]+)\"";
     NSRegularExpression* remote_regex_with_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_with_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
-    converted = [remote_regex_with_path stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include \\$root[\\\\\"$5\\\\\"].$3}}\": {}"];
+    NSString *converted = [remote_regex_with_path stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root[\\\\\"$5\\\\\"].$3}}\": {}"];
     
     // Remote url without path - convert "@": "https://www.google.com" to "{{#include $root[\"https://www.google.com\"]}}": {}
-    NSString *remote_pattern_without_path = @"\"(@)\"[ ]*:[ ]*\"([^\"]+)\"";
+    // The pattern leaves out the pattern where it starts with "$" because that's a $document and will be resolved by resolve_local_reference
+    NSString *remote_pattern_without_path = @"\"([+@])\"[ ]*:[ ]*\"([^$\"]+)\"";
     NSRegularExpression* remote_regex_without_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_without_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
     converted = [remote_regex_without_path stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include \\$root[\\\\\"$2\\\\\"]}}\": {}"];
     
@@ -1121,6 +1146,20 @@
     return include_resolved;
 }
 
+- (id)resolve_local_reference: (NSString *)json{
+    NSError *error;
+    
+    // Local - convert "@": "$document.blah.blah" to "{{#include $root.$document.blah.blah}}": {}
+    NSString *local_pattern = @"\"[+@]\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"";
+    NSRegularExpression* local_regex = [NSRegularExpression regularExpressionWithPattern:local_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+    NSString *converted = [local_regex stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root.$1}}\": {}"];
+    id tpl = [JasonHelper objectify:converted];
+    NSMutableDictionary *refs = [VC.requires mutableCopy];
+    refs[@"$document"] = VC.original;
+    id include_resolved = [JasonParser parse:refs with:tpl];
+    VC.original = include_resolved;
+    return include_resolved;
+}
 
 - (Jason *)detach:(UIViewController<RussianDollView>*)viewController{
     // Need to clean up before leaving the view
@@ -1166,6 +1205,7 @@
     tabController.delegate = self;
     tabController.tabBar.barTintColor=[UIColor whiteColor];
     tabController.tabBar.backgroundColor = [UIColor whiteColor];
+
     tabController.tabBar.shadowImage = [[UIImage alloc] init];
     [tabController.tabBar setClipsToBounds:YES];
     
@@ -1553,17 +1593,6 @@
 }
 - (void)drawViewFromJason: (NSDictionary *)jason{
     
-    // Step 0. In case there are passed parameters, we need to fill them in first.
-    if([VC respondsToSelector:@selector(options)]){
-        if([[VC valueForKey:@"options"] count] > 0){
-            NSDictionary *options = @{@"$params": [VC valueForKey:@"options"]};
-            NSDictionary *newres = [JasonHelper parse:options with:jason];
-            if(newres && newres.count > 0){
-                jason = newres;
-            }
-        }
-    }
-
     NSDictionary *head = jason[@"$jason"][@"head"];
     if(!head)return;
     
@@ -1661,7 +1690,9 @@
                 }
                 
                 // parse the data with the template to dynamically build the view
-                if(VC.data && VC.data.count > 0) rendered_page = [JasonHelper parse: VC.data with:body_parser];
+                if(VC.data && VC.data.count > 0){
+                    rendered_page = [JasonHelper parse: VC.data with:body_parser];
+                }
             }
         }
         
@@ -1700,40 +1731,73 @@
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *type = bg[@"type"];
-        if(type && [type isEqualToString:@"camera"]){
-            if(VC.background){
-                [VC.background removeFromSuperview];
-                VC.background = nil;
+        if(type) {
+            
+            if([type isEqualToString:@"camera"]){
+                
+                NSDictionary *options = bg[@"options"];
+                AVCaptureVideoPreviewLayer *_previewLayer;
+                
+                if(VC.background){
+                    [VC.background removeFromSuperview];
+                    VC.background = nil;
+                }
+                
+                VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+                _previewLayer = [[PBJVision sharedInstance] previewLayer];
+                _previewLayer.frame = VC.background.bounds;
+                _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+                
+                [VC.background.layer addSublayer:_previewLayer];
+                
+                vision = [PBJVision sharedInstance];
+                vision.delegate = self;
+                if(options[@"mode"] && [options[@"mode"] isEqualToString:@"video"]){
+                    vision.cameraMode = PBJCameraModeVideo;
+                } else {
+                    vision.cameraMode = PBJCameraModePhoto;
+                }
+                vision.cameraOrientation = PBJCameraOrientationPortrait;
+                vision.focusMode = PBJFocusModeContinuousAutoFocus;
+                if(options[@"device"] && [options[@"device"] isEqualToString:@"back"]){
+                    vision.cameraDevice = PBJCameraDeviceBack;
+                } else {
+                    vision.cameraDevice = PBJCameraDeviceFront;
+                }
+                
+                [vision startPreview];
+                
+            } else if([type isEqualToString:@"html"]){
+                if(VC.background && [VC.background isKindOfClass:[UIWebView class]]){
+                   // don't do anything, reuse.
+                } else {
+                    if(VC.background){
+                        [VC.background removeFromSuperview];
+                        VC.background = nil;
+                    }
+                    VC.background = [[UIWebView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+                    
+                    // Need to make the background transparent so that it doesn't flash white when first loading
+                    VC.background.opaque = NO;
+                    VC.background.backgroundColor = [UIColor clearColor];
+                }
+                if(bg[@"text"]){
+                    NSString *html = bg[@"text"];
+                    [((UIWebView*)VC.background) loadHTMLString:html baseURL:nil];
+                }
+                
+                // user interaction enable/disable => disabled by default
+                VC.background.userInteractionEnabled = NO;
+                if(bg[@"action"]){
+                    NSString *action_type = bg[@"action"][@"type"];
+                    if(action_type){
+                        if([action_type isEqualToString:@"$default"]){
+                            // enable input only when action type is $default
+                            VC.background.userInteractionEnabled = YES;
+                        }
+                    }
+                }
             }
-            
-            NSDictionary *options = bg[@"options"];
-            
-            
-            AVCaptureVideoPreviewLayer *_previewLayer;
-            VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-            _previewLayer = [[PBJVision sharedInstance] previewLayer];
-            _previewLayer.frame = VC.background.bounds;
-            _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-            
-            [VC.background.layer addSublayer:_previewLayer];
-            
-            vision = [PBJVision sharedInstance];
-            vision.delegate = self;
-            if(options[@"mode"] && [options[@"mode"] isEqualToString:@"video"]){
-                vision.cameraMode = PBJCameraModeVideo;
-            } else {
-                vision.cameraMode = PBJCameraModePhoto;
-            }
-            vision.cameraOrientation = PBJCameraOrientationPortrait;
-            vision.focusMode = PBJFocusModeContinuousAutoFocus;
-            if(options[@"device"] && [options[@"device"] isEqualToString:@"back"]){
-                vision.cameraDevice = PBJCameraDeviceBack;
-            } else {
-                vision.cameraDevice = PBJCameraDeviceFront;
-            }
-            
-            [vision startPreview];
-            
             [VC.view addSubview:VC.background];
             [VC.view sendSubviewToBack:VC.background];
         }
@@ -2276,9 +2340,13 @@
             NSDictionary *tab = tabs[i];
             NSString *url;
             NSDictionary *options = @{};
+            BOOL loading = NO;
             if(tab[@"href"]){
                 url = tab[@"href"][@"url"];
                 options = tab[@"href"][@"options"];
+                if(tab[@"href"][@"loading"]){
+                    loading = YES;
+                }
             } else {
                 url = tab[@"url"];
             }
@@ -2291,7 +2359,8 @@
                 } else {
                     JasonViewController *vc = [[JasonViewController alloc] init];
                     vc.url = url;
-                    vc.options = options;
+                    vc.options = [self filloutTemplate:options withData:[self variables]];
+                    vc.loading = loading;
                     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
                     [tabs_array addObject:nav];
                 }
@@ -2303,7 +2372,8 @@
                     UINavigationController *nav = tabController.viewControllers[i];
                     UIViewController<RussianDollView> *vc = [[nav viewControllers] firstObject];
                     vc.url = url;
-                    vc.options = options;
+                    vc.options = [self filloutTemplate:options withData:[self variables]];
+                    vc.loading = loading;
                 }
             }
         }
@@ -2342,13 +2412,13 @@
             NSString *view = selected_tab[@"href"][@"view"];
             if(transition){
                 if([transition isEqualToString:@"modal"]){
-                    [self go: selected_tab[@"href"]];
+                    [self go: [self filloutTemplate:selected_tab[@"href"] withData:[self variables]]];
                     return NO;
                 }
             }
             if(view){
                 if([view isEqualToString:@"web"] || [view isEqualToString:@"app"]){
-                    [self go: selected_tab[@"href"]];
+                    [self go: [self filloutTemplate:selected_tab[@"href"] withData:[self variables]]];
                     return NO;
                 }
             }
@@ -3253,10 +3323,11 @@
     
     UIImage *image = [JasonHelper takescreenshot];
     NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
+    NSString *base64 = [imageData base64EncodedStringWithOptions:0];
     
-    NSString* dataString = [NSString stringWithFormat:dataFormatString, [imageData base64EncodedStringWithOptions:0]];
+    NSString* dataString = [NSString stringWithFormat:dataFormatString, base64];
     NSURL* dataURI = [NSURL URLWithString:dataString];
-    [[Jason client] success:@{@"data": imageData, @"data_uri": dataURI.absoluteString, @"metadata": metadata, @"content_type" :contentType}];
+    [[Jason client] success:@{@"data": base64, @"data_uri": dataURI.absoluteString, @"metadata": metadata, @"content_type" :contentType}];
 }
 
 @end

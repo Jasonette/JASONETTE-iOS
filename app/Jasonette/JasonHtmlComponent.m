@@ -7,38 +7,67 @@
 #import "JasonHtmlComponent.h"
 
 @implementation JasonHtmlComponent
-+ (UIView *)build: (UILabel *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
-
++ (UIView *)build: (UIWebView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
     if(!component){
-        component = [[UILabel alloc] initWithFrame:CGRectZero];
+        component = [[UIWebView alloc] initWithFrame:CGRectZero];
+        CGFloat width = [[UIScreen mainScreen] bounds].size.width;
+        CGFloat height = [[UIScreen mainScreen] bounds].size.height;
+        if(json[@"style"]){
+            if(json[@"style"][@"width"]){
+                width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:json[@"style"][@"width"]];
+            }
+            if(json[@"style"][@"height"]){
+                height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:json[@"style"][@"height"]];
+            }
+        }
+        CGRect frame = CGRectMake(0,0, width, height);
+        component = [[UIWebView alloc] initWithFrame:frame];
     }
+    
+    component.opaque = NO;
+    component.backgroundColor = [UIColor clearColor];
+
+    
     if(json[@"text"] && ![[NSNull null] isEqual:json[@"text"]]){
         NSString *html = json[@"text"];
-        if(json[@"css"]){
-            html = [self styledHTMLwithHTML:html withStyle:json[@"css"]];
+        [((UIWebView*)component) loadHTMLString:html baseURL:nil];
+        component.scrollView.scrollEnabled = NO;
+
+        component.delegate = [self self];
+        [self stylize:json component:component];
+    }
+    
+    
+    // user interaction enable/disable => disabled by default
+    component.userInteractionEnabled = NO;
+    if(json[@"action"]){
+        // if there's an 'action' attribute, delegate the event handling to this component
+        component.userInteractionEnabled = YES;
+
+        NSString *type = json[@"action"][@"type"];
+        if(type && [type isEqualToString:@"$default"]){
+            // don't add button so the event passes all the way to the web canvas
+        } else {
+            // add a button so the event gets processed without reaching the web canvas
+            UIButton *b = [UIButton buttonWithType:UIButtonTypeCustom];
+            b.frame = CGRectMake(0, 0, component.frame.size.width, component.frame.size.height);
+            [component addSubview:b];
+            
+            b.payload = [@{@"action": json[@"action"]} mutableCopy];
+            [b removeTarget:self.class action:@selector(actionButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+            [b addTarget:self.class action:@selector(actionButtonClicked:) forControlEvents:UIControlEventTouchUpInside];            
         }
-        NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *options = @{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)};
-        NSAttributedString *str = [[NSAttributedString alloc] initWithData:data options:options documentAttributes:NULL error:NULL];
-        component.numberOfLines = 0;
-        component.attributedText = str;
-        [component sizeToFit];
+        
+
     }
     
     return component;
 }
-+ (NSString *)styledHTMLwithHTML:(NSString *)HTML withStyle: (NSString *)style{
-    
-    
-    CGFloat width = [[UIScreen mainScreen] bounds].size.width;
-    CGFloat height = [[UIScreen mainScreen] bounds].size.height;
-    
-    return [NSString stringWithFormat:@"<meta charset=\"UTF-8\"><style>body{width: %fpx; height: %fpx;}%@</style>%@", width, height, style, HTML];
-}
-
-+ (NSAttributedString *)attributedStringWithHTML:(NSString *)HTML {
-    NSDictionary *options = @{ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType };
-    return [[NSAttributedString alloc] initWithData:[HTML dataUsingEncoding:NSUTF8StringEncoding] options:options documentAttributes:NULL error:NULL];
++ (void)actionButtonClicked:(UIButton *)sender{
+    NSLog(@"sender.payload = %@", sender.payload);
+    if(sender.payload && sender.payload[@"action"]){
+        [[Jason client] call: sender.payload[@"action"]];
+    }
 }
 
 

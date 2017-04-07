@@ -883,5 +883,18 @@
   FlushBuffer();
   return resultData;
 }
++ (NSArray *)childOf: (UIView *)view withClassName: (NSString *)className {
+    NSMutableArray *f = [[NSMutableArray alloc] init];
+    Class klass = NSClassFromString (className);
+    if([view isKindOfClass:klass]){
+        [f addObject:view];
+    }
+    if(view.subviews && view.subviews.count > 0){
+        for(UIView *v in view.subviews){
+            [f addObjectsFromArray: [self childOf:v withClassName:className]];
+        }
+    }
+    return [f copy];
+}
 
 @end

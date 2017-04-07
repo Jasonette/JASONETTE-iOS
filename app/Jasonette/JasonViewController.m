@@ -11,7 +11,7 @@
     NSInteger selectedIndex;
     NSMutableArray *rowcount;
     NSMutableArray *headers;
-    NSMutableArray *layers;
+//    NSMutableArray *layers;
     NSString *search_url;
     NSString *search_field_name;
     NSString *back_url;
@@ -47,6 +47,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    
     
     original_height = self.view.frame.size.height;
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
@@ -95,7 +97,7 @@
 
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
-
+    
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"finishRefreshing" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishRefreshing) name:@"finishRefreshing" object:nil];
@@ -274,13 +276,13 @@
                 header = [JasonComponentFactory applyStylesheet:header];
                 if(header[@"style"] && header[@"style"][@"height"]){
                     NSString *height = header[@"style"][@"height"];
-                    return [height integerValue];
+                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:height];
                 }
                 return 40.0f;
             } else {
                 header = [JasonComponentFactory applyStylesheet:header];
                 if(header[@"style"] && header[@"style"][@"height"]){
-                    return (CGFloat)[header[@"style"][@"height"] floatValue];
+                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:header[@"style"][@"height"]];
                 }
             }
             return UITableViewAutomaticDimension;
@@ -419,7 +421,7 @@
             if(style){
                 if(style[@"height"]){
                     NSString *height = style[@"height"];
-                    tabs_height = [height integerValue];
+                    tabs_height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:height];
                 }
                 if(style[@"tintColor"]){   // deprecated. use tint_color
                     tabs_selection_color = [JasonHelper colorwithHexString:style[@"tintColor"] alpha:1.0];
@@ -584,7 +586,8 @@
     // Currently background only at cell level (layouts don't have background)
     if(style[@"background"]){
         if([style[@"background"] hasPrefix:@"http"]){
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,cell.frame.size.width, [style[@"height"] floatValue])];
+            CGFloat h = [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,cell.frame.size.width, h)];
             cell.backgroundView = imageView;
             cell.backgroundView.backgroundColor = [UIColor clearColor];
             cell.backgroundView.opaque = NO;
@@ -665,7 +668,7 @@
                 section = [JasonComponentFactory applyStylesheet: section];
                 NSDictionary *style = section[@"style"];
                 if(style && style[@"height"]){
-                    return [style[@"height"] floatValue];
+                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
                 }
                 
                 
@@ -707,7 +710,7 @@
                 item = [JasonComponentFactory applyStylesheet:item];
                 NSDictionary *style = item[@"style"];
                 if(style && style[@"height"]){
-                    return (CGFloat)[style[@"height"] floatValue];
+                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
                 }
             } else {
                 return 0.0f;
@@ -727,7 +730,7 @@
             NSDictionary *style = s[@"style"];
             if(style){
                 if(style[@"height"]){
-                    return [style[@"height"] floatValue];
+                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
                 }
             }
             return 100.0f;
@@ -998,7 +1001,7 @@
     
     @try{
         dispatch_async(dispatch_get_main_queue(), ^{
-            
+        
             [self setupHeader: body];
             [self setupLayers:body];
             [self setupFooter: body];
@@ -1071,7 +1074,7 @@
 // CHAT INPUT RELATED
 - (void)composeBarViewDidPressButton:(PHFComposeBarView *)c{
     if(chat_input){
-        if(chat_input[@"name"]){
+        if(chat_input[@"name"] || chat_input[@"textfield"][@"name"]){
             [c setText:@""];
             [[Jason client] call:chat_input[@"right"][@"action"]];
         }
@@ -1079,7 +1082,7 @@
 }
 - (void)composeBarViewDidPressUtilityButton:(PHFComposeBarView *)c{
     if(chat_input){
-        if(chat_input[@"name"]){
+        if(chat_input[@"name"] || chat_input[@"textfield"][@"name"]){
             [[Jason client] call:chat_input[@"left"][@"action"]];
         }
     }
@@ -1109,8 +1112,9 @@
                     NSDictionary *stylized_component = [JasonComponentFactory applyStylesheet: component];
                     NSDictionary *style = stylized_component[@"style"];
                     
-                    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-                    
+                    if(!self.searchController){
+                        self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+                    }
                     // style
                     NSString *theme = style[@"theme"];
                     if([theme isEqualToString:@"light"]){
@@ -1180,7 +1184,7 @@
                     }
 
                     self.tableView.tableHeaderView = self.searchController.searchBar;
-                    self.definesPresentationContext = YES;
+                    self.searchController.hidesNavigationBarDuringPresentation = NO;
 
                     [self.searchController.searchBar sizeToFit];
 
@@ -1210,8 +1214,9 @@
                     NSString *search_placeholder = component[@"placeholder"];
                     NSDictionary *style = component[@"style"];
                     
-                    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-                    
+                    if(!self.searchController){
+                        self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+                    }
                     // style
                     NSString *theme = style[@"theme"];
                     if([theme isEqualToString:@"light"]){
@@ -1273,7 +1278,7 @@
                     }
 
                     self.tableView.tableHeaderView = self.searchController.searchBar;
-                    self.definesPresentationContext = YES;
+                    self.searchController.hidesNavigationBarDuringPresentation = NO;
 
                     [self.searchController.searchBar sizeToFit];
 
@@ -1287,11 +1292,18 @@
 }
 
 - (void)setupLayers: (NSDictionary *)body{
-    [JasonLayer setupLayers: body withView:self.view];
+    for(UIView *v in self.layers){
+        [v removeFromSuperview];
+    }
+    self.layers = [JasonLayer setupLayers: body withView:self.view];
 }
 - (void)setupSections:(NSDictionary *)body{
     
     raw_sections = body[@"sections"];
+    
+    if(!raw_sections){
+        [self.view sendSubviewToBack:self.tableView];
+    }
     
     JasonComponentFactory.imageLoaded = [[NSMutableDictionary alloc] init];
     
@@ -1392,6 +1404,8 @@
 - (void)setupFooter: (NSDictionary *)body{
     
     if(body[@"footer"] && body[@"footer"][@"input"]){
+        
+        
         chat_input = body[@"footer"][@"input"];
         if(chat_input){
             
@@ -1406,6 +1420,15 @@
                 weakSelf.view.frame = newViewFrame;
             }];
             
+            // textfield logic
+            
+            NSDictionary *field;
+            if(chat_input[@"textfield"]){
+                field = chat_input[@"textfield"];
+            } else {
+                field = chat_input; // to be deprecated
+            }
+            
             if(!composeBarView){
                 CGRect viewBounds = [self.view bounds];
                 CGRect frame = CGRectMake(0.0f,
@@ -1413,16 +1436,58 @@
                                           viewBounds.size.width,
                                           PHFComposeBarViewInitialHeight);
                 composeBarView = [[PHFComposeBarView alloc] initWithFrame:frame];
-                if(chat_input[@"name"]){
-                    composeBarView.textView.payload = [@{@"name": chat_input[@"name"]} mutableCopy];
+                if(field[@"name"]){
+                    composeBarView.textView.payload = [@{@"name": field[@"name"]} mutableCopy];
                 }
                 [composeBarView setDelegate:self];
                 [self.view addSubview:composeBarView];
                 [self.view bringSubviewToFront:composeBarView];
             }
             
-            if(chat_input[@"placeholder"]){
-                [composeBarView setPlaceholder:chat_input[@"placeholder"]];
+            
+            // First set the background style. The order is important because we will override some background colors below
+            if(chat_input[@"style"]){
+                if(chat_input[@"style"][@"background"]){
+                    [self force_background:chat_input[@"style"][@"background"] intoView:composeBarView];
+                }
+            }
+            
+            // input field styling
+            if(field[@"style"]){
+                
+                //PHFComposeBarView hack to find relevant views and apply style
+                //[JasonHelper force_background:@"#000000" intoView:composeBarView];
+                for(UIView *v in composeBarView.subviews){
+                    for(UIView *vv in v.subviews){
+                        if([vv isKindOfClass:[UITextView class]]){
+                            vv.superview.layer.borderWidth = 0;
+                            for(UIView *vvv in vv.superview.subviews){
+                                
+                                // textfield background
+                                if(field[@"style"][@"background"]){
+                                    vvv.backgroundColor = [JasonHelper colorwithHexString:field[@"style"][@"background"] alpha:1.0];
+                                }
+                                
+                                // placeholder color
+                                if([vvv isKindOfClass:[UILabel class]]){
+                                    // placeholder label
+                                    ((UILabel*)vvv).textColor = [JasonHelper colorwithHexString:field[@"style"][@"color:placeholder"] alpha:1.0];
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                
+                // text color
+                if(field[@"style"][@"color"]){
+                    composeBarView.textView.textColor = [JasonHelper colorwithHexString:field[@"style"][@"color"] alpha:1.0];
+                }
+                    
+            }
+            
+            if(field[@"placeholder"]){
+                [composeBarView setPlaceholder:field[@"placeholder"]];
             }
             
             if(chat_input[@"left"]){
@@ -1435,6 +1500,13 @@
                                                  // progression tracking code
                                              }
                                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                
+                                                // colorize
+                                                if(chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
+                                                    UIColor *newColor = [JasonHelper colorwithHexString:chat_input[@"left"][@"style"][@"color"] alpha:1.0];
+                                                    image = [JasonHelper colorize:image into:newColor];
+                                                }
+                                                
                                                 UIImage *resizedImage = [JasonHelper scaleImage:image ToSize:CGSizeMake(30,30)];
                                                 dispatch_async(dispatch_get_main_queue(), ^{
                                                     [composeBarView setUtilityButtonImage:resizedImage];
@@ -1446,12 +1518,64 @@
             }
             if(chat_input[@"right"]){
                 if(chat_input[@"right"][@"text"]){
+                    
+                    /*
+                    // handle color
+                    if(chat_input[@"right"][@"style"] && chat_input[@"right"][@"style"][@"color"]){
+                        [composeBarView setButtonTintColor:[JasonHelper colorwithHexString:chat_input[@"right"][@"style"][@"color"] alpha:1.0]];
+                    }
+                     */
+                    
+                    NSArray *buttons = [JasonHelper childOf:composeBarView withClassName:@"PHFComposeBarView_Button"];
+                    for(UIButton *button in buttons){
+                        if([button.subviews.firstObject isKindOfClass:[UILabel class]]){
+                            
+                            // set "color"
+                            if(chat_input[@"right"][@"style"] && chat_input[@"right"][@"style"][@"color"]){
+                                [button setTitleColor:[JasonHelper colorwithHexString:chat_input[@"right"][@"style"][@"color"] alpha:1.0] forState:UIControlStateNormal];
+                            }
+                            
+                            // set "color:disabled"
+                            if(chat_input[@"right"][@"style"] && chat_input[@"right"][@"style"][@"color:disabled"]){
+                                [button setTitleColor:[JasonHelper colorwithHexString:chat_input[@"right"][@"style"][@"color:disabled"] alpha:1.0] forState:UIControlStateDisabled];
+                            } else {
+                                // default
+                                [button setTitleColor:[JasonHelper colorwithHexString:chat_input[@"right"][@"style"][@"color"] alpha:1.0] forState:UIControlStateDisabled];
+                            }
+                        }
+                    }
+                    
                     [composeBarView setButtonTitle:chat_input[@"right"][@"text"]];
                 }
             }
+            
+            // The background for the entire footer input
+            if(chat_input[@"style"]){
+                if(chat_input[@"style"][@"background"]){
+                    composeBarView.backgroundColor = [JasonHelper colorwithHexString:chat_input[@"style"][@"background"] alpha:1.0];
+                }
+            }
+
         }
         
         
+    }
+}
+- (void)force_background: (NSString *) color intoView: (UIView *) view{
+    if([view isKindOfClass:[UIToolbar class]]){
+        [(UIToolbar *)view setBackgroundImage:[UIImage new]
+                      forToolbarPosition:UIToolbarPositionAny
+                              barMetrics:UIBarMetricsDefault];
+        [(UIToolbar *)view setBackgroundColor:[UIColor clearColor]];
+    } else if([view isKindOfClass:[UITextView class]]){
+        // don't do anything
+    } else {
+        view.backgroundColor = [JasonHelper colorwithHexString:color alpha:1.0];
+        if(view.subviews && view.subviews.count > 0){
+            for(UIView *v in view.subviews){
+                [self force_background:color intoView:v];
+            }
+        }
     }
 }
 

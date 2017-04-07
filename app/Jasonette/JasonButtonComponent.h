@@ -6,6 +6,7 @@
 //
 #import "JasonComponent.h"
 #import "Jason.h"
+#import "NoPaddingButton.h"
 #import "JasonLabelComponent.h"
 
 @interface JasonButtonComponent : JasonComponent
