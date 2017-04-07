@@ -9,9 +9,15 @@
 @implementation JasonButtonComponent
 + (UIView *)build: (UIButton *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
     if(!component){
-        component = [[UIButton alloc] init];
+        component = [[NoPaddingButton alloc] init];
     }
     NSMutableDictionary *mutable_json = [json mutableCopy];
+    
+    NSMutableDictionary *style;
+    if(json[@"style"]){
+        style = [json[@"style"] mutableCopy];
+    }
+    
     if(json[@"url"]){
         
         if(options && options[@"indexPath"]){
@@ -51,9 +57,11 @@
         [component setTitle:@"" forState:UIControlStateNormal];
         
         // Before applying common styles, Update the style attribute based on the fetched image dimension (different from other components)
-        if(json[@"style"]){
-            NSMutableDictionary *style = [json[@"style"] mutableCopy];
+
+        if(style){
             NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
+   
+
             
             if(style[@"color"]){
                 // Setting tint color for an image
@@ -116,7 +124,13 @@
         if(json[@"text"]){
             [component setTitle:json[@"text"] forState:UIControlStateNormal];
         }
+
     }
+
+    
+    
+
+    
     
     if(json[@"action"]){
         component.payload = [@{@"action": json[@"action"]} mutableCopy];
@@ -127,9 +141,9 @@
     
     // 1. Apply Common Style
     [self stylize:mutable_json component:component];
-    
+
+
     // 2. Custom Style
-    NSDictionary *style = json[@"style"];
     if(style){
         if(json[@"text"]){
             // text button
@@ -150,8 +164,31 @@
             
         }
     }
-    [component setSelected:NO];
     
+    
+    // Padding Override
+    if(style){
+        NSString *padding_left = @"0";
+        NSString *padding_right = @"0";
+        NSString *padding_top = @"0";
+        NSString *padding_bottom = @"0";
+        
+        if(style[@"padding"]){
+            NSString *padding = style[@"padding"];
+            padding_left = padding;
+            padding_top = padding;
+            padding_right = padding;
+            padding_bottom = padding;
+        }
+        
+        if(style[@"padding_left"]) padding_left = style[@"padding_left"];
+        if(style[@"padding_right"]) padding_right = style[@"padding_right"];
+        if(style[@"padding_top"]) padding_top = style[@"padding_top"];
+        if(style[@"padding_bottom"]) padding_bottom = style[@"padding_bottom"];
+        component.contentEdgeInsets = UIEdgeInsetsMake([JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_top], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_left], [JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_bottom], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_right]);
+    }
+    
+    [component setSelected:NO];
     return component;
 }
 + (void)actionButtonClicked:(UIButton *)sender{
