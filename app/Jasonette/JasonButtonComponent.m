@@ -51,7 +51,15 @@
             [imageView sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 if(!error){
                     JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
-                    [component setImage:imageView.image forState:UIControlStateNormal];
+                    if(style[@"color"]){
+                        NSString *colorHex = style[@"color"];
+                        UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
+                        UIImage *image = [imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                        [component setTintColor:c];
+                        [component setImage: image forState:UIControlStateNormal];
+                    } else {
+                        [component setImage:imageView.image forState:UIControlStateNormal];
+                    }
                 }
             }];
         }
@@ -151,13 +159,14 @@
             // text button
             [self stylize:json text:component.titleLabel];
             
-            if(style[@"color"]){
-                NSString *colorHex = style[@"color"];
-                component.tintColor = [JasonHelper colorwithHexString:colorHex alpha:1.0];
-                UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
-                [component setTitleColor:c forState:UIControlStateNormal];
-            }
         }
+        if(style[@"color"]){
+            NSString *colorHex = style[@"color"];
+            UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
+            component.tintColor = c;
+            [component setTitleColor:c forState:UIControlStateNormal];
+        }
+
     }
     
     
