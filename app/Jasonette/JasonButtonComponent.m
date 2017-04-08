@@ -25,9 +25,10 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"setupIndexPathsForImage" object:nil userInfo:@{@"url": url, @"indexPath": options[@"indexPath"]}];
         }
         
-        
+        component.imageView.contentMode = UIViewContentModeScaleAspectFit;
+
         UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
-        [component setBackgroundImage:placeholder_image forState:UIControlStateNormal];
+        [component setImage:placeholder_image forState:UIControlStateNormal];
         NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
         
         
@@ -50,7 +51,7 @@
             [imageView sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 if(!error){
                     JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
-                    [component setBackgroundImage:imageView.image forState:UIControlStateNormal];
+                    [component setImage:imageView.image forState:UIControlStateNormal];
                 }
             }];
         }
@@ -68,7 +69,7 @@
                 UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
                 UIImage *newImage = [JasonHelper colorize:imageView.image into:newColor];
                 imageView.image = newImage;
-                [component setBackgroundImage:imageView.image forState:UIControlStateNormal];
+                [component setImage:imageView.image forState:UIControlStateNormal];
             }
             
             if(style[@"width"] && !style[@"height"]){
@@ -120,7 +121,7 @@
         
     }
     else{
-        [component setBackgroundImage:nil forState:UIControlStateNormal];
+        [component setImage:nil forState:UIControlStateNormal];
         if(json[@"text"]){
             [component setTitle:json[@"text"] forState:UIControlStateNormal];
         }
@@ -144,34 +145,36 @@
 
 
     // 2. Custom Style
+    [component setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     if(style){
         if(json[@"text"]){
             // text button
             [self stylize:json text:component.titleLabel];
-            
-            if(!style[@"background"]){
-                component.backgroundColor = [JasonHelper colorwithHexString:@"#007AFF" alpha:1.0];
-            }
             
             if(style[@"color"]){
                 NSString *colorHex = style[@"color"];
                 component.tintColor = [JasonHelper colorwithHexString:colorHex alpha:1.0];
                 UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
                 [component setTitleColor:c forState:UIControlStateNormal];
-            } else {
-                component.tintColor = [UIColor whiteColor];
             }
-            
         }
     }
     
     
-    // Padding Override
     if(style){
+        // Padding Override
         NSString *padding_left = @"0";
         NSString *padding_right = @"0";
         NSString *padding_top = @"0";
         NSString *padding_bottom = @"0";
+
+        if(json[@"text"]){
+            // padding 5 in case of text button
+            padding_left = @"5";
+            padding_right = @"5";
+            padding_top = @"5";
+            padding_bottom = @"5";
+        }
         
         if(style[@"padding"]){
             NSString *padding = style[@"padding"];
@@ -186,6 +189,29 @@
         if(style[@"padding_top"]) padding_top = style[@"padding_top"];
         if(style[@"padding_bottom"]) padding_bottom = style[@"padding_bottom"];
         component.contentEdgeInsets = UIEdgeInsetsMake([JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_top], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_left], [JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_bottom], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_right]);
+        
+        
+        
+        // align
+        if(style[@"align"]){
+            if([style[@"align"] isEqualToString:@"left"]){
+                component.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+            } else if([style[@"align"] isEqualToString:@"right"]){
+                component.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+            } else {
+                if(json[@"url"]){
+                    // image buttons fill horizontally
+                    component.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
+                } else {
+                    // text buttons center horizontally
+                    component.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+
+                }
+            }
+        }
+        component.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
+        
+
     }
     
     [component setSelected:NO];
