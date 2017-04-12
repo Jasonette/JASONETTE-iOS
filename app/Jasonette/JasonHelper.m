@@ -483,7 +483,7 @@
         
     } else {
         
-        NSRegularExpression* regexPixels = [NSRegularExpression regularExpressionWithPattern:@"^([0-9]+)$" options:0 error:&error];
+        NSRegularExpression* regexPixels = [NSRegularExpression regularExpressionWithPattern:@"^([0-9.]+)$" options:0 error:&error];
         NSTextCheckingResult *matchPixels = [regexPixels firstMatchInString:expression options:0 range: searchedRange];
         if(matchPixels){
             // Pixels only
