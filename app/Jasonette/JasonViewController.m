@@ -1016,6 +1016,7 @@
                 UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
                 [self.view addGestureRecognizer:pinchRecognizer];
             }
+            self.tableView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, self.bottomLayoutGuide.length, 0);
         
             original_bottom_inset = self.tableView.contentInset.bottom;
         
