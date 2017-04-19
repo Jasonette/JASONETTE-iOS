@@ -929,7 +929,7 @@
                         // it's a url!
                         // see if it's an image type
                         if(body[@"type"]){
-                            if([body[@"type"] isEqualToString:@"image"]){
+                            if([body[@"type"] isEqualToString:@"image"] || [body[@"type"] isEqualToString:@"button"]){
                                 // it's an image. Let's download!
                                 NSString *url = body[key];
                                 if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
