@@ -1389,12 +1389,6 @@
         }
     }
     
-    if(total_rowcount > 1){
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-    } else {
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    }
-    
     [self.tableView reloadData];
     if(!top_aligned){
         [self scrollToBottom];
