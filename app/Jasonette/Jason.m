@@ -1786,6 +1786,12 @@
                     [((UIWebView*)VC.background) loadHTMLString:html baseURL:nil];
                 }
                 
+                // allow autoplay
+                ((UIWebView*)VC.background).mediaPlaybackRequiresUserAction = NO;
+                
+                // allow inline playback
+                ((UIWebView*)VC.background).allowsInlineMediaPlayback = YES;
+
                 // user interaction enable/disable => disabled by default
                 VC.background.userInteractionEnabled = NO;
                 if(bg[@"action"]){
