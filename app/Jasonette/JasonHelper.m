@@ -454,6 +454,8 @@
 + (CGFloat)pixelsInDirection: (NSString *)direction fromExpression: (NSString *)expression {
     NSError *error = nil;
     CGFloat full_dimension;
+    if(!expression) return 0;
+    
     if([direction isEqualToString:@"vertical"]){
         full_dimension = [[UIScreen mainScreen] bounds].size.height;
     } else {

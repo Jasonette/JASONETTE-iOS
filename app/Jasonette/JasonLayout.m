@@ -274,7 +274,7 @@ static NSMutableDictionary *_stylesheet = nil;
     }
     
     if(style[@"spacing"]){
-        layout.spacing = [style[@"spacing"] floatValue];
+        layout.spacing = [JasonHelper pixelsInDirection:item[@"type"] fromExpression:style[@"spacing"]];
     }
     
     NSString *padding_left;
@@ -293,6 +293,8 @@ static NSMutableDictionary *_stylesheet = nil;
     if(style[@"padding_right"]) padding_right = style[@"padding_right"];
     if(style[@"padding_top"]) padding_top = style[@"padding_top"];
     if(style[@"padding_bottom"]) padding_bottom = style[@"padding_bottom"];
+    layout.layoutMargins = UIEdgeInsetsMake([JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_top], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_left], [JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_bottom], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_right]);
+
     layout.layoutMargins = UIEdgeInsetsMake([padding_top floatValue], [padding_left floatValue], [padding_bottom floatValue], [padding_right floatValue]);
     layout.layoutMarginsRelativeArrangement = true;
     

@@ -341,9 +341,10 @@
     [cell setStylesheet:self.style];
     
     UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout *) cell.collectionView.collectionViewLayout;
-    flowLayout.minimumInteritemSpacing = [style[@"spacing"] intValue];
-    flowLayout.minimumLineSpacing = [style[@"spacing"] intValue];
-    
+    if(style[@"spacing"]){
+        flowLayout.minimumInteritemSpacing = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"spacing"]];
+        flowLayout.minimumLineSpacing =  [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"spacing"]];
+    }
     
     // Padding Handling
     NSString *padding_left;
@@ -363,7 +364,7 @@
     if(style[@"padding_top"]) padding_top = style[@"padding_top"];
     if(style[@"padding_bottom"]) padding_bottom = style[@"padding_bottom"];
     
-    cell.collectionView.contentInset = UIEdgeInsetsMake([padding_top intValue], [padding_left intValue], [padding_bottom intValue], [padding_right intValue]);
+    cell.collectionView.contentInset = UIEdgeInsetsMake([JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_top], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_left], [JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_bottom], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_right]);
 
 
     

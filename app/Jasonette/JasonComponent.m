@@ -237,7 +237,8 @@
             if(style[@"padding_right"]) padding_right = style[@"padding_right"];
             if(style[@"padding_top"]) padding_top = style[@"padding_top"];
             if(style[@"padding_bottom"]) padding_bottom = style[@"padding_bottom"];
-            ((TTTAttributedLabel*)el).textInsets = UIEdgeInsetsMake([padding_top floatValue], [padding_left floatValue], [padding_bottom floatValue], [padding_right floatValue]);
+            ((TTTAttributedLabel*)el).textInsets = UIEdgeInsetsMake([JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_top], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_left], [JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_bottom], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_right]);
+
             ((TTTAttributedLabel *)el).lineBreakMode = NSLineBreakByTruncatingTail;
         }
         
