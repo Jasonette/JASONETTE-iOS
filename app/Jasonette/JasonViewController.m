@@ -936,6 +936,18 @@
                                 if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
                                     download_image_counter++;
                                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                                    NSDictionary *session = [JasonHelper sessionForUrl:url];
+                                    
+                                    if(session && session.count > 0 && session[@"header"]){
+                                        for(NSString *key in session[@"header"]){
+                                            [manager.imageDownloader setValue:session[@"header"][key] forHTTPHeaderField:key];
+                                        }
+                                    }
+                                    if(body[@"header"] && [body[@"header"] count] > 0){
+                                        for(NSString *key in body[@"header"]){
+                                            [manager.imageDownloader setValue:body[@"header"][key] forHTTPHeaderField:key];
+                                        }
+                                    }
                                     [manager downloadImageWithURL:[NSURL URLWithString:url]
                                                           options:0
                                                          progress:^(NSInteger receivedSize, NSInteger expectedSize) {
