@@ -12,14 +12,6 @@
         CGRect frame = CGRectMake(0,0,[[UIScreen mainScreen] bounds].size.width, 50);
         component = [[UITextField alloc] initWithFrame:frame];
     }
-    if(options && options[@"value"]){
-        component.text = options[@"value"];
-    } else if(json && json[@"value"]){
-        component.text = json[@"value"];
-    }
-    
-    component.delegate = [self self];
-    
     
     NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
     if(json[@"name"]){
@@ -29,6 +21,23 @@
         payload[@"action"] = json[@"action"];
     }
     component.payload = payload;
+
+    
+    if(options && options[@"value"]){
+        component.text = options[@"value"];
+    } else if(json && json[@"value"]){
+        component.text = json[@"value"];
+    }
+    
+    if(component.text){
+        if(component.payload && component.payload[@"name"]){
+            [self updateForm:@{component.payload[@"name"]: component.text}];
+        }
+    }
+    
+    component.delegate = [self self];
+    
+    
     [component addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     
     // 1. Apply Common Style
