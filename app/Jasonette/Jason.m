@@ -1670,25 +1670,7 @@
          ****************************************************************************/
         if(VC.parser && VC.parser.count > 0){
             NSDictionary *body_parser = VC.parser[@"body"];
-            if(body_parser){
-                // Pre-render navbar and tabbar first before rendering the VC
-                if(body_parser[@"nav"]) {
-                    // Deprecated
-                    [self setupHeader:body_parser[@"nav"]];
-                } else if(body_parser[@"header"]) {
-                    // Use thi
-                    [self setupHeader:body_parser[@"header"]];
-                } else {
-                    [self setupHeader: nil];
-                }
-                if(body_parser[@"footer"] && body_parser[@"footer"][@"tabs"]){
-                    // Use this
-                    [self setupTabBar:body_parser[@"footer"][@"tabs"]];
-                } else {
-                    // Deprecated
-                    [self setupTabBar:body_parser[@"tabs"]];
-                }
-                
+            if(body_parser){                
                 // parse the data with the template to dynamically build the view
                 if(VC.data && VC.data.count > 0){
                     rendered_page = [JasonHelper parse: VC.data with:body_parser];
@@ -1718,6 +1700,24 @@
                 [self drawBackground:@"#ffffff"];
             }
             
+            
+            if(rendered_page[@"nav"]) {
+                // Deprecated
+                [self setupHeader:rendered_page[@"nav"]];
+            } else if(rendered_page[@"header"]) {
+                // Use thi
+                [self setupHeader:rendered_page[@"header"]];
+            } else {
+                [self setupHeader: nil];
+            }
+            if(rendered_page[@"footer"] && rendered_page[@"footer"][@"tabs"]){
+                // Use this
+                [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
+            } else {
+                // Deprecated
+                [self setupTabBar:rendered_page[@"tabs"]];
+            }
+
             if([VC respondsToSelector:@selector(reload:)]) [VC reload:rendered_page];
             
             // Cache the view after drawing
