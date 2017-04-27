@@ -835,12 +835,13 @@
                 [self setupHeader:nil];
             }
             
-            if(rendered_page[@"footer"] && rendered_page[@"footer"][@"tabs"]){
-                // Use this
+            if(rendered_page[@"footer"]){
                 [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
-            } else {
+            } else if(rendered_page[@"tabs"]){
                 // Deprecated
                 [self setupTabBar:rendered_page[@"tabs"]];
+            } else {
+                [self setupTabBar:nil];
             }
             
             
@@ -1657,8 +1658,8 @@
             // By default, "body" is the markup that will be rendered
             rendered_page = dom[@"body"];
         } else {
-            [self setupHeader:nil];
-            [self setupTabBar:nil];
+            // Don't remove the header and footer even if it doesn't exist yet
+            // and let it be overridden in $render
         }
         
         
@@ -1670,7 +1671,8 @@
          ****************************************************************************/
         if(VC.parser && VC.parser.count > 0){
             NSDictionary *body_parser = VC.parser[@"body"];
-            if(body_parser){                
+            if(body_parser){
+                
                 // parse the data with the template to dynamically build the view
                 if(VC.data && VC.data.count > 0){
                     rendered_page = [JasonHelper parse: VC.data with:body_parser];
