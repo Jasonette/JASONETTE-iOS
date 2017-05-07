@@ -906,7 +906,7 @@
 
 - (void)loadAssets: (NSDictionary *)body{
     JasonViewController* weakSelf = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
     
         NSArray *keys = [body allKeys];
         for(NSString *key in keys){
@@ -937,7 +937,6 @@
                                     download_image_counter++;
                                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
                                     NSDictionary *session = [JasonHelper sessionForUrl:url];
-                                    
                                     if(session && session.count > 0 && session[@"header"]){
                                         for(NSString *key in session[@"header"]){
                                             [manager.imageDownloader setValue:session[@"header"][key] forHTTPHeaderField:key];
@@ -948,31 +947,26 @@
                                             [manager.imageDownloader setValue:body[@"header"][key] forHTTPHeaderField:key];
                                         }
                                     }
-                                    [manager downloadImageWithURL:[NSURL URLWithString:url]
-                                                          options:0
-                                                         progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                                             // progression tracking code
-                                                         }
-                                                        completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                                            download_image_counter--;
-                                                            if(!error){
-                                                                JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
-                                                            }
-                                                            //[self.tableView visibleCells];
-                                                            NSArray *indexPathArray = weakSelf.tableView.indexPathsForVisibleRows;
-                                                            NSMutableSet *visibleIndexPaths = [[NSMutableSet alloc] initWithArray: indexPathArray];
-                                                            [visibleIndexPaths intersectSet:(NSSet *)indexPathsForImage[url]];
-                                                            if(visibleIndexPaths.count > 0){
-                                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                                    [weakSelf.tableView reloadData];
-                                                                });
-                                                            }
-                                                            if(!top_aligned){
-                                                                if(download_image_counter == 0){
-                                                                    [weakSelf scrollToBottom];
-                                                                }
-                                                            }
-                                                        }];
+                                    [manager.imageDownloader downloadImageWithURL:[NSURL URLWithString:url] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) { } completed:^(UIImage *i, NSData *data, NSError *error, BOOL finished) {
+                                        download_image_counter--;
+                                        if(!error){
+                                            JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
+                                        }
+                                        //[self.tableView visibleCells];
+                                        NSArray *indexPathArray = weakSelf.tableView.indexPathsForVisibleRows;
+                                        NSMutableSet *visibleIndexPaths = [[NSMutableSet alloc] initWithArray: indexPathArray];
+                                        [visibleIndexPaths intersectSet:(NSSet *)indexPathsForImage[url]];
+                                        if(visibleIndexPaths.count > 0){
+                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                                [weakSelf.tableView reloadData];
+                                            });
+                                        }
+                                        if(!top_aligned){
+                                            if(download_image_counter == 0){
+                                                [weakSelf scrollToBottom];
+                                            }
+                                        }
+                                    }];
                                 }
                             }
                         }
