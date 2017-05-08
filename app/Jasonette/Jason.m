@@ -207,15 +207,7 @@
      **************************************************/
     
     if(result){
-        if([result isKindOfClass:[NSDictionary class]]){
-            if(((NSDictionary *)result).count > 0){
-                [JasonMemory client]._register = @{@"$jason": result};
-            } else {
-                [JasonMemory client]._register = result;
-            }
-        } else {
-            [JasonMemory client]._register = @{@"$jason": result};
-        }
+        [JasonMemory client]._register = @{@"$jason": result};
     } else {
         [JasonMemory client]._register = @{@"$jason": @{}};
     }
@@ -243,15 +235,7 @@
      **************************************************/
     
     if(result){
-        if([result isKindOfClass:[NSDictionary class]]){
-            if(((NSDictionary *)result).count > 0){
-                [JasonMemory client]._register = @{@"$jason": result};
-            } else {
-                [JasonMemory client]._register = result;
-            }
-        } else {
-            [JasonMemory client]._register = @{@"$jason": result};
-        }
+        [JasonMemory client]._register = @{@"$jason": result};
     } else {
         [JasonMemory client]._register = @{@"$jason": @{}};
     }

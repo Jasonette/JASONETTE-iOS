@@ -27,53 +27,39 @@
     
     [[NSUserDefaults standardUserDefaults] setObject:self.options forKey:self.VC.url];
     [[NSUserDefaults standardUserDefaults] synchronize];
-
+    [[Jason client] success];
 }
 - (void) import {
 
     /*************
-     Case 1:
 
      {
         "type": "$state.import",
         "options": {
-            "username": "username@https://www.jasonbase.com/things/3nf.json"
+            "db": "https://www.jasonbase.com/things/3nf.json"
         },
         "success": {
             "type": "$set",
             "options": {
-                "username": "{{$jason.username}}"
+                "db": "{{$jason.db}}"
             }
         }
      }
+     
+     1. If there's any state object stored under the URL, it will be returned.
+     2. If there's no state object stored under the URL, the return value will NOT include the key/value pair
+     
      *************/
 
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
     for(NSString *key in self.options){
-        [self extract:self.options[key]];
+        NSString *url = self.options[key];
+        NSDictionary *o = [[NSUserDefaults standardUserDefaults] objectForKey:url];
+        if(o){
+            dict[key] = o;  // only return an object if state exists under the URL
+        }
     }
+    [[Jason client] success:dict];
 }
 
-- (void) extract: (NSString *) url{
-    NSError* regexError = nil;
-    NSString *pattern = @"(([^$\"@]+)@)?([^$\"]+)";
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
-    NSArray *matches = [regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
-    for(int i = 0; i<matches.count; i++){
-        NSTextCheckingResult* match = matches[i];
-        NSRange group1 = [match rangeAtIndex:1];
-        NSRange group2 = [match rangeAtIndex:2];
-        NSRange group3 = [match rangeAtIndex:3];
-        if(group1.length > 0){
-            
-        }
-        if(group2.length > 0){
-            NSString *path = [url substringWithRange:group2];
-            NSLog(@"Path : %@", path);
-        }
-        if(group3.length > 0){
-            NSString *u = [url substringWithRange:group3];
-            NSLog(@"URL : %@", u);
-        }
-    }
-}
 @end
