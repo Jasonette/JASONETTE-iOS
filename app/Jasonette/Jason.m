@@ -2468,13 +2468,13 @@
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
     if(text){
         [item setTitle:text];
-        [item setTitlePositionAdjustment:UIOffsetMake(0.0, -2.0)];
     } else {
         [item setTitle:@""];
     }
     if(image){
         if(text){
             [item setImageInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+            [item setTitlePositionAdjustment:UIOffsetMake(0.0, -2.0)];
         } else {
             [item setImageInsets:UIEdgeInsetsMake(7.5, 0, -7.5, 0)];
         }
