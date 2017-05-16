@@ -2751,8 +2751,9 @@
                         
                         [self unlock];
                     }
+
+                    vc.extendedLayoutIncludesOpaqueBars = YES;
                     if(tabController.tabBar.hidden){
-                        vc.extendedLayoutIncludesOpaqueBars = YES;
                         tabController.tabBar.hidden = YES;
                     } else {
                         if([transition isEqualToString:@"fullscreen"]){
