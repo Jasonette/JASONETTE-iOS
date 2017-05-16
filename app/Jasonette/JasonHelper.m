@@ -898,5 +898,32 @@
     }
     return [f copy];
 }
++ (NSDictionary *) parseUrlPath: (NSString *) url{
+    NSError* regexError = nil;
+    NSString *pattern = @"(([^$\"@]+)@)?([^$\"]+)";
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
+    NSArray *matches = [regex matchesInString:url options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, url.length)];
+    NSTextCheckingResult* match = matches[0];
+    NSRange group1 = [match rangeAtIndex:1];
+    NSRange group2 = [match rangeAtIndex:2];
+    NSRange group3 = [match rangeAtIndex:3];
+    NSString *path = @"";;
+    NSString *u = @"";
+    if(group1.length > 0){
+        
+    }
+    if(group2.length > 0){
+        path = [url substringWithRange:group2];
+    }
+    if(group3.length > 0){
+        u = [url substringWithRange:group3];
+    }
+    NSLog(@"Path : %@", path);
+    NSLog(@"URL : %@", u);
+    return @{
+             @"path": path,
+             @"url": u
+             };
+}
 
 @end
