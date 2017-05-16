@@ -2468,6 +2468,7 @@
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
     if(text){
         [item setTitle:text];
+        [item setTitlePositionAdjustment:UIOffsetMake(0.0, -2.0)];
     } else {
         [item setTitle:@""];
     }
