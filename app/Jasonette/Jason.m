@@ -1674,7 +1674,7 @@
             if(body_parser){
                 
                 // parse the data with the template to dynamically build the view
-                if(VC.data && VC.data.count > 0){
+                if(VC.data){
                     rendered_page = [JasonHelper parse: VC.data with:body_parser];
                 }
             }
