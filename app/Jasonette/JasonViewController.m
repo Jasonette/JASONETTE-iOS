@@ -1410,9 +1410,7 @@
         
         chat_input = body[@"footer"][@"input"];
         if(chat_input){
-            
-            self.extendedLayoutIncludesOpaqueBars = NO;
-            
+                        
             //JasonViewController *weakSelf = self;
             __weak JasonViewController *weakSelf = self;
 
