@@ -1183,25 +1183,29 @@
     
     VC = (UIViewController<RussianDollView>*)viewController;
     navigationController = viewController.navigationController;
+    
+    tabController = navigationController.tabBarController;
+    tabController.delegate = self;
+    [tabController.tabBar setClipsToBounds:YES];
+    
+    // Only make the background white if it's being loaded modally
+    // Setting tabbar white looks weird when transitioning via push
+    if(VC.isModal){
+        tabController.tabBar.barTintColor=[UIColor whiteColor];
+        tabController.tabBar.backgroundColor = [UIColor whiteColor];
+        tabController.tabBar.shadowImage = [[UIImage alloc] init];
+    }
     navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
     navigationController.navigationBar.shadowImage = [UIImage new];
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    tabController = navigationController.tabBarController;
-    tabController.delegate = self;
-    tabController.tabBar.barTintColor=[UIColor whiteColor];
-    tabController.tabBar.backgroundColor = [UIColor whiteColor];
-
-    tabController.tabBar.shadowImage = [[UIImage alloc] init];
-    [tabController.tabBar setClipsToBounds:YES];
     
     VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-  
+    
     // Set the stylesheet
     if(VC.style){
         JasonComponentFactory.stylesheet = [VC.style mutableCopy];
         JasonComponentFactory.stylesheet[@"$default"] = @{@"color": VC.view.tintColor};
     }
-    
     
     JasonMemory *memory = [JasonMemory client];
     
