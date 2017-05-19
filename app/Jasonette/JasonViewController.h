@@ -38,7 +38,7 @@
 >
 
 @property (nonatomic, strong) NSString *url;
-@property (nonatomic, strong) NSDictionary *options;
+@property (nonatomic, strong) id options;
 @property (nonatomic, strong) NSDictionary *callback;
 @property (nonatomic, strong) NSDictionary *nav;
 @property (nonatomic, strong) NSDictionary *current_cache;

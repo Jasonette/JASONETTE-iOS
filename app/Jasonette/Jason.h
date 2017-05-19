@@ -26,7 +26,7 @@
                                                                                                                                  
 @property (strong, nonatomic) NSDictionary *parser;
 @property (strong, nonatomic) NSDictionary *data;
-@property (strong, nonatomic) NSDictionary *options;
+@property (strong, nonatomic) id options;
 @property (strong, nonatomic) NSDictionary *rendered;
 @property (strong, nonatomic) NSMutableArray *playing;
 @property (nonatomic, assign) BOOL touching;

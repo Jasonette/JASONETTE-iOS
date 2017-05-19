@@ -11,6 +11,6 @@
 
 @interface JasonAction : NSObject
 @property (nonatomic, strong) UIViewController<RussianDollView> *VC;
-@property (nonatomic, strong) NSDictionary *options;
+@property (nonatomic, strong) id options;
 @property (nonatomic, strong) NSMutableDictionary *cache;
 @end
