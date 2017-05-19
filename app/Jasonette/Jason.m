@@ -1658,7 +1658,7 @@
             if(body_parser){
                 
                 // parse the data with the template to dynamically build the view
-                if(VC.data && VC.data.count > 0){
+                if(VC.data){
                     rendered_page = [JasonHelper parse: VC.data with:body_parser];
                 }
             }
@@ -2458,6 +2458,7 @@
     if(image){
         if(text){
             [item setImageInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+            [item setTitlePositionAdjustment:UIOffsetMake(0.0, -2.0)];
         } else {
             [item setImageInsets:UIEdgeInsetsMake(7.5, 0, -7.5, 0)];
         }
@@ -2735,8 +2736,9 @@
                         
                         [self unlock];
                     }
+
+                    vc.extendedLayoutIncludesOpaqueBars = YES;
                     if(tabController.tabBar.hidden){
-                        vc.extendedLayoutIncludesOpaqueBars = YES;
                         tabController.tabBar.hidden = YES;
                     } else {
                         if([transition isEqualToString:@"fullscreen"]){
