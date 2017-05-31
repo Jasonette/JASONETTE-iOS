@@ -2415,6 +2415,14 @@
 - (BOOL)tabBarController:(UITabBarController *)theTabBarController shouldSelectViewController:(UIViewController *)viewController{
    
     NSUInteger indexOfTab = [theTabBarController.viewControllers indexOfObject:viewController];
+
+
+    // If moving away to a different tab bar, stop all actions currently running
+    if(indexOfTab != theTabBarController.selectedIndex){
+        [JasonMemory client].executing = NO;
+    }
+
+    
     if(VC.rendered && VC.rendered[@"footer"] && VC.rendered[@"footer"][@"tabs"] && VC.rendered[@"footer"][@"tabs"][@"items"]){
         NSArray *tabs = VC.rendered[@"footer"][@"tabs"][@"items"];
         NSDictionary *selected_tab = tabs[indexOfTab];
@@ -2450,7 +2458,7 @@
     // For updating tabbar whenever user taps on an item (The view itself won't reload)
     navigationController = (UINavigationController *) viewController;
     VC = navigationController.viewControllers.lastObject;
-    
+
     if(VC.parser){
         NSDictionary *body_parser = VC.parser[@"body"];
         if(body_parser){
