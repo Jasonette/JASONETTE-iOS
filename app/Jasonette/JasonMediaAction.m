@@ -104,6 +104,71 @@
     [self.VC.navigationController presentViewController:picker animated:YES completion:NULL];
     
 }
+- (void)cameralibrary{
+    JasonPortraitPicker *picker = [[JasonPortraitPicker alloc] init];
+    picker.delegate = self;
+    if(self.options[@"edit"]){
+        picker.allowsEditing = YES;
+    } else {
+        picker.allowsEditing = NO;
+    }
+    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [picker.view setFrame:CGRectMake(0,0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
+    
+    if(self.options){
+        NSString *type = self.options[@"type"];
+        if(type){
+            if([type isEqualToString:@"photo"]){
+                
+            } else if([type isEqualToString:@"gif"]){
+                NSString *quality = self.options[@"quality"];
+                if(quality && [quality isEqualToString:@"high"]){
+                    picker.videoQuality = UIImagePickerControllerQualityTypeHigh;
+                } else if(quality && [quality isEqualToString:@"medium"]){
+                    picker.videoQuality = UIImagePickerControllerQualityTypeMedium;
+                } else if(quality && [quality isEqualToString:@"low"]){
+                    picker.videoQuality = UIImagePickerControllerQualityTypeLow;
+                } else {
+                    picker.videoQuality = UIImagePickerControllerQualityTypeMedium;
+                }
+                picker.mediaTypes = @[(NSString *)kUTTypeMovie];
+            } else if([type isEqualToString:@"video"]){
+                NSString *quality = self.options[@"quality"];
+                if(quality && [quality isEqualToString:@"high"]){
+                    picker.videoQuality = UIImagePickerControllerQualityTypeHigh;
+                } else if(quality && [quality isEqualToString:@"medium"]){
+                    picker.videoQuality = UIImagePickerControllerQualityTypeMedium;
+                } else if(quality && [quality isEqualToString:@"low"]){
+                    picker.videoQuality = UIImagePickerControllerQualityTypeLow;
+                } else {
+                    picker.videoQuality = UIImagePickerControllerQualityTypeMedium;
+                }
+                picker.mediaTypes = @[(NSString *)kUTTypeMovie];
+            }
+        }
+    }
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Choose Image" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"Camera" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self.VC.navigationController presentViewController:picker animated:YES completion:NULL];
+    }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"Choose from Library" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        // Switch to Library View
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        
+        [self.VC.navigationController presentViewController:picker animated:YES completion:NULL];
+    }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+
+    [self.VC.navigationController presentViewController:alert animated:FALSE completion:^{
+        
+    }];
+    
+}
 - (void)picker{
     JasonPortraitPicker *picker = [[JasonPortraitPicker alloc] init];
     picker.delegate = self;
