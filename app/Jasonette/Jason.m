@@ -296,7 +296,7 @@
     if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
         MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
         hud.animationType = MBProgressHUDAnimationFade;
-        
+        hud.userInteractionEnabled = NO;
     }
     else if(!turnon){
         [MBProgressHUD hideHUDForView:VC.view animated:true];
@@ -1199,25 +1199,29 @@
     
     VC = (UIViewController<RussianDollView>*)viewController;
     navigationController = viewController.navigationController;
+    
+    tabController = navigationController.tabBarController;
+    tabController.delegate = self;
+    [tabController.tabBar setClipsToBounds:YES];
+    
+    // Only make the background white if it's being loaded modally
+    // Setting tabbar white looks weird when transitioning via push
+    if(VC.isModal){
+        tabController.tabBar.barTintColor=[UIColor whiteColor];
+        tabController.tabBar.backgroundColor = [UIColor whiteColor];
+        tabController.tabBar.shadowImage = [[UIImage alloc] init];
+    }
     navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
     navigationController.navigationBar.shadowImage = [UIImage new];
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    tabController = navigationController.tabBarController;
-    tabController.delegate = self;
-    tabController.tabBar.barTintColor=[UIColor whiteColor];
-    tabController.tabBar.backgroundColor = [UIColor whiteColor];
-
-    tabController.tabBar.shadowImage = [[UIImage alloc] init];
-    [tabController.tabBar setClipsToBounds:YES];
     
     VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-  
+    
     // Set the stylesheet
     if(VC.style){
         JasonComponentFactory.stylesheet = [VC.style mutableCopy];
         JasonComponentFactory.stylesheet[@"$default"] = @{@"color": VC.view.tintColor};
     }
-    
     
     JasonMemory *memory = [JasonMemory client];
     
@@ -1674,7 +1678,7 @@
             if(body_parser){
                 
                 // parse the data with the template to dynamically build the view
-                if(VC.data && VC.data.count > 0){
+                if(VC.data){
                     rendered_page = [JasonHelper parse: VC.data with:body_parser];
                 }
             }
@@ -2411,6 +2415,14 @@
 - (BOOL)tabBarController:(UITabBarController *)theTabBarController shouldSelectViewController:(UIViewController *)viewController{
    
     NSUInteger indexOfTab = [theTabBarController.viewControllers indexOfObject:viewController];
+
+
+    // If moving away to a different tab bar, stop all actions currently running
+    if(indexOfTab != theTabBarController.selectedIndex){
+        [JasonMemory client].executing = NO;
+    }
+
+    
     if(VC.rendered && VC.rendered[@"footer"] && VC.rendered[@"footer"][@"tabs"] && VC.rendered[@"footer"][@"tabs"][@"items"]){
         NSArray *tabs = VC.rendered[@"footer"][@"tabs"][@"items"];
         NSDictionary *selected_tab = tabs[indexOfTab];
@@ -2446,7 +2458,7 @@
     // For updating tabbar whenever user taps on an item (The view itself won't reload)
     navigationController = (UINavigationController *) viewController;
     VC = navigationController.viewControllers.lastObject;
-    
+
     if(VC.parser){
         NSDictionary *body_parser = VC.parser[@"body"];
         if(body_parser){
@@ -2474,6 +2486,7 @@
     if(image){
         if(text){
             [item setImageInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+            [item setTitlePositionAdjustment:UIOffsetMake(0.0, -2.0)];
         } else {
             [item setImageInsets:UIEdgeInsetsMake(7.5, 0, -7.5, 0)];
         }

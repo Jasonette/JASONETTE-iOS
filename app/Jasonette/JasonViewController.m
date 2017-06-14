@@ -1022,8 +1022,9 @@
                 // Swipe down to dismiss modal
                 UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
                 [self.view addGestureRecognizer:pinchRecognizer];
+                self.tableView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, self.bottomLayoutGuide.length, 0);
+
             }
-            self.tableView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, self.bottomLayoutGuide.length, 0);
         
             original_bottom_inset = self.tableView.contentInset.bottom;
         
@@ -1410,16 +1411,16 @@
         
         chat_input = body[@"footer"][@"input"];
         if(chat_input){
-            
-            self.extendedLayoutIncludesOpaqueBars = NO;
-            
+
             //JasonViewController *weakSelf = self;
             __weak JasonViewController *weakSelf = self;
 
             [self.view addKeyboardPanningWithActionHandler:^(CGRect keyboardFrameInView, BOOL opening, BOOL closing) {
                 CGFloat m = MIN(original_height, keyboardFrameInView.origin.y);
-                CGRect newViewFrame = CGRectMake(weakSelf.view.frame.origin.x, weakSelf.view.frame.origin.y, weakSelf.view.frame.size.width, m);
-                weakSelf.view.frame = newViewFrame;
+                if(opening || (closing && m >= weakSelf.view.frame.size.height)){
+                    CGRect newViewFrame = CGRectMake(weakSelf.view.frame.origin.x, weakSelf.view.frame.origin.y, weakSelf.view.frame.size.width, m);
+                    weakSelf.view.frame = newViewFrame;
+                }
             }];
             
             // textfield logic
