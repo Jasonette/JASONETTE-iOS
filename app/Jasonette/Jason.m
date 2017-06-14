@@ -2490,43 +2490,55 @@
         } else {
             [item setImageInsets:UIEdgeInsetsMake(7.5, 0, -7.5, 0)];
         }
-        [manager downloadImageWithURL:[NSURL URLWithString:image]
-                              options:0
-                             progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                             }
-                            completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                if (i) {
-                                    CGFloat width = 0;
-                                    CGFloat height = 0;
-                                    if(tab[@"style"] && tab[@"style"][@"width"]){
-                                        width = [tab[@"style"][@"width"] floatValue];
+        
+        if([image containsString:@"file://"]){
+            UIImage *i = [UIImage imageNamed:[image substringFromIndex:7]];
+            [self setTabImage:i withTab:tab andItem:item];
+        } else{
+            [manager downloadImageWithURL:[NSURL URLWithString:image]
+                                  options:0
+                                 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                 }
+                                completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                    if (i) {
+                                        [self setTabImage:i withTab:tab andItem:item];
                                     }
-                                    if(tab[@"style"] && tab[@"style"][@"height"]){
-                                        height = [tab[@"style"][@"height"] floatValue];
-                                    }
-                                    
-                                    if(width == 0 && height !=0){
-                                        width = height;
-                                    } else if (width != 0 && height ==0){
-                                        height = width;
-                                    } else if (width == 0 && height ==0){
-                                        width = 30;
-                                        height = 30;
-                                    }
-                                    
-                                    UIImage *newImage = [JasonHelper scaleImage:i ToSize:CGSizeMake(width,height)];
-                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                        [item setImage:newImage];
-                                    });
-                                }
-                            }];
+                                }];
 
+        }
+        
     } else {
         [item setTitlePositionAdjustment:UIOffsetMake(0.0, -18.0)];
     }
     if(badge){
         [item setBadgeValue:badge];
     }
+}
+
+- (void)setTabImage:(UIImage*)image withTab:(NSDictionary*)tab andItem:(UITabBarItem*)item {
+    CGFloat width = 0;
+    CGFloat height = 0;
+    if(tab[@"style"] && tab[@"style"][@"width"]){
+        width = [tab[@"style"][@"width"] floatValue];
+    }
+    if(tab[@"style"] && tab[@"style"][@"height"]){
+        height = [tab[@"style"][@"height"] floatValue];
+    }
+    
+    if(width == 0 && height !=0){
+        width = height;
+    } else if (width != 0 && height ==0){
+        height = width;
+    } else if (width == 0 && height ==0){
+        width = 30;
+        height = 30;
+    }
+    
+    UIImage *newImage = [JasonHelper scaleImage:image ToSize:CGSizeMake(width,height)];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [item setImage:newImage];
+    });
+
 }
 
 # pragma mark - View Event Handlers
