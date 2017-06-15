@@ -248,9 +248,8 @@
 }
 - (void)picker{
     NSString *title = self.options[@"title"];
-    NSString *description = self.options[@"description"];
     NSArray *items = self.options[@"items"];
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:description preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     for(int i = 0 ; i < items.count ; i++){
         NSDictionary *item = items[i];
