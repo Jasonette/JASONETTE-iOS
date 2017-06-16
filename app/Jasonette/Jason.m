@@ -1037,36 +1037,44 @@
             // 2. Enter dispatch_group
             dispatch_group_enter(requireGroup);
             
-            // 3. Setup networking
-            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-            AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
-            NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
-            [jsonAcceptableContentTypes addObject:@"text/plain"];
-            jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
-            manager.responseSerializer = jsonResponseSerializer;
-            
-            // 4. Attach session
-            NSDictionary *session = [JasonHelper sessionForUrl:url];
-            if(session && session.count > 0 && session[@"header"]){
-                for(NSString *key in session[@"header"]){
-                    [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
-                }
-            }
-            NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-            if(session && session.count > 0 && session[@"body"]){
-                for(NSString *key in session[@"body"]){
-                    parameters[key] = session[@"body"][key];
-                }
-            }
-            
-            // 5. Start request
-            [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                return_value[url] = responseObject;
+            if([url containsString:@"file://"]){
+                // local
+                return_value[url] = [JasonHelper read_local_json:url];
                 dispatch_group_leave(requireGroup);
-            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                NSLog(@"Error");
-                dispatch_group_leave(requireGroup);
-            }];
+                
+            } else {
+                // 3. Setup networking
+                AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+                AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+                NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                [jsonAcceptableContentTypes addObject:@"text/plain"];
+                jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+                manager.responseSerializer = jsonResponseSerializer;
+                
+                // 4. Attach session
+                NSDictionary *session = [JasonHelper sessionForUrl:url];
+                if(session && session.count > 0 && session[@"header"]){
+                    for(NSString *key in session[@"header"]){
+                        [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                    }
+                }
+                NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+                if(session && session.count > 0 && session[@"body"]){
+                    for(NSString *key in session[@"body"]){
+                        parameters[key] = session[@"body"][key];
+                    }
+                }
+                
+                // 5. Start request
+                [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                    return_value[url] = responseObject;
+                    dispatch_group_leave(requireGroup);
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    NSLog(@"Error");
+                    dispatch_group_leave(requireGroup);
+                }];
+                
+            }
         }
     }
     
