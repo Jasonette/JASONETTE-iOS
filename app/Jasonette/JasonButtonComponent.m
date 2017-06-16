@@ -48,20 +48,38 @@
         UIImageView * imageView = [[UIImageView alloc] init];
         
         if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
-            [imageView sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-                if(!error){
-                    JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
-                    if(style[@"color"]){
-                        NSString *colorHex = style[@"color"];
-                        UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
-                        UIImage *image = [imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                        [component setTintColor:c];
-                        [component setImage: image forState:UIControlStateNormal];
-                    } else {
-                        [component setImage:imageView.image forState:UIControlStateNormal];
-                    }
+            
+            if([url containsString:@"file://"]){
+                NSString *localImageName = [url substringFromIndex:7];
+                UIImage *localImage = [UIImage imageNamed:localImageName];
+                
+                if(style[@"color"]){
+                    NSString *colorHex = style[@"color"];
+                    UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
+                    UIImage *image = [localImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                    [component setTintColor:c];
+                    [component setImage:image forState:UIControlStateNormal];
+                } else {
+                    [component setImage:localImage forState:UIControlStateNormal];
                 }
-            }];
+                                
+                JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:localImage.size];
+            } else{
+                [imageView sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                    if(!error){
+                        JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
+                        if(style[@"color"]){
+                            NSString *colorHex = style[@"color"];
+                            UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
+                            UIImage *image = [imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                            [component setTintColor:c];
+                            [component setImage: image forState:UIControlStateNormal];
+                        } else {
+                            [component setImage:imageView.image forState:UIControlStateNormal];
+                        }
+                    }
+                }];
+            }
         }
         [component setTitle:@"" forState:UIControlStateNormal];
         
