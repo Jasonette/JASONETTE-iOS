@@ -40,4 +40,5 @@
 + (NSString*) UTF8StringFromData:(NSData*)data;
 + (NSString *)getSignature: (NSDictionary *)item;
 + (NSArray *)childOf: (UIView *)view withClassName: (NSString *)className;
++ (id) read_local_json: (NSString *)url;
 @end

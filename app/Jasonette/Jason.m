@@ -72,41 +72,13 @@
 }
 
 - (void) loadViewByFile: (NSString *)url{
-  
-    if ([url hasPrefix:@"file://"] && [url hasSuffix:@".json"]) {
-
-        NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-        NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];  
-        NSString *loc = @"file:/";
-
-        NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
-        NSLog(@"LOCALFILES jsonFile is %@", jsonFile);
-
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-
-        if ([fileManager fileExistsAtPath:jsonFile]) { 
-            NSError *error = nil;
-            NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
-            [inputStream open];
-            id jsonResponseObject = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
-            [self include:jsonResponseObject andCompletionHandler:^(id res){
-                dispatch_async(dispatch_get_main_queue(), ^{                    
-                    VC.original = @{@"$jason": res[@"$jason"]};
-                    [self drawViewFromJason: VC.original];                    
-                });
-            }];
-            [inputStream close];
-        } else {
-            NSLog(@"JASON FILE NOT FOUND: %@", jsonFile);
-            [self call:@{@"type": @"$util.banner", 
-                                  @"options": @{
-                                       @"title": @"Error",
-                                       @"description": [NSString stringWithFormat:@"JASON FILE NOT FOUND: %@", url]
-                                   }}];
-
-
-        }
-    }
+    id jsonResponseObject = [JasonHelper read_local_json:url];
+    [self include:jsonResponseObject andCompletionHandler:^(id res){
+        dispatch_async(dispatch_get_main_queue(), ^{                    
+            VC.original = @{@"$jason": res[@"$jason"]};
+            [self drawViewFromJason: VC.original];                    
+        });
+    }];
 }
 
 #pragma mark - Jason Core API (USE ONLY THESE METHODS TO ACCESS Jason Core!)

@@ -898,5 +898,28 @@
     }
     return [f copy];
 }
++ (id) read_local_json: (NSString *)url {
+    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];
+    NSString *loc = @"file:/";
+    
+    NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
+    NSLog(@"LOCALFILES jsonFile is %@", jsonFile);
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    id ret;
+    
+    if ([fileManager fileExistsAtPath:jsonFile]) {
+        NSError *error = nil;
+        NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
+        [inputStream open];
+        ret = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+        [inputStream close];
+    } else {
+        NSLog(@"JASON FILE NOT FOUND: %@", jsonFile);
+        ret = @{};
+    }
+    return ret;
+}
 
 @end
