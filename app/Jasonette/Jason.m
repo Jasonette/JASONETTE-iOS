@@ -2043,14 +2043,7 @@
                 
                 if([image_src containsString:@"file://"]){
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                    NSDictionary *style = left_menu[@"style"];
-                    if(style[@"color"]){
-                        UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                        UIImage *newImage = [JasonHelper colorize:localImage into:newColor];
-                        [btn setBackgroundImage:newImage forState:UIControlStateNormal];
-                    } else {
-                        [btn setBackgroundImage:localImage forState:UIControlStateNormal];
-                    }
+                    [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
                 } else{
                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
                     [manager downloadImageWithURL:[NSURL URLWithString:image_src]
@@ -2060,14 +2053,7 @@
                                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                             if (image) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                    NSDictionary *style = left_menu[@"style"];
-                                                    if(style[@"color"]){
-                                                        UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                                                        UIImage *newImage = [JasonHelper colorize:image into:newColor];
-                                                        [btn setBackgroundImage:newImage forState:UIControlStateNormal];
-                                                    } else {
-                                                        [btn setBackgroundImage:image forState:UIControlStateNormal];
-                                                    }
+                                                    [self setMenuButtonImage:image forButton:btn withMenu:left_menu];//
                                                 });
                                             }
                                         }];
@@ -2117,14 +2103,7 @@
                 
                 if([image_src containsString:@"file://"]){
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                    NSDictionary *style = left_menu[@"style"];
-                    if(style[@"color"]){
-                        UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                        UIImage *newImage = [JasonHelper colorize:localImage into:newColor];
-                        [btn setBackgroundImage:newImage forState:UIControlStateNormal];
-                    } else {
-                        [btn setBackgroundImage:localImage forState:UIControlStateNormal];
-                    }
+                    [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
                 } else{
                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
                     [manager downloadImageWithURL:[NSURL URLWithString:image_src]
@@ -2134,14 +2113,7 @@
                                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                             if (image) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                    NSDictionary *style = right_menu[@"style"];
-                                                    if(style[@"color"]){
-                                                        UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                                                        UIImage *newImage = [JasonHelper colorize:image into:newColor];
-                                                        [btn setBackgroundImage:newImage forState:UIControlStateNormal];
-                                                    } else {
-                                                        [btn setBackgroundImage:image forState:UIControlStateNormal];
-                                                    }
+                                                    [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
                                                 });
                                             }
                                         }];
@@ -2177,33 +2149,8 @@
                         if(url){
                             
                             if([url containsString:@"file://"]){
-                                
                                 UIImage *localImage = [UIImage imageNamed:[url substringFromIndex:7]];
-                                
-                                CGFloat width = 0;
-                                CGFloat height = 0;
-                                if(style && style[@"width"]){
-                                    width = [((NSString *)style[@"width"]) floatValue];
-                                }
-                                if(style && style[@"height"]){
-                                    height = [((NSString *)style[@"height"]) floatValue];
-                                }
-                                
-                                
-                                if(width == 0){
-                                    width = localImage.size.width;
-                                }
-                                if(height == 0){
-                                    height = localImage.size.height;
-                                }
-                                CGRect frame = CGRectMake(0, 0, width, height);
-                                
-                                UIView *logoView =[[UIView alloc] initWithFrame:frame];
-                                UIImageView *logoImageView = [[UIImageView alloc] initWithImage:localImage];
-                                logoImageView.frame = frame;
-                                
-                                [logoView addSubview:logoImageView];
-                                VC.navigationItem.titleView = logoView;
+                                [self setLogoImage:localImage withStyle:style];
                             } else{
                             
                                 SDWebImageManager *manager = [SDWebImageManager sharedManager];
@@ -2214,31 +2161,7 @@
                                                     completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                                         if (image) {
                                                             dispatch_async(dispatch_get_main_queue(), ^{
-                                                                CGFloat width = 0;
-                                                                CGFloat height = 0;
-                                                                if(style && style[@"width"]){
-                                                                    width = [((NSString *)style[@"width"]) floatValue];
-                                                                }
-                                                                if(style && style[@"height"]){
-                                                                    height = [((NSString *)style[@"height"]) floatValue];
-                                                                }
-                                                                
-                                                                
-                                                                if(width == 0){
-                                                                    width = image.size.width;
-                                                                }
-                                                                if(height == 0){
-                                                                    height = image.size.height;
-                                                                }
-                                                                CGRect frame = CGRectMake(0, 0, width, height);
-                                                                
-                                                                UIView *logoView =[[UIView alloc] initWithFrame:frame];
-                                                                UIImageView *logoImageView = [[UIImageView alloc] initWithImage:image];
-                                                                logoImageView.frame = frame;
-                                                                
-                                                                [logoView addSubview:logoImageView];
-                                                                VC.navigationItem.titleView = logoView;
-                                                                
+                                                                [self setLogoImage:image withStyle:style];
                                                             });
                                                         }
                                                     }];
@@ -2287,6 +2210,46 @@
     navigationController.navigationBarHidden = NO;
 
 }
+
+- (void)setLogoImage: (UIImage *)image withStyle:(NSMutableDictionary *)style {
+    CGFloat width = 0;
+    CGFloat height = 0;
+    if(style && style[@"width"]){
+        width = [((NSString *)style[@"width"]) floatValue];
+    }
+    if(style && style[@"height"]){
+        height = [((NSString *)style[@"height"]) floatValue];
+    }
+    
+    
+    if(width == 0){
+        width = image.size.width;
+    }
+    if(height == 0){
+        height = image.size.height;
+    }
+    CGRect frame = CGRectMake(0, 0, width, height);
+    
+    UIView *logoView =[[UIView alloc] initWithFrame:frame];
+    UIImageView *logoImageView = [[UIImageView alloc] initWithImage:image];
+    logoImageView.frame = frame;
+    
+    [logoView addSubview:logoImageView];
+    VC.navigationItem.titleView = logoView;
+}
+
+- (UIButton *)setMenuButtonImage: (UIImage *)image forButton: (UIButton *)button withMenu:(NSDictionary *)menu {
+    NSDictionary *style = menu[@"style"];
+    if(style[@"color"]){
+        UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
+        UIImage *newImage = [JasonHelper colorize:image into:newColor];
+        [button setBackgroundImage:newImage forState:UIControlStateNormal];
+    } else {
+        [button setBackgroundImage:image forState:UIControlStateNormal];
+    }
+    return button;
+}
+
 - (void)setupMenuBadge: (BBBadgeBarButtonItem *)barButton forData: (NSDictionary *)badge_menu{
     if(badge_menu[@"badge"]){
         NSDictionary *badge = badge_menu[@"badge"];
