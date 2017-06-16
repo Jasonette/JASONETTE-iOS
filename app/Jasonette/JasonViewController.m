@@ -35,7 +35,6 @@
     CGFloat original_height;
     CGFloat original_bottom_inset;
     BOOL need_to_adjust_frame;
-    UIView *currently_focused;
     #ifdef ADS
     NSTimer *intrestialAdTimer;
     #endif
@@ -94,7 +93,7 @@
     self.form = [[NSMutableDictionary alloc] init];
     self.requires = [[NSMutableDictionary alloc] init];
     self.tableView.delaysContentTouches = false;
-
+    self.tableView.scrollsToTop = YES;
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
     
@@ -138,7 +137,8 @@
 
 }
 - (void)adjustViewForKeyboard:(NSNotification *)notification{
-    currently_focused = notification.userInfo[@"view"];
+    self.currently_focused = notification.userInfo[@"view"];
+    [Jason client].currently_focused = self.currently_focused.payload;
     need_to_adjust_frame = YES;
 }
 - (void)updateForm:(NSNotification *)notification {
@@ -206,7 +206,7 @@
         if(!isEditing){
             CGRect aRect = self.view.frame;
             aRect.size.height -= kbSize.height;
-            CGRect currently_focused_frame = [currently_focused convertRect:currently_focused.bounds toView:self.tableView];
+            CGRect currently_focused_frame = [self.currently_focused convertRect:self.currently_focused.bounds toView:self.tableView];
             if(!CGRectContainsRect(aRect, currently_focused_frame)){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.tableView scrollRectToVisible:currently_focused_frame animated:YES];

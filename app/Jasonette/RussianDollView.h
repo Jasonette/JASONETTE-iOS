@@ -36,6 +36,8 @@
 @property (strong, nonatomic) NSMutableDictionary *audios;
 @property (nonatomic, strong) NSMutableArray *log;
 @property (nonatomic, strong) NSMutableArray *playing;
+@property (strong, nonatomic) UIView *currently_focused;
+
 - (void)right:(NSDictionary *)action;
 - (void)left;
 - (void)reload: (NSDictionary *)res;

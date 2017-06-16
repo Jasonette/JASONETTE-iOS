@@ -29,6 +29,7 @@
 @property (strong, nonatomic) NSDictionary *options;
 @property (strong, nonatomic) NSDictionary *rendered;
 @property (strong, nonatomic) NSMutableArray *playing;
+@property (strong, nonatomic) NSDictionary *currently_focused;
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL searchMode;
 @property (nonatomic, assign) BOOL oauth_in_process;

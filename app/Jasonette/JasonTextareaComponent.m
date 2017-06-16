@@ -112,6 +112,12 @@
         component.attributedPlaceholder = placeholderStr;
     }
     
+    if([[Jason client].currently_focused[@"name"] isEqualToString:json[@"name"]]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [component becomeFirstResponder];
+        });
+    }
+
     return component;
 }
 

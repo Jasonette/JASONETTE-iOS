@@ -71,6 +71,9 @@
 @property (strong, nonatomic) UITableView *tableView;
 
 @property (strong, nonatomic) UISearchController *searchController;
+@property (strong, nonatomic) UIView *currently_focused;
+
+
 #ifdef ADS
 @property (strong, nonatomic) GADBannerView *bannerAd;
 @property (strong, nonatomic) GADInterstitial * interestialAd;
