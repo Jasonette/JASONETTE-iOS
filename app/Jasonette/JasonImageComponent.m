@@ -19,7 +19,6 @@
     UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
     NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
     
-    
     SDWebImageDownloader *manager = [SDWebImageManager sharedManager].imageDownloader;
     NSDictionary *session = [JasonHelper sessionForUrl:url];
     if(session && session.count > 0 && session[@"header"]){
@@ -36,11 +35,20 @@
     if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
         [component setIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [component setShowActivityIndicatorView:YES];
-        [component sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-            if(!error){
-                JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
-            }
-        }];
+        
+        if([url containsString:@"file://"]){
+            NSString *localImageName = [url substringFromIndex:7];
+            UIImage *localImage = [UIImage imageNamed:localImageName];
+            [component setImage:[UIImage imageNamed:localImageName]];
+            JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:localImage.size];
+        } else{
+            [component sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                if(!error){
+                    JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
+                }
+            }];
+        }
+        
     }
     
     // Before applying common styles, Update the style attribute based on the fetched image dimension (different from other components)
