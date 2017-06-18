@@ -1824,7 +1824,7 @@
             [VC.view addSubview:VC.background];
             [VC.view sendSubviewToBack:VC.background];
             
-        }else if([bg hasPrefix:@"http"] || [bg hasPrefix:@"data:"]){
+        }else if([bg hasPrefix:@"http"] || [bg hasPrefix:@"data:"] || [bg hasPrefix:@"file"]){
             vision = nil;
             if(VC.background){
                 [VC.background removeFromSuperview];
@@ -1836,9 +1836,14 @@
             [VC.view addSubview:VC.background];
             [VC.view sendSubviewToBack:VC.background];
             
-            UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
-            [((UIImageView *)VC.background) sd_setImageWithURL:[NSURL URLWithString:bg] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-            }];
+            if([bg containsString:@"file://"]){
+                NSString *localImageName = [bg substringFromIndex:7];
+                [(UIImageView *)VC.background setImage:[UIImage imageNamed:localImageName]];
+            } else {
+                UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
+                [((UIImageView *)VC.background) sd_setImageWithURL:[NSURL URLWithString:bg] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                }];
+            }
         } else {
             vision = nil;
             if(VC.background){
