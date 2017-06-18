@@ -1455,6 +1455,18 @@
             data_stub[@"$cache"] = @{};
         }
     }
+    
+    if(self.global){
+        data_stub[@"$global"] = self.global;
+    } else {
+        NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"$global"];
+        if(dict && dict.count > 0){
+            data_stub[@"$global"] = dict;
+        } else {
+            data_stub[@"$global"] = @{};
+        }
+    }
+    
     return data_stub;
 }
 
