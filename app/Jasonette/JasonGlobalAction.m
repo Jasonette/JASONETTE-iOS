@@ -10,6 +10,21 @@
 
 @implementation JasonGlobalAction
 - (void)reset{
+    
+    /********************
+    
+     The following resets a global variable named "db".
+     When a variable is reset, the key itself gets destroyed, so when you check ('db' in $global), it will return false
+     
+     {
+       "type": "$global.reset",
+       "options": {
+         "items": ["db"]
+       }
+     }
+     
+     ********************/
+    
     @try {
         NSString *global = @"$global";
         NSDictionary *to_reset = [[NSUserDefaults standardUserDefaults] objectForKey:global];
@@ -33,6 +48,32 @@
     
 }
 - (void)set{
+    
+    /********************
+     
+     The following sets a global variable named "db".
+     
+     {
+       "type": "$global.set",
+       "options": {
+         "db": ["a", "b", "c", "d"]
+       }
+     }
+     
+     Once set, you can access them through template expressions from ANYWHERE within the app, like this:
+     
+     {
+       "items": {
+         "{{#each $global.db}}": {
+           "type": "label",
+           "text": "{{this}}"
+         }
+       }
+     }
+     
+     ********************/
+
+    
     if([[self.options description] containsString:@"{{"] && [[self.options description] containsString:@"}}"]){
         [[Jason client] error];
         return;
