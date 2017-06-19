@@ -1495,28 +1495,41 @@
             
             if(chat_input[@"left"]){
                 if(chat_input[@"left"][@"image"]){
-                    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-                        SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                        [manager downloadImageWithURL:[NSURL URLWithString:chat_input[@"left"][@"image"]]
-                                              options:0
-                                             progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                                 // progression tracking code
-                                             }
-                                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                                
-                                                // colorize
-                                                if(chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
-                                                    UIColor *newColor = [JasonHelper colorwithHexString:chat_input[@"left"][@"style"][@"color"] alpha:1.0];
-                                                    image = [JasonHelper colorize:image into:newColor];
+                    if([chat_input[@"left"][@"image"] containsString:@"file://"]){
+                        NSString *localImageName = [chat_input[@"left"][@"image"] substringFromIndex:7];
+                        UIImage *localImage = [UIImage imageNamed:localImageName];
+                        // colorize
+                        if(chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
+                            UIColor *newColor = [JasonHelper colorwithHexString:chat_input[@"left"][@"style"][@"color"] alpha:1.0];
+                            localImage = [JasonHelper colorize:localImage into:newColor];
+                        }
+                        UIImage *resizedImage = [JasonHelper scaleImage:localImage ToSize:CGSizeMake(30,30)];
+                        [composeBarView setUtilityButtonImage:resizedImage];
+                    } else {
+                        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+                            SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                            [manager downloadImageWithURL:[NSURL URLWithString:chat_input[@"left"][@"image"]]
+                                                  options:0
+                                                 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                                     // progression tracking code
+                                                 }
+                                                completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                    
+                                                    // colorize
+                                                    if(chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
+                                                        UIColor *newColor = [JasonHelper colorwithHexString:chat_input[@"left"][@"style"][@"color"] alpha:1.0];
+                                                        image = [JasonHelper colorize:image into:newColor];
+                                                    }
+                                                    
+                                                    UIImage *resizedImage = [JasonHelper scaleImage:image ToSize:CGSizeMake(30,30)];
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                        [composeBarView setUtilityButtonImage:resizedImage];
+                                                    });
                                                 }
-                                                
-                                                UIImage *resizedImage = [JasonHelper scaleImage:image ToSize:CGSizeMake(30,30)];
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [composeBarView setUtilityButtonImage:resizedImage];
-                                                });
-                                            }
-                         ];
-                    });
+                             ];
+                        });
+                        
+                    }
                 }
             }
             if(chat_input[@"right"]){

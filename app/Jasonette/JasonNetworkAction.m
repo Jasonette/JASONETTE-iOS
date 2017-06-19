@@ -387,7 +387,7 @@
 - (void)processError: (NSError *)error{
     NSLog(@"Error = %@", error);
     [[Jason client] networkLoading:NO with:nil];
-    [[Jason client] error];
+    [[Jason client] error: error.userInfo];
 }
 
 

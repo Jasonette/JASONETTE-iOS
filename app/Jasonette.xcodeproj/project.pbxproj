@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		042852531E984B890081F742 /* NoPaddingButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 042852521E984B890081F742 /* NoPaddingButton.m */; };
+		043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 043814151EF7455800CC4706 /* JasonGlobalAction.m */; };
 		045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */; };
 		049DD6551EF063AC00A5C0B1 /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 049DD6541EF063AC00A5C0B1 /* parser.js */; };
 		04EEDCFE1E02F5180023114F /* demo.json in Resources */ = {isa = PBXBuildFile; fileRef = 04EEDCFC1E02F5180023114F /* demo.json */; };
@@ -78,6 +79,8 @@
 /* Begin PBXFileReference section */
 		042852511E984B890081F742 /* NoPaddingButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoPaddingButton.h; sourceTree = "<group>"; };
 		042852521E984B890081F742 /* NoPaddingButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoPaddingButton.m; sourceTree = "<group>"; };
+		043814141EF7455800CC4706 /* JasonGlobalAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonGlobalAction.h; sourceTree = "<group>"; };
+		043814151EF7455800CC4706 /* JasonGlobalAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonGlobalAction.m; sourceTree = "<group>"; };
 		045E5F3B1E3661060088D5E6 /* JasonReturnAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonReturnAction.h; sourceTree = "<group>"; };
 		045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonReturnAction.m; sourceTree = "<group>"; };
 		049DD6541EF063AC00A5C0B1 /* parser.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = parser.js; sourceTree = "<group>"; };
@@ -217,6 +220,15 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		043814171EF7455E00CC4706 /* $global */ = {
+			isa = PBXGroup;
+			children = (
+				043814141EF7455800CC4706 /* JasonGlobalAction.h */,
+				043814151EF7455800CC4706 /* JasonGlobalAction.m */,
+			);
+			name = $global;
+			sourceTree = "<group>";
+		};
 		045E5F3E1E36610B0088D5E6 /* $return */ = {
 			isa = PBXGroup;
 			children = (
@@ -347,6 +359,7 @@
 				045E5F3E1E36610B0088D5E6 /* $return */,
 				5E3177AB1D1F297400D87778 /* $timer */,
 				5E3177AA1D1F296300D87778 /* $util */,
+				043814171EF7455E00CC4706 /* $global */,
 			);
 			name = Action;
 			sourceTree = "<group>";
@@ -833,6 +846,7 @@
 				5E0956421DA34F4D007ADC78 /* JasonSpaceComponent.m in Sources */,
 				5E3177701D1E411F00D87778 /* UIBarButtonItem+Badge.m in Sources */,
 				5E0956361DA34EFC007ADC78 /* JasonTextareaComponent.m in Sources */,
+				043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */,
 				5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */,
 				5E3177A31D1F28C100D87778 /* JasonCacheAction.m in Sources */,
 				045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */,

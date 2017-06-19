@@ -28,6 +28,7 @@
 @property (strong, nonatomic) NSDictionary *data;
 @property (strong, nonatomic) NSDictionary *options;
 @property (strong, nonatomic) NSDictionary *rendered;
+@property (strong, nonatomic) NSDictionary *global;
 @property (strong, nonatomic) NSMutableArray *playing;
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL searchMode;
