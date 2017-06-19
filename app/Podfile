@@ -8,7 +8,7 @@ target 'Jasonette' do
   pod 'APAddressBook'
   pod 'TTTAttributedLabel'
   pod 'BBBadgeBarButtonItem'
-  pod 'IQAudioRecorderController', :git => 'https://github.com/hackiftekhar/IQAudioRecorderController.git'
+  pod 'IQAudioRecorderController'
   pod 'REMenu'
   pod 'JDStatusBarNotification'
   pod 'HMSegmentedControl'

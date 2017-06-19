@@ -21,7 +21,7 @@
         }
     }
     controller.delegate = self;
-    [self.VC.navigationController presentViewController:controller animated:YES completion:nil];
+    [self.VC.navigationController presentBlurredAudioRecorderViewControllerAnimated:controller];
 }
 - (void)stop{
     if(!self.VC.audios){
@@ -224,7 +224,9 @@
     NSURL *fileUrl = [NSURL fileURLWithPath: filePath];
     NSData *d = [NSData dataWithContentsOfURL:fileUrl];
     NSString *base64 = [d base64EncodedStringWithOptions:0];
-    [[Jason client] success: @{@"url": fileUrl, @"data": base64 , @"content_type": @"audio/m4a"}];
+    [[Jason client] success: @{@"file_url": filePath, @"data": base64 , @"content_type": @"audio/m4a"}];
+    [self.VC.navigationController dismissViewControllerAnimated:YES completion:nil];
+    
 }
 
 -(void)audioRecorderControllerDidCancel:(IQAudioRecorderViewController *)controller

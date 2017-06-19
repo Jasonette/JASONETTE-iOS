@@ -168,6 +168,14 @@
                         counter--;
                         if(counter == 0) [self openShareWith:share_items];
                     }
+                } else if([item[@"type"] isEqualToString:@"audio"]){
+                    NSString *url = item[@"file_url"];
+                    if(url){
+                        NSURL *file_url = [NSURL fileURLWithPath:url isDirectory:NO];
+                        [share_items addObject:file_url];
+                        counter--;
+                        if(counter == 0) [self openShareWith:share_items];
+                    }
                 } else if([item[@"type"] isEqualToString:@"video"]){
                     NSString *file_url = item[@"file_url"];
                     if(file_url){
