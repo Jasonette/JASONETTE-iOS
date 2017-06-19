@@ -5,6 +5,8 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonLayer.h"
+#import "NSData+ImageContentType.h"
+#import "UIImage+GIF.h"
 
 @implementation JasonLayer
 static NSMutableDictionary *_stylesheet = nil;
@@ -31,8 +33,21 @@ static NSMutableDictionary *_stylesheet = nil;
                 [layerView addSubview:layerChild];
                 
                 if([layer[@"url"] containsString:@"file://"]){
-                    NSString *localImageName = [layer[@"url"] substringFromIndex:7];
-                    UIImage *localImage = [UIImage imageNamed:localImageName];
+                    NSString *localImageName = [layer[@"url"] substringFromIndex:7];                
+                    UIImage *localImage;
+                    
+                    // Get data for local file
+                    NSString *filePath = [[NSBundle mainBundle] pathForResource:localImageName ofType:nil];
+                    NSData *data = [[NSFileManager defaultManager] contentsAtPath:filePath];
+                    
+                    // Check for animated GIF
+                    NSString *imageContentType = [NSData sd_contentTypeForImageData:data];
+                    if ([imageContentType isEqualToString:@"image/gif"]) {
+                        localImage = [UIImage sd_animatedGIFWithData:data];
+                    } else {
+                        localImage = [UIImage imageNamed:localImageName];
+                    }
+                    
                     CGSize size = localImage.size;
                     
                     layerChild.image = localImage;
