@@ -6,6 +6,8 @@
 //
 #import "Jason.h"
 #import "JasonAppDelegate.h"
+#import "NSData+ImageContentType.h"
+#import "UIImage+GIF.h"
 @interface Jason(){
     UINavigationController *navigationController;
     UITabBarController *tabController;
@@ -1838,7 +1840,21 @@
             
             if([bg containsString:@"file://"]){
                 NSString *localImageName = [bg substringFromIndex:7];
-                [(UIImageView *)VC.background setImage:[UIImage imageNamed:localImageName]];
+                UIImage *localImage;
+                
+                // Get data for local file
+                NSString *filePath = [[NSBundle mainBundle] pathForResource:localImageName ofType:nil];
+                NSData *data = [[NSFileManager defaultManager] contentsAtPath:filePath];
+                
+                // Check for animated GIF
+                NSString *imageContentType = [NSData sd_contentTypeForImageData:data];
+                if ([imageContentType isEqualToString:@"image/gif"]) {
+                    localImage = [UIImage sd_animatedGIFWithData:data];
+                } else {
+                    localImage = [UIImage imageNamed:localImageName];
+                }
+
+                [(UIImageView *)VC.background setImage:localImage];
             } else {
                 UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
                 [((UIImageView *)VC.background) sd_setImageWithURL:[NSURL URLWithString:bg] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
@@ -2026,7 +2042,7 @@
             if(left_menu[@"image"]){
                 NSString *image_src = left_menu[@"image"];
                 
-                if([image_src containsString:@"file://"]){
+                if([image_src containsString:@"file://"]){                    
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
                     [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
                 } else{

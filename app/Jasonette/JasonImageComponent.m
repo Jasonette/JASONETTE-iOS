@@ -5,6 +5,8 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonImageComponent.h"
+#import "NSData+ImageContentType.h"
+#import "UIImage+GIF.h"
 
 @implementation JasonImageComponent
 + (UIView *)build: (UIImageView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
@@ -38,8 +40,20 @@
         
         if([url containsString:@"file://"]){
             NSString *localImageName = [url substringFromIndex:7];
-            UIImage *localImage = [UIImage imageNamed:localImageName];
-            [component setImage:[UIImage imageNamed:localImageName]];
+            UIImage *localImage;
+            
+            // Get data for local file
+            NSString *filePath = [[NSBundle mainBundle] pathForResource:localImageName ofType:nil];
+            NSData *data = [[NSFileManager defaultManager] contentsAtPath:filePath];
+            
+            // Check for animated GIF
+            NSString *imageContentType = [NSData sd_contentTypeForImageData:data];
+            if ([imageContentType isEqualToString:@"image/gif"]) {
+                localImage = [UIImage sd_animatedGIFWithData:data];
+            } else {
+                localImage = [UIImage imageNamed:localImageName];
+            }
+            [component setImage:localImage];
             JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:localImage.size];
         } else{
             [component sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
