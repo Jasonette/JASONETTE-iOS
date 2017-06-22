@@ -1400,6 +1400,14 @@
     NSURL *file = [[NSBundle mainBundle] URLForResource:@"Info" withExtension:@"plist"];
     NSDictionary *info_plist = [NSDictionary dictionaryWithContentsOfURL:file];
     dict[@"url_scheme"] = info_plist[@"CFBundleURLTypes"][0][@"CFBundleURLSchemes"][0];
+    
+    CGRect bounds = [[UIScreen mainScreen] bounds];
+    dict[@"device"] = @{ @"width": [NSNumber numberWithFloat:bounds.size.width], @"height": [NSNumber numberWithFloat:bounds.size.height], @"os": @{
+                                 @"name": @"ios",
+                                 @"version": [[UIDevice currentDevice] systemVersion]
+                                 }
+                         };
+
     return dict;
 }
 - (NSDictionary *)variables{
