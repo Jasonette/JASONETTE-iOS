@@ -68,11 +68,11 @@
                 }
 
                 if(style[@"color"]){
-                    NSString *colorHex = style[@"color"];
-                    UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
-                    UIImage *image = [localImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                    [component setTintColor:c];
-                    [component setImage:image forState:UIControlStateNormal];
+                    // Setting tint color for an image
+                    UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
+                    UIImage *newImage = [JasonHelper colorize:localImage into:newColor];
+                    [component setImage:newImage forState:UIControlStateNormal];
+
                 } else {
                     [component setImage:localImage forState:UIControlStateNormal];
                 }
@@ -83,11 +83,11 @@
                     if(!error){
                         JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
                         if(style[@"color"]){
-                            NSString *colorHex = style[@"color"];
-                            UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
-                            UIImage *image = [imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                            [component setTintColor:c];
-                            [component setImage: image forState:UIControlStateNormal];
+                            // Setting tint color for an image
+                            UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
+                            UIImage *newImage = [JasonHelper colorize:imageView.image into:newColor];
+                            imageView.image = newImage;
+                            [component setImage:imageView.image forState:UIControlStateNormal];
                         } else {
                             [component setImage:imageView.image forState:UIControlStateNormal];
                         }
@@ -103,15 +103,7 @@
             NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
    
 
-            
-            if(style[@"color"]){
-                // Setting tint color for an image
-                UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                UIImage *newImage = [JasonHelper colorize:imageView.image into:newColor];
-                imageView.image = newImage;
-                [component setImage:imageView.image forState:UIControlStateNormal];
-            }
-            
+                    
             if(style[@"width"] && !style[@"height"]){
                 // Width is set but height is not
                 CGFloat aspectRatioMult;

@@ -53,12 +53,28 @@
             } else {
                 localImage = [UIImage imageNamed:localImageName];
             }
-            [component setImage:localImage];
+
+            if(json[@"style"] && json[@"style"][@"color"]){
+                // Setting tint color for an image
+                UIColor *newColor = [JasonHelper colorwithHexString:json[@"style"][@"color"] alpha:1.0];
+                UIImage *newImage = [JasonHelper colorize:localImage into:newColor];
+                [component setImage:newImage];
+            } else {
+                [component setImage:localImage];
+            }
+
+            
             JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:localImage.size];
         } else{
             [component sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 if(!error){
                     JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
+                    if(json[@"style"] && json[@"style"][@"color"]){
+                        // Setting tint color for an image
+                        UIColor *newColor = [JasonHelper colorwithHexString:json[@"style"][@"color"] alpha:1.0];
+                        UIImage *newImage = [JasonHelper colorize:i into:newColor];
+                        [component setImage:newImage];
+                    }
                 }
             }];
         }
@@ -71,13 +87,6 @@
         NSMutableDictionary *style = [json[@"style"] mutableCopy];
         NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
         UIImageView *imageView = (UIImageView *)component;
-        
-        if(style[@"color"]){
-            // Setting tint color for an image
-            UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-            UIImage *newImage = [JasonHelper colorize:imageView.image into:newColor];
-            imageView.image = newImage;
-        }
         
         if(style[@"width"] && !style[@"height"]){
             // Width is set but height is not
