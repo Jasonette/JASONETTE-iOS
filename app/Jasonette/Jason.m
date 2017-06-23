@@ -2125,12 +2125,13 @@
                 NSString *image_src = right_menu[@"image"];
                 
                 float cornerRadius = [style[@"corner_radius"] floatValue];
+                CGSize size = CGSizeMake(40, 40);
                 
                 if([image_src containsString:@"file://"]){
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
                     
                     if(cornerRadius > 0) {
-                        UIImage *newImage = [JasonHelper getRoundedImage:localImage withCornerRadius:cornerRadius andStyle:style];
+                        UIImage *newImage = [JasonHelper getRoundedImage:localImage withCornerRadius:cornerRadius andSize:size andStyle:style];
                         [JasonHelper addShadowToButton:btn withStyle:style];
                         [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
                     } else {
@@ -2148,7 +2149,7 @@
                                                 dispatch_async(dispatch_get_main_queue(), ^{
                                                     
                                                     if(cornerRadius > 0) {
-                                                        UIImage *newImage = [JasonHelper getRoundedImage:image withCornerRadius:cornerRadius andStyle:style];
+                                                        UIImage *newImage = [JasonHelper getRoundedImage:image withCornerRadius:cornerRadius andSize:size andStyle:style];
                                                         [JasonHelper addShadowToButton:btn withStyle:style];
                                                         [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
                                                     } else {

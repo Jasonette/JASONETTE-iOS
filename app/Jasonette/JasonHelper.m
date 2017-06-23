@@ -922,12 +922,12 @@
     return ret;
 }
 
-+ (UIImage *) getRoundedImage:(UIImage *)image withCornerRadius:(float)cornerRadius andStyle:(NSDictionary *)style {
-    // Rounded button
-    CGRect rect = CGRectMake(0, 0, 40, 40);
++ (UIImage *) getRoundedImage:(UIImage *)image withCornerRadius:(float)cornerRadius andSize:(CGSize)size andStyle:(NSDictionary *)style {
+    
+    CGRect rect = CGRectMake(0, 0, size.width, size.height);
     
     // Border
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(40, 40), NO, 1.0); {
+    UIGraphicsBeginImageContextWithOptions(size, NO, image.scale); {
         
         // Set border defaults if not specified
         float borderOpacity = style[@"border_opacity"] ? [style[@"border_opacity"] floatValue] : 1.0f;
