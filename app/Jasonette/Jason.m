@@ -2084,6 +2084,7 @@
                 [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
             }
             [btn addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
+            
             leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:btn];
         }
         [self setupMenuBadge:leftBarButton forData:left_menu];
@@ -2093,11 +2094,11 @@
     if(!right_menu || [right_menu count] == 0){
         rightBarButton = nil;
     } else {
+        NSDictionary *style = right_menu[@"style"];
         if(right_menu[@"text"]){
             UIButton *button = [[UIButton alloc] init];
             [button setTitle:right_menu[@"text"] forState:UIControlStateNormal];
             [button setTitle:right_menu[@"text"] forState:UIControlStateFocused];
-            NSDictionary *style = right_menu[@"style"];
             if(style && style[@"color"]){
                 UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
                 [button setTitleColor:c forState:UIControlStateNormal];
@@ -2119,6 +2120,7 @@
         } else {
             UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
             btn.frame = CGRectMake(0,0,25,25);
+            
             if(right_menu[@"image"]){
                 NSString *image_src = right_menu[@"image"];
                 
@@ -2134,7 +2136,49 @@
                                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                             if (image) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
+                                                    
+                                                    if([style[@"shape"] isEqualToString:@"circle"]) {
+                                                        
+                                                        // Rounded circle button
+                                                        CGRect rect = CGRectMake(0, 0, 40, 40);
+                                                        
+                                                        // Border
+                                                        UIGraphicsBeginImageContextWithOptions(CGSizeMake(40, 40), NO, 1.0); {
+                                                            
+                                                            // Set border defaults if not specified
+                                                            float borderOpacity = style[@"border_opacity"] ? [style[@"border_opacity"] floatValue] : 1.0f;
+                                                            UIColor *borderColor = style[@"border_color"] ? [JasonHelper colorwithHexString:style[@"border_color"] alpha:borderOpacity] : [UIColor blackColor];
+                                                            float borderWidth = style[@"border_width"] ? [style[@"border_width"] floatValue] : 0.0f;
+                                                            
+                                                            [borderColor setFill];
+                                                            [[UIBezierPath bezierPathWithOvalInRect:rect] fill];
+                                                            
+                                                            CGRect interiorBox = CGRectInset(rect, borderWidth, borderWidth);
+                                                            UIBezierPath *interior = [UIBezierPath bezierPathWithOvalInRect:interiorBox];
+                                                            [interior addClip];
+                                                            [image drawInRect:rect];
+                                                        }
+                                                        
+                                                        UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+                                                        UIGraphicsEndImageContext();
+                                                        
+                                                        // Shadow
+                                                        float shadowOpacity = style[@"shadow_opacity"] ? [style[@"shadow_opacity"] floatValue] : 1.0f;
+                                                        UIColor *shadowColor = style[@"shadow_color"] ? [JasonHelper colorwithHexString:style[@"shadow_color"]  alpha:shadowOpacity] : [UIColor blackColor];
+                                                        float shadowWidth = style[@"shadow_width"] ? [style[@"shadow_width"] floatValue] : 0.0f;
+                                                        
+                                                        [btn.layer setShadowColor:[shadowColor CGColor]];
+                                                        [btn.layer setShadowOffset:CGSizeMake(0, shadowWidth)];
+                                                        [btn.layer setMasksToBounds:NO];
+                                                        [btn.layer setShadowRadius:shadowWidth];
+                                                        [btn.layer setShadowOpacity:shadowOpacity];
+                                                        [btn.layer setCornerRadius:20];
+                                                        
+                                                        [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
+                                                    } else {
+                                                        [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
+                                                    }
+                                                    
                                                 });
                                             }
                                         }];
