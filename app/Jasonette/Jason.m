@@ -2033,11 +2033,13 @@
             }
         }
     } else {
+        
+        NSDictionary *style = left_menu[@"style"];
         if(left_menu[@"text"]){
             UIButton *button = [[UIButton alloc] init];
             [button setTitle:left_menu[@"text"] forState:UIControlStateNormal];
             [button setTitle:left_menu[@"text"] forState:UIControlStateFocused];
-            NSDictionary *style = left_menu[@"style"];
+            
             if(style && style[@"color"]){
                 UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
                 [button setTitleColor:c forState:UIControlStateNormal];
@@ -2062,9 +2064,20 @@
             if(left_menu[@"image"]){
                 NSString *image_src = left_menu[@"image"];
                 
+                float cornerRadius = [style[@"corner_radius"] floatValue];
+                CGSize size = CGSizeMake(40, 40);
+                
                 if([image_src containsString:@"file://"]){                    
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                    [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    
+                    if(cornerRadius > 0) {
+                        UIImage *newImage = [JasonHelper getRoundedImage:localImage withCornerRadius:cornerRadius andSize:size andStyle:style];
+                        [JasonHelper addShadowToButton:btn withStyle:style];
+                        [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
+                    } else {
+                        [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    }
+
                 } else{
                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
                     [manager downloadImageWithURL:[NSURL URLWithString:image_src]
@@ -2074,7 +2087,15 @@
                                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                             if (image) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [self setMenuButtonImage:image forButton:btn withMenu:left_menu];//
+                                                    
+                                                    if(cornerRadius > 0) {
+                                                        UIImage *newImage = [JasonHelper getRoundedImage:image withCornerRadius:cornerRadius andSize:size andStyle:style];
+                                                        [JasonHelper addShadowToButton:btn withStyle:style];
+                                                        [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
+                                                    } else {
+                                                        [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
+                                                    }
+                                                    
                                                 });
                                             }
                                         }];
