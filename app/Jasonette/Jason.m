@@ -2058,7 +2058,7 @@
             leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:button];
         } else {
             UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
-            btn.frame = CGRectMake(0,0,20,20);
+            btn.frame = CGRectMake(0,0,20,20);            
             if(left_menu[@"image"]){
                 NSString *image_src = left_menu[@"image"];
                 
@@ -2124,9 +2124,19 @@
             if(right_menu[@"image"]){
                 NSString *image_src = right_menu[@"image"];
                 
+                float cornerRadius = [style[@"corner_radius"] floatValue];
+                
                 if([image_src containsString:@"file://"]){
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                    [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    
+                    if(cornerRadius > 0) {
+                        UIImage *newImage = [JasonHelper getRoundedImage:localImage withCornerRadius:cornerRadius andStyle:style];
+                        [JasonHelper addShadowToButton:btn withStyle:style];
+                        [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
+                    } else {
+                        [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    }
+                    
                 } else{
                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
                     [manager downloadImageWithURL:[NSURL URLWithString:image_src]
@@ -2137,43 +2147,9 @@
                                             if (image) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
                                                     
-                                                    if([style[@"shape"] isEqualToString:@"circle"]) {
-                                                        
-                                                        // Rounded circle button
-                                                        CGRect rect = CGRectMake(0, 0, 40, 40);
-                                                        
-                                                        // Border
-                                                        UIGraphicsBeginImageContextWithOptions(CGSizeMake(40, 40), NO, 1.0); {
-                                                            
-                                                            // Set border defaults if not specified
-                                                            float borderOpacity = style[@"border_opacity"] ? [style[@"border_opacity"] floatValue] : 1.0f;
-                                                            UIColor *borderColor = style[@"border_color"] ? [JasonHelper colorwithHexString:style[@"border_color"] alpha:borderOpacity] : [UIColor blackColor];
-                                                            float borderWidth = style[@"border_width"] ? [style[@"border_width"] floatValue] : 0.0f;
-                                                            
-                                                            [borderColor setFill];
-                                                            [[UIBezierPath bezierPathWithOvalInRect:rect] fill];
-                                                            
-                                                            CGRect interiorBox = CGRectInset(rect, borderWidth, borderWidth);
-                                                            UIBezierPath *interior = [UIBezierPath bezierPathWithOvalInRect:interiorBox];
-                                                            [interior addClip];
-                                                            [image drawInRect:rect];
-                                                        }
-                                                        
-                                                        UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-                                                        UIGraphicsEndImageContext();
-                                                        
-                                                        // Shadow
-                                                        float shadowOpacity = style[@"shadow_opacity"] ? [style[@"shadow_opacity"] floatValue] : 1.0f;
-                                                        UIColor *shadowColor = style[@"shadow_color"] ? [JasonHelper colorwithHexString:style[@"shadow_color"]  alpha:shadowOpacity] : [UIColor blackColor];
-                                                        float shadowWidth = style[@"shadow_width"] ? [style[@"shadow_width"] floatValue] : 0.0f;
-                                                        
-                                                        [btn.layer setShadowColor:[shadowColor CGColor]];
-                                                        [btn.layer setShadowOffset:CGSizeMake(0, shadowWidth)];
-                                                        [btn.layer setMasksToBounds:NO];
-                                                        [btn.layer setShadowRadius:shadowWidth];
-                                                        [btn.layer setShadowOpacity:shadowOpacity];
-                                                        [btn.layer setCornerRadius:20];
-                                                        
+                                                    if(cornerRadius > 0) {
+                                                        UIImage *newImage = [JasonHelper getRoundedImage:image withCornerRadius:cornerRadius andStyle:style];
+                                                        [JasonHelper addShadowToButton:btn withStyle:style];
                                                         [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
                                                     } else {
                                                         [self setMenuButtonImage:image forButton:btn withMenu:left_menu];

@@ -922,4 +922,50 @@
     return ret;
 }
 
++ (UIImage *) getRoundedImage:(UIImage *)image withCornerRadius:(float)cornerRadius andStyle:(NSDictionary *)style {
+    // Rounded button
+    CGRect rect = CGRectMake(0, 0, 40, 40);
+    
+    // Border
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(40, 40), NO, 1.0); {
+        
+        // Set border defaults if not specified
+        float borderOpacity = style[@"border_opacity"] ? [style[@"border_opacity"] floatValue] : 1.0f;
+        UIColor *borderColor = style[@"border_color"] ? [JasonHelper colorwithHexString:style[@"border_color"] alpha:borderOpacity] : [UIColor blackColor];
+        float borderWidth = style[@"border_width"] ? [style[@"border_width"] floatValue] : 0.0f;
+        
+        [borderColor setFill];
+        [[UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:cornerRadius] fill];
+        
+        CGRect interiorBox = CGRectInset(rect, borderWidth, borderWidth);
+        UIBezierPath *interior = [UIBezierPath bezierPathWithRoundedRect:interiorBox cornerRadius:cornerRadius];
+        //UIBezierPath *interior = [UIBezierPath bezierPathWithOvalInRect:interiorBox];
+        [interior addClip];
+        [image drawInRect:rect];
+    }
+    
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
++ (void) addShadowToButton:(UIButton *)btn withStyle:(NSDictionary *)style {
+    
+    // Shadow
+    float shadowOpacity = style[@"shadow_opacity"] ? [style[@"shadow_opacity"] floatValue] : 1.0f;
+    UIColor *shadowColor = style[@"shadow_color"] ? [JasonHelper colorwithHexString:style[@"shadow_color"]  alpha:shadowOpacity] : [UIColor blackColor];
+    float shadowRadius = style[@"shadow_radius"] ? [style[@"shadow_radius"] floatValue] : 0.0f;
+    float shadowOffsetX = style[@"shadow_offsetx"] ? [style[@"shadow_offsetx"] floatValue] : 0.0f;
+    float shadowOffsetY = style[@"shadow_offsety"] ? [style[@"shadow_offsety"] floatValue] : 0.0f;
+    
+    [btn.layer setShadowColor:[shadowColor CGColor]];
+    [btn.layer setShadowOffset:CGSizeMake(shadowOffsetX, shadowOffsetY)];
+    [btn.layer setMasksToBounds:NO];
+    [btn.layer setShadowRadius:shadowRadius];
+    [btn.layer setShadowOpacity:shadowOpacity];    
+
+}
+
+
 @end
