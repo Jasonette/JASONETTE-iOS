@@ -102,14 +102,6 @@
         if(style){
             NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
    
-            if(style[@"color"]){
-                // Setting tint color for an image
-                UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                UIImage *newImage = [JasonHelper colorize:imageView.image into:newColor];
-                imageView.image = newImage;
-                [component setImage:imageView.image forState:UIControlStateNormal];
-            }
-
                     
             if(style[@"width"] && !style[@"height"]){
                 // Width is set but height is not

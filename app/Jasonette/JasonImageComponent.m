@@ -21,6 +21,11 @@
     UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
     NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
     
+    NSMutableDictionary *style;
+    if(json[@"style"]){
+        style = [json[@"style"] mutableCopy];
+    }
+
     SDWebImageDownloader *manager = [SDWebImageManager sharedManager].imageDownloader;
     NSDictionary *session = [JasonHelper sessionForUrl:url];
     if(session && session.count > 0 && session[@"header"]){
@@ -69,6 +74,13 @@
             [component sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 if(!error){
                     JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
+                    if(style[@"color"]){
+                        NSString *colorHex = style[@"color"];
+                        UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
+                        UIImage *image = [i imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                        [component setTintColor:c];
+                        [component setImage: image];;
+                    }
                 }
             }];
         }
@@ -82,13 +94,6 @@
         NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
         UIImageView *imageView = (UIImageView *)component;
         
-        if(style[@"color"]){
-            // Setting tint color for an image
-            UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-            UIImage *newImage = [JasonHelper colorize:imageView.image into:newColor];
-            imageView.image = newImage;
-        }
-
         if(style[@"width"] && !style[@"height"]){
             // Width is set but height is not
             CGFloat aspectRatioMult;
