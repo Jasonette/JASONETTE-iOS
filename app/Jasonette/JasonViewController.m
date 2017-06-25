@@ -1099,7 +1099,6 @@
 - (void)setupHeader: (NSDictionary *)body{
     
     
-    self.tableView.tableHeaderView = nil;
     // NAV (deprecated. See 'header' below)
     NSDictionary *nav = body[@"nav"];
     if(nav){
@@ -1192,7 +1191,9 @@
                         }
                     }
 
-                    self.tableView.tableHeaderView = self.searchController.searchBar;
+                    if(!self.tableView.tableHeaderView) {
+                        self.tableView.tableHeaderView = self.searchController.searchBar;
+                    }
                     self.searchController.hidesNavigationBarDuringPresentation = NO;
 
                     [self.searchController.searchBar sizeToFit];
@@ -1202,101 +1203,106 @@
                 }
             }
         }
-    }
-    
-    
-    // Header (Replacement for nav)
-    NSDictionary *header = body[@"header"];
-    if(header){
-    
-        // only handles components specific to TableView (search/tabs).
-        // common component (menu) is handled in Jason.m
-        tabs = nil;
+    } else if (body[@"header"]){
+        
+        
+        // Header (Replacement for nav)
+        NSDictionary *header = body[@"header"];
+        if(header){
+        
+            // only handles components specific to TableView (search/tabs).
+            // common component (menu) is handled in Jason.m
+            tabs = nil;
 
-        for(NSString *type in [header allKeys]){
-            if(type){
-                if([type isEqualToString:@"search"]){
-                    NSDictionary *component = [JasonComponentFactory applyStylesheet:header[type]];
-                    
-                    search_action = component[@"action"];
-                    search_field_name = component[@"name"];
-                    NSString *search_placeholder = component[@"placeholder"];
-                    NSDictionary *style = component[@"style"];
-                    
-                    if(!self.searchController){
-                        self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-                    }
-                    // style
-                    NSString *theme = style[@"theme"];
-                    if([theme isEqualToString:@"light"]){
-                        self.searchController.dimsBackgroundDuringPresentation = NO;
-                    } else {
-                        self.searchController.dimsBackgroundDuringPresentation = YES;
-                    }
-                    
-                    // When there's no action, use the default search behavior
-                    if(!search_action){
-                        self.searchController.searchResultsUpdater = self;
-                        self.searchController.dimsBackgroundDuringPresentation = NO;
-                    }
-                    self.searchController.searchBar.delegate = self;
-                    
-                    NSString *backgroundColorStr = style[@"background"];
-                    UIColor *backgroundColor = self.navigationController.navigationBar.backgroundColor;
-                    if(backgroundColorStr){
-                        backgroundColor = [JasonHelper colorwithHexString:backgroundColorStr alpha:1.0];
-                    }
-                    
-                    NSString *colorStr = style[@"color"];
-                    UIColor *color = self.navigationController.navigationBar.tintColor;
-                    if(colorStr){
-                        color = [JasonHelper colorwithHexString:colorStr alpha:1.0];
-                    }
-                    
-                    if(search_placeholder){
-                        self.searchController.searchBar.placeholder = search_placeholder;
-                    }
-
-                    UIView *subViews =  [[self.searchController.searchBar subviews] firstObject];
-                    for(UIView *subView in [subViews subviews]) {
-                        if([subView conformsToProtocol:@protocol(UITextInputTraits)]) {
-                            [(UITextField *)subView setEnablesReturnKeyAutomatically:NO];
-                            [(UITextField *)subView setTextColor:color];
+            for(NSString *type in [header allKeys]){
+                if(type){
+                    if([type isEqualToString:@"search"]){
+                        NSDictionary *component = [JasonComponentFactory applyStylesheet:header[type]];
+                        
+                        search_action = component[@"action"];
+                        search_field_name = component[@"name"];
+                        NSString *search_placeholder = component[@"placeholder"];
+                        NSDictionary *style = component[@"style"];
+                        
+                        if(!self.searchController){
+                            self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
                         }
-                    }
-                    
-                    self.searchController.searchBar.returnKeyType = UIReturnKeyGo;
-                    self.searchController.searchBar.barTintColor = backgroundColor;
-                    self.searchController.searchBar.tintColor = color;
-                    self.searchController.searchBar.backgroundColor = backgroundColor;
-                    self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-                    
-                    // Search bar textfield styling
-                    NSArray *searchBarSubViews = [[self.searchController.searchBar.subviews objectAtIndex:0] subviews];
-                    for (UIView *view in searchBarSubViews) {
-                        if([view isKindOfClass:[UITextField class]])
-                        {
-                            UITextField *textField = (UITextField*)view;
-                            UIImageView *imgView = (UIImageView*)textField.leftView;
-                            imgView.image = [imgView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                            imgView.tintColor = color;
-                            NSDictionary *placeholderAttributes = @{ NSForegroundColorAttributeName: color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue" size:15] };
-                            textField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.searchController.searchBar.placeholder
-                                                                                                        attributes:placeholderAttributes];
+                        // style
+                        NSString *theme = style[@"theme"];
+                        if([theme isEqualToString:@"light"]){
+                            self.searchController.dimsBackgroundDuringPresentation = NO;
+                        } else {
+                            self.searchController.dimsBackgroundDuringPresentation = YES;
                         }
+                        
+                        // When there's no action, use the default search behavior
+                        if(!search_action){
+                            self.searchController.searchResultsUpdater = self;
+                            self.searchController.dimsBackgroundDuringPresentation = NO;
+                        }
+                        self.searchController.searchBar.delegate = self;
+                        
+                        NSString *backgroundColorStr = style[@"background"];
+                        UIColor *backgroundColor = self.navigationController.navigationBar.backgroundColor;
+                        if(backgroundColorStr){
+                            backgroundColor = [JasonHelper colorwithHexString:backgroundColorStr alpha:1.0];
+                        }
+                        
+                        NSString *colorStr = style[@"color"];
+                        UIColor *color = self.navigationController.navigationBar.tintColor;
+                        if(colorStr){
+                            color = [JasonHelper colorwithHexString:colorStr alpha:1.0];
+                        }
+                        
+                        if(search_placeholder){
+                            self.searchController.searchBar.placeholder = search_placeholder;
+                        }
+
+                        UIView *subViews =  [[self.searchController.searchBar subviews] firstObject];
+                        for(UIView *subView in [subViews subviews]) {
+                            if([subView conformsToProtocol:@protocol(UITextInputTraits)]) {
+                                [(UITextField *)subView setEnablesReturnKeyAutomatically:NO];
+                                [(UITextField *)subView setTextColor:color];
+                            }
+                        }
+                        
+                        self.searchController.searchBar.returnKeyType = UIReturnKeyGo;
+                        self.searchController.searchBar.barTintColor = backgroundColor;
+                        self.searchController.searchBar.tintColor = color;
+                        self.searchController.searchBar.backgroundColor = backgroundColor;
+                        self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+                        
+                        // Search bar textfield styling
+                        NSArray *searchBarSubViews = [[self.searchController.searchBar.subviews objectAtIndex:0] subviews];
+                        for (UIView *view in searchBarSubViews) {
+                            if([view isKindOfClass:[UITextField class]])
+                            {
+                                UITextField *textField = (UITextField*)view;
+                                UIImageView *imgView = (UIImageView*)textField.leftView;
+                                imgView.image = [imgView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                                imgView.tintColor = color;
+                                NSDictionary *placeholderAttributes = @{ NSForegroundColorAttributeName: color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue" size:15] };
+                                textField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.searchController.searchBar.placeholder
+                                                                                                            attributes:placeholderAttributes];
+                            }
+                        }
+
+                        if(!self.tableView.tableHeaderView) {
+                            self.tableView.tableHeaderView = self.searchController.searchBar;
+                        }
+                        self.searchController.hidesNavigationBarDuringPresentation = NO;
+
+                        [self.searchController.searchBar sizeToFit];
+
+                    } else if([type isEqualToString:@"tabs"]){
+                        NSDictionary *component = [JasonComponentFactory applyStylesheet:header[type]];
+                        tabs = component;
                     }
-
-                    self.tableView.tableHeaderView = self.searchController.searchBar;
-                    self.searchController.hidesNavigationBarDuringPresentation = NO;
-
-                    [self.searchController.searchBar sizeToFit];
-
-                } else if([type isEqualToString:@"tabs"]){
-                    NSDictionary *component = [JasonComponentFactory applyStylesheet:header[type]];
-                    tabs = component;
                 }
             }
         }
+    } else {
+        self.tableView.tableHeaderView = nil;
     }
 }
 
