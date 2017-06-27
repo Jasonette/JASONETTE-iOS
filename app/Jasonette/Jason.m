@@ -78,7 +78,7 @@
     [self include:jsonResponseObject andCompletionHandler:^(id res){
         dispatch_async(dispatch_get_main_queue(), ^{                    
             VC.original = @{@"$jason": res[@"$jason"]};
-            [self drawViewFromJason: VC.original];                    
+            [self drawViewFromJason: VC.original withCache:NO];
         });
     }];
 }
@@ -95,7 +95,7 @@
     JasonAppDelegate *app = (JasonAppDelegate *)[[UIApplication sharedApplication] delegate];
     NSDictionary *plist = [self getSettings];
     ROOT_URL = plist[@"url"];
-    INITIAL_LOADING = plist[@"loading"];
+    INITIAL_LOADING = [plist[@"loading"] boolValue];
     
     JasonViewController *vc = [[JasonViewController alloc] init];
     if(href){
@@ -1409,6 +1409,9 @@
         @"language": [[NSLocale preferredLanguages] objectAtIndex:0]
     };
 
+    dict[@"view"] = @{
+        @"url": VC.url
+    };
     return dict;
 }
 - (NSDictionary *)variables{
@@ -1539,7 +1542,7 @@
          * Experimental : Offline handling
          * => Only load from cache initially if head contains "offline":"true"
          ***************************************************/
-        NSString *normalized_url = [self normalized_url];
+        NSString *normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *documentsDirectory = [paths objectAtIndex:0];
         NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
@@ -1547,10 +1550,17 @@
         if(data && data.length > 0){
             NSDictionary *responseObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
             if(responseObject && responseObject[@"$jason"] && responseObject[@"$jason"][@"head"] && responseObject[@"$jason"][@"head"][@"offline"]){
-                [self drawViewFromJason: responseObject];
+                // get rid of $load and $show so they don't get triggered
+                if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$load"]){
+                    [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$load"];
+                }
+                if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$show"]){
+                    [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$show"];
+                }
+                VC.offline = YES;
+                [self drawViewFromJason: responseObject withCache:NO];
             }
         }
-        
         VC.requires = [[NSMutableDictionary alloc] init];
         
         /**************************************************
@@ -1562,7 +1572,7 @@
             NSData *jsonData = [NSData dataWithContentsOfURL:url];
             NSError* error;
             VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
-            [self drawViewFromJason: VC.original];
+            [self drawViewFromJason: VC.original withCache:NO];
         } else if([VC.url hasPrefix:@"file://"]) {
 			[self loadViewByFile: VC.url];
         }
@@ -1589,17 +1599,21 @@
                  VC.original = responseObject;
                  [self include:responseObject andCompletionHandler:^(id res){
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        VC.contentLoaded = NO;
+
                         VC.original = @{@"$jason": res[@"$jason"]};
-                        [self drawViewFromJason: VC.original];
+                        [self drawViewFromJason: VC.original withCache:YES];
                     });
                  }];
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                [self call:@{@"type": @"$util.toast", @"options": @{@"text": @"offline mode"}, @"success": @{@"type": @"$unlock"}}];
+                if(!VC.offline){
+                    [[Jason client] loadViewByFile: @"file://error.json"];
+                }
             }];
         }
     }
 }
-- (void)drawViewFromJason: (NSDictionary *)jason{
+- (void)drawViewFromJason: (NSDictionary *)jason withCache: (BOOL) cache{
     
     NSDictionary *head = jason[@"$jason"][@"head"];
     if(!head)return;
@@ -1730,7 +1744,7 @@
             if([VC respondsToSelector:@selector(reload:)]) [VC reload:rendered_page];
             
             // Cache the view after drawing
-            [self cache_view];
+            if(cache) [self cache_view];
         }
         
     }
@@ -3356,27 +3370,34 @@
     if(VC.original && VC.rendered && VC.original[@"$jason"][@"head"][@"offline"]){
         if(![[VC.rendered description] containsString:@"{{"] && ![[self.options description] containsString:@"}}"]){
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                NSString *normalized_url = [self normalized_url];
+                NSString *normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
                 normalized_url = [normalized_url stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
                 NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
                 NSString *documentsDirectory = [paths objectAtIndex:0];
                 NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
                 
                 NSMutableDictionary *to_store = [VC.original mutableCopy];
-                to_store[@"$jason"] = @{@"body": VC.rendered};
+                if(to_store[@"$jason"]){
+                    to_store[@"$jason"][@"body"] = VC.rendered;
+                }
                 NSData *data = [NSKeyedArchiver archivedDataWithRootObject:to_store];
                 [data writeToFile:path atomically:YES];
+                return;
             });
         }
     }
-}
-- (NSString *)normalized_url{
-    NSString *normalized_url = [VC.url lowercaseString];
-    normalized_url = [normalized_url stringByAppendingString:[NSString stringWithFormat:@"|%@", VC.options]];
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[/:]" options:NSRegularExpressionCaseInsensitive error:nil];
-    normalized_url = [regex stringByReplacingMatchesInString:normalized_url options:0 range:NSMakeRange(0, [normalized_url length]) withTemplate:@"_"];
-    normalized_url = [[normalized_url componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@""];
-    return normalized_url;
+    
+    // if not offline, delete the file associated with the url
+    NSString *normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
+    normalized_url = [normalized_url stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:path];
+    if(fileExists){
+        NSError *error;
+        [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
+    }
 }
 // Delegate for handling snapshot
 - (void)vision:(PBJVision *)vision capturedPhoto:(NSDictionary *)photoDict error:(NSError *)error

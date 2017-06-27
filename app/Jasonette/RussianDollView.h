@@ -25,6 +25,7 @@
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL fresh;
 @property (nonatomic, assign) BOOL loading;
+@property (nonatomic, assign) BOOL offline;
 @property (strong, nonatomic) NSDictionary *events;
 @property (strong, nonatomic) NSDictionary *style;
 @property (strong, nonatomic) NSDictionary *rendered;
