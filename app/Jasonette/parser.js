@@ -22572,9 +22572,13 @@ var run = function(template, data){
             }
           } // end of #each
         } else { // end of if(fun)
-          // This shouldn't happen since the only supported functions are #each and #include currently.
-          // But need to return the original template for debugging
-          result = template;
+          // If the key is a template expression but aren't either #include or #each, 
+          // it needs to be parsed
+          var k = getData(data, key);
+          var v = getData(data, template[key]);
+          if(k !== undefined && v !== undefined){
+            result[k] = v;
+          }
         }
       } else {
         // isTemplate(key) was false, which means the key was not a template (hardcoded string)
