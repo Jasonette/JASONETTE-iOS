@@ -41,4 +41,6 @@
 + (NSString *)getSignature: (NSDictionary *)item;
 + (NSArray *)childOf: (UIView *)view withClassName: (NSString *)className;
 + (id) read_local_json: (NSString *)url;
++ (UIImage *)getRoundedImage: (UIImage *)image withCornerRadius:(float)cornerRadius andSize:(CGSize)size andStyle: (NSDictionary *)style;
++ (void)addShadowToButton: (UIButton *)btn withStyle:(NSDictionary *)style;
 @end

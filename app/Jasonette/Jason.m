@@ -2034,11 +2034,13 @@
             }
         }
     } else {
+        
+        NSDictionary *style = left_menu[@"style"];
         if(left_menu[@"text"]){
             UIButton *button = [[UIButton alloc] init];
             [button setTitle:left_menu[@"text"] forState:UIControlStateNormal];
             [button setTitle:left_menu[@"text"] forState:UIControlStateFocused];
-            NSDictionary *style = left_menu[@"style"];
+            
             if(style && style[@"color"]){
                 UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
                 [button setTitleColor:c forState:UIControlStateNormal];
@@ -2059,13 +2061,24 @@
             leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:button];
         } else {
             UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
-            btn.frame = CGRectMake(0,0,20,20);
+            btn.frame = CGRectMake(0,0,20,20);            
             if(left_menu[@"image"]){
                 NSString *image_src = left_menu[@"image"];
                 
+                float cornerRadius = [style[@"corner_radius"] floatValue];
+                CGSize size = CGSizeMake(40, 40);
+                
                 if([image_src containsString:@"file://"]){                    
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                    [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    
+                    if(cornerRadius > 0) {
+                        UIImage *newImage = [JasonHelper getRoundedImage:localImage withCornerRadius:cornerRadius andSize:size andStyle:style];
+                        [JasonHelper addShadowToButton:btn withStyle:style];
+                        [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
+                    } else {
+                        [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    }
+
                 } else{
                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
                     [manager downloadImageWithURL:[NSURL URLWithString:image_src]
@@ -2075,7 +2088,15 @@
                                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                             if (image) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [self setMenuButtonImage:image forButton:btn withMenu:left_menu];//
+                                                    
+                                                    if(cornerRadius > 0) {
+                                                        UIImage *newImage = [JasonHelper getRoundedImage:image withCornerRadius:cornerRadius andSize:size andStyle:style];
+                                                        [JasonHelper addShadowToButton:btn withStyle:style];
+                                                        [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
+                                                    } else {
+                                                        [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
+                                                    }
+                                                    
                                                 });
                                             }
                                         }];
@@ -2085,6 +2106,7 @@
                 [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
             }
             [btn addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
+            
             leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:btn];
         }
         [self setupMenuBadge:leftBarButton forData:left_menu];
@@ -2094,11 +2116,11 @@
     if(!right_menu || [right_menu count] == 0){
         rightBarButton = nil;
     } else {
+        NSDictionary *style = right_menu[@"style"];
         if(right_menu[@"text"]){
             UIButton *button = [[UIButton alloc] init];
             [button setTitle:right_menu[@"text"] forState:UIControlStateNormal];
             [button setTitle:right_menu[@"text"] forState:UIControlStateFocused];
-            NSDictionary *style = right_menu[@"style"];
             if(style && style[@"color"]){
                 UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
                 [button setTitleColor:c forState:UIControlStateNormal];
@@ -2120,12 +2142,24 @@
         } else {
             UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
             btn.frame = CGRectMake(0,0,25,25);
+            
             if(right_menu[@"image"]){
                 NSString *image_src = right_menu[@"image"];
                 
+                float cornerRadius = [style[@"corner_radius"] floatValue];
+                CGSize size = CGSizeMake(40, 40);
+                
                 if([image_src containsString:@"file://"]){
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                    [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    
+                    if(cornerRadius > 0) {
+                        UIImage *newImage = [JasonHelper getRoundedImage:localImage withCornerRadius:cornerRadius andSize:size andStyle:style];
+                        [JasonHelper addShadowToButton:btn withStyle:style];
+                        [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
+                    } else {
+                        [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    }
+                    
                 } else{
                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
                     [manager downloadImageWithURL:[NSURL URLWithString:image_src]
@@ -2135,7 +2169,15 @@
                                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                             if (image) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
+                                                    
+                                                    if(cornerRadius > 0) {
+                                                        UIImage *newImage = [JasonHelper getRoundedImage:image withCornerRadius:cornerRadius andSize:size andStyle:style];
+                                                        [JasonHelper addShadowToButton:btn withStyle:style];
+                                                        [self setMenuButtonImage:newImage forButton:btn withMenu:left_menu];
+                                                    } else {
+                                                        [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
+                                                    }
+                                                    
                                                 });
                                             }
                                         }];
