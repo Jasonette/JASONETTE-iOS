@@ -5,6 +5,8 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonButtonComponent.h"
+#import "NSData+ImageContentType.h"
+#import "UIImage+GIF.h"
 
 @implementation JasonButtonComponent
 + (UIView *)build: (UIButton *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
@@ -51,14 +53,26 @@
             
             if([url containsString:@"file://"]){
                 NSString *localImageName = [url substringFromIndex:7];
-                UIImage *localImage = [UIImage imageNamed:localImageName];
+                UIImage *localImage;
                 
+                // Get data for local file
+                NSString *filePath = [[NSBundle mainBundle] pathForResource:localImageName ofType:nil];
+                NSData *data = [[NSFileManager defaultManager] contentsAtPath:filePath];
+                
+                // Check for animated GIF
+                NSString *imageContentType = [NSData sd_contentTypeForImageData:data];
+                if ([imageContentType isEqualToString:@"image/gif"]) {
+                    localImage = [UIImage sd_animatedGIFWithData:data];
+                } else {
+                    localImage = [UIImage imageNamed:localImageName];
+                }
+
                 if(style[@"color"]){
-                    NSString *colorHex = style[@"color"];
-                    UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
-                    UIImage *image = [localImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                    [component setTintColor:c];
-                    [component setImage:image forState:UIControlStateNormal];
+                    // Setting tint color for an image
+                    UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
+                    UIImage *newImage = [JasonHelper colorize:localImage into:newColor];
+                    [component setImage:newImage forState:UIControlStateNormal];
+
                 } else {
                     [component setImage:localImage forState:UIControlStateNormal];
                 }
@@ -88,16 +102,7 @@
         if(style){
             NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
    
-
-            
-            if(style[@"color"]){
-                // Setting tint color for an image
-                UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                UIImage *newImage = [JasonHelper colorize:imageView.image into:newColor];
-                imageView.image = newImage;
-                [component setImage:imageView.image forState:UIControlStateNormal];
-            }
-            
+                    
             if(style[@"width"] && !style[@"height"]){
                 // Width is set but height is not
                 CGFloat aspectRatioMult;

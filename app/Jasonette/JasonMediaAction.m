@@ -158,7 +158,7 @@
             [NSGIF optimalGIFfromURL:url loopCount:0 completion:^(NSURL *GifURL) {
                 NSData *d = [NSData dataWithContentsOfURL:GifURL];
                 NSString *base64 = [d base64EncodedStringWithOptions:0];
-                NSDictionary *result = @{@"file_url": url, @"data": base64 , @"content_type": @"image/gif"};
+                NSDictionary *result = @{@"file_url": url.absoluteString, @"data": base64 , @"content_type": @"image/gif"};
                 [[Jason client] success: result];
             }];
         }
@@ -214,7 +214,7 @@
             NSURL* dataURI = [NSURL URLWithString:dataString];
              
              
-            NSDictionary *result = @{@"file_url": url, @"data_uri": dataURI.absoluteString, @"data": base64 , @"content_type": contentType};
+            NSDictionary *result = @{@"file_url": url.absoluteString, @"data_uri": dataURI.absoluteString, @"data": base64 , @"content_type": contentType};
             [[Jason client] success: result];
          }];
     } else if(isImage){
@@ -256,7 +256,7 @@
         
         NSDictionary *result;
         if(url){
-            result = @{@"file_url": url, @"data_uri": dataURI.absoluteString, @"data": base64 , @"content_type": contentType};
+            result = @{@"file_url": url.absoluteString, @"data_uri": dataURI.absoluteString, @"data": base64 , @"content_type": contentType};
         } else {
             result = @{@"data": base64 , @"data_uri": dataURI.absoluteString, @"content_type": contentType};
         }

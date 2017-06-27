@@ -10,7 +10,7 @@
 // DO SEE http://stackoverflow.com/questions/1191868/uiimageview-scaling-interpolation
 // see http://stackoverflow.com/questions/3514066/how-to-tint-a-transparent-png-image-in-iphone
 
-#import "FDWaveFormView.h"
+#import "IQ_FDWaveformView.h"
 #import <UIKit/UIKit.h>
 
 #define absX(x) ((x)<0?0-(x):(x))
@@ -31,15 +31,16 @@
 #define verticalTargetOverdraw 2
 
 
-@interface FDWaveformView() <UIGestureRecognizerDelegate>
+@interface IQ_FDWaveformView() <UIGestureRecognizerDelegate>
 @property (nonatomic, strong) UIImageView *image;
 @property (nonatomic, strong) UIImageView *highlightedImage;
-@property (nonatomic, strong) UIView *clipping;
+@property (nonatomic, strong) UIImageView *croppedImage;
+
 @property (nonatomic, strong) AVAsset *asset;
 @property (nonatomic, strong) AVAssetTrack *assetTrack;
-@property (nonatomic, assign) unsigned long int totalSamples;
-@property (nonatomic, assign) unsigned long int cachedStartSamples;
-@property (nonatomic, assign) unsigned long int cachedEndSamples;
+@property (nonatomic, assign) long int totalSamples;
+@property (nonatomic, assign) long int cachedStartSamples;
+@property (nonatomic, assign) long int cachedEndSamples;
 @property (nonatomic, strong) UIPinchGestureRecognizer *pinchRecognizer;
 @property (nonatomic, strong) UIPanGestureRecognizer *panRecognizer;
 @property (nonatomic, strong) UITapGestureRecognizer *tapRecognizer;
@@ -47,19 +48,28 @@
 @property BOOL loadingInProgress;
 @end
 
-@implementation FDWaveformView
+@implementation IQ_FDWaveformView
 
 - (void)initialize
 {
-    self.image = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-    self.highlightedImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-    self.image.contentMode = UIViewContentModeScaleToFill;
-    self.highlightedImage.contentMode = UIViewContentModeScaleToFill;
-    [self addSubview:self.image];
-    self.clipping = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-    [self.clipping addSubview:self.highlightedImage];
-    self.clipping.clipsToBounds = YES;
-    [self addSubview:self.clipping];
+    {
+        self.image = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        self.image.contentMode = UIViewContentModeScaleToFill;
+        [self addSubview:self.image];
+    }
+    
+    {
+        self.highlightedImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        self.highlightedImage.contentMode = UIViewContentModeScaleToFill;
+        [self addSubview:self.highlightedImage];
+    }
+
+    {
+        self.croppedImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        self.croppedImage.contentMode = UIViewContentModeScaleToFill;
+        [self addSubview:self.croppedImage];
+    }
+    
     self.clipsToBounds = YES;
     
     self.wavesColor = [UIColor blackColor];
@@ -111,14 +121,15 @@
             case AVKeyValueStatusLoaded:{
                 self.image.image = nil;
                 self.highlightedImage.image = nil;
-                _progressSamples = 0; // skip setter
-                _zoomStartSamples = 0; // skip setter
-
+                self.croppedImage.image = nil;
+                
                 NSArray *formatDesc = self.assetTrack.formatDescriptions;
                 CMAudioFormatDescriptionRef item = (__bridge CMAudioFormatDescriptionRef)formatDesc[0];
                 const AudioStreamBasicDescription *asbd = CMAudioFormatDescriptionGetStreamBasicDescription(item);
                 unsigned long int samples = asbd->mSampleRate * (float)self.asset.duration.value/self.asset.duration.timescale;
-                _totalSamples = _zoomEndSamples = samples;
+                self.totalSamples = self.zoomEndSamples = self.cropEndSamples = samples;
+                self.progressSamples = self.zoomStartSamples = self.cropStartSamples = 0;
+
                 [self setNeedsDisplay];
                 [self performSelectorOnMainThread:@selector(setNeedsLayout) withObject:nil waitUntilDone:NO];
                 break;
@@ -127,7 +138,7 @@
             case AVKeyValueStatusLoading:
             case AVKeyValueStatusFailed:
             case AVKeyValueStatusCancelled:
-                NSLog(@"FDWaveformView could not load asset: %@", error.localizedDescription);
+                NSLog(@"IQ_FDWaveformView could not load asset: %@", error.localizedDescription);
                 break;
             default:
                 break;
@@ -135,24 +146,74 @@
     }];
 }
 
-- (void)setProgressSamples:(unsigned long)progressSamples
+- (void)setProgressSamples:(long)progressSamples
 {
     _progressSamples = progressSamples;
     if (self.totalSamples) {
         float progress = (float)self.progressSamples / self.totalSamples;
-        self.clipping.frame = CGRectMake(0,0,self.frame.size.width*progress,self.frame.size.height);
+        
+        CALayer *layer = [[CALayer alloc] init];
+        layer.frame = CGRectMake(0,0,self.frame.size.width*progress,self.frame.size.height);
+        layer.backgroundColor = [[UIColor blackColor] CGColor];
+        self.highlightedImage.layer.mask = layer;
         [self setNeedsLayout];
     }
 }
 
-- (void)setZoomStartSamples:(unsigned long)startSamples
+-(void)setCropStartSamples:(long)cropStartSamples
+{
+    _cropStartSamples = cropStartSamples;
+
+    if (self.totalSamples) {
+        float startProgress = (float)self.cropStartSamples / self.totalSamples;
+        float endProgress = (float)self.cropEndSamples / self.totalSamples;
+
+        CGRect visibleRect = CGRectMake(self.frame.size.width*startProgress,0,self.frame.size.width*(endProgress-startProgress),self.frame.size.height);;
+        UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRect:self.croppedImage.bounds];
+        [bezierPath appendPath:[UIBezierPath bezierPathWithRect:visibleRect]];
+        
+        CAShapeLayer *layer = [[CAShapeLayer alloc] init];
+        layer.frame = self.croppedImage.bounds;
+        layer.fillRule = kCAFillRuleEvenOdd;
+        layer.fillColor = [UIColor blackColor].CGColor;
+        layer.path = bezierPath.CGPath;
+
+        self.croppedImage.layer.mask = layer;
+        [self setNeedsLayout];
+    }
+}
+
+-(void)setCropEndSamples:(long)cropEndSamples
+{
+    _cropEndSamples = cropEndSamples;
+
+    if (self.totalSamples) {
+        float startProgress = (float)self.cropStartSamples / self.totalSamples;
+        float endProgress = (float)self.cropEndSamples / self.totalSamples;
+        
+        CGRect visibleRect = CGRectMake(self.frame.size.width*startProgress,0,self.frame.size.width*(endProgress-startProgress),self.frame.size.height);;
+        UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRect:self.croppedImage.bounds];
+        [bezierPath appendPath:[UIBezierPath bezierPathWithRect:visibleRect]];
+        
+        CAShapeLayer *layer = [[CAShapeLayer alloc] init];
+        layer.frame = self.croppedImage.bounds;
+        layer.fillRule = kCAFillRuleEvenOdd;
+        layer.fillColor = [UIColor blackColor].CGColor;
+        layer.path = bezierPath.CGPath;
+        
+        self.croppedImage.layer.mask = layer;
+        [self setNeedsLayout];
+    }
+}
+
+- (void)setZoomStartSamples:(long)startSamples
 {
     _zoomStartSamples = startSamples;
     [self setNeedsDisplay];
     [self setNeedsLayout];
 }
 
-- (void)setZoomEndSamples:(unsigned long)endSamples
+- (void)setZoomEndSamples:(long)endSamples
 {
     _zoomEndSamples = endSamples;
     [self setNeedsDisplay];
@@ -196,17 +257,15 @@
     // We need to place the images which have samples from cachedStart..cachedEnd
     // inside our frame which represents startSamples..endSamples
     // all figures are a portion of our frame size
-    float scaledStart = 0, scaledProgress = 0, scaledEnd = 1, scaledWidth = 1;
+    float scaledStart = 0, scaledEnd = 1, scaledWidth = 1;
     if (self.cachedEndSamples > self.cachedStartSamples) {
         scaledStart = ((float)self.cachedStartSamples-self.zoomStartSamples)/(self.zoomEndSamples-self.zoomStartSamples);
         scaledEnd = ((float)self.cachedEndSamples-self.zoomStartSamples)/(self.zoomEndSamples-self.zoomStartSamples);
         scaledWidth = scaledEnd - scaledStart;
-        scaledProgress = ((float)self.progressSamples-self.zoomStartSamples)/(self.zoomEndSamples-self.zoomStartSamples);
     }
+    
     CGRect frame = CGRectMake(self.frame.size.width*scaledStart, 0, self.frame.size.width*scaledWidth, self.frame.size.height);
-    self.image.frame = self.highlightedImage.frame = frame;
-    self.clipping.frame = CGRectMake(0,0,self.frame.size.width*scaledProgress,self.frame.size.height);
-    self.clipping.hidden = self.progressSamples <= self.zoomStartSamples;
+    self.image.frame = self.highlightedImage.frame = self.croppedImage.frame = frame;
 }
 
 - (void)renderAsset
@@ -222,31 +281,31 @@
     
     CGFloat widthInPixels = self.frame.size.width * [UIScreen mainScreen].scale * horizontalTargetOverdraw;
     CGFloat heightInPixels = self.frame.size.height * [UIScreen mainScreen].scale * verticalTargetOverdraw;
-    [FDWaveformView sliceAndDownsampleAsset:self.asset
-                                      track:self.assetTrack
-                               startSamples:renderStartSamples
-                                 endSamples:renderEndSamples
-                              targetSamples:widthInPixels
-                                       done:^(NSData *samples, NSInteger sampleCount, Float32 sampleMax) {
-                                           [self plotLogGraph:samples
-                                                 maximumValue:sampleMax
-                                                 mimimumValue:noiseFloor
-                                                  sampleCount:sampleCount
-                                                  imageHeight:heightInPixels
-                                                         done:^(UIImage *image, UIImage *selectedImage) {
-                                                             dispatch_async(dispatch_get_main_queue(), ^{
-                                                                 self.image.image = image;
-                                                                 self.highlightedImage.image = selectedImage;
-                                                                 self.cachedStartSamples = renderStartSamples;
-                                                                 self.cachedEndSamples = renderEndSamples;
-                                                                 self.renderingInProgress = NO;
-                                                                 [self layoutSubviews]; // warning
-                                                                 if ([self.delegate respondsToSelector:@selector(waveformViewDidRender:)])
-                                                                     [self.delegate waveformViewDidRender:self];
-                                                             });
-                                                         }
-                                            ];
-                             }];
+    
+    [IQ_FDWaveformView sliceAndDownsampleAsset:self.asset track:self.assetTrack startSamples:renderStartSamples endSamples:renderEndSamples targetSamples:widthInPixels done:^(NSData *samples, NSInteger sampleCount, Float32 sampleMax) {
+        
+        [self plotLogGraph:samples
+              maximumValue:sampleMax
+              mimimumValue:noiseFloor
+               sampleCount:sampleCount
+               imageHeight:heightInPixels
+                      done:^(UIImage *image,
+                             UIImage *selectedImage,
+                             UIImage *cropImage) {
+                          dispatch_async(dispatch_get_main_queue(), ^{
+                              self.image.image = image;
+                              self.highlightedImage.image = selectedImage;
+                              self.croppedImage.image = cropImage;
+                              self.cachedStartSamples = renderStartSamples;
+                              self.cachedEndSamples = renderEndSamples;
+                              self.renderingInProgress = NO;
+                              [self layoutSubviews]; // warning
+                              if ([self.delegate respondsToSelector:@selector(waveformViewDidRender:)])
+                                  [self.delegate waveformViewDidRender:self];
+                          });
+                      }
+         ];
+    }];
 }
 
 + (void)sliceAndDownsampleAsset:(AVAsset *)songAsset
@@ -267,7 +326,7 @@
     AVAssetReaderTrackOutput *output = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:songTrack outputSettings:outputSettingsDict];
     output.alwaysCopiesSampleData = NO;
     [reader addOutput:output];
-    UInt32 channelCount;
+    UInt32 channelCount = 0;
     NSArray *formatDesc = songTrack.formatDescriptions;
     for(unsigned int i = 0; i < [formatDesc count]; ++i) {
         CMAudioFormatDescriptionRef item = (__bridge CMAudioFormatDescriptionRef)formatDesc[i];
@@ -331,38 +390,54 @@
         mimimumValue:(Float32) normalizeMin
          sampleCount:(NSInteger) sampleCount
          imageHeight:(float) imageHeight
-                done:(void(^)(UIImage *image, UIImage *selectedImage))done
+                done:(void(^)(UIImage *image,
+                              UIImage *selectedImage,
+                              UIImage *cropImage))done
 {
     Float32 *samples = (Float32 *)samplesData.bytes;
-    
     
     // TODO: switch to a synchronous function that paints onto a given context? (for issue #2)
     CGSize imageSize = CGSizeMake(sampleCount, imageHeight);
     UIGraphicsBeginImageContext(imageSize);
     CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetShouldAntialias(context, NO);
     CGContextSetAlpha(context,1.0);
     CGContextSetLineWidth(context, 1.0);
     CGContextSetStrokeColorWithColor(context, [self.wavesColor CGColor]);
     
     float halfGraphHeight = (imageHeight / 2);
     float centerLeft = halfGraphHeight;
-    float sampleAdjustmentFactor = imageHeight / (normalizeMax - noiseFloor) / 2;
-    
+    float sampleAdjustmentFactor;
+    if(normalizeMax - noiseFloor == 0){
+        sampleAdjustmentFactor = imageHeight / 2;
+    }else{
+        sampleAdjustmentFactor = imageHeight / (normalizeMax - noiseFloor) / 2;
+    }
+
     for (NSInteger intSample=0; intSample<sampleCount; intSample++) {
         Float32 sample = *samples++;
         float pixels = (sample - noiseFloor) * sampleAdjustmentFactor;
+        if (pixels == 0) {
+            pixels = 1;
+        }
         CGContextMoveToPoint(context, intSample, centerLeft-pixels);
         CGContextAddLineToPoint(context, intSample, centerLeft+pixels);
         CGContextStrokePath(context);
     }
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+
     CGRect drawRect = CGRectMake(0, 0, image.size.width, image.size.height);
     [self.progressColor set];
     UIRectFillUsingBlendMode(drawRect, kCGBlendModeSourceAtop);
     UIImage *tintedImage = UIGraphicsGetImageFromCurrentImageContext();
+
+    [self.cropColor set];
+    UIRectFillUsingBlendMode(drawRect, kCGBlendModeSourceAtop);
+    UIImage *cropImage = UIGraphicsGetImageFromCurrentImageContext();
+
     UIGraphicsEndImageContext();
-    done(image, tintedImage);
+    done(image, tintedImage,cropImage);
 }
 
 #pragma mark - Interaction
