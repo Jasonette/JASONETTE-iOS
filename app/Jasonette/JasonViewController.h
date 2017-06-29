@@ -62,6 +62,7 @@
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL fresh;
 @property (nonatomic, assign) BOOL loading;
+@property (nonatomic, assign) BOOL offline;
 @property (strong, nonatomic) NSMutableDictionary *menu;
 @property (strong, nonatomic) NSMutableDictionary *form;
 @property (strong, nonatomic) NSMutableDictionary *requires;

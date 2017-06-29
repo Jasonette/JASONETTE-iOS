@@ -921,5 +921,13 @@
     }
     return ret;
 }
++ (NSString *)normalized_url: (NSString *)url forOptions: (id)options{
+    NSString *normalized_url = [url lowercaseString];
+    normalized_url = [normalized_url stringByAppendingString:[NSString stringWithFormat:@"|%@", options]];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[/:]" options:NSRegularExpressionCaseInsensitive error:nil];
+    normalized_url = [regex stringByReplacingMatchesInString:normalized_url options:0 range:NSMakeRange(0, [normalized_url length]) withTemplate:@"_"];
+    normalized_url = [[normalized_url componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@""];
+    return normalized_url;
+}
 
 @end

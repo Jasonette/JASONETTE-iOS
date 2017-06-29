@@ -60,6 +60,18 @@
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat: @"H:|[tableView]|" options:0 metrics:nil views:@{@"tableView": self.tableView}]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat: @"V:|[tableView]|" options:0 metrics:nil views:@{@"tableView": self.tableView}]];
 
+    if(self.url){
+        NSString *normalized_url = [JasonHelper normalized_url:self.url forOptions:self.options];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
+        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:path];
+        if(!fileExists){
+            [[Jason client] loadViewByFile: @"file://loading.json"];
+        }
+    } else {
+        [[Jason client] loadViewByFile: @"file://loading.json"];
+    }
     empty_view = [[UIView alloc] initWithFrame:CGRectZero];
 
     estimatedRowHeightCache = [[NSMutableDictionary alloc] init];
@@ -135,7 +147,7 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-
+    
 }
 - (void)adjustViewForKeyboard:(NSNotification *)notification{
     currently_focused = notification.userInfo[@"view"];
