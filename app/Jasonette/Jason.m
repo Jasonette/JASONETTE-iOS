@@ -1426,10 +1426,15 @@
 
     if(VC.form){
         data_stub[@"$get"] = VC.form;
+    } else {
+        data_stub[@"$get"] = @{};
     }
     if(VC.options){
         data_stub[@"$params"] = VC.options;
+    } else {
+        data_stub[@"$params"] = @{};
     }
+    
     NSArray *keys = [self getKeys];
     if(keys && keys.count > 0){
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
