@@ -1647,7 +1647,7 @@
             }
             
             // 3. Set up event
-            [self onLoad];
+            [self onLoad: cache];
         }
         
         /****************************************************************************
@@ -2627,7 +2627,7 @@
         }
     }
 }
-- (void)onLoad{
+- (void)onLoad: (Boolean) online{
     [JasonMemory client].executing = NO;
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events){
@@ -2640,7 +2640,11 @@
     // onLoad calls onShow by default
     // so that $show will be triggered even if $load doesn't exit
     [self onShow];
-    VC.contentLoaded = YES;
+    if(online){
+        // if online is YES, it means the content is being loaded from remote, since the remote content has finished loading, set contentLoaded to YES
+        // if it's NO, it means it's an offline content, so the real online content is yet to come, so shouldn't set contentLoaded to YES
+        VC.contentLoaded = YES;
+    }
 }
 - (void)onBackground{
     isForeground = NO;
