@@ -318,7 +318,7 @@
      *  if not, pop back
      *
      ********************************************************************************/
-     
+    [self unlock];
     if(VC.isModal){
         [navigationController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     } else {
