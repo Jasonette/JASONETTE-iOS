@@ -78,7 +78,7 @@
     [self include:jsonResponseObject andCompletionHandler:^(id res){
         dispatch_async(dispatch_get_main_queue(), ^{                    
             VC.original = @{@"$jason": res[@"$jason"]};
-            [self drawViewFromJason: VC.original withCache:NO];
+            [self drawViewFromJason: VC.original asFinal:NO];
         });
     }];
 }
@@ -791,31 +791,34 @@
         }
         
         if(rendered_page){
-            // Deprecated
-            if(rendered_page[@"nav"]) {
-                if(VC.rendered && [[VC.rendered[@"nav"] description] isEqualToString:[rendered_page[@"nav"] description]]){
-                    // Don' re-render since it's the same
-                } else {
-                    [self setupHeader:rendered_page[@"nav"]];
-                }
-            } else if(rendered_page[@"header"]) {
-                // Use This
-                if(VC.rendered && [[VC.rendered[@"header"] description] isEqualToString:[rendered_page[@"header"] description]]){
-                    // Don' re-render since it's the same
-                } else {
-                    [self setupHeader:rendered_page[@"header"]];
-                }
-            } else {
-                [self setupHeader:nil];
-            }
-            
-            if(rendered_page[@"footer"]){
-                [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
-            } else if(rendered_page[@"tabs"]){
+            if(VC.isFinal){
                 // Deprecated
-                [self setupTabBar:rendered_page[@"tabs"]];
-            } else {
-                [self setupTabBar:nil];
+                if(rendered_page[@"nav"]) {
+                    if(VC.rendered && [[VC.rendered[@"nav"] description] isEqualToString:[rendered_page[@"nav"] description]]){
+                        // Don' re-render since it's the same
+                    } else {
+                        [self setupHeader:rendered_page[@"nav"]];
+                    }
+                } else if(rendered_page[@"header"]) {
+                    // Use This
+                    if(VC.rendered && [[VC.rendered[@"header"] description] isEqualToString:[rendered_page[@"header"] description]]){
+                        // Don' re-render since it's the same
+                    } else {
+                        [self setupHeader:rendered_page[@"header"]];
+                    }
+                } else {
+                    [self setupHeader:nil];
+                }
+                
+                if(rendered_page[@"footer"]){
+                    [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
+                } else if(rendered_page[@"tabs"]){
+                    // Deprecated
+                    [self setupTabBar:rendered_page[@"tabs"]];
+                } else {
+                    [self setupTabBar:nil];
+                }
+
             }
             
             
@@ -1563,7 +1566,7 @@
                     [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$show"];
                 }
                 VC.offline = YES;
-                [self drawViewFromJason: responseObject withCache:NO];
+                [self drawViewFromJason: responseObject asFinal:NO];
             }
         }
         VC.requires = [[NSMutableDictionary alloc] init];
@@ -1577,7 +1580,7 @@
             NSData *jsonData = [NSData dataWithContentsOfURL:url];
             NSError* error;
             VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
-            [self drawViewFromJason: VC.original withCache:NO];
+            [self drawViewFromJason: VC.original asFinal:NO];
         } else if([VC.url hasPrefix:@"file://"]) {
 			[self loadViewByFile: VC.url];
         }
@@ -1607,7 +1610,7 @@
                         VC.contentLoaded = NO;
 
                         VC.original = @{@"$jason": res[@"$jason"]};
-                        [self drawViewFromJason: VC.original withCache:YES];
+                        [self drawViewFromJason: VC.original asFinal:YES];
                     });
                  }];
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -1618,7 +1621,9 @@
         }
     }
 }
-- (void)drawViewFromJason: (NSDictionary *)jason withCache: (BOOL) cache{
+- (void)drawViewFromJason: (NSDictionary *)jason asFinal: (BOOL) final{
+    
+    VC.isFinal = final;
     
     NSDictionary *head = jason[@"$jason"][@"head"];
     if(!head)return;
@@ -1652,7 +1657,7 @@
             }
             
             // 3. Set up event
-            [self onLoad: cache];
+            [self onLoad: final];
         }
         
         /****************************************************************************
@@ -1662,30 +1667,33 @@
          ****************************************************************************/
         NSDictionary *body = dom[@"body"];
         NSDictionary *rendered_page = nil;
-        if(body){
-            if(body[@"nav"]) {
-                // Deprecated
-                [self setupHeader:body[@"nav"]];
-            } else if(body[@"header"]) {
-                // Use this
-                [self setupHeader:body[@"header"]];
+
+        if(final){
+            if(body){
+                if(body[@"nav"]) {
+                    // Deprecated
+                    [self setupHeader:body[@"nav"]];
+                } else if(body[@"header"]) {
+                    // Use this
+                    [self setupHeader:body[@"header"]];
+                } else {
+                    [self setupHeader:nil];
+                }
+                
+                if(body[@"footer"] && body[@"footer"][@"tabs"]){
+                    // Use this
+                    [self setupTabBar:body[@"footer"][@"tabs"]];
+                } else {
+                    // Deprecated
+                    [self setupTabBar:body[@"tabs"]];
+                }
+                
+                // By default, "body" is the markup that will be rendered
+                rendered_page = dom[@"body"];
             } else {
-                [self setupHeader:nil];
+                // Don't remove the header and footer even if it doesn't exist yet
+                // and let it be overridden in $render
             }
-            
-            if(body[@"footer"] && body[@"footer"][@"tabs"]){
-                // Use this
-                [self setupTabBar:body[@"footer"][@"tabs"]];
-            } else {
-                // Deprecated
-                [self setupTabBar:body[@"tabs"]];
-            }
-            
-            // By default, "body" is the markup that will be rendered
-            rendered_page = dom[@"body"];
-        } else {
-            // Don't remove the header and footer even if it doesn't exist yet
-            // and let it be overridden in $render
         }
         
         
@@ -1728,28 +1736,29 @@
                 [self drawBackground:@"#ffffff"];
             }
             
-            
-            if(rendered_page[@"nav"]) {
-                // Deprecated
-                [self setupHeader:rendered_page[@"nav"]];
-            } else if(rendered_page[@"header"]) {
-                // Use thi
-                [self setupHeader:rendered_page[@"header"]];
-            } else {
-                [self setupHeader: nil];
-            }
-            if(rendered_page[@"footer"] && rendered_page[@"footer"][@"tabs"]){
-                // Use this
-                [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
-            } else {
-                // Deprecated
-                [self setupTabBar:rendered_page[@"tabs"]];
+            if(final){
+                if(rendered_page[@"nav"]) {
+                    // Deprecated
+                    [self setupHeader:rendered_page[@"nav"]];
+                } else if(rendered_page[@"header"]) {
+                    // Use thi
+                    [self setupHeader:rendered_page[@"header"]];
+                } else {
+                    [self setupHeader: nil];
+                }
+                if(rendered_page[@"footer"] && rendered_page[@"footer"][@"tabs"]){
+                    // Use this
+                    [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
+                } else {
+                    // Deprecated
+                    [self setupTabBar:rendered_page[@"tabs"]];
+                }
             }
 
             if([VC respondsToSelector:@selector(reload:)]) [VC reload:rendered_page];
             
             // Cache the view after drawing
-            if(cache) [self cache_view];
+            if(final) [self cache_view];
         }
         
     }
