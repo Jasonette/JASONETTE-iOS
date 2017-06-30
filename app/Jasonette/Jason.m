@@ -22,6 +22,7 @@
     NSString *ROOT_URL;
     BOOL INITIAL_LOADING;
     BOOL isForeground;
+    NSDictionary *rendered_page;
 }
 @end
 
@@ -777,7 +778,6 @@
     if(body_parser){
         
         // if self.data is not empty, render
-        NSDictionary *rendered_page;
         if(stack[@"options"] && stack[@"options"][@"type"]){
             if([stack[@"options"][@"type"] isEqualToString:@"html"]){
                 rendered_page = [JasonHelper parse: data_stub ofType:@"html" with:body_parser];
@@ -1175,6 +1175,7 @@
     
     return self;
 }
+
 - (Jason *)attach:(UIViewController<RussianDollView>*)viewController{
    
     // When oauth is in process, let it do its job and don't interfere.
@@ -1246,7 +1247,7 @@
          * If VC.rendered is not nil, it means it's been already fully rendered.
          *
          ********************************************************************************************************/
-        if(VC.rendered){
+        if(VC.rendered && rendered_page){
             
             /*********************************************************************************************************
              *
@@ -1264,15 +1265,35 @@
             } else {
                 [self setupHeader:nil];
             }
+
+            NSDictionary *old_tabs = nil;
+            if(rendered_page[@"footer"] && rendered_page[@"footer"][@"tabs"]){
+                old_tabs = rendered_page[@"footer"][@"tabs"];
+            } else if(rendered_page[@"tabs"]){
+                old_tabs = rendered_page[@"tabs"];
+            }
             
             if(VC.rendered[@"footer"] && VC.rendered[@"footer"][@"tabs"]){
-                // Use this
-                [self setupTabBar:VC.rendered[@"footer"][@"tabs"]];
+                if(![old_tabs isEqualToDictionary:VC.rendered[@"footer"][@"tabs"]]) {
+                    // Use this
+                    [self setupTabBar:VC.rendered[@"footer"][@"tabs"]];
+                }
             } else {
                 // Deprecated
-                [self setupTabBar:VC.rendered[@"tabs"]];
+                if(![old_tabs isEqualToDictionary:VC.rendered[@"tabs"]]) {
+                    [self setupTabBar:VC.rendered[@"tabs"]];
+                }
             }
+            
+            // set "rendered_page" to VC.rendered for cases when we're coming back from another view
+            // so that rendered_page will be always in sync even when there is no $show handler to refresh the view.
+            
+            rendered_page = VC.rendered;
+
+            // if the view gets updated inside onShow, the rendered_page will update automatically
             [self onShow];
+            
+            
         }
         
         
@@ -1666,7 +1687,7 @@
          *
          ****************************************************************************/
         NSDictionary *body = dom[@"body"];
-        NSDictionary *rendered_page = nil;
+        rendered_page = nil;
 
         if(final){
             if(body){
@@ -2465,12 +2486,11 @@
         if(firstTime){
             tabController.viewControllers = tabs_array;
         }
-        
+
         for(int i = 0 ; i < maxTabCount ; i++){
             NSDictionary *tab = tabs[i];
             [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
         }
-        
         
         // Warn that at least one of the tab bar items should contain the same URL as the currently visible URL
         if(!tabFound){
@@ -2524,25 +2544,8 @@
 }
 
 - (void)tabBarController:(UITabBarController *)theTabBarController didSelectViewController:(UIViewController *)viewController {
-   
-    
-    // 2. Then go on to updating the nav and VC
-    // For updating tabbar whenever user taps on an item (The view itself won't reload)
     navigationController = (UINavigationController *) viewController;
     VC = navigationController.viewControllers.lastObject;
-
-    if(VC.parser){
-        NSDictionary *body_parser = VC.parser[@"body"];
-        if(body_parser){
-            if(body_parser[@"footer"] && body_parser[@"footer"][@"tabs"]){
-                // Use this
-                [self setupTabBar:body_parser[@"footer"][@"tabs"]];
-            } else {
-                // Deprecated
-                [self setupTabBar:body_parser[@"tabs"]];
-            }
-        }
-    }
 }
 - (void)setTabBarItem:(UITabBarItem *)item withTab: (NSDictionary *)tab{
     NSString *image = tab[@"image"];
