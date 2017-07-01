@@ -67,10 +67,10 @@
         NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
         BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:path];
         if(!fileExists){
-            [[Jason client] loadViewByFile: @"file://loading.json"];
+            [[Jason client] loadViewByFile: @"file://loading.json" asFinal:NO];
         }
     } else {
-        [[Jason client] loadViewByFile: @"file://loading.json"];
+        [[Jason client] loadViewByFile: @"file://loading.json" asFinal:NO];
     }
     empty_view = [[UIView alloc] initWithFrame:CGRectZero];
 

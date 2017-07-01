@@ -74,12 +74,12 @@
     [[Jason client] error:args];
 }
 
-- (void) loadViewByFile: (NSString *)url{
+- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final{
     id jsonResponseObject = [JasonHelper read_local_json:url];
     [self include:jsonResponseObject andCompletionHandler:^(id res){
         dispatch_async(dispatch_get_main_queue(), ^{                    
             VC.original = @{@"$jason": res[@"$jason"]};
-            [self drawViewFromJason: VC.original asFinal:NO];
+            [self drawViewFromJason: VC.original asFinal:final];
         });
     }];
 }
@@ -1601,9 +1601,9 @@
             NSData *jsonData = [NSData dataWithContentsOfURL:url];
             NSError* error;
             VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
-            [self drawViewFromJason: VC.original asFinal:NO];
+            [self drawViewFromJason: VC.original asFinal:YES];
         } else if([VC.url hasPrefix:@"file://"]) {
-			[self loadViewByFile: VC.url];
+			[self loadViewByFile: VC.url asFinal:YES];
         }
         
         /**************************************************
@@ -1636,7 +1636,7 @@
                  }];
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 if(!VC.offline){
-                    [[Jason client] loadViewByFile: @"file://error.json"];
+                    [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
                 }
             }];
         }
