@@ -147,7 +147,7 @@
       [self call: action with: nil];
 }
 - (void)call: (NSDictionary *)action with: (NSDictionary*)data{
-    if(action){
+    if(action && action.count > 0){
         JasonMemory *memory = [JasonMemory client];
         memory._stack = action;
         if(data && data.count > 0){
