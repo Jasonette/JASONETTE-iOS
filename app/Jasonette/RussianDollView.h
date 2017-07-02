@@ -27,6 +27,10 @@
 @property (nonatomic, assign) BOOL loading;
 @property (nonatomic, assign) BOOL offline;
 @property (nonatomic, assign) BOOL isFinal;
+
+@property (strong, nonatomic) NSMutableDictionary *old_header;
+@property (strong, nonatomic) NSMutableDictionary *old_footer;
+
 @property (strong, nonatomic) NSDictionary *events;
 @property (strong, nonatomic) NSDictionary *style;
 @property (strong, nonatomic) NSDictionary *rendered;

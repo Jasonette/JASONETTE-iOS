@@ -48,6 +48,8 @@
 
 @property (strong, nonatomic) NSDictionary *parser;
 @property (nonatomic, strong) NSDictionary *data;
+@property (strong, nonatomic) NSMutableDictionary *old_header;
+@property (strong, nonatomic) NSMutableDictionary *old_footer;
 
 @property (nonatomic, strong) NSArray *layers;
 @property (nonatomic, strong) NSMutableArray *sections;

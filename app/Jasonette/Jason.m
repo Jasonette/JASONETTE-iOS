@@ -791,36 +791,23 @@
         }
         
         if(rendered_page){
-            if(VC.isFinal){
+            if(rendered_page[@"nav"]) {
                 // Deprecated
-                if(rendered_page[@"nav"]) {
-                    if(VC.rendered && [[VC.rendered[@"nav"] description] isEqualToString:[rendered_page[@"nav"] description]]){
-                        // Don' re-render since it's the same
-                    } else {
-                        [self setupHeader:rendered_page[@"nav"]];
-                    }
-                } else if(rendered_page[@"header"]) {
-                    // Use This
-                    if(VC.rendered && [[VC.rendered[@"header"] description] isEqualToString:[rendered_page[@"header"] description]]){
-                        // Don' re-render since it's the same
-                    } else {
-                        [self setupHeader:rendered_page[@"header"]];
-                    }
-                } else {
-                    [self setupHeader:nil];
-                }
-                
-                if(rendered_page[@"footer"]){
-                    [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
-                } else if(rendered_page[@"tabs"]){
-                    // Deprecated
-                    [self setupTabBar:rendered_page[@"tabs"]];
-                } else {
-                    [self setupTabBar:nil];
-                }
-
+                [self setupHeader:rendered_page[@"nav"]];
+            } else if(rendered_page[@"header"]) {
+                [self setupHeader:rendered_page[@"header"]];
+            } else {
+                [self setupHeader:nil];
             }
             
+            if(rendered_page[@"footer"]){
+                [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
+            } else if(rendered_page[@"tabs"]){
+                // Deprecated
+                [self setupTabBar:rendered_page[@"tabs"]];
+            } else {
+                [self setupTabBar:nil];
+            }
             
             if(rendered_page[@"style"] && rendered_page[@"style"][@"background"]){
                 if([rendered_page[@"style"][@"background"] isKindOfClass:[NSDictionary class]]){
@@ -1689,32 +1676,30 @@
         NSDictionary *body = dom[@"body"];
         rendered_page = nil;
 
-        if(final){
-            if(body){
-                if(body[@"nav"]) {
-                    // Deprecated
-                    [self setupHeader:body[@"nav"]];
-                } else if(body[@"header"]) {
-                    // Use this
-                    [self setupHeader:body[@"header"]];
-                } else {
-                    [self setupHeader:nil];
-                }
-                
-                if(body[@"footer"] && body[@"footer"][@"tabs"]){
-                    // Use this
-                    [self setupTabBar:body[@"footer"][@"tabs"]];
-                } else {
-                    // Deprecated
-                    [self setupTabBar:body[@"tabs"]];
-                }
-                
-                // By default, "body" is the markup that will be rendered
-                rendered_page = dom[@"body"];
+        if(body){
+            if(body[@"nav"]) {
+                // Deprecated
+                [self setupHeader:body[@"nav"]];
+            } else if(body[@"header"]) {
+                // Use this
+                [self setupHeader:body[@"header"]];
             } else {
-                // Don't remove the header and footer even if it doesn't exist yet
-                // and let it be overridden in $render
+                [self setupHeader:nil];
             }
+            
+            if(body[@"footer"] && body[@"footer"][@"tabs"]){
+                // Use this
+                [self setupTabBar:body[@"footer"][@"tabs"]];
+            } else {
+                // Deprecated
+                [self setupTabBar:body[@"tabs"]];
+            }
+            
+            // By default, "body" is the markup that will be rendered
+            rendered_page = dom[@"body"];
+        } else {
+            // Don't remove the header and footer even if it doesn't exist yet
+            // and let it be overridden in $render
         }
         
         
@@ -1961,6 +1946,19 @@
 
 # pragma mark - View rendering (nav)
 - (void)setupHeader: (NSDictionary *)nav{
+
+    if(!nav && !VC.isFinal) return;
+
+    if(VC.rendered){
+        if(VC.old_header && [[VC.old_header description] isEqualToString:[nav description]]){
+            // and if the header is the same as the value trying to set, ignore.
+            return;
+        }
+    }
+    
+    if(nav) VC.old_header = nav;
+    
+
     
     UIColor *background = [JasonHelper colorwithHexString:@"#ffffff" alpha:1.0];
     UIColor *color = [JasonHelper colorwithHexString:@"#000000" alpha:1.0];
@@ -2388,6 +2386,16 @@
 # pragma mark - View rendering (tab)
 - (void)setupTabBar: (NSDictionary *)t{
     
+    if(!t && !VC.isFinal) return;
+
+    
+    if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){
+        return;
+    }
+    
+    if(!VC.old_footer) VC.old_footer = [[NSMutableDictionary alloc] init];
+    VC.old_footer[@"tabs"] = t;
+
     if(!t){
         tabController.tabBar.hidden = YES;
         return;
