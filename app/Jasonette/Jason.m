@@ -2628,43 +2628,47 @@
 
 /*************************************************************
  
- ## Event Handlers Rule
+ ## Event Handlers Rule ver2.
  
- 1. Pick only ONE Between $load and $show.
-    - It's because currently action call chains are single threaded on Jason.
-    - If you include both, only $load will be triggered.
- 2. Use $show if you want to keep content constantly in sync without manually refreshing ($show gets triggered whenever the view shows up while you're in the app, either from a parent view or coming back from a child view).
- 3. Use $load if you want to trigger ONLY when the view loads (for populating content once)
-    - You still may want to implement a way to refresh the view manually. You can:
-        - add some component that calls "$network.request" or "$reload" when touched
-        - add "$pull" event handler that calls "$network.request" or "$reload" when user makes a pull to refresh action
- 4. Use $foreground to handle coming background ($show only gets triggered WHILE you're on the app)
+1. When there's only $show handler
+ - $show: Handles both initial load and subsequent show events
+ 
+2. When there's only $load handler
+ - $load: Handles Only the initial load event
+ 
+3. When there are both $show and $load handlers
+ - $load : handle initial load only
+ - $show : handle subsequent show events only
+ 
+ 
+ ## Summary
+ 
+    $load:
+        - triggered when view loads for the first time.
+    $show:
+        - triggered at load time + subsequent show events (IF $load handler doesn't exist)
+        - NOT triggered at load time BUT ONLY at subsequent show events (IF $load handler exists)
  
 *************************************************************/
 
 - (void)onShow{
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events){
-        if(!events[@"$load"]){
-            if(events[@"$show"]) {
-                [self call:events[@"$show"]];
-            }
+        if(events[@"$show"]){
+            [self call:events[@"$show"]];
         }
     }
 }
 - (void)onLoad: (Boolean) online{
     [JasonMemory client].executing = NO;
     NSDictionary *events = [VC valueForKey:@"events"];
-    if(events){
-        if(events[@"$load"]){
-            if(!VC.contentLoaded){
-                [self call:events[@"$load"]];
-            }
+    if(events && events[@"$load"]){
+        if(!VC.contentLoaded){
+            [self call:events[@"$load"]];
         }
+    } else {
+        [self onShow];        
     }
-    // onLoad calls onShow by default
-    // so that $show will be triggered even if $load doesn't exit
-    [self onShow];
     if(online){
         // if online is YES, it means the content is being loaded from remote, since the remote content has finished loading, set contentLoaded to YES
         // if it's NO, it means it's an offline content, so the real online content is yet to come, so shouldn't set contentLoaded to YES
