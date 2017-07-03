@@ -23,6 +23,8 @@
     BOOL INITIAL_LOADING;
     BOOL isForeground;
     NSDictionary *rendered_page;
+    NSMutableDictionary *previous_footer;
+    NSMutableDictionary *previus_header;
 }
 @end
 
@@ -2388,14 +2390,21 @@
     
     if(!t && !VC.isFinal) return;
 
-    
-    if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){
-        return;
+    if(previous_footer && previous_footer[@"tabs"]){
+        // if previous footer tab was not null, we diff the tabs to determine whether to re-render
+        if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){
+            return;
+        }
+    } else {
+        // if previous footer tab was null, we need to construct the tab again
     }
     
     if(!VC.old_footer) VC.old_footer = [[NSMutableDictionary alloc] init];
     VC.old_footer[@"tabs"] = t;
-
+    if(!previous_footer) previous_footer = [[NSMutableDictionary alloc] init];
+    previous_footer[@"tabs"] = t;
+    
+    
     if(!t){
         tabController.tabBar.hidden = YES;
         return;
