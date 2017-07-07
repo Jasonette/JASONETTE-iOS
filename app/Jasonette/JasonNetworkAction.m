@@ -174,6 +174,22 @@
         // Instantiate with session if needed
         NSDictionary *session = [JasonHelper sessionForUrl:url];
         
+        // Check for valid URL and throw error if invalid
+        if(![url isEqualToString:@""]) {
+            NSURL *urlToCheck = [NSURL URLWithString:url];
+            if(!urlToCheck){
+                NSLog(@"Error = Invalid URL for $network.request call");
+                [[Jason client] networkLoading:NO with:nil];
+                [[Jason client] error: nil];
+                return;
+            }
+        } else {
+            NSLog(@"Error = URL not specified for $network.request call");
+            [[Jason client] networkLoading:NO with:nil];
+            [[Jason client] error: nil];
+            return;
+        }
+        
         // Set Header if specified  "header"
         NSDictionary *headers = self.options[@"header"];
         // legacy code : headers is deprecated
