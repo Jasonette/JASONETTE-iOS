@@ -183,6 +183,11 @@
                 [[Jason client] error: nil];
                 return;
             }
+        } else {
+            NSLog(@"Error = URL not specified for $network.request call");
+            [[Jason client] networkLoading:NO with:nil];
+            [[Jason client] error: nil];
+            return;
         }
         
         // Set Header if specified  "header"
