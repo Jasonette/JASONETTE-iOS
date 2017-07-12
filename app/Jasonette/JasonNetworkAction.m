@@ -246,7 +246,7 @@
             manager.responseSerializer = [AFHTTPResponseSerializer serializer];
             manager.responseSerializer.acceptableContentTypes = nil;
         } else {
-            AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+            JASONResponseSerializer *jsonResponseSerializer = [JASONResponseSerializer serializer];
             NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
             [jsonAcceptableContentTypes addObject:@"text/plain"];
             jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
