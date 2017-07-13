@@ -79,6 +79,6 @@
 @property (strong, nonatomic) GADBannerView *bannerAd;
 @property (strong, nonatomic) GADInterstitial * interestialAd;
 #endif
-- (void)reload: (NSDictionary *)res;
+- (void)reload: (NSDictionary *)res final: (BOOL) final;
 
 @end

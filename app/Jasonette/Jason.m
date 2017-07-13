@@ -171,6 +171,11 @@
      **************************************************/
     [self success:@{}];
 }
+- (void)success: (id) result withOriginalUrl: (NSString *)url {
+    if([url isEqualToString:VC.url]){
+        [self success: result];
+    }
+}
 - (void)success: (id)result{
     /**************************************************
      *
@@ -209,6 +214,11 @@
      *
      **************************************************/
     [self error:@{}];
+}
+- (void)error: (id) result withOriginalUrl: (NSString *)url {
+    if([url isEqualToString:VC.url]){
+        [self error: result];
+    }
 }
 - (void)error: (id)result{
     /**************************************************
@@ -831,7 +841,7 @@
         }
         VC.rendered = rendered_page;
         
-        if([VC respondsToSelector:@selector(reload:)]) [VC reload:rendered_page];
+        if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:NO];
         
         // Cache the view after drawing
         [self cache_view];
@@ -998,6 +1008,8 @@
         [self networkLoading:YES with:nil];
     }
     
+    NSString *origin_url = VC.url;
+    
     /*
      
      {
@@ -1093,7 +1105,9 @@
                 }
             }
         }
-        [self success:dict];
+        // require could take a long time to finish, so we make sure at this point
+        // we are looking at the same URL we began with
+        [self success:dict withOriginalUrl:origin_url];
         [MBProgressHUD hideHUDForView:VC.view animated:true];
     });
 }
@@ -1236,7 +1250,7 @@
          * If VC.rendered is not nil, it means it's been already fully rendered.
          *
          ********************************************************************************************************/
-        if(VC.rendered && rendered_page){
+        if(VC.isFinal && VC.rendered && rendered_page){
             
             /*********************************************************************************************************
              *
@@ -1299,7 +1313,7 @@
              *  2. re-setup event listener
              *
              ********************************************************************************************************/
-            if(VC.contentLoaded){
+            if(VC.contentLoaded && VC.isFinal){
                 // If content already loaded,
                 // 1. just setup the navbar so the navbar will have the correct style
                 // 2. trigger load events ($show or $load)
@@ -1633,7 +1647,6 @@
 }
 - (void)drawViewFromJason: (NSDictionary *)jason asFinal: (BOOL) final{
     
-    VC.isFinal = final;
     
     NSDictionary *head = jason[@"$jason"][@"head"];
     if(!head)return;
@@ -1763,7 +1776,7 @@
                 }
             }
 
-            if([VC respondsToSelector:@selector(reload:)]) [VC reload:rendered_page];
+            if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:final];
             
             // Cache the view after drawing
             if(final) [self cache_view];
