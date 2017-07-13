@@ -1001,7 +1001,7 @@
 }
 
 
-- (void)reload: (NSDictionary *)body{
+- (void)reload: (NSDictionary *)body final: (BOOL)final{
     indexPathsForImage = [[NSMutableDictionary alloc] init];
     isSearching = NO;
     [self finishRefreshing];
@@ -1039,7 +1039,7 @@
             }
         
             original_bottom_inset = self.tableView.contentInset.bottom;
-        
+            if(final) self.isFinal = final;
         });
     }
     @catch(NSException *e){

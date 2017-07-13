@@ -44,5 +44,5 @@
 @property (nonatomic, strong) NSMutableArray *playing;
 - (void)right:(NSDictionary *)action;
 - (void)left;
-- (void)reload: (NSDictionary *)res;
+- (void)reload: (NSDictionary *)res final: (BOOL) final;
 @end

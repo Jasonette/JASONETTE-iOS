@@ -831,7 +831,7 @@
         }
         VC.rendered = rendered_page;
         
-        if([VC respondsToSelector:@selector(reload:)]) [VC reload:rendered_page];
+        if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:NO];
         
         // Cache the view after drawing
         [self cache_view];
@@ -1236,7 +1236,7 @@
          * If VC.rendered is not nil, it means it's been already fully rendered.
          *
          ********************************************************************************************************/
-        if(VC.rendered && rendered_page){
+        if(VC.isFinal && VC.rendered && rendered_page){
             
             /*********************************************************************************************************
              *
@@ -1299,7 +1299,7 @@
              *  2. re-setup event listener
              *
              ********************************************************************************************************/
-            if(VC.contentLoaded){
+            if(VC.contentLoaded && VC.isFinal){
                 // If content already loaded,
                 // 1. just setup the navbar so the navbar will have the correct style
                 // 2. trigger load events ($show or $load)
@@ -1633,7 +1633,6 @@
 }
 - (void)drawViewFromJason: (NSDictionary *)jason asFinal: (BOOL) final{
     
-    VC.isFinal = final;
     
     NSDictionary *head = jason[@"$jason"][@"head"];
     if(!head)return;
@@ -1763,7 +1762,7 @@
                 }
             }
 
-            if([VC respondsToSelector:@selector(reload:)]) [VC reload:rendered_page];
+            if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:final];
             
             // Cache the view after drawing
             if(final) [self cache_view];
