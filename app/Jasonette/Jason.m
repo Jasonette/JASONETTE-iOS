@@ -171,6 +171,11 @@
      **************************************************/
     [self success:@{}];
 }
+- (void)success: (id) result withOriginalUrl: (NSString *)url {
+    if([url isEqualToString:VC.url]){
+        [self success: result];
+    }
+}
 - (void)success: (id)result{
     /**************************************************
      *
@@ -209,6 +214,11 @@
      *
      **************************************************/
     [self error:@{}];
+}
+- (void)error: (id) result withOriginalUrl: (NSString *)url {
+    if([url isEqualToString:VC.url]){
+        [self error: result];
+    }
 }
 - (void)error: (id)result{
     /**************************************************
@@ -1097,9 +1107,7 @@
         }
         // require could take a long time to finish, so we make sure at this point
         // we are looking at the same URL we began with
-        if([VC.url isEqualToString:origin_url]){
-            [self success:dict];
-        }
+        [self success:dict withOriginalUrl:origin_url];
         [MBProgressHUD hideHUDForView:VC.view animated:true];
     });
 }

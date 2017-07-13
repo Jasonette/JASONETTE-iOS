@@ -43,9 +43,12 @@
 - (void)ok;
 - (void)ok:(NSDictionary *)result;
 - (void)finish;
+
+- (void)error:(id)result withOriginalUrl:(NSString*)url;
 - (void)error:(id)result;
 - (void)error;
 
+- (void)success:(id)result withOriginalUrl:(NSString*)url;
 - (void)success:(id)result;
 - (void)success;
 
