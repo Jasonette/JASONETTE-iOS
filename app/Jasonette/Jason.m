@@ -998,6 +998,8 @@
         [self networkLoading:YES with:nil];
     }
     
+    NSString *origin_url = VC.url;
+    
     /*
      
      {
@@ -1093,7 +1095,11 @@
                 }
             }
         }
-        [self success:dict];
+        // require could take a long time to finish, so we make sure at this point
+        // we are looking at the same URL we began with
+        if([VC.url isEqualToString:origin_url]){
+            [self success:dict];
+        }
         [MBProgressHUD hideHUDForView:VC.view animated:true];
     });
 }
