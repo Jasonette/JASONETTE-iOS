@@ -14,10 +14,18 @@
     }
     component.continuous = YES;
     component.value = 0.5;
+    component.payload = [@{@"name": json[@"name"], @"action": json[@"action"]} mutableCopy];
+
     if(options && options[@"value"] && [options[@"value"] length] > 0){
         component.value = [options[@"value"] floatValue];
     }
-    component.payload = [@{@"name": json[@"name"], @"action": json[@"action"]} mutableCopy];
+    
+    if(component.value){
+        if(component.payload && component.payload[@"name"]){
+            [self updateForm:@{component.payload[@"name"]: [NSString stringWithFormat:@"%f", component.value]}];
+        }
+    }
+
     [component removeTarget:self action:@selector(sliderStarted:) forControlEvents:UIControlEventTouchDown];
     [component removeTarget:self action:@selector(sliderUpdated:) forControlEvents:UIControlEventTouchUpInside];
     [component addTarget:self action:@selector(sliderStarted:) forControlEvents:UIControlEventTouchDown];

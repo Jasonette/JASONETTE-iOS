@@ -168,9 +168,18 @@
                         counter--;
                         if(counter == 0) [self openShareWith:share_items];
                     }
+                } else if([item[@"type"] isEqualToString:@"audio"]){
+                    NSString *url = item[@"file_url"];
+                    if(url){
+                        NSURL *file_url = [NSURL fileURLWithPath:url isDirectory:NO];
+                        [share_items addObject:file_url];
+                        counter--;
+                        if(counter == 0) [self openShareWith:share_items];
+                    }
                 } else if([item[@"type"] isEqualToString:@"video"]){
-                    NSString *file_url = item[@"file_url"];
-                    if(file_url){
+                    NSString *url = item[@"file_url"];
+                    if(url){
+                        NSURL *file_url = [NSURL fileURLWithPath:url isDirectory:NO];
                         [share_items addObject:file_url];
                         counter--;
                         if(counter == 0) [self openShareWith:share_items];
@@ -249,40 +258,25 @@
 - (void)picker{
     NSString *title = self.options[@"title"];
     NSArray *items = self.options[@"items"];
-    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithTitle:nil];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
     for(int i = 0 ; i < items.count ; i++){
         NSDictionary *item = items[i];
-        [actionSheet addButtonWithTitle:item[@"text"] type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
-            if(item[@"href"]){
-                [[Jason client] go:item[@"href"]];
-            } else if(item[@"action"]){
-                [[Jason client] call:item[@"action"]];
-            }
-        }];
+        UIAlertAction *action = [UIAlertAction actionWithTitle:item[@"text"]
+                                                              style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                  if(item[@"href"]){
+                                                                      [[Jason client] go:item[@"href"]];
+                                                                  } else if(item[@"action"]){
+                                                                      [[Jason client] call:item[@"action"]];
+                                                                  }
+                                                              }];
+        [alert addAction:action];
     }
-    actionSheet.blurTintColor = [UIColor colorWithWhite:1.0f alpha:0.75f];
-    actionSheet.blurRadius = 8.0f;
-    actionSheet.buttonHeight = 45.0f;
-    
-    if(title){
-        actionSheet.title = title;
-    }
-
-    actionSheet.animationDuration = 0.2f;
-    UIFont *defaultFont = [UIFont fontWithName:@"HelveticaNeue" size:16.0f];
-    actionSheet.buttonTextAttributes = @{ NSFontAttributeName : defaultFont,
-                                          NSForegroundColorAttributeName : [UIColor blackColor] };
-    actionSheet.disabledButtonTextAttributes = @{ NSFontAttributeName : defaultFont,
-                                                  NSForegroundColorAttributeName : [UIColor grayColor] };
-    actionSheet.destructiveButtonTextAttributes = @{ NSFontAttributeName : defaultFont,
-                                                     NSForegroundColorAttributeName : [UIColor redColor] };
-    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName : defaultFont,
-                                                NSForegroundColorAttributeName : [UIColor blackColor] };
-
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [actionSheet show];
+        [self.VC.navigationController presentViewController:alert animated:YES completion:nil]; // 6
     });
- 
+    
 }
 - (void)datepicker{
     RMActionControllerStyle style = RMActionControllerStyleWhite;

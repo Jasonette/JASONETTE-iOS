@@ -60,6 +60,18 @@
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat: @"H:|[tableView]|" options:0 metrics:nil views:@{@"tableView": self.tableView}]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat: @"V:|[tableView]|" options:0 metrics:nil views:@{@"tableView": self.tableView}]];
 
+    if(self.url){
+        NSString *normalized_url = [JasonHelper normalized_url:self.url forOptions:self.options];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
+        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:path];
+        if(!fileExists){
+            [[Jason client] loadViewByFile: @"file://loading.json" asFinal:NO];
+        }
+    } else {
+        [[Jason client] loadViewByFile: @"file://loading.json" asFinal:NO];
+    }
     empty_view = [[UIView alloc] initWithFrame:CGRectZero];
 
     estimatedRowHeightCache = [[NSMutableDictionary alloc] init];
@@ -135,7 +147,7 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-
+    
 }
 - (void)adjustViewForKeyboard:(NSNotification *)notification{
     currently_focused = notification.userInfo[@"view"];
@@ -341,9 +353,10 @@
     [cell setStylesheet:self.style];
     
     UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout *) cell.collectionView.collectionViewLayout;
-    flowLayout.minimumInteritemSpacing = [style[@"spacing"] intValue];
-    flowLayout.minimumLineSpacing = [style[@"spacing"] intValue];
-    
+    if(style[@"spacing"]){
+        flowLayout.minimumInteritemSpacing = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"spacing"]];
+        flowLayout.minimumLineSpacing =  [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"spacing"]];
+    }
     
     // Padding Handling
     NSString *padding_left;
@@ -363,7 +376,7 @@
     if(style[@"padding_top"]) padding_top = style[@"padding_top"];
     if(style[@"padding_bottom"]) padding_bottom = style[@"padding_bottom"];
     
-    cell.collectionView.contentInset = UIEdgeInsetsMake([padding_top intValue], [padding_left intValue], [padding_bottom intValue], [padding_right intValue]);
+    cell.collectionView.contentInset = UIEdgeInsetsMake([JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_top], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_left], [JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_bottom], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_right]);
 
 
     
@@ -905,7 +918,7 @@
 
 - (void)loadAssets: (NSDictionary *)body{
     JasonViewController* weakSelf = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
     
         NSArray *keys = [body allKeys];
         for(NSString *key in keys){
@@ -929,37 +942,43 @@
                         // it's a url!
                         // see if it's an image type
                         if(body[@"type"]){
-                            if([body[@"type"] isEqualToString:@"image"]){
+                            if([body[@"type"] isEqualToString:@"image"] || [body[@"type"] isEqualToString:@"button"]){
                                 // it's an image. Let's download!
                                 NSString *url = body[key];
                                 if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
                                     download_image_counter++;
                                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                                    [manager downloadImageWithURL:[NSURL URLWithString:url]
-                                                          options:0
-                                                         progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                                             // progression tracking code
-                                                         }
-                                                        completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                                            download_image_counter--;
-                                                            if(!error){
-                                                                JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
-                                                            }
-                                                            //[self.tableView visibleCells];
-                                                            NSArray *indexPathArray = weakSelf.tableView.indexPathsForVisibleRows;
-                                                            NSMutableSet *visibleIndexPaths = [[NSMutableSet alloc] initWithArray: indexPathArray];
-                                                            [visibleIndexPaths intersectSet:(NSSet *)indexPathsForImage[url]];
-                                                            if(visibleIndexPaths.count > 0){
-                                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                                    [weakSelf.tableView reloadData];
-                                                                });
-                                                            }
-                                                            if(!top_aligned){
-                                                                if(download_image_counter == 0){
-                                                                    [weakSelf scrollToBottom];
-                                                                }
-                                                            }
-                                                        }];
+                                    NSDictionary *session = [JasonHelper sessionForUrl:url];
+                                    if(session && session.count > 0 && session[@"header"]){
+                                        for(NSString *key in session[@"header"]){
+                                            [manager.imageDownloader setValue:session[@"header"][key] forHTTPHeaderField:key];
+                                        }
+                                    }
+                                    if(body[@"header"] && [body[@"header"] count] > 0){
+                                        for(NSString *key in body[@"header"]){
+                                            [manager.imageDownloader setValue:body[@"header"][key] forHTTPHeaderField:key];
+                                        }
+                                    }
+                                    [manager.imageDownloader downloadImageWithURL:[NSURL URLWithString:url] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) { } completed:^(UIImage *i, NSData *data, NSError *error, BOOL finished) {
+                                        download_image_counter--;
+                                        if(!error){
+                                            JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
+                                        }
+                                        //[self.tableView visibleCells];
+                                        NSArray *indexPathArray = weakSelf.tableView.indexPathsForVisibleRows;
+                                        NSMutableSet *visibleIndexPaths = [[NSMutableSet alloc] initWithArray: indexPathArray];
+                                        [visibleIndexPaths intersectSet:(NSSet *)indexPathsForImage[url]];
+                                        if(visibleIndexPaths.count > 0){
+                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                                [weakSelf.tableView reloadData];
+                                            });
+                                        }
+                                        if(!top_aligned){
+                                            if(download_image_counter == 0){
+                                                [weakSelf scrollToBottom];
+                                            }
+                                        }
+                                    }];
                                 }
                             }
                         }
@@ -982,7 +1001,7 @@
 }
 
 
-- (void)reload: (NSDictionary *)body{
+- (void)reload: (NSDictionary *)body final: (BOOL)final{
     indexPathsForImage = [[NSMutableDictionary alloc] init];
     isSearching = NO;
     [self finishRefreshing];
@@ -1015,10 +1034,12 @@
                 // Swipe down to dismiss modal
                 UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
                 [self.view addGestureRecognizer:pinchRecognizer];
+                self.tableView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, self.bottomLayoutGuide.length, 0);
+
             }
         
             original_bottom_inset = self.tableView.contentInset.bottom;
-        
+            if(final) self.isFinal = final;
         });
     }
     @catch(NSException *e){
@@ -1090,7 +1111,6 @@
 - (void)setupHeader: (NSDictionary *)body{
     
     
-    self.tableView.tableHeaderView = nil;
     // NAV (deprecated. See 'header' below)
     NSDictionary *nav = body[@"nav"];
     if(nav){
@@ -1183,7 +1203,9 @@
                         }
                     }
 
-                    self.tableView.tableHeaderView = self.searchController.searchBar;
+                    if(!self.tableView.tableHeaderView) {
+                        self.tableView.tableHeaderView = self.searchController.searchBar;
+                    }
                     self.searchController.hidesNavigationBarDuringPresentation = NO;
 
                     [self.searchController.searchBar sizeToFit];
@@ -1193,101 +1215,106 @@
                 }
             }
         }
-    }
-    
-    
-    // Header (Replacement for nav)
-    NSDictionary *header = body[@"header"];
-    if(header){
-    
-        // only handles components specific to TableView (search/tabs).
-        // common component (menu) is handled in Jason.m
-        tabs = nil;
+    } else if (body[@"header"]){
+        
+        
+        // Header (Replacement for nav)
+        NSDictionary *header = body[@"header"];
+        if(header){
+        
+            // only handles components specific to TableView (search/tabs).
+            // common component (menu) is handled in Jason.m
+            tabs = nil;
 
-        for(NSString *type in [header allKeys]){
-            if(type){
-                if([type isEqualToString:@"search"]){
-                    NSDictionary *component = [JasonComponentFactory applyStylesheet:header[type]];
-                    
-                    search_action = component[@"action"];
-                    search_field_name = component[@"name"];
-                    NSString *search_placeholder = component[@"placeholder"];
-                    NSDictionary *style = component[@"style"];
-                    
-                    if(!self.searchController){
-                        self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-                    }
-                    // style
-                    NSString *theme = style[@"theme"];
-                    if([theme isEqualToString:@"light"]){
-                        self.searchController.dimsBackgroundDuringPresentation = NO;
-                    } else {
-                        self.searchController.dimsBackgroundDuringPresentation = YES;
-                    }
-                    
-                    // When there's no action, use the default search behavior
-                    if(!search_action){
-                        self.searchController.searchResultsUpdater = self;
-                        self.searchController.dimsBackgroundDuringPresentation = NO;
-                    }
-                    self.searchController.searchBar.delegate = self;
-                    
-                    NSString *backgroundColorStr = style[@"background"];
-                    UIColor *backgroundColor = self.navigationController.navigationBar.backgroundColor;
-                    if(backgroundColorStr){
-                        backgroundColor = [JasonHelper colorwithHexString:backgroundColorStr alpha:1.0];
-                    }
-                    
-                    NSString *colorStr = style[@"color"];
-                    UIColor *color = self.navigationController.navigationBar.tintColor;
-                    if(colorStr){
-                        color = [JasonHelper colorwithHexString:colorStr alpha:1.0];
-                    }
-                    
-                    if(search_placeholder){
-                        self.searchController.searchBar.placeholder = search_placeholder;
-                    }
-
-                    UIView *subViews =  [[self.searchController.searchBar subviews] firstObject];
-                    for(UIView *subView in [subViews subviews]) {
-                        if([subView conformsToProtocol:@protocol(UITextInputTraits)]) {
-                            [(UITextField *)subView setEnablesReturnKeyAutomatically:NO];
-                            [(UITextField *)subView setTextColor:color];
+            for(NSString *type in [header allKeys]){
+                if(type){
+                    if([type isEqualToString:@"search"]){
+                        NSDictionary *component = [JasonComponentFactory applyStylesheet:header[type]];
+                        
+                        search_action = component[@"action"];
+                        search_field_name = component[@"name"];
+                        NSString *search_placeholder = component[@"placeholder"];
+                        NSDictionary *style = component[@"style"];
+                        
+                        if(!self.searchController){
+                            self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
                         }
-                    }
-                    
-                    self.searchController.searchBar.returnKeyType = UIReturnKeyGo;
-                    self.searchController.searchBar.barTintColor = backgroundColor;
-                    self.searchController.searchBar.tintColor = color;
-                    self.searchController.searchBar.backgroundColor = backgroundColor;
-                    self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-                    
-                    // Search bar textfield styling
-                    NSArray *searchBarSubViews = [[self.searchController.searchBar.subviews objectAtIndex:0] subviews];
-                    for (UIView *view in searchBarSubViews) {
-                        if([view isKindOfClass:[UITextField class]])
-                        {
-                            UITextField *textField = (UITextField*)view;
-                            UIImageView *imgView = (UIImageView*)textField.leftView;
-                            imgView.image = [imgView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                            imgView.tintColor = color;
-                            NSDictionary *placeholderAttributes = @{ NSForegroundColorAttributeName: color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue" size:15] };
-                            textField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.searchController.searchBar.placeholder
-                                                                                                        attributes:placeholderAttributes];
+                        // style
+                        NSString *theme = style[@"theme"];
+                        if([theme isEqualToString:@"light"]){
+                            self.searchController.dimsBackgroundDuringPresentation = NO;
+                        } else {
+                            self.searchController.dimsBackgroundDuringPresentation = YES;
                         }
+                        
+                        // When there's no action, use the default search behavior
+                        if(!search_action){
+                            self.searchController.searchResultsUpdater = self;
+                            self.searchController.dimsBackgroundDuringPresentation = NO;
+                        }
+                        self.searchController.searchBar.delegate = self;
+                        
+                        NSString *backgroundColorStr = style[@"background"];
+                        UIColor *backgroundColor = self.navigationController.navigationBar.backgroundColor;
+                        if(backgroundColorStr){
+                            backgroundColor = [JasonHelper colorwithHexString:backgroundColorStr alpha:1.0];
+                        }
+                        
+                        NSString *colorStr = style[@"color"];
+                        UIColor *color = self.navigationController.navigationBar.tintColor;
+                        if(colorStr){
+                            color = [JasonHelper colorwithHexString:colorStr alpha:1.0];
+                        }
+                        
+                        if(search_placeholder){
+                            self.searchController.searchBar.placeholder = search_placeholder;
+                        }
+
+                        UIView *subViews =  [[self.searchController.searchBar subviews] firstObject];
+                        for(UIView *subView in [subViews subviews]) {
+                            if([subView conformsToProtocol:@protocol(UITextInputTraits)]) {
+                                [(UITextField *)subView setEnablesReturnKeyAutomatically:NO];
+                                [(UITextField *)subView setTextColor:color];
+                            }
+                        }
+                        
+                        self.searchController.searchBar.returnKeyType = UIReturnKeyGo;
+                        self.searchController.searchBar.barTintColor = backgroundColor;
+                        self.searchController.searchBar.tintColor = color;
+                        self.searchController.searchBar.backgroundColor = backgroundColor;
+                        self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+                        
+                        // Search bar textfield styling
+                        NSArray *searchBarSubViews = [[self.searchController.searchBar.subviews objectAtIndex:0] subviews];
+                        for (UIView *view in searchBarSubViews) {
+                            if([view isKindOfClass:[UITextField class]])
+                            {
+                                UITextField *textField = (UITextField*)view;
+                                UIImageView *imgView = (UIImageView*)textField.leftView;
+                                imgView.image = [imgView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                                imgView.tintColor = color;
+                                NSDictionary *placeholderAttributes = @{ NSForegroundColorAttributeName: color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue" size:15] };
+                                textField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.searchController.searchBar.placeholder
+                                                                                                            attributes:placeholderAttributes];
+                            }
+                        }
+
+                        if(!self.tableView.tableHeaderView) {
+                            self.tableView.tableHeaderView = self.searchController.searchBar;
+                        }
+                        self.searchController.hidesNavigationBarDuringPresentation = NO;
+
+                        [self.searchController.searchBar sizeToFit];
+
+                    } else if([type isEqualToString:@"tabs"]){
+                        NSDictionary *component = [JasonComponentFactory applyStylesheet:header[type]];
+                        tabs = component;
                     }
-
-                    self.tableView.tableHeaderView = self.searchController.searchBar;
-                    self.searchController.hidesNavigationBarDuringPresentation = NO;
-
-                    [self.searchController.searchBar sizeToFit];
-
-                } else if([type isEqualToString:@"tabs"]){
-                    NSDictionary *component = [JasonComponentFactory applyStylesheet:header[type]];
-                    tabs = component;
                 }
             }
         }
+    } else {
+        self.tableView.tableHeaderView = nil;
     }
 }
 
@@ -1389,12 +1416,6 @@
         }
     }
     
-    if(total_rowcount > 1){
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-    } else {
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    }
-    
     [self.tableView reloadData];
     if(!top_aligned){
         [self scrollToBottom];
@@ -1408,16 +1429,16 @@
         
         chat_input = body[@"footer"][@"input"];
         if(chat_input){
-            
-            self.extendedLayoutIncludesOpaqueBars = NO;
-            
+
             //JasonViewController *weakSelf = self;
             __weak JasonViewController *weakSelf = self;
 
             [self.view addKeyboardPanningWithActionHandler:^(CGRect keyboardFrameInView, BOOL opening, BOOL closing) {
                 CGFloat m = MIN(original_height, keyboardFrameInView.origin.y);
-                CGRect newViewFrame = CGRectMake(weakSelf.view.frame.origin.x, weakSelf.view.frame.origin.y, weakSelf.view.frame.size.width, m);
-                weakSelf.view.frame = newViewFrame;
+                if(opening || (closing && m >= weakSelf.view.frame.size.height)){
+                    CGRect newViewFrame = CGRectMake(weakSelf.view.frame.origin.x, weakSelf.view.frame.origin.y, weakSelf.view.frame.size.width, m);
+                    weakSelf.view.frame = newViewFrame;
+                }
             }];
             
             // textfield logic
@@ -1492,28 +1513,41 @@
             
             if(chat_input[@"left"]){
                 if(chat_input[@"left"][@"image"]){
-                    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-                        SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                        [manager downloadImageWithURL:[NSURL URLWithString:chat_input[@"left"][@"image"]]
-                                              options:0
-                                             progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                                 // progression tracking code
-                                             }
-                                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                                
-                                                // colorize
-                                                if(chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
-                                                    UIColor *newColor = [JasonHelper colorwithHexString:chat_input[@"left"][@"style"][@"color"] alpha:1.0];
-                                                    image = [JasonHelper colorize:image into:newColor];
+                    if([chat_input[@"left"][@"image"] containsString:@"file://"]){
+                        NSString *localImageName = [chat_input[@"left"][@"image"] substringFromIndex:7];
+                        UIImage *localImage = [UIImage imageNamed:localImageName];
+                        // colorize
+                        if(chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
+                            UIColor *newColor = [JasonHelper colorwithHexString:chat_input[@"left"][@"style"][@"color"] alpha:1.0];
+                            localImage = [JasonHelper colorize:localImage into:newColor];
+                        }
+                        UIImage *resizedImage = [JasonHelper scaleImage:localImage ToSize:CGSizeMake(30,30)];
+                        [composeBarView setUtilityButtonImage:resizedImage];
+                    } else {
+                        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+                            SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                            [manager downloadImageWithURL:[NSURL URLWithString:chat_input[@"left"][@"image"]]
+                                                  options:0
+                                                 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                                     // progression tracking code
+                                                 }
+                                                completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                    
+                                                    // colorize
+                                                    if(chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
+                                                        UIColor *newColor = [JasonHelper colorwithHexString:chat_input[@"left"][@"style"][@"color"] alpha:1.0];
+                                                        image = [JasonHelper colorize:image into:newColor];
+                                                    }
+                                                    
+                                                    UIImage *resizedImage = [JasonHelper scaleImage:image ToSize:CGSizeMake(30,30)];
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                        [composeBarView setUtilityButtonImage:resizedImage];
+                                                    });
                                                 }
-                                                
-                                                UIImage *resizedImage = [JasonHelper scaleImage:image ToSize:CGSizeMake(30,30)];
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [composeBarView setUtilityButtonImage:resizedImage];
-                                                });
-                                            }
-                         ];
-                    });
+                             ];
+                        });
+                        
+                    }
                 }
             }
             if(chat_input[@"right"]){

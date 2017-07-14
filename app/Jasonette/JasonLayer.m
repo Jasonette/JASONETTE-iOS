@@ -5,6 +5,8 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonLayer.h"
+#import "NSData+ImageContentType.h"
+#import "UIImage+GIF.h"
 
 @implementation JasonLayer
 static NSMutableDictionary *_stylesheet = nil;
@@ -20,7 +22,6 @@ static NSMutableDictionary *_stylesheet = nil;
             
             if(layer[@"type"] && [layer[@"type"] isEqualToString:@"image"] && layer[@"url"]){
                 
-                NSURL *url = [NSURL URLWithString:layer[@"url"]];
                 UIImageView *layerChild = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
                 UIView *layerView = [[UIView alloc] init];
                 [self addGestureRecognizersTo:layerView withStyle: layer[@"style"]];
@@ -31,9 +32,25 @@ static NSMutableDictionary *_stylesheet = nil;
                 }
                 [layerView addSubview:layerChild];
                 
-                
-                [layerChild sd_setImageWithURL:url completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-                    CGSize size = image.size;
+                if([layer[@"url"] containsString:@"file://"]){
+                    NSString *localImageName = [layer[@"url"] substringFromIndex:7];                
+                    UIImage *localImage;
+                    
+                    // Get data for local file
+                    NSString *filePath = [[NSBundle mainBundle] pathForResource:localImageName ofType:nil];
+                    NSData *data = [[NSFileManager defaultManager] contentsAtPath:filePath];
+                    
+                    // Check for animated GIF
+                    NSString *imageContentType = [NSData sd_contentTypeForImageData:data];
+                    if ([imageContentType isEqualToString:@"image/gif"]) {
+                        localImage = [UIImage sd_animatedGIFWithData:data];
+                    } else {
+                        localImage = [UIImage imageNamed:localImageName];
+                    }
+                    
+                    CGSize size = localImage.size;
+                    
+                    layerChild.image = localImage;
                     
                     if(size.width > 0 && size.height > 0){
                         
@@ -44,13 +61,37 @@ static NSMutableDictionary *_stylesheet = nil;
                             if(layer[@"style"][@"color"]){
                                 // Setting tint color for an image
                                 UIColor *newColor = [JasonHelper colorwithHexString:layer[@"style"][@"color"] alpha:1.0];
-                                UIImage *newImage = [JasonHelper colorize:image into:newColor];
+                                UIImage *newImage = [JasonHelper colorize:localImage into:newColor];
                                 layerChild.image = newImage;
                             }
                         }
                         
                     }
-                }];
+
+                } else {
+                    NSURL *url = [NSURL URLWithString:layer[@"url"]];
+                    
+                    [layerChild sd_setImageWithURL:url completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                        CGSize size = image.size;
+                        
+                        if(size.width > 0 && size.height > 0){
+                            
+                            if(layer[@"style"]){
+                                [self setStyle:layer[@"style"] ForLayerChild:layerChild ofSize:[NSValue valueWithCGSize:size]];
+                                
+                                
+                                if(layer[@"style"][@"color"]){
+                                    // Setting tint color for an image
+                                    UIColor *newColor = [JasonHelper colorwithHexString:layer[@"style"][@"color"] alpha:1.0];
+                                    UIImage *newImage = [JasonHelper colorize:image into:newColor];
+                                    layerChild.image = newImage;
+                                }
+                            }
+                            
+                        }
+                    }];
+                    
+                }
                 if(layer[@"action"]){
                     if(layer[@"name"]){
                         layerView.payload = [@{@"type": @"layer", @"action": layer[@"action"], @"name": layer[@"name"]} mutableCopy];

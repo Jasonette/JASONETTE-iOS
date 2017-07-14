@@ -5,6 +5,8 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonImageComponent.h"
+#import "NSData+ImageContentType.h"
+#import "UIImage+GIF.h"
 
 @implementation JasonImageComponent
 + (UIView *)build: (UIImageView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
@@ -19,7 +21,11 @@
     UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
     NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
     
-    
+    NSMutableDictionary *style;
+    if(json[@"style"]){
+        style = [json[@"style"] mutableCopy];
+    }
+
     SDWebImageDownloader *manager = [SDWebImageManager sharedManager].imageDownloader;
     NSDictionary *session = [JasonHelper sessionForUrl:url];
     if(session && session.count > 0 && session[@"header"]){
@@ -36,11 +42,49 @@
     if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
         [component setIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [component setShowActivityIndicatorView:YES];
-        [component sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-            if(!error){
-                JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
+        
+        if([url containsString:@"file://"]){
+            NSString *localImageName = [url substringFromIndex:7];
+            UIImage *localImage;
+            
+            // Get data for local file
+            NSString *filePath = [[NSBundle mainBundle] pathForResource:localImageName ofType:nil];
+            NSData *data = [[NSFileManager defaultManager] contentsAtPath:filePath];
+            
+            // Check for animated GIF
+            NSString *imageContentType = [NSData sd_contentTypeForImageData:data];
+            if ([imageContentType isEqualToString:@"image/gif"]) {
+                localImage = [UIImage sd_animatedGIFWithData:data];
+            } else {
+                localImage = [UIImage imageNamed:localImageName];
             }
-        }];
+
+            if(json[@"style"] && json[@"style"][@"color"]){
+                // Setting tint color for an image
+                UIColor *newColor = [JasonHelper colorwithHexString:json[@"style"][@"color"] alpha:1.0];
+                UIImage *newImage = [JasonHelper colorize:localImage into:newColor];
+                [component setImage:newImage];
+            } else {
+                [component setImage:localImage];
+            }
+
+            
+            JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:localImage.size];
+        } else{
+            [component sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                if(!error){
+                    JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
+                    if(style[@"color"]){
+                        NSString *colorHex = style[@"color"];
+                        UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
+                        UIImage *image = [i imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                        [component setTintColor:c];
+                        [component setImage: image];;
+                    }
+                }
+            }];
+        }
+        
     }
     
     // Before applying common styles, Update the style attribute based on the fetched image dimension (different from other components)
@@ -49,13 +93,6 @@
         NSMutableDictionary *style = [json[@"style"] mutableCopy];
         NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
         UIImageView *imageView = (UIImageView *)component;
-        
-        if(style[@"color"]){
-            // Setting tint color for an image
-            UIColor *newColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-            UIImage *newImage = [JasonHelper colorize:imageView.image into:newColor];
-            imageView.image = newImage;
-        }
         
         if(style[@"width"] && !style[@"height"]){
             // Width is set but height is not

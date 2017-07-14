@@ -12,138 +12,6 @@
     UICKeyChainStore *keychain = [UICKeyChainStore keyChainStoreWithService:[domain lowercaseString]];
     keychain[@"session"] = [session description];
 }
-- (void)auth{
-    __weak typeof(self) weakSelf = self;
-
-    if(self.options){
-        
-        [[Jason client] networkLoading:YES with:self.options];
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-
-        
-        NSString *url = self.options[@"url"];
-        NSString *domain = [[NSURL URLWithString:url] host];
-        
-        // Set Header if specified  ("headers"
-        NSDictionary *headers = self.options[@"headers"];
-        if(headers && headers.count > 0){
-            for(NSString *key in headers){
-                [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
-            }
-        }
-        
-        
-        // Set params if specified  ("data")
-        NSMutableDictionary *params = [self.options[@"data"] mutableCopy];
-        NSMutableDictionary *parameters = params;
-        
-        NSString *method = self.options[@"method"];
-        
-        if(method){
-            if([[method lowercaseString] isEqualToString:@"post"]){
-                dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                    [manager.operationQueue cancelAllOperations];
-                    [manager POST:url parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
-                        // NOTHING
-                    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                        // Ignore if the url is different
-                        if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            NSDictionary *session = [responseObject valueForKey:@"$session"];
-                            if(session){
-                                if(session[@"domain"] && [url containsString:session[@"domain"]]){
-                                    // if domain is specified, use that instead
-                                    [self storeSession: session forDomain:session[@"domain"]];
-                                } else {
-                                    [self storeSession: session forDomain:domain];
-                                }
-                            }
-                            [[Jason client] success: responseObject];
-                        });
-                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        [weakSelf processError: error];
-                    }];
-                });
-            } else if([[method lowercaseString] isEqualToString:@"put"]){
-                dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                    [manager.operationQueue cancelAllOperations];
-                    [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
-                        // Ignore if the url is different
-                        if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            NSDictionary *session = [responseObject valueForKey:@"$session"];
-                            if(session){
-                                if(session[@"domain"] && [url containsString:session[@"domain"]]){
-                                    // if domain is specified, use that instead
-                                    [self storeSession: session forDomain:session[@"domain"]];
-                                } else {
-                                    [self storeSession: session forDomain:domain];
-                                }
-                            }
-                            [[Jason client] success: responseObject];
-                        });
-                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        [weakSelf processError: error];
-                    }];
-                });
-            } else if([[method lowercaseString] isEqualToString:@"delete"]){
-                dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                    [manager.operationQueue cancelAllOperations];
-                    [manager DELETE:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
-                        // Ignore if the url is different
-                        if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            NSDictionary *session = [responseObject valueForKey:@"$session"];
-                            if(session){
-                                if(session[@"domain"] && [url containsString:session[@"domain"]]){
-                                    // if domain is specified, use that instead
-                                    [self storeSession: session forDomain:session[@"domain"]];
-                                } else {
-                                    [self storeSession: session forDomain:domain];
-                                }
-                            }
-                            [[Jason client] success: responseObject];
-                        });
-                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        [weakSelf processError: error];
-                    }];
-                });
-            }
-            
-        }
-        
-    }
-}
-- (void)unauth{
-    
-    if(self.options){
-        [[Jason client] networkLoading:YES with:self.options];
-        if(self.options[@"type"] && [self.options[@"type"] isEqualToString:@"html"]){
-            NSString *url = self.options[@"url"];
-            NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL: [NSURL URLWithString:url]];
-            for (NSHTTPCookie *cookie in cookies)
-            {
-                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
-            }
-            NSData *cookiesData = [NSKeyedArchiver archivedDataWithRootObject: [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            [defaults setObject: cookiesData forKey: @"sessionCookies"];
-            [defaults synchronize];
-            [[Jason client] success];
-        } else {
-            NSString *domain;
-            if(self.options[@"domain"]){
-                domain = self.options[@"domain"];
-            } else {
-                NSString *url = self.options[@"url"];
-                domain = [[[NSURL URLWithString:url] host] lowercaseString];
-            }
-            UICKeyChainStore* keychain = [UICKeyChainStore keyChainStoreWithService:domain];
-            [keychain removeAllItems];
-            [[Jason client] success];
-        }
-    }
-}
 - (void)saveCookies{
     
     NSData *cookiesData = [NSKeyedArchiver archivedDataWithRootObject: [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
@@ -167,12 +35,30 @@
 - (void)request{
     __weak typeof(self) weakSelf = self;
 
+    NSString *original_url = self.VC.url;
+    
     if(self.options){
         [[Jason client] networkLoading:YES with:self.options];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         NSString *url = self.options[@"url"];
         // Instantiate with session if needed
         NSDictionary *session = [JasonHelper sessionForUrl:url];
+        
+        // Check for valid URL and throw error if invalid
+        if(![url isEqualToString:@""]) {
+            NSURL *urlToCheck = [NSURL URLWithString:url];
+            if(!urlToCheck){
+                NSLog(@"Error = Invalid URL for $network.request call");
+                [[Jason client] networkLoading:NO with:nil];
+                [[Jason client] error: nil];
+                return;
+            }
+        } else {
+            NSLog(@"Error = URL not specified for $network.request call");
+            [[Jason client] networkLoading:NO with:nil];
+            [[Jason client] error: nil];
+            return;
+        }
         
         // Set Header if specified  "header"
         NSDictionary *headers = self.options[@"header"];
@@ -230,7 +116,7 @@
             manager.responseSerializer = [AFHTTPResponseSerializer serializer];
             manager.responseSerializer.acceptableContentTypes = nil;
         } else {
-            AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+            JASONResponseSerializer *jsonResponseSerializer = [JASONResponseSerializer serializer];
             NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
             [jsonAcceptableContentTypes addObject:@"text/plain"];
             jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
@@ -281,17 +167,17 @@
                                 [self saveCookies];
                                 NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
                                 data = [[data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
-                                [[Jason client] success: data];
+                                [[Jason client] success: data withOriginalUrl:original_url];
                             } else if(dataType && [dataType isEqualToString:@"raw"]){
                                 [self saveCookies];
                                 NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                                [[Jason client] success: data];
+                                [[Jason client] success: data withOriginalUrl:original_url];
                             } else {
-                                [[Jason client] success: responseObject];
+                                [[Jason client] success: responseObject withOriginalUrl:original_url];
                             }
                         });
                     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        [weakSelf processError: error];
+                        [weakSelf processError: error withOriginalUrl:original_url];
                     }];
                 });
                 return;
@@ -306,18 +192,18 @@
                                 [self saveCookies];
                                 NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
                                 data = [[data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
-                                [[Jason client] success: data];
+                                [[Jason client] success: data withOriginalUrl:original_url];
                                 
                             } else if(dataType && [dataType isEqualToString:@"raw"]){
                                 [self saveCookies];
                                 NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                                [[Jason client] success: data];
+                                [[Jason client] success: data withOriginalUrl:original_url];
                             } else {
-                                [[Jason client] success: responseObject];
+                                [[Jason client] success: responseObject withOriginalUrl:original_url];
                             }
                         });
                     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        [weakSelf processError: error];
+                        [weakSelf processError: error withOriginalUrl:original_url];
                     }];
                 });
                 return;
@@ -332,18 +218,18 @@
                                 [self saveCookies];
                                 NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
                                 data = [[data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
-                                [[Jason client] success: data];
+                                [[Jason client] success: data withOriginalUrl:original_url];
                                 
                             } else if(dataType && [dataType isEqualToString:@"raw"]){
                                 [self saveCookies];
                                 NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                                [[Jason client] success: data];
+                                [[Jason client] success: data withOriginalUrl:original_url];
                             } else {
-                                [[Jason client] success: responseObject];
+                                [[Jason client] success: responseObject withOriginalUrl:original_url];
                             }
                         });
                     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        [weakSelf processError: error];
+                        [weakSelf processError: error withOriginalUrl:original_url];
                     }];
                 });
                 return;
@@ -366,35 +252,34 @@
                         [self saveCookies];
                         NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
                         data = [[data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
-                        [[Jason client] success: data];
+                        [[Jason client] success: data withOriginalUrl:original_url];
                         
                     } else if(dataType && [dataType isEqualToString:@"raw"]){
                         [self saveCookies];
                         NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                        [[Jason client] success: data];
+                        [[Jason client] success: data withOriginalUrl:original_url];
                     } else {
-                        [[Jason client] success: responseObject];
+                        [[Jason client] success: responseObject withOriginalUrl:original_url];
                     }
                 });
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakSelf processError: error];
+                    [weakSelf processError: error withOriginalUrl:original_url];
                 });
             }];
         });
     }
 }
-- (void)processError: (NSError *)error{
+- (void)processError: (NSError *)error withOriginalUrl: (NSString*) original_url{
     NSLog(@"Error = %@", error);
     [[Jason client] networkLoading:NO with:nil];
-    [[Jason client] error];
+    [[Jason client] error: error.userInfo withOriginalUrl:original_url];
 }
-
-
 
 
 // UPLOAD TO S3
 - (void)upload{
+    NSString *original_url = self.VC.url;
     if(self.options){
         NSString *contentType = self.options[@"Content-Type"];      //Content-Type is deprecated. Use content_type
         if(!contentType){
@@ -424,13 +309,13 @@
                     if (!success) {
                         NSLog(@"writeToFile failed with error %@", error);
                     }
-                    [weakSelf _uploadData: mediaData ofType: contentType withFilename: upload_filename];
+                    [weakSelf _uploadData: mediaData ofType: contentType withFilename: upload_filename fromOriginalUrl: original_url];
                 }
             }
         });
     }
 }
-- (void)_uploadData:(NSData *)mediaData ofType: (NSString *)contentType withFilename: upload_filename{
+- (void)_uploadData:(NSData *)mediaData ofType: (NSString *)contentType withFilename: upload_filename fromOriginalUrl: original_url{
     
     NSDictionary *storage = self.options;
     NSString *bucket = storage[@"bucket"];
@@ -477,7 +362,7 @@
         // Ignore if the url is different
         if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:sign_url]) return;
         if(!responseObject[@"$jason"]){
-            [[Jason client] error:@{@"description": @"The server must return a signed url wrapped with '$jason' key"}];
+            [[Jason client] error:@{@"description": @"The server must return a signed url wrapped with '$jason' key"} withOriginalUrl:original_url];
             return;
         }
         
@@ -490,32 +375,32 @@
         NSURLSessionDataTask *upload_task = [manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
             if (!error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self s3UploadDidSucceed: upload_filename];
+                    [self s3UploadDidSucceed: upload_filename withOriginalUrl: original_url];
                 });
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     NSLog(@"error = %@", error);
-                    [self s3UploadDidFail];
+                    [self s3UploadDidFail: error withOriginalUrl:original_url];
                 });
             }
         }];
         [upload_task resume];
 
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self s3UploadDidFail];
+        [self s3UploadDidFail:error withOriginalUrl: original_url];
     }];
 }
-- (void)s3UploadDidFail
+- (void)s3UploadDidFail: (NSError *)error withOriginalUrl: (NSString*)original_url
 {
     [[Jason client] loading:NO];
     [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Error"
                                                description:@"There was an error sending the image. Please try again."
                                                       type:TWMessageBarMessageTypeError];
-    [[Jason client] finish];
+    [[Jason client] error: error.userInfo withOriginalUrl:original_url];
 }
-- (void)s3UploadDidSucceed: (NSString *)upload_filename{
+- (void)s3UploadDidSucceed: (NSString *)upload_filename withOriginalUrl: original_url{
     [[Jason client] loading:NO];
-    [[Jason client] success: @{@"filename": upload_filename, @"file_name": upload_filename}];
+    [[Jason client] success: @{@"filename": upload_filename, @"file_name": upload_filename} withOriginalUrl:original_url];
 }
 
 @end

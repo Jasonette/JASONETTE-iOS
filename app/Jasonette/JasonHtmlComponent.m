@@ -37,6 +37,11 @@
         [self stylize:json component:component];
     }
     
+    // allow autoplay
+    component.mediaPlaybackRequiresUserAction = NO;
+    
+    // allow inline playback
+    component.allowsInlineMediaPlayback = YES;
     
     // user interaction enable/disable => disabled by default
     component.userInteractionEnabled = NO;

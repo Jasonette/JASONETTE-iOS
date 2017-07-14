@@ -48,6 +48,8 @@
 
 @property (strong, nonatomic) NSDictionary *parser;
 @property (nonatomic, strong) NSDictionary *data;
+@property (strong, nonatomic) NSMutableDictionary *old_header;
+@property (strong, nonatomic) NSMutableDictionary *old_footer;
 
 @property (nonatomic, strong) NSArray *layers;
 @property (nonatomic, strong) NSMutableArray *sections;
@@ -62,6 +64,8 @@
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL fresh;
 @property (nonatomic, assign) BOOL loading;
+@property (nonatomic, assign) BOOL offline;
+@property (nonatomic, assign) BOOL isFinal;
 @property (strong, nonatomic) NSMutableDictionary *menu;
 @property (strong, nonatomic) NSMutableDictionary *form;
 @property (strong, nonatomic) NSMutableDictionary *requires;
@@ -75,6 +79,6 @@
 @property (strong, nonatomic) GADBannerView *bannerAd;
 @property (strong, nonatomic) GADInterstitial * interestialAd;
 #endif
-- (void)reload: (NSDictionary *)res;
+- (void)reload: (NSDictionary *)res final: (BOOL) final;
 
 @end

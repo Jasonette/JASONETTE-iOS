@@ -13,18 +13,12 @@
         component = [[SZTextView alloc] initWithFrame:frame];
     }
     
-    if(options && options[@"value"]){
-        component.text = options[@"value"];
-    } else if(json && json[@"value"]){
-        component.text = json[@"value"];
-    }
-    
     NSDictionary *style = json[@"style"];
     
     NSMutableDictionary *mutated_json = [json mutableCopy];
     if(style){
         if(!style[@"height"]){
-           mutated_json[@"style"][@"height"] = @"100";
+            mutated_json[@"style"][@"height"] = @"100";
         }
     } else {
         mutated_json[@"style"] = @{@"height": @"100"};
@@ -38,6 +32,21 @@
         payload[@"action"] = mutated_json[@"action"];
     }
     component.payload = payload;
+
+    
+    
+    
+    if(options && options[@"value"]){
+        component.text = options[@"value"];
+    } else if(json && json[@"value"]){
+        component.text = json[@"value"];
+    }
+    if(component.text){
+        if(component.payload && component.payload[@"name"]){
+            [self updateForm:@{component.payload[@"name"]: component.text}];
+        }
+    }
+
     
     component.delegate = [self self];
     

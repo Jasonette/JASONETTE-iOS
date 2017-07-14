@@ -28,6 +28,7 @@
 @property (strong, nonatomic) NSDictionary *data;
 @property (strong, nonatomic) NSDictionary *options;
 @property (strong, nonatomic) NSDictionary *rendered;
+@property (strong, nonatomic) NSDictionary *global;
 @property (strong, nonatomic) NSMutableArray *playing;
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL searchMode;
@@ -42,9 +43,12 @@
 - (void)ok;
 - (void)ok:(NSDictionary *)result;
 - (void)finish;
+
+- (void)error:(id)result withOriginalUrl:(NSString*)url;
 - (void)error:(id)result;
 - (void)error;
 
+- (void)success:(id)result withOriginalUrl:(NSString*)url;
 - (void)success:(id)result;
 - (void)success;
 
@@ -64,6 +68,6 @@
 - (void)onRemoteNotification: (NSDictionary *)payload;
 - (void)onRemoteNotificationDeviceRegistered: (NSString *)device_token;
 
-- (void)loadViewByFile: (NSString *)url;
+- (void)loadViewByFile: (NSString *)url asFinal: (BOOL)final;
 - (NSDictionary *)variables;
 @end

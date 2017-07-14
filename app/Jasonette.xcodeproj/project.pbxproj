@@ -8,10 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		042852531E984B890081F742 /* NoPaddingButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 042852521E984B890081F742 /* NoPaddingButton.m */; };
+		043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 043814151EF7455800CC4706 /* JasonGlobalAction.m */; };
+		045C77E91F0278EA00F06598 /* loading.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77E81F0278EA00F06598 /* loading.json */; };
+		045C77EB1F02791D00F06598 /* error.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77EA1F02791D00F06598 /* error.json */; };
+		045C77F11F029BEC00F06598 /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 045C77F01F029BEC00F06598 /* parser.js */; };
 		045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */; };
-		0489E5CF1E7B3EF40046FFA5 /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 0489E5CE1E7B3EF40046FFA5 /* parser.js */; };
-		04EEDCFE1E02F5180023114F /* demo.json in Resources */ = {isa = PBXBuildFile; fileRef = 04EEDCFC1E02F5180023114F /* demo.json */; };
-		04EEDCFF1E02F5180023114F /* hello.json in Resources */ = {isa = PBXBuildFile; fileRef = 04EEDCFD1E02F5180023114F /* hello.json */; };
+		04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
 		5E0956301DA34D70007ADC78 /* JasonImageComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562F1DA34D6F007ADC78 /* JasonImageComponent.m */; };
 		5E0956331DA34EEA007ADC78 /* JasonButtonComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0956321DA34EEA007ADC78 /* JasonButtonComponent.m */; };
@@ -78,11 +80,15 @@
 /* Begin PBXFileReference section */
 		042852511E984B890081F742 /* NoPaddingButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoPaddingButton.h; sourceTree = "<group>"; };
 		042852521E984B890081F742 /* NoPaddingButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoPaddingButton.m; sourceTree = "<group>"; };
+		043814141EF7455800CC4706 /* JasonGlobalAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonGlobalAction.h; sourceTree = "<group>"; };
+		043814151EF7455800CC4706 /* JasonGlobalAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonGlobalAction.m; sourceTree = "<group>"; };
+		045C77E81F0278EA00F06598 /* loading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loading.json; sourceTree = "<group>"; };
+		045C77EA1F02791D00F06598 /* error.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = error.json; sourceTree = "<group>"; };
+		045C77F01F029BEC00F06598 /* parser.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = parser.js; sourceTree = "<group>"; };
 		045E5F3B1E3661060088D5E6 /* JasonReturnAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonReturnAction.h; sourceTree = "<group>"; };
 		045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonReturnAction.m; sourceTree = "<group>"; };
-		0489E5CE1E7B3EF40046FFA5 /* parser.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = parser.js; sourceTree = "<group>"; };
-		04EEDCFC1E02F5180023114F /* demo.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = demo.json; sourceTree = "<group>"; };
-		04EEDCFD1E02F5180023114F /* hello.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hello.json; sourceTree = "<group>"; };
+		04D947E91F16ACF50063CC65 /* JASONResponseSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JASONResponseSerializer.h; sourceTree = "<group>"; };
+		04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JASONResponseSerializer.m; sourceTree = "<group>"; };
 		1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.release.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.release.xcconfig"; sourceTree = "<group>"; };
 		2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Jasonette.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E025B471DE017EB0016786A /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
@@ -217,6 +223,15 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		043814171EF7455E00CC4706 /* $global */ = {
+			isa = PBXGroup;
+			children = (
+				043814141EF7455800CC4706 /* JasonGlobalAction.h */,
+				043814151EF7455800CC4706 /* JasonGlobalAction.m */,
+			);
+			name = $global;
+			sourceTree = "<group>";
+		};
 		045E5F3E1E36610B0088D5E6 /* $return */ = {
 			isa = PBXGroup;
 			children = (
@@ -347,6 +362,7 @@
 				045E5F3E1E36610B0088D5E6 /* $return */,
 				5E3177AB1D1F297400D87778 /* $timer */,
 				5E3177AA1D1F296300D87778 /* $util */,
+				043814171EF7455E00CC4706 /* $global */,
 			);
 			name = Action;
 			sourceTree = "<group>";
@@ -404,7 +420,7 @@
 			isa = PBXGroup;
 			children = (
 				5E31769B1D1E411E00D87778 /* csv.js */,
-				0489E5CE1E7B3EF40046FFA5 /* parser.js */,
+				045C77F01F029BEC00F06598 /* parser.js */,
 				5E3176F41D1E411E00D87778 /* rss.js */,
 			);
 			name = Lib;
@@ -444,6 +460,8 @@
 			children = (
 				5E3176D11D1E411E00D87778 /* JasonNetworkAction.h */,
 				5E3176D21D1E411E00D87778 /* JasonNetworkAction.m */,
+				04D947E91F16ACF50063CC65 /* JASONResponseSerializer.h */,
+				04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */,
 			);
 			name = $network;
 			sourceTree = "<group>";
@@ -506,9 +524,9 @@
 		5E3177AC1D1F2A8200D87778 /* file:// */ = {
 			isa = PBXGroup;
 			children = (
-				04EEDCFC1E02F5180023114F /* demo.json */,
-				04EEDCFD1E02F5180023114F /* hello.json */,
 				5E31777B1D1F199D00D87778 /* Images */,
+				045C77E81F0278EA00F06598 /* loading.json */,
+				045C77EA1F02791D00F06598 /* error.json */,
 			);
 			name = "file://";
 			sourceTree = "<group>";
@@ -727,17 +745,17 @@
 				5E3177781D1E414C00D87778 /* Media.xcassets in Resources */,
 				5E3840751D3A3D2200D1C421 /* placeholderr@2x.png in Resources */,
 				5E3177291D1E411F00D87778 /* csv.js in Resources */,
-				04EEDCFE1E02F5180023114F /* demo.json in Resources */,
 				5E31771E1D1E411F00D87778 /* JasonVerticalSectionItem.xib in Resources */,
 				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
-				0489E5CF1E7B3EF40046FFA5 /* parser.js in Resources */,
+				045C77F11F029BEC00F06598 /* parser.js in Resources */,
 				5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */,
 				5E3177371D1E411F00D87778 /* icon-info.png in Resources */,
-				04EEDCFF1E02F5180023114F /* hello.json in Resources */,
 				5E3177531D1E411F00D87778 /* Next@2x.png in Resources */,
 				5E31773A1D1E411F00D87778 /* icon-success@2x.png in Resources */,
 				5E3177671D1E411F00D87778 /* rss.js in Resources */,
 				5E3177481D1E411F00D87778 /* LaunchScreen.storyboard in Resources */,
+				045C77E91F0278EA00F06598 /* loading.json in Resources */,
+				045C77EB1F02791D00F06598 /* error.json in Resources */,
 				5E3177361D1E411F00D87778 /* icon-error@2x.png in Resources */,
 				5E31775F1D1E411F00D87778 /* placeholder@2x.png in Resources */,
 				5E3177391D1E411F00D87778 /* icon-success.png in Resources */,
@@ -761,7 +779,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		4838282BA327C039BDB24767 /* [CP] Copy Pods Resources */ = {
@@ -833,6 +851,7 @@
 				5E0956421DA34F4D007ADC78 /* JasonSpaceComponent.m in Sources */,
 				5E3177701D1E411F00D87778 /* UIBarButtonItem+Badge.m in Sources */,
 				5E0956361DA34EFC007ADC78 /* JasonTextareaComponent.m in Sources */,
+				043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */,
 				5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */,
 				5E3177A31D1F28C100D87778 /* JasonCacheAction.m in Sources */,
 				045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */,
@@ -842,6 +861,7 @@
 				5E31774C1D1E411F00D87778 /* JasonMediaAction.m in Sources */,
 				5E3177241D1E411F00D87778 /* JasonHorizontalSectionItem.m in Sources */,
 				5E3177221D1E411F00D87778 /* JasonHorizontalSection.m in Sources */,
+				04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */,
 				5E3177301D1E411F00D87778 /* JasonGeoAction.m in Sources */,
 				5E3177591D1E411F00D87778 /* JasonOauthAction.m in Sources */,
 			);

@@ -23,14 +23,12 @@
 // THE SOFTWARE.
 
 #import "IQAudioCropperViewController.h"
-#import "FDWaveformView.h"
+#import "IQ_FDWaveformView.h"
 #import "NSString+IQTimeIntervalFormatter.h"
 #import "IQCropSelectionBeginView.h"
 #import "IQCropSelectionEndView.h"
 
-@import FDWaveformView;
-
-@interface IQAudioCropperViewController ()<FDWaveformViewDelegate,AVAudioPlayerDelegate>
+@interface IQAudioCropperViewController ()<IQ_FDWaveformViewDelegate,AVAudioPlayerDelegate>
 {
     //BlurrView
     UIVisualEffectView *visualEffectView;
@@ -38,7 +36,7 @@
 
     UIView *middleContainerView;
     
-    FDWaveformView *waveformView;
+    IQ_FDWaveformView *waveformView;
     UIActivityIndicatorView *waveLoadiingIndicatorView;
     
     //Navigation Bar
@@ -208,12 +206,13 @@
     [visualEffectView.contentView addSubview:middleContainerView];
     
     {
-        waveformView = [[FDWaveformView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(middleContainerView.frame), 150)];
+        waveformView = [[IQ_FDWaveformView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(middleContainerView.frame), 150)];
         waveformView.delegate = self;
         waveformView.center = CGPointMake(CGRectGetMidX(middleContainerView.bounds), CGRectGetMidY(middleContainerView.bounds));
         waveformView.audioURL = audioURL;
         waveformView.wavesColor = [self _normalTintColor];
         waveformView.progressColor = [self _highlightedTintColor];
+        waveformView.cropColor = [UIColor yellowColor];
         
         waveformView.doesAllowScroll = NO;
         waveformView.doesAllowScrubbing = NO;
@@ -277,7 +276,9 @@
         rightCropView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin;
         leftCropView.cropTime = 0;
         rightCropView.cropTime = _audioPlayer.duration;
-        
+        waveformView.cropStartSamples = waveformView.totalSamples*(leftCropView.cropTime/_audioPlayer.duration);
+        waveformView.cropEndSamples = waveformView.totalSamples*(rightCropView.cropTime/_audioPlayer.duration);
+
         [middleContainerView addSubview:leftCropView];
         [middleContainerView addSubview:rightCropView];
         
@@ -352,6 +353,7 @@
             leftCropView.cropTime = (leftCropView.center.x/waveformView.frame.size.width)*_audioPlayer.duration;
             _audioPlayer.currentTime = leftCropView.cropTime;
             waveformView.progressSamples = waveformView.totalSamples*(_audioPlayer.currentTime/_audioPlayer.duration);
+            waveformView.cropStartSamples = waveformView.totalSamples*(leftCropView.cropTime/_audioPlayer.duration);
         }
     }
     else if (panRecognizer.state == UIGestureRecognizerStateEnded|| panRecognizer.state == UIGestureRecognizerStateFailed)
@@ -399,8 +401,7 @@
         
         {
             rightCropView.cropTime = (rightCropView.center.x/waveformView.frame.size.width)*_audioPlayer.duration;
-            _audioPlayer.currentTime = leftCropView.cropTime;
-            waveformView.progressSamples = waveformView.totalSamples*(_audioPlayer.currentTime/_audioPlayer.duration);
+            waveformView.cropEndSamples = waveformView.totalSamples*(rightCropView.cropTime/_audioPlayer.duration);
         }
     }
     else if (panRecognizer.state == UIGestureRecognizerStateEnded|| panRecognizer.state == UIGestureRecognizerStateFailed)
@@ -643,9 +644,9 @@
     [invocation invoke];
 }
 
-#pragma mark - FDWaveformView delegate
+#pragma mark - IQ_FDWaveformView delegate
 
-- (void)waveformViewWillRender:(FDWaveformView *)waveformView
+- (void)waveformViewWillRender:(IQ_FDWaveformView *)waveformView
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [UIView animateWithDuration:0.1 animations:^{
@@ -655,7 +656,7 @@
     }];
 }
 
-- (void)waveformViewDidRender:(FDWaveformView *)waveformView
+- (void)waveformViewDidRender:(IQ_FDWaveformView *)waveformView
 {
     [UIView animateWithDuration:0.1 animations:^{
         middleContainerView.alpha = 1.0;
@@ -663,22 +664,22 @@
     }];
 }
 
-- (void)waveformViewWillLoad:(FDWaveformView *)waveformView
+- (void)waveformViewWillLoad:(IQ_FDWaveformView *)waveformView
 {
 //    NSLog(@"%@",NSStringFromSelector(_cmd));
 }
 
-- (void)waveformViewDidLoad:(FDWaveformView *)waveformView
+- (void)waveformViewDidLoad:(IQ_FDWaveformView *)waveformView
 {
 //    NSLog(@"%@",NSStringFromSelector(_cmd));
 }
 
-- (void)waveformDidBeginPanning:(FDWaveformView *)waveformView
+- (void)waveformDidBeginPanning:(IQ_FDWaveformView *)waveformView
 {
 //    NSLog(@"%@",NSStringFromSelector(_cmd));
 }
 
-- (void)waveformDidEndPanning:(FDWaveformView *)waveformView
+- (void)waveformDidEndPanning:(IQ_FDWaveformView *)waveformView
 {
 //    NSLog(@"%@",NSStringFromSelector(_cmd));
 }

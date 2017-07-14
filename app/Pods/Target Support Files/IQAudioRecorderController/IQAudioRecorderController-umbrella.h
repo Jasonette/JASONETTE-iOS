@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "IQ_FDWaveformView.h"
 #import "IQAudioCropperViewController.h"
 #import "IQAudioRecorderConstraints.h"
 #import "IQAudioRecorderViewController.h"

@@ -454,6 +454,8 @@
 + (CGFloat)pixelsInDirection: (NSString *)direction fromExpression: (NSString *)expression {
     NSError *error = nil;
     CGFloat full_dimension;
+    if(!expression) return 0;
+    
     if([direction isEqualToString:@"vertical"]){
         full_dimension = [[UIScreen mainScreen] bounds].size.height;
     } else {
@@ -483,7 +485,7 @@
         
     } else {
         
-        NSRegularExpression* regexPixels = [NSRegularExpression regularExpressionWithPattern:@"^([0-9]+)$" options:0 error:&error];
+        NSRegularExpression* regexPixels = [NSRegularExpression regularExpressionWithPattern:@"^([0-9.]+)$" options:0 error:&error];
         NSTextCheckingResult *matchPixels = [regexPixels firstMatchInString:expression options:0 range: searchedRange];
         if(matchPixels){
             // Pixels only
@@ -895,6 +897,37 @@
         }
     }
     return [f copy];
+}
++ (id) read_local_json: (NSString *)url {
+    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];
+    NSString *loc = @"file:/";
+    
+    NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
+    NSLog(@"LOCALFILES jsonFile is %@", jsonFile);
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    id ret;
+    
+    if ([fileManager fileExistsAtPath:jsonFile]) {
+        NSError *error = nil;
+        NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
+        [inputStream open];
+        ret = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+        [inputStream close];
+    } else {
+        NSLog(@"JASON FILE NOT FOUND: %@", jsonFile);
+        ret = @{};
+    }
+    return ret;
+}
++ (NSString *)normalized_url: (NSString *)url forOptions: (id)options{
+    NSString *normalized_url = [url lowercaseString];
+    normalized_url = [normalized_url stringByAppendingString:[NSString stringWithFormat:@"|%@", options]];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[/:]" options:NSRegularExpressionCaseInsensitive error:nil];
+    normalized_url = [regex stringByReplacingMatchesInString:normalized_url options:0 range:NSMakeRange(0, [normalized_url length]) withTemplate:@"_"];
+    normalized_url = [[normalized_url componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@""];
+    return normalized_url;
 }
 
 @end
