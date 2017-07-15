@@ -35,6 +35,7 @@ PODS:
     - DTFoundation/Core
   - DTFoundation/UIKit (1.7.10):
     - DTFoundation/Core
+  - FLEX (2.4.0)
   - FreeStreamer (3.5.7):
     - Reachability (~> 3.0)
   - HMSegmentedControl (1.5.2)
@@ -82,6 +83,7 @@ DEPENDENCIES:
   - DAKeyboardControl
   - DHSmartScreenshot
   - DTCoreText
+  - FLEX (~> 2.0)
   - FreeStreamer (from `https://github.com/muhku/FreeStreamer.git`)
   - HMSegmentedControl
   - INTULocationManager
@@ -143,6 +145,7 @@ SPEC CHECKSUMS:
   DHSmartScreenshot: ee749048bd7126c4826748f98df3a4adc6ad6c78
   DTCoreText: 3ea8bba23dd2141ba18adb227a7dd33a822df1c4
   DTFoundation: 3b6b1b817d2a7fb02e7eaf2596c922a68145bd43
+  FLEX: bd1a39e55b56bb413b6f1b34b3c10a0dc44ef079
   FreeStreamer: c11b83e4e4010c00d1e1549a37d6719e98252c45
   HMSegmentedControl: 83b9686022d2176fb6457d2bdb61e5d6393fed7d
   INTULocationManager: 73f8254b3d05c897c56bb13c190e5b7c648c0998
@@ -173,6 +176,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
 
-PODFILE CHECKSUM: cd713d890636246e92bf95b4187667079654f2fb
+PODFILE CHECKSUM: f7bbb72e2dfbfe66d83bc3bd0a0bb4e1afd2e395
 
 COCOAPODS: 1.2.1

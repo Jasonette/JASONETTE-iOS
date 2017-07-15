@@ -99,6 +99,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/DHSmartScreenshot/DHSmartScreenshot.framework"
   install_framework "$BUILT_PRODUCTS_DIR/DTCoreText/DTCoreText.framework"
   install_framework "$BUILT_PRODUCTS_DIR/DTFoundation/DTFoundation.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/FLEX/FLEX.framework"
   install_framework "$BUILT_PRODUCTS_DIR/FreeStreamer/FreeStreamer.framework"
   install_framework "$BUILT_PRODUCTS_DIR/HMSegmentedControl/HMSegmentedControl.framework"
   install_framework "$BUILT_PRODUCTS_DIR/INTULocationManager/INTULocationManager.framework"
