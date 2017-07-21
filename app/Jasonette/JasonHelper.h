@@ -42,4 +42,5 @@
 + (NSArray *)childOf: (UIView *)view withClassName: (NSString *)className;
 + (id) read_local_json: (NSString *)url;
 + (NSString *)normalized_url: (NSString *)url forOptions: (id)options;
++ (CGFloat)parseRatio: (NSString *) ratio;
 @end

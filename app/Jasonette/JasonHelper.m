@@ -451,6 +451,23 @@
     urlComponents2.query = nil; // Strip out query parameters.
     return [urlComponents.string isEqualToString:urlComponents2.string];
 }
++ (CGFloat)parseRatio: (NSString *) ratio {
+    if([ratio containsString:@":"] || [ratio containsString:@"/"]) {
+        NSError *error = nil;
+        NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"^[ ]*([0-9]+)[ ]*[:/][ ]*([0-9]+)[ ]*$" options:0 error:&error];
+        NSRange searchedRange = NSMakeRange(0, [ratio length]);
+        NSTextCheckingResult *match = [regex firstMatchInString:ratio options:0 range: searchedRange];
+        if(match){
+            NSString *w = [ratio substringWithRange:[match rangeAtIndex:1]];
+            NSString *h = [ratio substringWithRange:[match rangeAtIndex:2]];
+            return [w floatValue]/[h floatValue];
+        } else {
+            return 1; // shouldn't happen
+        }
+    } else {
+        return [ratio floatValue];
+    }
+}
 + (CGFloat)pixelsInDirection: (NSString *)direction fromExpression: (NSString *)expression {
     NSError *error = nil;
     CGFloat full_dimension;

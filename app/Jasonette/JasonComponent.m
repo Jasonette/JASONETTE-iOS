@@ -55,7 +55,7 @@
                                                                          relatedBy:NSLayoutRelationEqual
                                                                          toItem:component
                                                                          attribute:NSLayoutAttributeHeight
-                                                                         multiplier:[style[@"ratio"] floatValue]
+                                                                         multiplier:[JasonHelper parseRatio:style[@"ratio"]]
                                                                                  constant:0];
             ratio_constraint.identifier = @"ratio";
             [component addConstraint:ratio_constraint];
