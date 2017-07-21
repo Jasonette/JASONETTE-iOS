@@ -48,6 +48,19 @@
             }
         }
         
+        // ratio
+        if(style[@"ratio"]){
+            NSLayoutConstraint *ratio_constraint = [NSLayoutConstraint constraintWithItem: component
+                                                                         attribute:NSLayoutAttributeWidth
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                         toItem:component
+                                                                         attribute:NSLayoutAttributeHeight
+                                                                         multiplier:[style[@"ratio"] floatValue]
+                                                                                 constant:0];
+            ratio_constraint.identifier = @"ratio";
+            [component addConstraint:ratio_constraint];
+        }
+        
         // width
         if(style[@"width"]){
             NSString *widthStr = style[@"width"];
