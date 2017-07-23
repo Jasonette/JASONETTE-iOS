@@ -943,6 +943,18 @@
                         // see if it's an image type
                         if(body[@"type"]){
                             if([body[@"type"] isEqualToString:@"image"] || [body[@"type"] isEqualToString:@"button"]){
+                                
+                                if(body[@"style"]) {
+                                    // [Image load optimization] Don't load assets if
+                                    // 1. height exists or
+                                    // 2. width + ratio exist
+                                    if(body[@"style"][@"height"]) {
+                                        return;
+                                    } else if (body[@"style"][@"width"] && body[@"style"][@"ratio"]) {
+                                        return;
+                                    }
+                                }
+                                
                                 // it's an image. Let's download!
                                 NSString *url = body[key];
                                 if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
@@ -1415,7 +1427,6 @@
             [headers addObject:section[@"header"]];
         }
     }
-    
     [self.tableView reloadData];
     if(!top_aligned){
         [self scrollToBottom];
