@@ -94,49 +94,61 @@
         NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
         UIImageView *imageView = (UIImageView *)component;
         
-        if(style[@"width"] && !style[@"height"]){
-            // Width is set but height is not
-            CGFloat aspectRatioMult;
-            if(JasonComponentFactory.imageLoaded[url]){
-                @try{
-                    CGSize size = [JasonComponentFactory.imageLoaded[url] CGSizeValue];
-                    if(size.width > 0 && size.height > 0){
-                        aspectRatioMult = (size.height / size.width);
+        if(style[@"width"]) {
+            if(style[@"ratio"]){
+                // don't do anything about the height, it will be handled in JasonComponent
+            } else {
+                if (!style[@"height"]){
+                    // Width is set but height is not
+                    CGFloat aspectRatioMult;
+                    if(JasonComponentFactory.imageLoaded[url]){
+                        @try{
+                            CGSize size = [JasonComponentFactory.imageLoaded[url] CGSizeValue];
+                            if(size.width > 0 && size.height > 0){
+                                aspectRatioMult = (size.height / size.width);
+                            } else {
+                                aspectRatioMult = (imageView.image.size.height / imageView.image.size.width);
+                            }
+                        }
+                        @catch (NSException *e){
+                            aspectRatioMult = (imageView.image.size.height / imageView.image.size.width);
+                        }
                     } else {
                         aspectRatioMult = (imageView.image.size.height / imageView.image.size.width);
                     }
+                    NSString *widthStr = style[@"width"];
+                    CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
+                    style[@"height"] = [NSString stringWithFormat:@"%d", (int)(width * aspectRatioMult)];
                 }
-                @catch (NSException *e){
-                    aspectRatioMult = (imageView.image.size.height / imageView.image.size.width);
-                }
-            } else {
-                aspectRatioMult = (imageView.image.size.height / imageView.image.size.width);
             }
-            NSString *widthStr = style[@"width"];
-            CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
-            style[@"height"] = [NSString stringWithFormat:@"%d", (int)(width * aspectRatioMult)];
         }
-        if(style[@"height"] && !style[@"width"]){
-            // Height is set but width is not
-            CGFloat aspectRatioMult;
-            if(JasonComponentFactory.imageLoaded[url]){
-                @try {
-                    CGSize size = [JasonComponentFactory.imageLoaded[url] CGSizeValue];
-                    if(size.width > 0 && size.height > 0){
-                        aspectRatioMult = (size.width / size.height);
+        if(style[@"height"]){
+            if(style[@"ratio"]){
+                // don't do anything about the width, it will be handled in JasonComponent
+            } else {
+                if(!style[@"width"]) {
+                    // Height is set but width is not
+                    CGFloat aspectRatioMult;
+                    if(JasonComponentFactory.imageLoaded[url]){
+                        @try {
+                            CGSize size = [JasonComponentFactory.imageLoaded[url] CGSizeValue];
+                            if(size.width > 0 && size.height > 0){
+                                aspectRatioMult = (size.width / size.height);
+                            } else {
+                                aspectRatioMult = (imageView.image.size.width / imageView.image.size.height);
+                            }
+                        }
+                        @catch (NSException *e){
+                            aspectRatioMult = (imageView.image.size.width / imageView.image.size.height);
+                        }
                     } else {
                         aspectRatioMult = (imageView.image.size.width / imageView.image.size.height);
                     }
+                    NSString *heightStr = style[@"height"];
+                    CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:heightStr];
+                    style[@"width"] = [NSString stringWithFormat:@"%d", (int)(height * aspectRatioMult)];
                 }
-                @catch (NSException *e){
-                    aspectRatioMult = (imageView.image.size.width / imageView.image.size.height);
-                }
-            } else {
-                aspectRatioMult = (imageView.image.size.width / imageView.image.size.height);
             }
-            NSString *heightStr = style[@"height"];
-            CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:heightStr];
-            style[@"width"] = [NSString stringWithFormat:@"%d", (int)(height * aspectRatioMult)];
         }
         mutable_json[@"style"] = style;
     }

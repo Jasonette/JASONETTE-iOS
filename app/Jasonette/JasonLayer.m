@@ -193,7 +193,11 @@ static NSMutableDictionary *_stylesheet = nil;
     CGFloat width = -1;
     CGFloat height = -1;
     CGFloat aspectRatioMult;
-    aspectRatioMult = (size.height / size.width);
+    if(style[@"ratio"]) {
+        aspectRatioMult = 1/[JasonHelper parseRatio:style[@"ratio"]];
+    } else {
+        aspectRatioMult = (size.height / size.width);
+    }
     
     if(style[@"width"]){
         width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"width"]];
