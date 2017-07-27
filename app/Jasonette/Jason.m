@@ -841,7 +841,7 @@
         }
         VC.rendered = rendered_page;
         
-        if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:NO];
+        if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:VC.contentLoaded];
         
         // Cache the view after drawing
         [self cache_view];
