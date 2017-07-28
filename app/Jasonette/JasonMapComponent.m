@@ -55,6 +55,15 @@
         component.payload[@"finished"] = @YES;
     }
 }
++ (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+    [mapView deselectAnnotation:view.annotation animated:YES];
+    if(view.annotation[@"action"]) {
+        [[Jason client] call:view.annotation[@"action"]];
+    } else if(view.annotation[@"href"]) {
+        [[Jason client] go:view.annotation[@"href"]];
+    }
+}
 
 + (void)addPins: (NSArray *)pins toMapView: (MKMapView *)mapView{
     for(int i = 0 ; i < pins.count ; i++){
@@ -62,7 +71,7 @@
         if(pin[@"coord"]){
             CLLocation *coord = [self pinFromCoordinateString:pin[@"coord"]];
             MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
-            
+            annotation.payload = pin;
             NSString *image = pin[@"image"];
             if(image){
                 // todo
