@@ -55,23 +55,21 @@
         component.payload[@"finished"] = @YES;
     }
 }
-+ (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
++ (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
-    [mapView deselectAnnotation:view.annotation animated:YES];
-    if(view.annotation[@"action"]) {
-        [[Jason client] call:view.annotation[@"action"]];
-    } else if(view.annotation[@"href"]) {
-        [[Jason client] go:view.annotation[@"href"]];
+    NSDictionary *payload = ((NSObject *)view.annotation).payload;
+    if(payload[@"action"]) {
+        [[Jason client] call:payload[@"action"]];
+    } else if(payload[@"href"]) {
+        [[Jason client] go:payload[@"href"]];
     }
 }
-
 + (void)addPins: (NSArray *)pins toMapView: (MKMapView *)mapView{
     for(int i = 0 ; i < pins.count ; i++){
         NSDictionary *pin = pins[i];
         if(pin[@"coord"]){
             CLLocation *coord = [self pinFromCoordinateString:pin[@"coord"]];
             MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
-            annotation.payload = pin;
             NSString *image = pin[@"image"];
             if(image){
                 // todo
@@ -89,6 +87,8 @@
             }
             [annotation setCoordinate:coord.coordinate];
             [mapView addAnnotation:annotation];
+
+            annotation.payload = pin;
             
             if(pin[@"style"]){
                 if(pin[@"style"][@"selected"]){
@@ -99,6 +99,19 @@
         }
     }
 }
++ (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MKUserLocation class]])
+        return nil;
+    
+    MKAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"location"];
+    annotationView.canShowCallout = YES;
+    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    
+    
+    return annotationView;
+}
+
 /*
 + (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation{
     [self setRegion:mapView];
