@@ -22,7 +22,7 @@
 #import "MBProgressHud.h"
 @import MediaPlayer;
 
-@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, PBJVisionDelegate>
+@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, PBJVisionDelegate, UIWebViewDelegate>
                                                                                                                                  
 @property (strong, nonatomic) NSDictionary *parser;
 @property (strong, nonatomic) NSDictionary *data;
