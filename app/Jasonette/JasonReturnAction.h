@@ -8,6 +8,6 @@
 
 #import "JasonAction.h"
 
-@interface JasonReturnAction : NSObject
+@interface JasonReturnAction : JasonAction
 
 @end

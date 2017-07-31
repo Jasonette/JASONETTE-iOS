@@ -18,7 +18,7 @@
     // 1. propagate the memory._register to the next action
     // 2. set the stack with the caller's success action
     if(caller[@"success"]){
-        [[Jason client] call: caller[@"success"] with:memory._register];
+        [[Jason client] call: caller[@"success"] with:@{@"$jason": self.options}];
     } else {
         [[Jason client] finish];
     }
@@ -30,7 +30,7 @@
     // 1. propagate the memory._register to the next action
     // 2. set the stack with the caller's success action
     if(caller[@"error"]){
-        [[Jason client] call: caller[@"error"] with:memory._register];
+        [[Jason client] call: caller[@"error"] with:@{@"$jason": self.options}];
     } else {
         [[Jason client] finish];
     }
