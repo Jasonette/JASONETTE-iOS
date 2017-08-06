@@ -1507,17 +1507,17 @@
     } else {
         
         id data = [[NSUserDefaults standardUserDefaults] objectForKey:@"$global"];
-        NSDictionary *to_set;
+        NSDictionary *dict;
         BOOL deprecated = ![data isKindOfClass:[NSData class]];
         if(data) {
             if(deprecated) {
                 // string type (old version, will deprecate)
-                to_set = (NSDictionary *)data;
+                dict = (NSDictionary *)data;
             } else {
-                to_set = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                dict = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
             }
-            if(to_set && to_set.count > 0) {
-                data_stub[@"$global"] = to_set;
+            if(dict && dict.count > 0) {
+                data_stub[@"$global"] = dict;
             } else {
                 data_stub[@"$global"] = @{};
             }

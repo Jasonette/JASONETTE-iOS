@@ -52,7 +52,8 @@
         } else {
             mutated = [@{} mutableCopy];
         }
-        [[NSUserDefaults standardUserDefaults] setObject:mutated forKey:global];
+        NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:mutated];
+        [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
         [Jason client].global = mutated;
@@ -123,14 +124,9 @@
                 mutated = [self.options mutableCopy];
             }
             
-            if(deprecated) {
-                [[NSUserDefaults standardUserDefaults] setObject:mutated forKey:global];
-                [[NSUserDefaults standardUserDefaults] synchronize];
-            } else {
-                NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:mutated];
-                [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
-                [[NSUserDefaults standardUserDefaults] synchronize];
-            }
+            NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:mutated];
+            [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
+            [[NSUserDefaults standardUserDefaults] synchronize];
 
         } else {
             // first time using global
