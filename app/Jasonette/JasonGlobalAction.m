@@ -81,7 +81,20 @@
     
     @try {
         NSString *global = @"$global";
-        NSDictionary *to_set = [[NSUserDefaults standardUserDefaults] objectForKey:global];
+        
+        id data = [[NSUserDefaults standardUserDefaults] objectForKey:global];
+        NSDictionary *to_set;
+        BOOL deprecated = ![data isKindOfClass:[NSData class]];
+        if(data) {
+            if(deprecated) {
+                // string type (old version, will deprecate)
+                to_set = (NSDictionary *)data;
+            } else {
+                to_set = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            }
+        } else {
+            to_set = nil;
+        }
         NSMutableDictionary *mutated;
         if(to_set && to_set.count > 0){
             mutated = [to_set mutableCopy];
@@ -91,8 +104,14 @@
         } else {
             mutated = [self.options mutableCopy];
         }
-        [[NSUserDefaults standardUserDefaults] setObject:mutated forKey:global];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        if(deprecated) {
+            [[NSUserDefaults standardUserDefaults] setObject:mutated forKey:global];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        } else {
+            NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:mutated];
+            [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
         
         [Jason client].global = mutated;
         [[Jason client] success: mutated];
