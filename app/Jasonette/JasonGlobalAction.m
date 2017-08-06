@@ -27,8 +27,21 @@
     
     @try {
         NSString *global = @"$global";
-        NSDictionary *to_reset = [[NSUserDefaults standardUserDefaults] objectForKey:global];
+        id data = [[NSUserDefaults standardUserDefaults] objectForKey:global];
         NSMutableDictionary *mutated;
+
+        BOOL deprecated = ![data isKindOfClass:[NSData class]];
+        NSDictionary *to_reset;
+        if(data) {
+            if(deprecated) {
+                // string type (old version, will deprecate)
+                to_reset = (NSDictionary *)data;
+            } else {
+                to_reset = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            }
+        } else {
+            to_reset = nil;
+        }
         if(to_reset && to_reset.count > 0){
             mutated = [to_reset mutableCopy];
             if(self.options && self.options[@"items"]){
@@ -36,6 +49,8 @@
                     [mutated removeObjectForKey:key];
                 }
             }
+        } else {
+            mutated = [@{} mutableCopy];
         }
         [[NSUserDefaults standardUserDefaults] setObject:mutated forKey:global];
         [[NSUserDefaults standardUserDefaults] synchronize];
@@ -84,34 +99,48 @@
         
         id data = [[NSUserDefaults standardUserDefaults] objectForKey:global];
         NSDictionary *to_set;
-        BOOL deprecated = ![data isKindOfClass:[NSData class]];
-        if(data) {
-            if(deprecated) {
-                // string type (old version, will deprecate)
-                to_set = (NSDictionary *)data;
-            } else {
-                to_set = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
-            }
-        } else {
-            to_set = nil;
-        }
         NSMutableDictionary *mutated;
-        if(to_set && to_set.count > 0){
-            mutated = [to_set mutableCopy];
-            for(NSString *key in self.options){
-                mutated[key] = self.options[key];
+
+        if(data) {
+            // already set once before
+            BOOL deprecated = ![data isKindOfClass:[NSData class]];
+            if(data) {
+                if(deprecated) {
+                    // string type (old version, will deprecate)
+                    to_set = (NSDictionary *)data;
+                } else {
+                    to_set = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                }
+            } else {
+                to_set = nil;
             }
+            if(to_set && to_set.count > 0){
+                mutated = [to_set mutableCopy];
+                for(NSString *key in self.options){
+                    mutated[key] = self.options[key];
+                }
+            } else {
+                mutated = [self.options mutableCopy];
+            }
+            
+            if(deprecated) {
+                [[NSUserDefaults standardUserDefaults] setObject:mutated forKey:global];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+            } else {
+                NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:mutated];
+                [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+            }
+
         } else {
-            mutated = [self.options mutableCopy];
-        }
-        if(deprecated) {
-            [[NSUserDefaults standardUserDefaults] setObject:mutated forKey:global];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-        } else {
-            NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:mutated];
+            // first time using global
+            NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:self.options];
             [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
             [[NSUserDefaults standardUserDefaults] synchronize];
+            mutated = [self.options mutableCopy];
         }
+        
+        
         
         [Jason client].global = mutated;
         [[Jason client] success: mutated];
