@@ -20,6 +20,10 @@
 #import <FreeStreamer/FSAudioStream.h>
 #import <PBJVision/PBJVision.h>
 #import "MBProgressHud.h"
+#if DEBUG
+#include <FLEX/FLEX.h>
+#endif
+
 @import MediaPlayer;
 
 @interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, PBJVisionDelegate>

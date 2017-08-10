@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 #import "JasonViewController.h"
 #include "Constants.h"
-#include <FLEX/FLEX.h>
 #ifdef PUSH
 #import <UserNotifications/UserNotifications.h>
 #endif
