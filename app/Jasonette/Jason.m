@@ -100,6 +100,13 @@
     ROOT_URL = plist[@"url"];
     INITIAL_LOADING = [plist[@"loading"] boolValue];
     
+    // FLEX DEBUGGER
+    #if DEBUG
+    if(plist[@"debug"] && [plist[@"debug"] boolValue]){
+        [[FLEXManager sharedManager] showExplorer];
+    }
+    #endif
+
     JasonViewController *vc = [[JasonViewController alloc] init];
     if(href){
         if(href[@"url"]){
