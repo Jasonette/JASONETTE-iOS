@@ -119,6 +119,8 @@
             JASONResponseSerializer *jsonResponseSerializer = [JASONResponseSerializer serializer];
             NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
             [jsonAcceptableContentTypes addObject:@"text/plain"];
+            [jsonAcceptableContentTypes addObject:@"application/vnd.api+json"];
+
             jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
             manager.responseSerializer = jsonResponseSerializer;
         }
