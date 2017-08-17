@@ -5,6 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonSessionAction.h"
+#import "JasonHeaderValidation.h"
 
 @implementation JasonSessionAction
 - (void)set{
@@ -25,7 +26,8 @@
         session[@"domain"] = domain;
         session[@"url"] = url;
         if(header){
-            session[@"header"] = header;
+            session[@"header"] = [JasonHeaderValidation validHeaders:header];
+          
         }
         if(body){
             session[@"body"] = body;

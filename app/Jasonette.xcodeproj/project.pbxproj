@@ -75,6 +75,12 @@
 		5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B801DA5C0080049EACE /* JasonLayer.m */; };
 		5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF904351DD10F6E00C8A94E /* JasonLogAction.m */; };
 		9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */; };
+		EF44A0971F45D9E000202D04 /* JasonNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = EF44A0961F45D9E000202D04 /* JasonNotificationCenter.m */; };
+		EF44A09B1F45DEDA00202D04 /* JasonNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = EF44A09A1F45DEDA00202D04 /* JasonNotification.m */; };
+		EF44A09F1F45E04900202D04 /* JasonNotificationWrongHeaderFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = EF44A09E1F45E04900202D04 /* JasonNotificationWrongHeaderFormat.m */; };
+		EF44A0A41F45E6BC00202D04 /* JasonNotificationWarnings.m in Sources */ = {isa = PBXBuildFile; fileRef = EF44A0A31F45E6BC00202D04 /* JasonNotificationWarnings.m */; };
+		EF44A0A91F45E98E00202D04 /* JasonHeaderValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = EF44A0A81F45E98E00202D04 /* JasonHeaderValidation.m */; };
+		EF44A0AC1F45EB5900202D04 /* JasonValidations.m in Sources */ = {isa = PBXBuildFile; fileRef = EF44A0AB1F45EB5900202D04 /* JasonValidations.m */; };
 		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
 /* End PBXBuildFile section */
 
@@ -202,6 +208,18 @@
 		9A16EE0D1E592DC4006D3F73 /* JasonOptionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonOptionHelper.h; sourceTree = "<group>"; };
 		9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonOptionHelper.m; sourceTree = "<group>"; };
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
+		EF44A0951F45D9E000202D04 /* JasonNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonNotificationCenter.h; sourceTree = "<group>"; };
+		EF44A0961F45D9E000202D04 /* JasonNotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonNotificationCenter.m; sourceTree = "<group>"; };
+		EF44A0991F45DEDA00202D04 /* JasonNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonNotification.h; sourceTree = "<group>"; };
+		EF44A09A1F45DEDA00202D04 /* JasonNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonNotification.m; sourceTree = "<group>"; };
+		EF44A09D1F45E04900202D04 /* JasonNotificationWrongHeaderFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonNotificationWrongHeaderFormat.h; sourceTree = "<group>"; };
+		EF44A09E1F45E04900202D04 /* JasonNotificationWrongHeaderFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonNotificationWrongHeaderFormat.m; sourceTree = "<group>"; };
+		EF44A0A21F45E6BC00202D04 /* JasonNotificationWarnings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonNotificationWarnings.h; sourceTree = "<group>"; };
+		EF44A0A31F45E6BC00202D04 /* JasonNotificationWarnings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonNotificationWarnings.m; sourceTree = "<group>"; };
+		EF44A0A71F45E98E00202D04 /* JasonHeaderValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonHeaderValidation.h; sourceTree = "<group>"; };
+		EF44A0A81F45E98E00202D04 /* JasonHeaderValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonHeaderValidation.m; sourceTree = "<group>"; };
+		EF44A0AA1F45EB5900202D04 /* JasonValidations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonValidations.h; sourceTree = "<group>"; };
+		EF44A0AB1F45EB5900202D04 /* JasonValidations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonValidations.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -481,6 +499,8 @@
 		5E3177901D1F229200D87778 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				EF44A0A51F45E96F00202D04 /* Validations */,
+				EF44A0941F45D9B000202D04 /* Notifications */,
 				9A16EE101E592DC9006D3F73 /* Option */,
 				5E3177041D1E411E00D87778 /* JasonHelper.h */,
 				5E3177051D1E411E00D87778 /* JasonHelper.m */,
@@ -674,6 +694,72 @@
 			name = Option;
 			sourceTree = "<group>";
 		};
+		EF44A0941F45D9B000202D04 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				EF44A0981F45D9E800202D04 /* NotificationCenter */,
+				EF44A09C1F45DEDE00202D04 /* Notification */,
+				EF44A0A11F45E0DB00202D04 /* Warnings */,
+			);
+			name = Notifications;
+			sourceTree = "<group>";
+		};
+		EF44A0981F45D9E800202D04 /* NotificationCenter */ = {
+			isa = PBXGroup;
+			children = (
+				EF44A0951F45D9E000202D04 /* JasonNotificationCenter.h */,
+				EF44A0961F45D9E000202D04 /* JasonNotificationCenter.m */,
+			);
+			name = NotificationCenter;
+			sourceTree = "<group>";
+		};
+		EF44A09C1F45DEDE00202D04 /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				EF44A0991F45DEDA00202D04 /* JasonNotification.h */,
+				EF44A09A1F45DEDA00202D04 /* JasonNotification.m */,
+			);
+			name = Notification;
+			sourceTree = "<group>";
+		};
+		EF44A0A01F45E04C00202D04 /* WrongHeaderFormat */ = {
+			isa = PBXGroup;
+			children = (
+				EF44A09D1F45E04900202D04 /* JasonNotificationWrongHeaderFormat.h */,
+				EF44A09E1F45E04900202D04 /* JasonNotificationWrongHeaderFormat.m */,
+			);
+			name = WrongHeaderFormat;
+			sourceTree = "<group>";
+		};
+		EF44A0A11F45E0DB00202D04 /* Warnings */ = {
+			isa = PBXGroup;
+			children = (
+				EF44A0A21F45E6BC00202D04 /* JasonNotificationWarnings.h */,
+				EF44A0A31F45E6BC00202D04 /* JasonNotificationWarnings.m */,
+				EF44A0A01F45E04C00202D04 /* WrongHeaderFormat */,
+			);
+			name = Warnings;
+			sourceTree = "<group>";
+		};
+		EF44A0A51F45E96F00202D04 /* Validations */ = {
+			isa = PBXGroup;
+			children = (
+				EF44A0AA1F45EB5900202D04 /* JasonValidations.h */,
+				EF44A0AB1F45EB5900202D04 /* JasonValidations.m */,
+				EF44A0A61F45E97700202D04 /* HeaderValidation */,
+			);
+			name = Validations;
+			sourceTree = "<group>";
+		};
+		EF44A0A61F45E97700202D04 /* HeaderValidation */ = {
+			isa = PBXGroup;
+			children = (
+				EF44A0A71F45E98E00202D04 /* JasonHeaderValidation.h */,
+				EF44A0A81F45E98E00202D04 /* JasonHeaderValidation.m */,
+			);
+			name = HeaderValidation;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -824,6 +910,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF44A09B1F45DEDA00202D04 /* JasonNotification.m in Sources */,
 				5EE85B6A1DA444770049EACE /* JasonMapComponent.m in Sources */,
 				5E0956301DA34D70007ADC78 /* JasonImageComponent.m in Sources */,
 				5E31776D1D1E411F00D87778 /* JasonStack.m in Sources */,
@@ -833,12 +920,16 @@
 				5E3177131D1E411E00D87778 /* JasonAudioAction.m in Sources */,
 				042852531E984B890081F742 /* NoPaddingButton.m in Sources */,
 				5EE85B791DA582940049EACE /* JasonAction.m in Sources */,
+				EF44A0A91F45E98E00202D04 /* JasonHeaderValidation.m in Sources */,
 				5E2CB5C61D9DF5B600DA2B83 /* JasonComponentFactory.m in Sources */,
 				5E3177611D1E411F00D87778 /* Jason.m in Sources */,
 				5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */,
+				EF44A09F1F45E04900202D04 /* JasonNotificationWrongHeaderFormat.m in Sources */,
 				5E3176611D1E400C00D87778 /* JasonAppDelegate.m in Sources */,
 				5E31776F1D1E411F00D87778 /* JasonViewController.m in Sources */,
 				5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */,
+				EF44A0AC1F45EB5900202D04 /* JasonValidations.m in Sources */,
+				EF44A0971F45D9E000202D04 /* JasonNotificationCenter.m in Sources */,
 				5E31774D1D1E411F00D87778 /* JasonMemory.m in Sources */,
 				5E09563C1DA34F1A007ADC78 /* JasonSliderComponent.m in Sources */,
 				5E3177711D1E411F00D87778 /* JasonHelper.m in Sources */,
@@ -866,6 +957,7 @@
 				5EDF644E1DB0480500C5E403 /* JasonSessionAction.m in Sources */,
 				5E31774C1D1E411F00D87778 /* JasonMediaAction.m in Sources */,
 				5E3177241D1E411F00D87778 /* JasonHorizontalSectionItem.m in Sources */,
+				EF44A0A41F45E6BC00202D04 /* JasonNotificationWarnings.m in Sources */,
 				5E3177221D1E411F00D87778 /* JasonHorizontalSection.m in Sources */,
 				04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */,
 				5E3177301D1E411F00D87778 /* JasonGeoAction.m in Sources */,

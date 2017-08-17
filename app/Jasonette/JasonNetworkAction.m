@@ -7,6 +7,9 @@
 //
 #import "JasonNetworkAction.h"
 
+#import "JasonNotificationWarnings.h"
+#import "JasonValidations.h"
+
 @implementation JasonNetworkAction
 - (void)storeSession:(NSDictionary *)session forDomain:(NSString*)domain{
     UICKeyChainStore *keychain = [UICKeyChainStore keyChainStoreWithService:[domain lowercaseString]];
@@ -83,12 +86,23 @@
         
         if(headers && headers.count > 0){
             for(NSString *key in headers){
-                [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
+                id headerValue = headers[key];
+                if([JasonValidations isString:headerValue]){
+                    [manager.requestSerializer setValue:headerValue forHTTPHeaderField:key];
+                } else {
+                  [JasonNotificationWarnings triggerWrongHeaderFormatWarningWithKey:key andValue:headerValue];
+                }
             }
         }
+      
         if(session && session.count > 0 && session[@"header"]){
             for(NSString *key in session[@"header"]){
-                [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                id headerValue = session[@"header"][key];
+                if([JasonValidations isString:headerValue]){
+                  [manager.requestSerializer setValue:headerValue forHTTPHeaderField:key];
+                } else {
+                  [JasonNotificationWarnings triggerWrongHeaderFormatWarningWithKey:key andValue:headerValue];
+                }
             }
         }
         NSString *dataType = self.options[@"dataType"];     // dataType is deprecated. Use data_type
