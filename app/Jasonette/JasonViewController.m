@@ -307,9 +307,16 @@
 }
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForHeaderInSection:(NSInteger)section
 {
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1000000 inSection:section];
-    CGFloat f = [self getEstimatedHeight:indexPath defaultHeight:60.0f];
-    return f;
+    NSDictionary *header = [headers objectAtIndex:section];
+    if(header && [header count] > 0){
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1000000 inSection:section];
+        NSLog(@"estimated for header");
+        CGFloat f = [self getEstimatedHeight:indexPath defaultHeight:300.0f];
+        return f;
+        
+    } else {
+        return 0;
+    }
 }
 
 
