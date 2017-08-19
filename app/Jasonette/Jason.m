@@ -2307,8 +2307,52 @@
                         }
                         
                     } else if([titleDict[@"type"] isEqualToString:@"label"]) {
-                        VC.navigationItem.titleView = nil;
-                        VC.navigationItem.title = titleDict[@"text"];
+
+                        UILabel *tLabel = [[UILabel alloc] init];
+                        tLabel.text = titleDict[@"text"];
+                        NSString *font = @"HelveticaNeue";
+                        CGFloat size = 20;
+                        CGFloat x=0;
+                        CGFloat y=0;
+                        [tLabel sizeToFit];
+
+                        
+
+                        if(titleDict[@"style"]){
+                            if(titleDict[@"style"][@"size"]){
+                                size = [titleDict[@"style"][@"size"] floatValue];
+                            }
+                            if(titleDict[@"style"][@"font"]){
+                                font = titleDict[@"style"][@"font"];
+                            }
+                            if(titleDict[@"style"][@"left"]){
+                                x = [((NSString *)titleDict[@"style"][@"left"]) floatValue];
+                            }
+                            if(titleDict[@"style"][@"top"]){
+                                y = [((NSString *)titleDict[@"style"][@"top"]) floatValue];
+                            }
+
+                            tLabel.font = [UIFont fontWithName: font size:size];
+                            
+                            if(titleDict[@"style"][@"align"]) {
+                                if([titleDict[@"style"][@"align"] isEqualToString:@"left"]) {
+                                    UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
+                                    [v addSubview:tLabel];
+                                    VC.navigationItem.titleView = v;
+
+                                    tLabel.frame = CGRectMake(x,y,VC.navigationController.navigationBar.frame.size.width, tLabel.frame.size.height);
+                                    [VC.navigationItem.titleView setFrame: CGRectMake(0, 0, VC.navigationController.navigationBar.frame.size.width, VC.navigationItem.titleView.frame.size.height)];
+                                    tLabel.textAlignment = NSTextAlignmentLeft;
+
+                                } else {
+                                    [self setCenterLogoLabel:tLabel atY:y];
+                                }
+                            } else {
+                                [self setCenterLogoLabel:tLabel atY:y];
+                            }
+                        } else {
+                            [self setCenterLogoLabel:tLabel atY:y];
+                        }
                     }
                 }
             } else if([nav[@"title"] isKindOfClass:[NSString class]]){
@@ -2348,15 +2392,30 @@
     navigationController.navigationBarHidden = NO;
 
 }
-
+- (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y{
+    UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
+    [v addSubview:tLabel];
+    VC.navigationItem.titleView = v;
+    tLabel.frame = CGRectMake(0,y,tLabel.frame.size.width, tLabel.frame.size.height);
+    [tLabel sizeToFit];
+    v.frame = CGRectMake(0,0,tLabel.frame.size.width, tLabel.frame.size.height+y);
+}
 - (void)setLogoImage: (UIImage *)image withStyle:(NSDictionary *)style {
     CGFloat width = 0;
     CGFloat height = 0;
+    CGFloat x = 0;
+    CGFloat y = 0;
     if(style && style[@"width"]){
         width = [((NSString *)style[@"width"]) floatValue];
     }
     if(style && style[@"height"]){
         height = [((NSString *)style[@"height"]) floatValue];
+    }
+    if(style && style[@"left"]){
+        x = [((NSString *)style[@"left"]) floatValue];
+    }
+    if(style && style[@"top"]){
+        y = [((NSString *)style[@"top"]) floatValue];
     }
     
     
@@ -2366,7 +2425,7 @@
     if(height == 0){
         height = image.size.height;
     }
-    CGRect frame = CGRectMake(0, 0, width, height);
+    CGRect frame = CGRectMake(x, y, width, height);
     
     UIView *logoView =[[UIView alloc] initWithFrame:frame];
     UIImageView *logoImageView = [[UIImageView alloc] initWithImage:image];
@@ -2374,6 +2433,12 @@
     
     [logoView addSubview:logoImageView];
     VC.navigationItem.titleView = logoView;
+
+    if(style[@"align"]) {
+        if([style[@"align"] isEqualToString:@"left"]) {
+            [VC.navigationItem.titleView setFrame: CGRectMake(0, 0, VC.navigationController.navigationBar.frame.size.width, VC.navigationItem.titleView.frame.size.height)];
+        }
+    }
 }
 
 - (UIButton *)setMenuButtonImage: (UIImage *)image forButton: (UIButton *)button withMenu:(NSDictionary *)menu {
