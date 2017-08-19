@@ -142,6 +142,7 @@
         }
         
         NSString *method = self.options[@"method"];
+        if(!method) method = @"get";
         if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
             [self loadCookies];
         }
