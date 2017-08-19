@@ -74,6 +74,26 @@
         [[Jason client] call: sender.payload[@"action"]];
     }
 }
++ (void) webViewDidFinishLoad:(UIWebView *)webView
+{
+    NSString *summon = @"var JASON={call: function(e){var n=document.createElement(\"IFRAME\");n.setAttribute(\"src\",\"jason:\"+JSON.stringify(e)),document.documentElement.appendChild(n),n.parentNode.removeChild(n),n=null}};";
+    [webView stringByEvaluatingJavaScriptFromString:summon];
+}
++ (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
 
+    if ([[[request URL] absoluteString] hasPrefix:@"jason:"]) {
+        // Extract the selector name from the URL
+        NSString *json = [[[request URL] absoluteString] substringFromIndex:6];
+        json = [json stringByRemovingPercentEncoding];
+
+        NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *action = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        [[Jason client] call: action];
+        
+        return NO;
+    }
+    
+    return YES;
+}
 
 @end

@@ -1857,6 +1857,7 @@
                         VC.background = nil;
                     }
                     VC.background = [[UIWebView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+                    ((UIWebView*)VC.background).delegate = self;
                     
                     // Need to make the background transparent so that it doesn't flash white when first loading
                     VC.background.opaque = NO;
@@ -1864,7 +1865,15 @@
                 }
                 if(bg[@"text"]){
                     NSString *html = bg[@"text"];
-                    [((UIWebView*)VC.background) loadHTMLString:html baseURL:nil];
+                    if(VC.background.payload && VC.background.payload[@"html"] && [VC.background.payload[@"html"] isEqualToString:html]) {
+                        // same html, no need to reload
+                    } else {
+                        // different html, reload
+                        [((UIWebView*)VC.background) loadHTMLString:html baseURL:nil];
+                    }
+
+                    VC.background.payload = @{@"html": html};
+
                 }
                 
                 // allow autoplay
@@ -1890,6 +1899,28 @@
         }
     });
 }
+- (void) webViewDidFinishLoad:(UIWebView *)webView
+{
+    NSString *summon = @"var JASON={call: function(e){var n=document.createElement(\"IFRAME\");n.setAttribute(\"src\",\"jason:\"+JSON.stringify(e)),document.documentElement.appendChild(n),n.parentNode.removeChild(n),n=null}};";
+    [webView stringByEvaluatingJavaScriptFromString:summon];
+}
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    
+    if ([[[request URL] absoluteString] hasPrefix:@"jason:"]) {
+        // Extract the selector name from the URL
+        NSString *json = [[[request URL] absoluteString] substringFromIndex:6];
+        json = [json stringByRemovingPercentEncoding];
+        
+        NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *action = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        [[Jason client] call: action];
+        
+        return NO;
+    }
+    
+    return YES;
+}
+
 - (void)drawBackground:(NSString *)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
 
