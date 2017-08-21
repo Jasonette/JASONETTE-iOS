@@ -155,14 +155,24 @@
      **************************************************/
       [self call: action with: nil];
 }
-- (void)call: (NSDictionary *)action with: (NSDictionary*)data{
-    if(action && action.count > 0){
-        JasonMemory *memory = [JasonMemory client];
-        memory._stack = action;
-        if(data && data.count > 0){
-            memory._register = data;
+- (void)call: (id)action with: (NSDictionary*)data{
+    JasonMemory *memory = [JasonMemory client];
+    
+    if(data && data.count > 0){
+        memory._register = data;
+    }
+    
+    if([action isKindOfClass:[NSDictionary class]]){
+        if((NSDictionary *)action && ((NSDictionary *)action).count > 0){
+            memory._stack = action;
+            [self exec];
+            
         }
-        [self exec];
+    } else {
+        if(memory._register && memory._register.count > 0) {
+            memory._stack = [self filloutTemplate: action withData: memory._register];
+            [self exec];
+        }
     }
 }
 - (void)success{
