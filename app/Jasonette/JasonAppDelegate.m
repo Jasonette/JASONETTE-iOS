@@ -61,8 +61,12 @@
     } else if(launchOptions && launchOptions.count > 0 && [launchOptions objectForKey: UIApplicationLaunchOptionsRemoteNotificationKey]){
         UILocalNotification *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
         if(notification){
-            if(notification.userInfo && notification.userInfo[@"href"]){
-                [[Jason client] go:notification.userInfo[@"href"]];
+            if(notification.userInfo) {
+                if(notification.userInfo[@"href"]){
+                    [[Jason client] go:notification.userInfo[@"href"]];
+                } else if(notification.userInfo[@"action"]) {
+                    [[Jason client] call:notification.userInfo[@"action"]];
+                }
             }
         }
 #endif
@@ -162,10 +166,14 @@
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
     
-    if(response.notification.request.content.userInfo && response.notification.request.content.userInfo[@"href"]){
-        [[Jason client] go:response.notification.request.content.userInfo[@"href"]];
+    if(response.notification.request.content.userInfo) {
+        if(response.notification.request.content.userInfo[@"href"]){
+            [[Jason client] go:response.notification.request.content.userInfo[@"href"]];
+        } else if(response.notification.request.content.userInfo[@"action"]) {
+            [[Jason client] call:response.notification.request.content.userInfo[@"action"]];
+        }
     }
-    
+   
     completionHandler();
 }
 #endif
