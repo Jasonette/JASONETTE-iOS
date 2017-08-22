@@ -1013,9 +1013,6 @@
 }
 
 - (void)require{
-    if(VC.loading){
-        [self networkLoading:YES with:nil];
-    }
     
     NSString *origin_url = VC.url;
     
