@@ -37,6 +37,7 @@
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL searchMode;
 @property (nonatomic, assign) BOOL oauth_in_process;
+@property (strong, nonatomic) NSMutableDictionary *modules;
 
 
 + (Jason*)client;

@@ -14,7 +14,7 @@
 
 @implementation JasonAppDelegate
 
-- (void)init_extensions{
+- (void)init_extensions: (NSDictionary *)launchOptions{
     // 1. Find json files that start with $
     // 2. For each file, see if the class contains an "initialize" class method
     // 3. If so, run them one by one.
@@ -31,12 +31,16 @@
         NSDictionary *json = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
         [inputStream close];
         if(json[@"classname"]){
-            Class ExtensionClass = NSClassFromString(json[@"classname"]);
-            [ExtensionClass performSelector: @selector(initialize)];
+            [self init_class:json[@"classname"] withLaunchOptions:launchOptions];
         }
     }
+    
+    
 }
-
+- (void) init_class: (NSString *)className withLaunchOptions: (NSDictionary *)launchOptions{
+    Class ExtensionClass = NSClassFromString(className);
+    [ExtensionClass performSelector: @selector(initialize:) withObject: launchOptions];
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
@@ -44,34 +48,23 @@
     NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
     [NSURLCache setSharedURLCache:URLCache];
 
-    // Run "initialize" method for all extensions
-    [self init_extensions];
     
-#ifdef PUSH
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"registerNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registerNotification) name:@"registerNotification" object:nil];
-#else
-    NSLog(@"Push notification turned off by default. If you'd like to suport push, uncomment the #define statement in Constants.h and turn on the push notification feature from the capabilities tab.");
-#endif
+    // # initialize
+    // Run "initialize" for built-in daemon type actions
+    NSArray *native_daemon_actions = @[@"push"];
+    for(NSString *action in native_daemon_actions) {
+        [self init_class:action withLaunchOptions:launchOptions];
+    }
+    // Run "initialize" method for all extensions
+    [self init_extensions: launchOptions];
+
     
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey]){
         // launched with url. so wait until openURL is called.
         
-#ifdef PUSH
     } else if(launchOptions && launchOptions.count > 0 && [launchOptions objectForKey: UIApplicationLaunchOptionsRemoteNotificationKey]){
-        UILocalNotification *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-        if(notification){
-            if(notification.userInfo) {
-                if(notification.userInfo[@"href"]){
-                    [[Jason client] go:notification.userInfo[@"href"]];
-                } else if(notification.userInfo[@"action"]) {
-                    [[Jason client] call:notification.userInfo[@"action"]];
-                }
-            }
-        }
-#endif
-        
-        
+        // launched with push notification. so ignore. It's already been taken care of by
+        // JasonPushAction.initialize from [self init_extensions]
     } else {
         [[Jason client] start:nil];
     }
@@ -108,74 +101,5 @@
 
 
 
-
-
-
-// PUSH RELATED
-// The "PUSH" constant is defined in Constants.h
-// By default PUSH is disabled. To turn it on, go to Constants.h and uncomment the #define statement, and then go to the capabilities tab and switch the push notification feature on.
-
-#ifdef PUSH
-
-- (void)registerNotification {
-    if(SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(@"10.0")) {
-        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-        center.delegate = self;
-        [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
-            if( !error ){
-                [[UIApplication sharedApplication] registerForRemoteNotifications];
-            }
-        }];
-    }
-    else {
-        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
-    }
-}
-
-#pragma mark - Remote Notification Delegate below iOS 9
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
-    [application registerForRemoteNotifications];
-}
-
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
-    NSString *device_token = [[NSString alloc]initWithFormat:@"%@",[[[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""]];
-    NSLog(@"Device Token = %@",device_token);
-    [[Jason client] onRemoteNotificationDeviceRegistered: device_token];
-}
-
--(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
-    [[Jason client] onRemoteNotification:userInfo];
-}
-
--(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
-{
-    NSLog(@"Error = %@",error);
-}
-
-#pragma mark - UNUserNotificationCenter Delegate above iOS 10
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
-    
-    [[Jason client] onRemoteNotification:notification.request.content.userInfo];
-    
-    completionHandler(UNNotificationPresentationOptionNone);
-}
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
-    
-    if(response.notification.request.content.userInfo) {
-        if(response.notification.request.content.userInfo[@"href"]){
-            [[Jason client] go:response.notification.request.content.userInfo[@"href"]];
-        } else if(response.notification.request.content.userInfo[@"action"]) {
-            [[Jason client] call:response.notification.request.content.userInfo[@"action"]];
-        }
-    }
-   
-    completionHandler();
-}
-#endif
 
 @end

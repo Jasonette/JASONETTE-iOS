@@ -13,6 +13,7 @@
 		045C77EB1F02791D00F06598 /* error.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77EA1F02791D00F06598 /* error.json */; };
 		045C77F11F029BEC00F06598 /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 045C77F01F029BEC00F06598 /* parser.js */; };
 		045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */; };
+		04B1568C1F4B8D6600625C61 /* JasonPushAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04B1568B1F4B8D6600625C61 /* JasonPushAction.m */; };
 		04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */; };
 		04F3BCBE1F2BF9ED00C95170 /* NSObject+JSONPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
@@ -88,6 +89,8 @@
 		045C77F01F029BEC00F06598 /* parser.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = parser.js; sourceTree = "<group>"; };
 		045E5F3B1E3661060088D5E6 /* JasonReturnAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonReturnAction.h; sourceTree = "<group>"; };
 		045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonReturnAction.m; sourceTree = "<group>"; };
+		04B1568A1F4B8D6600625C61 /* JasonPushAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonPushAction.h; sourceTree = "<group>"; };
+		04B1568B1F4B8D6600625C61 /* JasonPushAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonPushAction.m; sourceTree = "<group>"; };
 		04D947E91F16ACF50063CC65 /* JASONResponseSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JASONResponseSerializer.h; sourceTree = "<group>"; };
 		04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JASONResponseSerializer.m; sourceTree = "<group>"; };
 		04F3BCBC1F2BF9ED00C95170 /* NSObject+JSONPayload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+JSONPayload.h"; sourceTree = "<group>"; };
@@ -244,6 +247,15 @@
 			name = $return;
 			sourceTree = "<group>";
 		};
+		04B1568D1F4B8D6A00625C61 /* $push */ = {
+			isa = PBXGroup;
+			children = (
+				04B1568A1F4B8D6600625C61 /* JasonPushAction.h */,
+				04B1568B1F4B8D6600625C61 /* JasonPushAction.m */,
+			);
+			name = $push;
+			sourceTree = "<group>";
+		};
 		5E0956271DA30970007ADC78 /* Component */ = {
 			isa = PBXGroup;
 			children = (
@@ -362,6 +374,7 @@
 				5E98626A1DCF1F6A0084CA4A /* $notification */,
 				5EDF644F1DB0480B00C5E403 /* $session */,
 				5E31778F1D1F20AB00D87778 /* $oauth */,
+				04B1568D1F4B8D6A00625C61 /* $push */,
 				045E5F3E1E36610B0088D5E6 /* $return */,
 				5E3177AB1D1F297400D87778 /* $timer */,
 				5E3177AA1D1F296300D87778 /* $util */,
@@ -833,6 +846,7 @@
 				5E3177131D1E411E00D87778 /* JasonAudioAction.m in Sources */,
 				042852531E984B890081F742 /* NoPaddingButton.m in Sources */,
 				5EE85B791DA582940049EACE /* JasonAction.m in Sources */,
+				04B1568C1F4B8D6600625C61 /* JasonPushAction.m in Sources */,
 				5E2CB5C61D9DF5B600DA2B83 /* JasonComponentFactory.m in Sources */,
 				5E3177611D1E411F00D87778 /* Jason.m in Sources */,
 				5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */,
