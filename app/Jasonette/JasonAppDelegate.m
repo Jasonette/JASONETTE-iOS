@@ -10,7 +10,6 @@
 
 @end
 
-#define SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 @implementation JasonAppDelegate
 
@@ -38,8 +37,17 @@
     
 }
 - (void) init_class: (NSString *)className withLaunchOptions: (NSDictionary *)launchOptions{
-    Class ExtensionClass = NSClassFromString(className);
-    [ExtensionClass performSelector: @selector(initialize:) withObject: launchOptions];
+    Class ActionClass = NSClassFromString(className);
+    id module;
+    
+    if([Jason client].modules && [Jason client].modules[className]){
+        module = [Jason client].modules[className];
+    } else {
+        module = [[ActionClass alloc] init];
+        [Jason client].modules[className] = module;
+    }
+    
+    [module performSelector: @selector(initialize:) withObject: launchOptions];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -47,17 +55,17 @@
     
     NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
     [NSURLCache setSharedURLCache:URLCache];
-
+    
     
     // # initialize
     // Run "initialize" for built-in daemon type actions
-    NSArray *native_daemon_actions = @[@"push"];
+    NSArray *native_daemon_actions = @[@"JasonPushAction"];
     for(NSString *action in native_daemon_actions) {
         [self init_class:action withLaunchOptions:launchOptions];
     }
     // Run "initialize" method for all extensions
     [self init_extensions: launchOptions];
-
+    
     
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey]){
         // launched with url. so wait until openURL is called.
@@ -84,7 +92,6 @@
         if(href_view && href_view.length > 0) href[@"view"] = href_view;
         if(href_transition && href_transition.length > 0) {
             href[@"transition"] = href_transition;
-            
         } else {
             // Default is modal
             href[@"transition"] = @"modal";
@@ -99,7 +106,29 @@
 }
 
 
+#ifdef PUSH
+#pragma mark - Remote Notification Delegate below iOS 9
 
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    [application registerForRemoteNotifications];
+}
 
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
+    NSString *device_token = [[NSString alloc]initWithFormat:@"%@",[[[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""]];
+    NSLog(@"Device Token = %@",device_token);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil userInfo:@{@"device_token": device_token}];
+}
+
+-(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotification" object:nil userInfo:userInfo];
+}
+
+-(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    NSLog(@"Error = %@",error);
+}
+#endif
 
 @end
+

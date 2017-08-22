@@ -46,22 +46,25 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
         self.searchMode = NO;
         self.modules = [[NSMutableDictionary alloc] init];
-
+        
         // Add observers for public API
         [[NSNotificationCenter defaultCenter]
-                addObserver:self
-                   selector:@selector(notifySuccess:)
-                       name:@"Jason.success"
-                     object:nil];
-
+         addObserver:self
+         selector:@selector(notifySuccess:)
+         name:@"Jason.success"
+         object:nil];
+        
         [[NSNotificationCenter defaultCenter]
-            addObserver:self
-               selector:@selector(notifyError:)
-                   name:@"Jason.error"
-                 object:nil];
-
+         addObserver:self
+         selector:@selector(notifyError:)
+         name:@"Jason.error"
+         object:nil];
+        
     }
     return self;
+}
+- (UIViewController *)getVC {
+    return VC;
 }
 
 #pragma mark - Jason Core API Notifications
@@ -80,7 +83,7 @@
 - (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final{
     id jsonResponseObject = [JasonHelper read_local_json:url];
     [self include:jsonResponseObject andCompletionHandler:^(id res){
-        dispatch_async(dispatch_get_main_queue(), ^{                    
+        dispatch_async(dispatch_get_main_queue(), ^{
             VC.original = @{@"$jason": res[@"$jason"]};
             [self drawViewFromJason: VC.original asFinal:final];
         });
@@ -102,12 +105,12 @@
     INITIAL_LOADING = [plist[@"loading"] boolValue];
     
     // FLEX DEBUGGER
-    #if DEBUG
+#if DEBUG
     if(plist[@"debug"] && [plist[@"debug"] boolValue]){
         [[FLEXManager sharedManager] showExplorer];
     }
-    #endif
-
+#endif
+    
     JasonViewController *vc = [[JasonViewController alloc] init];
     if(href){
         if(href[@"url"]){
@@ -154,7 +157,7 @@
      * (ex) [[Jason client] call: @{@"type": @"$render"}]
      *
      **************************************************/
-      [self call: action with: nil];
+    [self call: action with: nil];
 }
 - (void)call: (id)action with: (NSDictionary*)data{
     JasonMemory *memory = [JasonMemory client];
@@ -167,7 +170,6 @@
         if((NSDictionary *)action && ((NSDictionary *)action).count > 0){
             memory._stack = action;
             [self exec];
-            
         }
     } else {
         if(memory._register && memory._register.count > 0) {
@@ -269,7 +271,7 @@
     /************************************************************************************
      *
      * Loading indicator
-     * 
+     *
      * pass YES to start loading
      * pass NO to end loading
      *
@@ -288,7 +290,7 @@
         } else {
             [JDStatusBarNotification showActivityIndicator:YES indicatorStyle:UIActivityIndicatorViewStyleGray];
         }
-
+        
     } else {
         if([JDStatusBarNotification isVisible]){
             [JDStatusBarNotification dismissAnimated:YES];
@@ -375,11 +377,11 @@
     // Act and close
     JasonMemory *memory = [JasonMemory client];
     if(memory._stack && memory._stack.count > 0){
-      memory.need_to_exec = YES;
+        memory.need_to_exec = YES;
     } else {
-      [self unlock];
+        [self unlock];
     }
-
+    
     if(menu_component){
         if([menu_component isOpen]){
             [menu_component close];
@@ -391,9 +393,9 @@
 - (void)ok: (NSDictionary *)data{
     JasonMemory *memory = [JasonMemory client];
     if(memory._stack && memory._stack.count > 0){
-      if(data && data.count > 0) {
-        [memory set_register: data];
-      }
+        if(data && data.count > 0) {
+            [memory set_register: data];
+        }
     }
     [self ok];
 }
@@ -429,18 +431,18 @@
             NSDictionary *item_action = item[@"action"];
             NSDictionary *item_href = item[@"href"];
             REMenuItem *menuItem = [[REMenuItem alloc] initWithTitle:itemtitle
-                                                    subtitle:subtitle
-                                                       image:nil
-                                            highlightedImage:nil
-                                                      action:^(REMenuItem *item) {
-                                                            [menu_component close];
-                                                            if(item_action){
-                                                                [memory set_stack:item_action];
-                                                                [self exec];
-                                                            } else if (item_href){
-                                                                [self go:item_href];
-                                                            }
-                                                      }];
+                                                            subtitle:subtitle
+                                                               image:nil
+                                                    highlightedImage:nil
+                                                              action:^(REMenuItem *item) {
+                                                                  [menu_component close];
+                                                                  if(item_action){
+                                                                      [memory set_stack:item_action];
+                                                                      [self exec];
+                                                                  } else if (item_href){
+                                                                      [self go:item_href];
+                                                                  }
+                                                              }];
             
             menuItem.backgroundColor = backgroundColor;
             menuItem.textColor = foregroundColor;
@@ -463,116 +465,116 @@
     
     /*
      
-    # LAMBDA - Functional Programming for Actions
-    #  Call an action by name, with arguments. Wait for it to finish. And continue on with its return value.
-
-    # How it works
-    1. Calls another action by name
-    2. Can also pass arguments via `options`, which will be interpreted as `$jason` in the callee action
-    2. Waits for the callee action to return via `$return.success` or `$return.error`
-    3. The Callee action can return using the `$return.success` or `$return.error` actions.
-    4. `$return.success` calls the caller action's `success` action with return value. The caller action picks up where it left off and continues walking down the `success` action call chain.
-    4. `$return.error` calls the caller action's `error` action with return value. The caller action picks up where it left off and continues walking down the `error` action call chain.
-
-    # Example 1: Basic lambda (Same as trigger)
-    {
+     # LAMBDA - Functional Programming for Actions
+     #  Call an action by name, with arguments. Wait for it to finish. And continue on with its return value.
+     
+     # How it works
+     1. Calls another action by name
+     2. Can also pass arguments via `options`, which will be interpreted as `$jason` in the callee action
+     2. Waits for the callee action to return via `$return.success` or `$return.error`
+     3. The Callee action can return using the `$return.success` or `$return.error` actions.
+     4. `$return.success` calls the caller action's `success` action with return value. The caller action picks up where it left off and continues walking down the `success` action call chain.
+     4. `$return.error` calls the caller action's `error` action with return value. The caller action picks up where it left off and continues walking down the `error` action call chain.
+     
+     # Example 1: Basic lambda (Same as trigger)
+     {
         "type": "$lambda",
         "options": {
             "name": "fetch"
         }
-    }
-
-
-    # Example 2: Basic lambda with success/error handlers
-    {
+     }
+     
+     
+     # Example 2: Basic lambda with success/error handlers
+     {
         "type": "$lambda",
-        "options": {
-            "name": "fetch"
-        }
-        "success": {
-            "type": "$render"
-        },
-        "error": {
-            "type": "$util.toast",
-            "options": {
-                "text": "Error"
-            }
-        }
-    }
-
-
-    # Example 3: Passing arguments
-    {
-        "type": "$lambda",
-        "options": {
-            "name": "fetch",
-            "options": {
-                "url": "https://www.jasonbase.com/things/73g"
-            }
-        },
-        "success": {
-            "type": "$render"
-        },
-        "error": {
-            "type": "$util.toast",
-            "options": {
-                "text": "Error"
-            }
-        }
-    }
-
-    # Example 4: Using the previous action's return value
-
-    {
-        "type": "$network.request",
-        "options": {
-            "url": "https://www.jasonbase.com/things/73g"
-        },
-        "success": {
-            "type": "$lambda",
-            "options": {
-                "name": "draw"
-            },
-            "success": {
-                "type": "$render"
-            },
-            "error": {
-                "type": "$util.toast",
-                "options": {
-                    "text": "Error"
-                }
-            }
-        }
-    }
-
-    # Example 5: Using the previous action's return value as well as custom options
-
-    {
-        "type": "$network.request",
-        "options": {
-            "url": "https://www.jasonbase.com/things/73g"
-        },
-        "success": {
-            "type": "$lambda",
-            "options": {
-                "name": "draw",
-                "options": {
-                    "p1": "another param",
-                    "p2": "yet another param"
-                }
-            },
-            "success": {
-                "type": "$render"
-            },
-            "error": {
-                "type": "$util.toast",
-                "options": {
-                    "text": "Error"
-                }
-            }
-        }
-    }
-
+         "options": {
+             "name": "fetch"
+         }
+         "success": {
+             "type": "$render"
+         },
+         "error": {
+             "type": "$util.toast",
+             "options": {
+                 "text": "Error"
+             }
+         }
+     }
+     
+     
+     # Example 3: Passing arguments
+     {
+         "type": "$lambda",
+         "options": {
+             "name": "fetch",
+             "options": {
+                 "url": "https://www.jasonbase.com/things/73g"
+             }
+         },
+         "success": {
+             "type": "$render"
+         },
+         "error": {
+             "type": "$util.toast",
+             "options": {
+                 "text": "Error"
+             }
+         }
+     }
+     
+     # Example 4: Using the previous action's return value
+     
+     {
+         "type": "$network.request",
+         "options": {
+             "url": "https://www.jasonbase.com/things/73g"
+         },
+         "success": {
+             "type": "$lambda",
+             "options": {
+                 "name": "draw"
+             },
+             "success": {
+                 "type": "$render"
+             },
+             "error": {
+                 "type": "$util.toast",
+                 "options": {
+                     "text": "Error"
+                 }
+             }
+         }
+     }
+     
+     # Example 5: Using the previous action's return value as well as custom options
+     
+     {
+         "type": "$network.request",
+         "options": {
+             "url": "https://www.jasonbase.com/things/73g"
+         },
+         "success": {
+             "type": "$lambda",
+             "options": {
+                 "name": "draw",
+                 "options": {
+                     "p1": "another param",
+                     "p2": "yet another param"
+                 }
+             },
+             "success": {
+                 "type": "$render"
+             },
+             "error": {
+                 "type": "$util.toast",
+                 "options": {
+                     "text": "Error"
+                 }
+             }
+         }
+     }
+     
      */
     
     
@@ -583,53 +585,53 @@
     
     
     /*
-    # Example:
+     # Example:
      {
-        "type": "$lambda",
-        "options": {
-            "name": "draw",
-            "options": {
-                "p1": "another param",
-                "p2": "yet another param"
-            }
-        },
-        "success": {
-            "type": "$render"
-        },
-        "error": {
-            "type": "$util.toast",
-            "options": {
-                "text": "Error"
-            }
-        }
-    }
+         "type": "$lambda",
+         "options": {
+             "name": "draw",
+             "options": {
+                 "p1": "another param",
+                 "p2": "yet another param"
+             }
+         },
+         "success": {
+             "type": "$render"
+         },
+         "error": {
+             "type": "$util.toast",
+             "options": {
+                 "text": "Error"
+             }
+         }
+     }
      
      */
     
     NSDictionary *options = [self options];
     /*
-         options = {
-            "name": "draw",
-            "options": {
-                "p1": "another param",
-                "p2": "yet another param"
-            }
+     options = {
+         "name": "draw",
+         "options": {
+             "p1": "another param",
+             "p2": "yet another param"
          }
+     }
      */
     
     
     NSString *name = options[@"name"];
     /*
      name = "draw"
-    */
+     */
     
     if(name){
         // options can be an array or an object
         id args = options[@"options"];
-        /* 
+        /*
          args = {
-            "p1": "another param",
-            "p2": "yet another param"
+         "p1": "another param",
+         "p2": "yet another param"
          }
          */
         JasonMemory *memory = [JasonMemory client];
@@ -647,19 +649,19 @@
         id lambda = [[VC valueForKey:@"events"] valueForKey:name];
         /*
          lambda = [{
-            "{{#if $jason.items}}: {
-                "type": "$render",
-                "options": {
-                    "data": "{{$jason.items}}"
-                }
-            }
-         }, {
-            "{{#else}}": {
-                "type": "$util.toast",
+             "{{#if $jason.items}}: {
+                 "type": "$render",
                  "options": {
-                    "text": "Nothing to render"
+                     "data": "{{$jason.items}}"
                  }
-             }  
+             }
+         }, {
+             "{{#else}}": {
+                 "type": "$util.toast",
+                 "options": {
+                     "text": "Nothing to render"
+                 }
+             }
          }]
          */
         
@@ -671,7 +673,7 @@
         }
         /*
          resolved_lambda = {
-            "type": "$render"
+             "type": "$render"
          }
          */
         
@@ -687,8 +689,8 @@
     } else {
         [self error];
     }
-
-
+    
+    
 }
 - (void)render{
     NSDictionary *stack = [JasonMemory client]._stack;
@@ -712,7 +714,7 @@
     for(NSString *key in kv){
         data_stub[key] = kv[key];
     }
-
+    
     if(stack[@"options"]){
         if(!stack[@"options"][@"type"] || [stack[@"options"][@"type"] isEqualToString:@"json"]){
             if(stack[@"options"][@"data"]){
@@ -737,36 +739,36 @@
                  *
                  * 1. In this case we override the $jason value with the value inside `data`.
                  *
-		             * In above example, The $jason value at the point of rendering becomes:
-		             *
-		             *   $jason = {
-		             *     "results": [{
+                 * In above example, The $jason value at the point of rendering becomes:
+                 *
+                 *   $jason = {
+                 *     "results": [{
                  *       "id": "1",
                  *       "name": "tom"
                  *     }, {
                  *       "id": "2",
                  *       "name": "kat"
                  *     }]
-		             *   }
-		             *
-		             * 2. The `data` can also be a template expression, in which case it will parse whatever data is being passed in to `$render` before using it as the data.
-		             *
-		             *   {
+                 *   }
+                 *
+                 * 2. The `data` can also be a template expression, in which case it will parse whatever data is being passed in to `$render` before using it as the data.
+                 *
+                 *   {
                  *     "type": "$render",
                  *     "options": {
                  *       "data": {
                  *         "results": {
-		             *		       "{{#each $jason}}": {
+                 *		       "{{#each $jason}}": {
                  *             "id": "{{id}}",
                  *             "name": "{{name}}"
                  *           }
-		             *	       }
+                 *	       }
                  *       }
                  *     }
                  *   }
-		             *
-		             **************************************************/
-		             data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
+                 *
+                 **************************************************/
+                data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
             }
         }
     }
@@ -780,7 +782,7 @@
     
     // The default template is 'body'
     NSString *template_name = @"body";
-
+    
     if(stack[@"options"] && stack[@"options"][@"template"]){
         /**************************************************
          *
@@ -798,8 +800,8 @@
         template_name = stack[@"options"][@"template"];
     }
     NSDictionary *body_parser = VC.parser[template_name];
-        
-        
+    
+    
     /**********************************************************************
      *
      * PART 3: Actually render the prepared data with the selected template
@@ -885,9 +887,9 @@
         }
         href[@"url"] = url;
         [self call:@{
-             @"type": @"$href",
-             @"options": href
-         }];
+                     @"type": @"$href",
+                     @"options": href
+                     }];
     }
 }
 
@@ -954,36 +956,36 @@
         for(NSString *url in urlSet){
             // 2. Enter dispatch_group
             dispatch_group_enter(requireGroup);
-                            
+            
             // 3. Check if local
             if ([url hasPrefix:@"file://"]) {
                 NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-                NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];  
+                NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];
                 NSString *loc = @"file:/";
                 
                 NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
                 
                 NSFileManager *fileManager = [NSFileManager defaultManager];
                 
-                if ([fileManager fileExistsAtPath:jsonFile]) { 
+                if ([fileManager fileExistsAtPath:jsonFile]) {
                     NSError *error = nil;
                     NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
                     [inputStream open];
                     
                     id jsonResponseObject = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
                     VC.requires[url] = jsonResponseObject;
-                    [inputStream close];                      
-                } 
+                    [inputStream close];
+                }
                 dispatch_group_leave(requireGroup);
                 
-            } else {                
+            } else {
                 // 4. Setup networking
                 AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
                 AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
                 NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
                 [jsonAcceptableContentTypes addObject:@"text/plain"];
                 [jsonAcceptableContentTypes addObject:@"application/vnd.api+json"];
-
+                
                 jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
                 manager.responseSerializer = jsonResponseSerializer;
                 
@@ -1008,7 +1010,7 @@
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     NSLog(@"Error");
                     dispatch_group_leave(requireGroup);
-                }];                    
+                }];
             }
         }
         
@@ -1033,11 +1035,11 @@
     /*
      
      {
-        "type": "$require",
-        "options": {
-            "items": ["https://...", "https://...", ....],
-            "item": "https://...."
-        }
+         "type": "$require",
+         "options": {
+             "items": ["https://...", "https://...", ....],
+             "item": "https://...."
+         }
      }
      
      Crawl all the items in the array and assign it to the key
@@ -1075,7 +1077,7 @@
                 NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
                 [jsonAcceptableContentTypes addObject:@"text/plain"];
                 [jsonAcceptableContentTypes addObject:@"application/vnd.api+json"];
-
+                
                 jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
                 manager.responseSerializer = jsonResponseSerializer;
                 
@@ -1202,7 +1204,7 @@
 }
 
 - (Jason *)attach:(UIViewController<RussianDollView>*)viewController{
-   
+    
     // When oauth is in process, let it do its job and don't interfere.
     if(self.oauth_in_process) return self;
     
@@ -1290,7 +1292,7 @@
             } else {
                 [self setupHeader:nil];
             }
-
+            
             NSDictionary *old_tabs = nil;
             if(rendered_page[@"footer"] && rendered_page[@"footer"][@"tabs"]){
                 old_tabs = rendered_page[@"footer"][@"tabs"];
@@ -1314,7 +1316,7 @@
             // so that rendered_page will be always in sync even when there is no $show handler to refresh the view.
             
             rendered_page = VC.rendered;
-
+            
             // if the view gets updated inside onShow, the rendered_page will update automatically
             [self onShow];
             
@@ -1414,11 +1416,11 @@
 - (NSArray *)getKeys{
     
     /*********************************************************************************************************
-    *
-    * You can set the key globally on the app by changing "settings.plist" file.
-    * Keys from the settings.plist overrides everything else from above.
-    *
-    ********************************************************************************************************/
+     *
+     * You can set the key globally on the app by changing "settings.plist" file.
+     * Keys from the settings.plist overrides everything else from above.
+     *
+     ********************************************************************************************************/
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
     NSDictionary *plist = [self getSettings];
     for(NSString *key in plist){
@@ -1438,7 +1440,7 @@
     NSDictionary * infoPlistSettings = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"settings"];
     if(infoPlistSettings != nil){//target's info.plist file contains customized settings
         return infoPlistSettings;
-    }else{//settings not found in target's Info.plist - get from file 
+    }else{//settings not found in target's Info.plist - get from file
         NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
         NSDictionary *settingsPlistSettings = [NSDictionary dictionaryWithContentsOfURL:file];
         return settingsPlistSettings;
@@ -1452,19 +1454,19 @@
     
     CGRect bounds = [[UIScreen mainScreen] bounds];
     dict[@"device"] = @{
-        @"width": [NSNumber numberWithFloat:bounds.size.width],
-        @"height": [NSNumber numberWithFloat:bounds.size.height],
-        @"os": @{ @"name": @"ios", @"version": [[UIDevice currentDevice] systemVersion] },
-        @"language": [[NSLocale preferredLanguages] objectAtIndex:0]
-    };
-
+                        @"width": [NSNumber numberWithFloat:bounds.size.width],
+                        @"height": [NSNumber numberWithFloat:bounds.size.height],
+                        @"os": @{ @"name": @"ios", @"version": [[UIDevice currentDevice] systemVersion] },
+                        @"language": [[NSLocale preferredLanguages] objectAtIndex:0]
+                        };
+    
     dict[@"view"] = @{
-        @"url": VC.url
-    };
+                      @"url": VC.url
+                      };
     return dict;
 }
 - (NSDictionary *)variables{
-    NSMutableDictionary *data_stub = [[NSMutableDictionary alloc] init];    
+    NSMutableDictionary *data_stub = [[NSMutableDictionary alloc] init];
     if(VC.data){
         for(NSString *key in VC.data){
             if(![key isEqualToString:@"$jason"]){
@@ -1472,7 +1474,7 @@
             }
         }
     }
-
+    
     if(VC.form){
         data_stub[@"$get"] = VC.form;
     } else {
@@ -1554,7 +1556,7 @@
 - (void)reload{
     VC.data = nil;
     if(VC.url){
-       [self networkLoading:VC.loading with:nil];
+        [self networkLoading:VC.loading with:nil];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.operationQueue cancelAllOperations];
         NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
@@ -1598,7 +1600,7 @@
                 parameters = [@{} mutableCopy];
             }
             int timestamp = [[NSDate date] timeIntervalSince1970];
-
+            
             parameters[@"timestamp"] = [NSString stringWithFormat:@"%d", timestamp];
         }
         
@@ -1640,7 +1642,7 @@
             VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
             [self drawViewFromJason: VC.original asFinal:YES];
         } else if([VC.url hasPrefix:@"file://"]) {
-			[self loadViewByFile: VC.url asFinal:YES];
+            [self loadViewByFile: VC.url asFinal:YES];
         }
         
         /**************************************************
@@ -1658,24 +1660,24 @@
             manager.responseSerializer = jsonResponseSerializer;
             
             [manager GET:VC.url parameters:parameters
-             progress:^(NSProgress * _Nonnull downloadProgress) { }
-             success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                // Ignore if the url is different
-                 if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
-                 VC.original = responseObject;
-                 [self include:responseObject andCompletionHandler:^(id res){
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        VC.contentLoaded = NO;
-
-                        VC.original = @{@"$jason": res[@"$jason"]};
-                        [self drawViewFromJason: VC.original asFinal:YES];
-                    });
+                progress:^(NSProgress * _Nonnull downloadProgress) { }
+                 success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                     // Ignore if the url is different
+                     if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
+                     VC.original = responseObject;
+                     [self include:responseObject andCompletionHandler:^(id res){
+                         dispatch_async(dispatch_get_main_queue(), ^{
+                             VC.contentLoaded = NO;
+                             
+                             VC.original = @{@"$jason": res[@"$jason"]};
+                             [self drawViewFromJason: VC.original asFinal:YES];
+                         });
+                     }];
+                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                     if(!VC.offline){
+                         [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
+                     }
                  }];
-            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                if(!VC.offline){
-                    [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
-                }
-            }];
         }
     }
 }
@@ -1724,7 +1726,7 @@
          ****************************************************************************/
         NSDictionary *body = dom[@"body"];
         rendered_page = nil;
-
+        
         if(body){
             if(body[@"nav"]) {
                 // Deprecated
@@ -1809,7 +1811,7 @@
                     [self setupTabBar:rendered_page[@"tabs"]];
                 }
             }
-
+            
             if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:final];
             
             // Cache the view after drawing
@@ -1861,7 +1863,7 @@
                 
             } else if([type isEqualToString:@"html"]){
                 if(VC.background && [VC.background isKindOfClass:[UIWebView class]]){
-                   // don't do anything, reuse.
+                    // don't do anything, reuse.
                 } else {
                     if(VC.background){
                         [VC.background removeFromSuperview];
@@ -1882,9 +1884,9 @@
                         // different html, reload
                         [((UIWebView*)VC.background) loadHTMLString:html baseURL:nil];
                     }
-
+                    
                     VC.background.payload = @{@"html": html};
-
+                    
                 }
                 
                 // allow autoplay
@@ -1892,7 +1894,7 @@
                 
                 // allow inline playback
                 ((UIWebView*)VC.background).allowsInlineMediaPlayback = YES;
-
+                
                 // user interaction enable/disable => disabled by default
                 VC.background.userInteractionEnabled = NO;
                 if(bg[@"action"]){
@@ -1934,7 +1936,7 @@
 
 - (void)drawBackground:(NSString *)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
-
+        
         if([bg isEqualToString:@"camera"]){
             if(VC.background){
                 [VC.background removeFromSuperview];
@@ -1988,7 +1990,7 @@
                 } else {
                     localImage = [UIImage imageNamed:localImageName];
                 }
-
+                
                 [(UIImageView *)VC.background setImage:localImage];
             } else {
                 UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
@@ -2004,7 +2006,7 @@
             VC.view.backgroundColor = [JasonHelper colorwithHexString:bg alpha:1.0];
         }
     });
-
+    
 }
 
 - (void)setupHead: (NSDictionary *)head{
@@ -2026,9 +2028,9 @@
 
 # pragma mark - View rendering (nav)
 - (void)setupHeader: (NSDictionary *)nav{
-
+    
     if(!nav && !VC.isFinal) return;
-
+    
     if(VC.rendered){
         if(VC.old_header && [[VC.old_header description] isEqualToString:[nav description]]){
             // and if the header is the same as the value trying to set, ignore.
@@ -2038,7 +2040,7 @@
     
     if(nav) VC.old_header = nav;
     
-
+    
     
     UIColor *background = [JasonHelper colorwithHexString:@"#ffffff" alpha:1.0];
     UIColor *color = [JasonHelper colorwithHexString:@"#000000" alpha:1.0];
@@ -2102,7 +2104,7 @@
         
         if(headStyle[@"hide"] && [headStyle[@"hide"] boolValue]){
             dispatch_async(dispatch_get_main_queue(), ^{
-                 [navigationController setNavigationBarHidden:YES];
+                [navigationController setNavigationBarHidden:YES];
             });
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -2130,8 +2132,8 @@
         NSString *font_size = @"18";
         navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
     }
-
-
+    
+    
     NSDictionary *left_menu = nav[@"left"];
     NSDictionary *right_menu;
     
@@ -2149,7 +2151,7 @@
     }
     right_menu = nav[@"menu"];
     
-                
+    
     BBBadgeBarButtonItem *leftBarButton;
     if(!left_menu || [left_menu count] == 0){
         // if the current view is in a modal AND is the rootviewcontroller of the navigationcontroller,
@@ -2190,7 +2192,7 @@
             if(left_menu[@"image"]){
                 NSString *image_src = left_menu[@"image"];
                 
-                if([image_src containsString:@"file://"]){                    
+                if([image_src containsString:@"file://"]){
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
                     [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
                 } else{
@@ -2216,7 +2218,7 @@
         }
         [self setupMenuBadge:leftBarButton forData:left_menu];
     }
-
+    
     BBBadgeBarButtonItem *rightBarButton;
     if(!right_menu || [right_menu count] == 0){
         rightBarButton = nil;
@@ -2286,7 +2288,7 @@
     VC.navigationItem.leftBarButtonItem = leftBarButton;
     
     if(nav[@"title"]){
-
+        
         if(![[nav[@"title"] description] containsString:@"{{"] && ![[nav[@"title"] description] containsString:@"}}"]){
             if([nav[@"title"] isKindOfClass:[NSDictionary class]]){
                 // Advanced title
@@ -2301,7 +2303,7 @@
                                 UIImage *localImage = [UIImage imageNamed:[url substringFromIndex:7]];
                                 [self setLogoImage:localImage withStyle:style];
                             } else{
-                            
+                                
                                 SDWebImageManager *manager = [SDWebImageManager sharedManager];
                                 [manager downloadImageWithURL:[NSURL URLWithString:url]
                                                       options:0
@@ -2318,7 +2320,7 @@
                         }
                         
                     } else if([titleDict[@"type"] isEqualToString:@"label"]) {
-
+                        
                         UILabel *tLabel = [[UILabel alloc] init];
                         tLabel.text = titleDict[@"text"];
                         NSString *font = @"HelveticaNeue";
@@ -2326,9 +2328,9 @@
                         CGFloat x=0;
                         CGFloat y=0;
                         [tLabel sizeToFit];
-
                         
-
+                        
+                        
                         if(titleDict[@"style"]){
                             if(titleDict[@"style"][@"size"]){
                                 size = [titleDict[@"style"][@"size"] floatValue];
@@ -2342,7 +2344,7 @@
                             if(titleDict[@"style"][@"top"]){
                                 y = [((NSString *)titleDict[@"style"][@"top"]) floatValue];
                             }
-
+                            
                             tLabel.font = [UIFont fontWithName: font size:size];
                             
                             if(titleDict[@"style"][@"align"]) {
@@ -2350,11 +2352,11 @@
                                     UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
                                     [v addSubview:tLabel];
                                     VC.navigationItem.titleView = v;
-
+                                    
                                     tLabel.frame = CGRectMake(x,y,VC.navigationController.navigationBar.frame.size.width, tLabel.frame.size.height);
                                     [VC.navigationItem.titleView setFrame: CGRectMake(0, 0, VC.navigationController.navigationBar.frame.size.width, VC.navigationItem.titleView.frame.size.height)];
                                     tLabel.textAlignment = NSTextAlignmentLeft;
-
+                                    
                                 } else {
                                     [self setCenterLogoLabel:tLabel atY:y];
                                 }
@@ -2377,7 +2379,7 @@
         } else {
             VC.navigationItem.titleView = nil;
         }
-
+        
     } else {
         VC.navigationItem.titleView = nil;
     }
@@ -2394,14 +2396,14 @@
         navigationController.navigationBar.translucent = NO;
         [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
     }
-
+    
     navigationController.navigationBar.backgroundColor = background;
     navigationController.navigationBar.barTintColor = background;
     navigationController.navigationBar.tintColor = color;
     
     navigationController.navigationBarHidden = YES;
     navigationController.navigationBarHidden = NO;
-
+    
 }
 - (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y{
     UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
@@ -2444,7 +2446,7 @@
     
     [logoView addSubview:logoImageView];
     VC.navigationItem.titleView = logoView;
-
+    
     if(style[@"align"]) {
         if([style[@"align"] isEqualToString:@"left"]) {
             [VC.navigationItem.titleView setFrame: CGRectMake(0, 0, VC.navigationController.navigationBar.frame.size.width, VC.navigationItem.titleView.frame.size.height)];
@@ -2532,7 +2534,7 @@
 - (void)setupTabBar: (NSDictionary *)t{
     
     if(!t && !VC.isFinal) return;
-
+    
     if(previous_footer && previous_footer[@"tabs"]){
         // if previous footer tab was not null, we diff the tabs to determine whether to re-render
         if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){
@@ -2554,7 +2556,7 @@
     } else {
         tabController.tabBar.hidden = NO;
     }
-   
+    
     NSArray *tabs = t[@"items"];
     NSDictionary *style = t[@"style"];
     if(style){
@@ -2646,7 +2648,7 @@
         if(firstTime){
             tabController.viewControllers = tabs_array;
         }
-
+        
         for(int i = 0 ; i < maxTabCount ; i++){
             NSDictionary *tab = tabs[i];
             [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
@@ -2665,15 +2667,15 @@
 }
 
 - (BOOL)tabBarController:(UITabBarController *)theTabBarController shouldSelectViewController:(UIViewController *)viewController{
-   
+    
     NSUInteger indexOfTab = [theTabBarController.viewControllers indexOfObject:viewController];
-
-
+    
+    
     // If moving away to a different tab bar, stop all actions currently running
     if(indexOfTab != theTabBarController.selectedIndex){
         [JasonMemory client].executing = NO;
     }
-
+    
     
     if(VC.rendered && VC.rendered[@"footer"] && VC.rendered[@"footer"][@"tabs"] && VC.rendered[@"footer"][@"tabs"][@"items"]){
         NSArray *tabs = VC.rendered[@"footer"][@"tabs"][@"items"];
@@ -2739,7 +2741,7 @@
                                         [self setTabImage:i withTab:tab andItem:item];
                                     }
                                 }];
-
+            
         }
         
     } else {
@@ -2773,7 +2775,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [item setImage:newImage];
     });
-
+    
 }
 
 # pragma mark - View Event Handlers
@@ -2782,26 +2784,26 @@
  
  ## Event Handlers Rule ver2.
  
-1. When there's only $show handler
+ 1. When there's only $show handler
  - $show: Handles both initial load and subsequent show events
  
-2. When there's only $load handler
+ 2. When there's only $load handler
  - $load: Handles Only the initial load event
  
-3. When there are both $show and $load handlers
+ 3. When there are both $show and $load handlers
  - $load : handle initial load only
  - $show : handle subsequent show events only
  
  
  ## Summary
  
-    $load:
-        - triggered when view loads for the first time.
-    $show:
-        - triggered at load time + subsequent show events (IF $load handler doesn't exist)
-        - NOT triggered at load time BUT ONLY at subsequent show events (IF $load handler exists)
+ $load:
+ - triggered when view loads for the first time.
+ $show:
+ - triggered at load time + subsequent show events (IF $load handler doesn't exist)
+ - NOT triggered at load time BUT ONLY at subsequent show events (IF $load handler exists)
  
-*************************************************************/
+ *************************************************************/
 
 - (void)onShow{
     NSDictionary *events = [VC valueForKey:@"events"];
@@ -2819,7 +2821,7 @@
             [self call:events[@"$load"]];
         }
     } else {
-        [self onShow];        
+        [self onShow];
     }
     if(online){
         // if online is YES, it means the content is being loaded from remote, since the remote content has finished loading, set contentLoaded to YES
@@ -2850,24 +2852,6 @@
         }
     }
     isForeground = YES;
-}
-- (void)onRemoteNotification: (NSDictionary *)payload{
-    NSDictionary *events = [VC valueForKey:@"events"];
-    if(events){
-        if(events[@"$notification.remote"]){
-            [self call:events[@"$notification.remote"] with: @{@"$jason": payload}];
-        }
-    }
-}
-
-- (void)onRemoteNotificationDeviceRegistered: (NSString *)device_token{
-    NSDictionary *events = [VC valueForKey:@"events"];
-    if(events){
-        if(events[@"$notification.registered"]){
-            [self call:events[@"$notification.registered"] with: @{@"$jason": @{@"device_token": device_token}}];
-        }
-    }
-
 }
 
 # pragma mark - View Linking
@@ -2924,7 +2908,7 @@
             [self unlock];
         } else {
             if(!view || (view && [view.lowercaseString isEqualToString:@"jason"])){
-               // Jason View
+                // Jason View
                 NSString *viewClass = @"JasonViewController";
                 if([transition isEqualToString:@"replace"]){
                     /****************************************************************************
@@ -2983,7 +2967,7 @@
                     while (root.presentedViewController) {
                         root = (UITabBarController *)root.presentedViewController;
                     }
-
+                    
                     // Hide tab bar before opening modal
                     vc.extendedLayoutIncludesOpaqueBars = YES;
                     root.tabBar.hidden = YES;
@@ -3019,7 +3003,7 @@
                         
                         [self unlock];
                     }
-
+                    
                     vc.extendedLayoutIncludesOpaqueBars = YES;
                     if(tabController.tabBar.hidden){
                         tabController.tabBar.hidden = YES;
@@ -3037,100 +3021,100 @@
                 
                 /****************************************************************************
                  
-                ** Custom ViewControllers
+                 ** Custom ViewControllers
                  
-                1. Opening your custom view from Jason view
-                    1.1. Using storyboard
-                        To transition from Jasonette to Your custom view controller,
-                        Simply declare the view controller class name as:
-                            
-                            [Storyboard Name].[The viewcontroller's storyboard ID]
-             
-                        [Example]
-                            if your storyboard is named "MainStoryboard.storyboard", and the viewcontroller has the id "LiveStreamView",
+                 1. Opening your custom view from Jason view
+                 1.1. Using storyboard
+                 To transition from Jasonette to Your custom view controller,
+                 Simply declare the view controller class name as:
                  
-                            simply attach the following href to any component you desire:
+                 [Storyboard Name].[The viewcontroller's storyboard ID]
                  
-                            {
-                                "type": "label",
-                                "text": "Start livestreaming",
-                                "href": {
-                                    "view": "MainStoryboard.LiveStreamView"
-                                }
-                            }
-                    1.2. Without storyboard
-                        To transition from Jasonette to Your custom view controller,
-                        Simply declare the view controller class name as "view" attribute.
-             
-                        [Example]
-                            if you have a view controller class called "LiveStreamViewController",
-                            simply attach the following href to any component you desire:
+                 [Example]
+                 if your storyboard is named "MainStoryboard.storyboard", and the viewcontroller has the id "LiveStreamView",
                  
-                            {
-                                "type": "label",
-                                "text": "Start livestreaming",
-                                "href": {
-                                    "view": "LiveStreamViewController"
-                                }
-                            }
-                            
-                    1.3. Passing parameters
-                        To pass parameters to your custom view controller,
-             
-                        A. just add a property called "jason" to your view controller like this:
-             
-                            @property (nonatomic, strong) NSDictionary *jason
-             
-                        B. Then pass values via 'options' attribute like this:
-             
-                            {
-                                "type": "label",
-                                "text": "Make a payment",
-                                "href": {
-                                    "view": "PaymentViewController",
-                                    "options": {
-                                        "product_id": "dnekfsl",
-                                        "user_id": "3kz"
-                                    }
-                                }
-                            }
-            
-                        C. Then use the jason NSDictionary from your custom view controller
+                 simply attach the following href to any component you desire:
                  
-                            // PaymentViewController.m
-                            #import "PaymentViewController.h"
-                            @implementation PaymentViewController
-                              ....
-                              - (void)viewDidLoad {
-                                [super viewDidLoad];
-                                NSString *product_id = self.jason[@"product_id"];
-                                NSString *user_id = self.jason[@"user_id"];
-
-                                // do some customization with product_id and user_id
-                              }
-                              ....
-                            @end
-             
-                2. Opening Jason view from your custom viewcontrollers
-             
-                    Opening Jasonette from your viewcontrollers is same as opening any other viewcontrollers.
-             
-                    A. First, include JasonViewController.h in your viewcontroller
-             
-                       #import "JasonViewController.h"
-             
-                    B. To display Jasonette view with push transition:
-             
-                        JasonViewController *vc = [[JasonViewController alloc] init];
-                        vc.url = @"https://jasonbase.com/things/jYJ.json";
-                        [self.navigationViewController pushViewController:vc animated:YES];
+                 {
+                 "type": "label",
+                 "text": "Start livestreaming",
+                 "href": {
+                 "view": "MainStoryboard.LiveStreamView"
+                 }
+                 }
+                 1.2. Without storyboard
+                 To transition from Jasonette to Your custom view controller,
+                 Simply declare the view controller class name as "view" attribute.
                  
-                    C. To present Jasonette view as modal:
-             
-                        JasonViewController *vc = [[JasonViewController alloc] init];
-                        vc.url = @"https://jasonbase.com/things/jYJ.json";
-                        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
-                        [self.navigationController presentViewController:nav animated:YES completion:nil];
+                 [Example]
+                 if you have a view controller class called "LiveStreamViewController",
+                 simply attach the following href to any component you desire:
+                 
+                 {
+                 "type": "label",
+                 "text": "Start livestreaming",
+                 "href": {
+                 "view": "LiveStreamViewController"
+                 }
+                 }
+                 
+                 1.3. Passing parameters
+                 To pass parameters to your custom view controller,
+                 
+                 A. just add a property called "jason" to your view controller like this:
+                 
+                 @property (nonatomic, strong) NSDictionary *jason
+                 
+                 B. Then pass values via 'options' attribute like this:
+                 
+                 {
+                 "type": "label",
+                 "text": "Make a payment",
+                 "href": {
+                 "view": "PaymentViewController",
+                 "options": {
+                 "product_id": "dnekfsl",
+                 "user_id": "3kz"
+                 }
+                 }
+                 }
+                 
+                 C. Then use the jason NSDictionary from your custom view controller
+                 
+                 // PaymentViewController.m
+                 #import "PaymentViewController.h"
+                 @implementation PaymentViewController
+                 ....
+                 - (void)viewDidLoad {
+                 [super viewDidLoad];
+                 NSString *product_id = self.jason[@"product_id"];
+                 NSString *user_id = self.jason[@"user_id"];
+                 
+                 // do some customization with product_id and user_id
+                 }
+                 ....
+                 @end
+                 
+                 2. Opening Jason view from your custom viewcontrollers
+                 
+                 Opening Jasonette from your viewcontrollers is same as opening any other viewcontrollers.
+                 
+                 A. First, include JasonViewController.h in your viewcontroller
+                 
+                 #import "JasonViewController.h"
+                 
+                 B. To display Jasonette view with push transition:
+                 
+                 JasonViewController *vc = [[JasonViewController alloc] init];
+                 vc.url = @"https://jasonbase.com/things/jYJ.json";
+                 [self.navigationViewController pushViewController:vc animated:YES];
+                 
+                 C. To present Jasonette view as modal:
+                 
+                 JasonViewController *vc = [[JasonViewController alloc] init];
+                 vc.url = @"https://jasonbase.com/things/jYJ.json";
+                 UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+                 [self.navigationController presentViewController:nav animated:YES completion:nil];
                  
                  
                  ****************************************************************************/
@@ -3185,35 +3169,35 @@
 
 # pragma mark - Action invocation related
 /**********************************************************************************************************************
-*
-* Generates 'options' object to be passed to the next action in the call chain by looking at the stack, register, etc.
-*
-*********************************************************************************************************************/
+ *
+ * Generates 'options' object to be passed to the next action in the call chain by looking at the stack, register, etc.
+ *
+ *********************************************************************************************************************/
 - (NSDictionary *)options{
     JasonMemory *memory = [JasonMemory client];
     
     /*********************************************************************************************************
-    *
-    * Step 1.
-    *
-    * "IF" clause handling
-    *
-    * If the stack contains an array, it may mean it's an if clause
-    *
-    * (ex)
-    *
-    *   [
-    *        {
-    *            "{{#if result.length > 0}}": {...}
-    *        },
-    *        {
-    *            "{{#else}}": {...}
-    *        }
-    *    ]
-    *
-    * In this case we need to fill it out once to reduce it down to the actual expression to be executed
-    *
-    ********************************************************************************************************/
+     *
+     * Step 1.
+     *
+     * "IF" clause handling
+     *
+     * If the stack contains an array, it may mean it's an if clause
+     *
+     * (ex)
+     *
+     *   [
+     *        {
+     *            "{{#if result.length > 0}}": {...}
+     *        },
+     *        {
+     *            "{{#else}}": {...}
+     *        }
+     *    ]
+     *
+     * In this case we need to fill it out once to reduce it down to the actual expression to be executed
+     *
+     ********************************************************************************************************/
     NSDictionary *reduced_stack;
     if([memory._stack isKindOfClass:[NSArray class]]){
         reduced_stack = [self filloutTemplate: memory._stack withData: memory._register];
@@ -3222,10 +3206,10 @@
     }
     
     /*********************************************************************************************************
-    *
-    * Step 2. Now that the if conditionals are out of the way, actually fill out the result options template with register
-    *
-    ********************************************************************************************************/
+     *
+     * Step 2. Now that the if conditionals are out of the way, actually fill out the result options template with register
+     *
+     ********************************************************************************************************/
     if(reduced_stack[@"options"]){
         return [self filloutTemplate: reduced_stack[@"options"] withData: memory._register];
     } else {
@@ -3244,10 +3228,10 @@
         if(memory._stack && memory._stack.count > 0){
             
             /****************************************************
-            * First, handle conditional cases
-            * If the stack contains an array, it must be a conditional. (#if)
-            # So run it through 'options' method to generate an actual stack
-            ****************************************************/
+             * First, handle conditional cases
+             * If the stack contains an array, it must be a conditional. (#if)
+             # So run it through 'options' method to generate an actual stack
+             ****************************************************/
             if([memory._stack isKindOfClass:[NSArray class]]){
                 memory._stack = [self filloutTemplate: memory._stack withData: memory._register];
             }
@@ -3260,62 +3244,62 @@
             {
                 
                 /****************************************************************************************
-                // "trigger" is a syntactic sugar for calling `$lambda` action
+                 // "trigger" is a syntactic sugar for calling `$lambda` action
                  
-                The syntax is as follows:
-
-                {
-                    "trigger": "twitter.get",
-                    "options": {
-                        "endpoint": "timeline"
-                    },
-                    "success": {
-                        "type": "$render"
-                    },
-                    "error": {
-                        "type": "$util.toast",
-                        "options": {
-                            "text": "Uh oh. Something went wrong"
+                 The syntax is as follows:
+                 
+                 {
+                     "trigger": "twitter.get",
+                     "options": {
+                         "endpoint": "timeline"
+                     },
+                     "success": {
+                         "type": "$render"
+                     },
+                     "error": {
+                         "type": "$util.toast",
+                         "options": {
+                         "text": "Uh oh. Something went wrong"
                          }
-                    }
-                }
-
-                Above is a syntactic sugar for the below "$lambda" type action call:
-
-                $lambda action is a special purpose action that triggers another action by name and waits until it returns.
-                This way we can define a huge size action somewhere and simply call them as a subroutine and wait for its return value.
-                When the subroutine (the lambda action that was triggered by name) returns via `"type": "$return.success"` action,
-                the $lambda action picks up where it left off and starts executing its "success" action with the value returned from the subroutine.
-
-                Notice that:
-                1. we get rid of the "trigger" field and turn it into a regular action of `"type": "$lambda"`.
-                2. the "trigger" value (`"twitter.get"`) gets mapped to "options.name"
-                3. the "options" value (`{"endpoint": "timeline"}`) gets mapped to "options.options"
-
-
-                {
-                    "type": "$lambda",
-                    "options": {
-                        "name": "twitter.get",
-                        "options": {
-                            "endpoint": "timeline"
-                        }
-                    },
-                    "success": {
-                        "type": "$render"
-                    },
-                    "error": {
-                        "type": "$util.toast",
-                        "options": {
-                            "text": "Uh oh. Something went wrong"
+                     }
+                 }
+                 
+                 Above is a syntactic sugar for the below "$lambda" type action call:
+                 
+                 $lambda action is a special purpose action that triggers another action by name and waits until it returns.
+                 This way we can define a huge size action somewhere and simply call them as a subroutine and wait for its return value.
+                 When the subroutine (the lambda action that was triggered by name) returns via `"type": "$return.success"` action,
+                 the $lambda action picks up where it left off and starts executing its "success" action with the value returned from the subroutine.
+                 
+                 Notice that:
+                 1. we get rid of the "trigger" field and turn it into a regular action of `"type": "$lambda"`.
+                 2. the "trigger" value (`"twitter.get"`) gets mapped to "options.name"
+                 3. the "options" value (`{"endpoint": "timeline"}`) gets mapped to "options.options"
+                 
+                 
+                 {
+                     "type": "$lambda",
+                     "options": {
+                         "name": "twitter.get",
+                         "options": {
+                             "endpoint": "timeline"
                          }
-                    }
-                }
-
-                The success / error actions get executed AFTER the triggered action has finished and returns with a return value.
-
-                ****************************************************************************************/
-
+                     },
+                     "success": {
+                         "type": "$render"
+                     },
+                     "error": {
+                         "type": "$util.toast",
+                         "options": {
+                             "text": "Uh oh. Something went wrong"
+                         }
+                     }
+                 }
+                 
+                 The success / error actions get executed AFTER the triggered action has finished and returns with a return value.
+                 
+                 ****************************************************************************************/
+                
                 // Construct a new JSON from the trigger JSON
                 NSString *lambda_name = memory._stack[@"trigger"];
                 NSMutableDictionary *lambda = [[NSMutableDictionary alloc] init];
@@ -3382,54 +3366,54 @@
                      * }
                      *
                      */
-
+                    
                     // skip prefix to get module path
                     NSString *plugin_path = [type substringFromIndex:1];
                     NSLog(@"Plugin: plugin path: %@", plugin_path);
-
+                    
                     // The module name is the plugin path w/o the last part
                     // e.g. "MyModule.MyClass.demo" -> "MyModule.MyClass"
                     //      "MyClass.demo" -> "MyClass"
                     NSArray *mod_tokens = [plugin_path componentsSeparatedByString:@"."];
                     if (mod_tokens.count > 1) {
                         NSString *module_name = [[mod_tokens subarrayWithRange:NSMakeRange(0, mod_tokens.count -1)]
-                                                  componentsJoinedByString:@"."];
+                                                 componentsJoinedByString:@"."];
                         NSString *action_name = [mod_tokens lastObject];
-
+                        
                         NSLog(@"Plugin: module name: %@", module_name);
                         NSLog(@"Plugin: action name: %@", action_name);
-
+                        
                         Class PluginClass = NSClassFromString(module_name);
                         if (PluginClass) {
                             NSLog(@"Plugin: class: %@", PluginClass);
-
+                            
                             // Initialize Plugin
                             module = [[PluginClass alloc] init];  // could go away if we had some sort of plug in registration
-
+                            
                             [[NSNotificationCenter defaultCenter]
-                                    postNotificationName:plugin_path
-                                                  object:self
-                                                  userInfo:@{
-                                      @"vc": VC,
-                                      @"plugin_path": plugin_path,
-                                      @"action_name": action_name,
-                                      @"options": [self options]
-                                  }];
-
+                             postNotificationName:plugin_path
+                             object:self
+                             userInfo:@{
+                                        @"vc": VC,
+                                        @"plugin_path": plugin_path,
+                                        @"action_name": action_name,
+                                        @"options": [self options]
+                                        }];
+                            
                         } else {
                             [[Jason client] call:@{@"type": @"$util.banner",
                                                    @"options": @{
-                                                           @"title": @"Error",
-                                                           @"description":
-                                                               [NSString stringWithFormat:@"Plugin class '%@' doesn't exist.", module_name]
-                                                           }}];
-
+                                                   @"title": @"Error",
+                                                   @"description":
+                                                       [NSString stringWithFormat:@"Plugin class '%@' doesn't exist.", module_name]
+                                                   }}];
+                            
                         }
                     } else {
                         // ignore error: "@ModuleName" -> missing action name
                     }
                 }
-
+                
                 // Module actions: "$CLASS.METHOD" format => Calls other classes
                 else
                 {

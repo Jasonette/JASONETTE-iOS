@@ -27,7 +27,7 @@
 @import MediaPlayer;
 
 @interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, PBJVisionDelegate, UIWebViewDelegate>
-                                                                                                                                 
+
 @property (strong, nonatomic) NSDictionary *parser;
 @property (strong, nonatomic) NSDictionary *data;
 @property (strong, nonatomic) NSDictionary *options;
@@ -38,6 +38,8 @@
 @property (nonatomic, assign) BOOL searchMode;
 @property (nonatomic, assign) BOOL oauth_in_process;
 @property (strong, nonatomic) NSMutableDictionary *modules;
+
+- (UIViewController *)getVC;
 
 
 + (Jason*)client;
@@ -59,7 +61,7 @@
 
 - (void)go:(NSDictionary *)href;
 - (void)call: (NSDictionary*)action;
-- (void)call: (NSDictionary*)action with: (NSDictionary *)data;
+- (void)call: (id)action with: (NSDictionary *)data;
 
 - (void)loading:(BOOL)turnon;
 - (void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;
@@ -70,9 +72,7 @@
 
 - (void)start:(NSDictionary *)href;
 
-- (void)onRemoteNotification: (NSDictionary *)payload;
-- (void)onRemoteNotificationDeviceRegistered: (NSString *)device_token;
-
 - (void)loadViewByFile: (NSString *)url asFinal: (BOOL)final;
 - (NSDictionary *)variables;
 @end
+
