@@ -64,7 +64,7 @@
     NSDictionary *events = [[[Jason client] getVC] valueForKey:@"events"];
     if(events){
         if(events[@"$push.onregister"]){
-            [[Jason client] call:events[@"$push.onregister"] with: @{@"$jason": @{@"device_token": payload[@"device_token"]}}];
+            [[Jason client] call:events[@"$push.onregister"] with: @{@"$jason": @{@"token": payload[@"token"]}}];
         }
     }
 }

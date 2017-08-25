@@ -8,6 +8,8 @@
 
 #import "JasonAction.h"
 #import "JasonHelper.h"
+#import "JasonPushService.h"
+#import <UserNotifications/UserNotifications.h>
 
 @interface JasonPushAction : JasonAction
 

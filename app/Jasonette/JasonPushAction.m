@@ -181,6 +181,7 @@
 
 
 #import "JasonPushAction.h"
+#define SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 @implementation JasonPushAction
 
