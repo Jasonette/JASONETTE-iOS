@@ -38,16 +38,16 @@
 }
 - (void) init_class: (NSString *)className withLaunchOptions: (NSDictionary *)launchOptions{
     Class ActionClass = NSClassFromString(className);
-    id module;
+    id service;
     
-    if([Jason client].modules && [Jason client].modules[className]){
-        module = [Jason client].modules[className];
+    if([Jason client].services && [Jason client].services[className]){
+        service = [Jason client].services[className];
     } else {
-        module = [[ActionClass alloc] init];
-        [Jason client].modules[className] = module;
+        service = [[ActionClass alloc] init];
+        [Jason client].services[className] = service;
     }
     
-    [module performSelector: @selector(initialize:) withObject: launchOptions];
+    [service performSelector: @selector(initialize:) withObject: launchOptions];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -59,7 +59,7 @@
     
     // # initialize
     // Run "initialize" for built-in daemon type actions
-    NSArray *native_daemon_actions = @[@"JasonPushAction"];
+    NSArray *native_daemon_actions = @[@"JasonPushService"];
     for(NSString *action in native_daemon_actions) {
         [self init_class:action withLaunchOptions:launchOptions];
     }

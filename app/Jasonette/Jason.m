@@ -45,7 +45,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onForeground) name:UIApplicationDidBecomeActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
         self.searchMode = NO;
-        self.modules = [[NSMutableDictionary alloc] init];
+        self.services = [[NSMutableDictionary alloc] init];
         
         // Add observers for public API
         [[NSNotificationCenter defaultCenter]
@@ -3460,13 +3460,7 @@
                             
                             NSDictionary *options = [self options];
                             
-                            
-                            if(self.modules && self.modules[type]){
-                                module = self.modules[type];
-                            } else {
-                                module = [[ActionClass alloc] init];
-                                self.modules[type] = module;
-                            }
+                            module = [[ActionClass alloc] init];
                             
                             if([module respondsToSelector:@selector(VC)]) [module setValue:VC forKey:@"VC"];
                             if([module respondsToSelector:@selector(options)]) [module setValue:options forKey:@"options"];
