@@ -746,17 +746,33 @@
 -(CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     @try{
         NSDictionary *s = [self.sections objectAtIndex:indexPath.section];
-        if([self isHorizontal: s]){
-            NSDictionary *style = s[@"style"];
-            if(style){
-                if(style[@"height"]){
-                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+        
+        if([s[@"items"] count] > 0){
+            // if the row has a style, honor that first.
+            // If not, look to see if it has a class, if it does, look it up on style object
+            
+            NSDictionary *item = [s[@"items"] objectAtIndex:indexPath.row];
+            item = [JasonComponentFactory applyStylesheet: item];
+            NSDictionary *style = item[@"style"];
+            if(style && style[@"height"]){
+                return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+            } else {
+                if([self isHorizontal: s]){
+                    NSDictionary *style = s[@"style"];
+                    if(style){
+                        if(style[@"height"]){
+                            return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+                        }
+                    }
+                    return 100.0f;
+                } else {
+                    return [self getEstimatedHeight:indexPath defaultHeight:60.0f];
                 }
             }
-            return 100.0f;
         } else {
-            return [self getEstimatedHeight:indexPath defaultHeight:60.0f];
+            return 0;
         }
+        
     }
     @catch(NSException *e){
         hasError = YES;
