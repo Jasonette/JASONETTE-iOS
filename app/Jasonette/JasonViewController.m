@@ -755,15 +755,14 @@
             item = [JasonComponentFactory applyStylesheet: item];
             NSDictionary *style = item[@"style"];
             if(style && style[@"height"]){
-                return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+                CGFloat h = [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+                if(h <= 1.0) {
+                    return 1.1;
+                } else {
+                    return h;
+                }
             } else {
                 if([self isHorizontal: s]){
-                    NSDictionary *style = s[@"style"];
-                    if(style){
-                        if(style[@"height"]){
-                            return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
-                        }
-                    }
                     return 100.0f;
                 } else {
                     return [self getEstimatedHeight:indexPath defaultHeight:60.0f];
