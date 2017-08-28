@@ -8,6 +8,7 @@
 #import "Jason.h"
 #import "RussianDollView.h"
 #import <JavaScriptCore/JavaScriptCore.h>
+#import "JasonScriptAction.h"
 
 @interface JasonParser : NSObject
 @property (nonatomic, strong) NSDictionary *options;

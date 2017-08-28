@@ -129,7 +129,11 @@
                                                    usedEncoding:&encoding
                                                           error:&error];
             
-            JSContext *context = [[JSContext alloc] init];
+
+            JSContext *context = [JasonScriptAction get];
+            if(!context) {
+                context = [[JSContext alloc] init];
+            }
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
                 NSLog(@"%@", value);
             }];
