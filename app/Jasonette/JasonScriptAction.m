@@ -73,8 +73,9 @@
 /**
  * Clean up context
  **/
-- (void) clean {
+- (void) clear {
     [Jason client].jscontext = nil;
+    [[Jason client] success];
 }
 
 @end
