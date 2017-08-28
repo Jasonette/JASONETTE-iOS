@@ -22,11 +22,12 @@
         
         if(script[@"url"]) {
             if([script[@"url"] containsString:@"file://"]){
-//                // local
-//                return_value[url] = [JasonHelper read_local_json:url];
-//                dispatch_group_leave(requireGroup);
+                NSString *localFilename = [script[@"url"] substringFromIndex:7];
+                NSString *filePath = [[NSBundle mainBundle] pathForResource:localFilename ofType:nil];
+                NSData *data = [[NSFileManager defaultManager] contentsAtPath:filePath];
+                NSString *js = [JasonHelper UTF8StringFromData:data];
+                [self inject: js into: context];
                 dispatch_group_leave(requireGroup);
-
             } else {
                 AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
                 AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
@@ -49,7 +50,6 @@
             }
         } else if(script[@"text"]) {
             dispatch_group_leave(requireGroup);
-
         }
     }
 
