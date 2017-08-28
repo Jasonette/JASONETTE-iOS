@@ -8,20 +8,14 @@
 
 #import "JasonScriptAction.h"
 
-static JSContext *context;
 @implementation JasonScriptAction
-
-+ (JSContext *) get {
-    return context;
-}
 
 // Construct a static JSContext
 - (void) include {
     NSArray *scripts = self.options[@"items"];
-    NSMutableDictionary *return_value = [[NSMutableDictionary alloc] init];
     dispatch_group_t requireGroup = dispatch_group_create();
 
-    context = [[JSContext alloc] init];
+    JSContext *context = [[JSContext alloc] init];
     
     for(NSDictionary *script in scripts){
         dispatch_group_enter(requireGroup);
@@ -31,7 +25,8 @@ static JSContext *context;
 //                // local
 //                return_value[url] = [JasonHelper read_local_json:url];
 //                dispatch_group_leave(requireGroup);
-                
+                dispatch_group_leave(requireGroup);
+
             } else {
                 AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
                 AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
@@ -39,12 +34,12 @@ static JSContext *context;
                 [contentTypes addObject:@"text/plain"];
                 [contentTypes addObject:@"application/javascript"];
                 [contentTypes addObject:@"text/javascript"];
-                serializer.acceptableContentTypes = jsonAcceptableContentTypes;
+                serializer.acceptableContentTypes = contentTypes;
                 manager.responseSerializer = serializer;
                 
-                [manager GET:url parameters: @{} progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                [manager GET:script[@"url"] parameters: @{} progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     NSString *js = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                    [self inject: js];
+                    [self inject: js into: context];
                     dispatch_group_leave(requireGroup);
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     NSLog(@"Error");
@@ -53,17 +48,19 @@ static JSContext *context;
                 
             }
         } else if(script[@"text"]) {
-            
+            dispatch_group_leave(requireGroup);
+
         }
     }
 
     dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
+        [Jason client].jscontext = context;
         [[Jason client] success];
     });
 
 }
 
-- (void) inject: (NSString *) js {
+- (void) inject: (NSString *) js into: (JSContext *)context{
     [context setExceptionHandler:^(JSContext *context, JSValue *value) {
         NSLog(@"%@", value);
     }];
@@ -75,7 +72,7 @@ static JSContext *context;
  * Clean up context
  **/
 - (void) clean {
-    context = nil;
+    [Jason client].jscontext = nil;
 }
 
 @end

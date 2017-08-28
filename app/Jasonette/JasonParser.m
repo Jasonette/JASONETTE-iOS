@@ -130,9 +130,19 @@
                                                           error:&error];
             
 
-            JSContext *context = [JasonScriptAction get];
+            JSContext *context = [Jason client].jscontext;
             if(!context) {
                 context = [[JSContext alloc] init];
+            }
+            
+            
+
+            NSDictionary *globals = [context.globalObject toDictionary];
+            
+            if(globals && globals.count > 0) {
+                for(NSString *key in globals) {
+                    [data setValue:[context.globalObject objectForKeyedSubscript:key] forKey:key];
+                }
             }
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
                 NSLog(@"%@", value);

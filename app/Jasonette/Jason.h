@@ -19,6 +19,8 @@
 #import <NSHash/NSString+NSHash.h>
 #import <FreeStreamer/FSAudioStream.h>
 #import <PBJVision/PBJVision.h>
+#import <JavaScriptCore/JavaScriptCore.h>
+
 #import "MBProgressHud.h"
 #if DEBUG
 #include <FLEX/FLEX.h>
@@ -37,7 +39,7 @@
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL searchMode;
 @property (nonatomic, assign) BOOL oauth_in_process;
-
+@property (strong, nonatomic) JSContext *jscontext;
 
 + (Jason*)client;
 - (Jason*)attach:(UIViewController<RussianDollView>*)viewController;

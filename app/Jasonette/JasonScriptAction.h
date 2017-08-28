@@ -11,7 +11,5 @@
 #import <AFNetworking/AFNetworking.h>
 #import "JASONResponseSerializer.h"
 #import <JavaScriptCore/JavaScriptCore.h>
-
 @interface JasonScriptAction : JasonAction
-+ (JSContext *) get;
 @end
