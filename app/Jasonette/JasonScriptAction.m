@@ -49,6 +49,8 @@
                 
             }
         } else if(script[@"text"]) {
+            NSString *js = script[@"text"];
+            [self inject: js into: context];
             dispatch_group_leave(requireGroup);
         }
     }
