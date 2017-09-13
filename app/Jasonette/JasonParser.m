@@ -51,7 +51,7 @@
     if(type && [[type lowercaseString] isEqualToString:@"html"]){
         if(data && [data count] > 0){
             NSString *str = data[@"$jason"];
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"parser" ofType:@"js"];
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"st" ofType:@"js"];
             NSStringEncoding encoding;
             NSError *error = nil;
             NSString *js = [NSString stringWithContentsOfFile:path
@@ -64,8 +64,16 @@
             }];
 
             [context evaluateScript:js];
-            JSValue *parse = context[@"parser"][@"html"];
-            JSValue *val = [parse callWithArguments:@[parser, str]];
+            
+            NSString *tojson_path = [[NSBundle mainBundle] pathForResource:@"xhtml" ofType:@"js"];
+            js = [NSString stringWithContentsOfFile:tojson_path
+                                                 usedEncoding:&encoding
+                                                        error:&error];
+            [context evaluateScript:js];
+
+            
+            JSValue *parse = context[@"to_json"];
+            JSValue *val = [parse callWithArguments:@[@"html", parser, str]];
             @try{
                 if([val isString]){
                     return [val toString];
@@ -86,7 +94,7 @@
     } else if(type && [[type lowercaseString] isEqualToString:@"xml"]){
         if(data && [data count] > 0){
             NSString *str = data[@"$jason"];
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"parser" ofType:@"js"];
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"st" ofType:@"js"];
             NSStringEncoding encoding;
             NSError *error = nil;
             NSString *js = [NSString stringWithContentsOfFile:path
@@ -99,8 +107,18 @@
             }];
 
             [context evaluateScript:js];
-            JSValue *parse = context[@"parser"][@"xml"];
-            JSValue *val = [parse callWithArguments:@[parser, str]];
+
+            NSString *tojson_path = [[NSBundle mainBundle] pathForResource:@"xhtml" ofType:@"js"];
+            js = [NSString stringWithContentsOfFile:tojson_path
+                                       usedEncoding:&encoding
+                                              error:&error];
+            [context evaluateScript:js];
+            
+            
+            JSValue *parse = context[@"to_json"];
+            JSValue *val = [parse callWithArguments:@[@"xml", parser, str]];
+
+            
             @try{
                 if([val isString]){
                     return [val toString];
@@ -122,7 +140,7 @@
        // default: json
 //        if(data && [data count] > 0){
         if(data){
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"parser" ofType:@"js"];
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"st" ofType:@"js"];
             NSStringEncoding encoding;
             NSError *error = nil;
             NSString *js = [NSString stringWithContentsOfFile:path
@@ -155,7 +173,7 @@
 
 
             [context evaluateScript:js];
-            JSValue *parse = context[@"parser"][@"json"];
+            JSValue *parse = context[@"JSON"][@"transform"];
             JSValue *val = [parse callWithArguments:@[parser, data]];
             
             @try{
