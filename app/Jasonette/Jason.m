@@ -1445,7 +1445,12 @@
     NSURL *file = [[NSBundle mainBundle] URLForResource:@"Info" withExtension:@"plist"];
     NSDictionary *info_plist = [NSDictionary dictionaryWithContentsOfURL:file];
     dict[@"url_scheme"] = info_plist[@"CFBundleURLTypes"][0][@"CFBundleURLSchemes"][0];
-    
+
+    NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+    NSString *version = [info objectForKey:@"CFBundleShortVersionString"];
+    NSString *build = [info objectForKey:(NSString *)kCFBundleVersionKey];
+    dict[@"app"] = @{ @"build": build, @"version": version };
+
     CGRect bounds = [[UIScreen mainScreen] bounds];
     dict[@"device"] = @{
         @"width": [NSNumber numberWithFloat:bounds.size.width],
