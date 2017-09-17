@@ -1,7 +1,5 @@
 (function($context) {
-
   var root; // root context
-
   var Helper = {
     is_template: function(str){
       var re = /\{\{(.+)\}\}/g;
@@ -17,10 +15,10 @@
       );
     },
     resolve: function(o, path, new_val){
-      // 1. takes any object
-      // 2. Finds thes subtree based on path
-      // 3. sets the value to new_val
-      // 4. returns the object;
+      // 1. Takes any object
+      // 2. Finds subtree based on path
+      // 3. Sets the value to new_val
+      // 4. Returns the object;
       if(path && path.length > 0){
         func = Function('new_val', "with(this){this" + path + "=new_val; return this;}").bind(o);
         return func(new_val);
@@ -29,8 +27,7 @@
         return o;
       }
     }
-  }
-
+  };
   var Conditional = {
     run: function(template, data){
       // expecting template as an array of objects,
@@ -42,20 +39,16 @@
       // Step 1. get all the conditional keys of the template first.
       // Step 2. then try evaluating one by one until something returns true
       // Step 3. if it reaches the end, the last item shall be returned
-
       var cannot_parse = false;
       for(var i = 0 ; i < template.length; i++){
         var item = template[i];
         var keys = Object.keys(item);
         // assuming that there's only a single kv pair for each item
         var key = keys[0];
-
-
         var func = TRANSFORM.tokenize(key)
         if(func.name == "#if" || func.name == "#elseif"){
           var expression = func.expression;
           var res = TRANSFORM.fillout(data, "{{" + expression + "}}");
-
           if(res == ("{{" + expression + "}}")){
             // if there was at least one item that was not evaluatable,
             // we halt parsing and return the template;
@@ -77,34 +70,28 @@
           return TRANSFORM.run(item[key], data);
         }
       }
-
       // if you've reached this point, it means nothing matched.
       // so return null
       return null;
     },
     is: function(template){
-
       // TRUE ONLY IF it's in a correct format.
       // Otherwise return the original template
-
       // Condition 0. Must be an array
       // Condition 1. Must have at least one item
       // Condition 2. Each item in the array should be an object of a single key/value pair
       // Condition 3. starts with #if
       // Condition 4. in case there's more than two items, everything between the first and the last item should be #elseif
       // Condition 5. in case there's more than two items, the last one should be either "#else" or "#elseif"
-
       if(!Helper.is_array(template)){
         // Condition 0, it needs to be an array to be a conditional
         return false;
       }
-
       // Condition 1.
       // Must have at least one item
       if(template.length == 0){
         return false;
       }
-
       // Condition 2.
       // Each item in the array should be an object
       // , and  of a single key/value pair
@@ -124,7 +111,6 @@
       if(!containsValidObjects){
         return false;
       }
-
       // Condition 3.
       // the first item should have #if as its key
       // the first item should also contain an expression
@@ -137,29 +123,22 @@
         if(!func.name){
           return false;
         }
-
         // "{{#if }}"
         if(!func.expression || func.expression.length == 0){
           return false;
         }
-
         var func_name = func.name.toLowerCase();
         if(func_name != "#if"){
           return false;
         }
       }
-
       if(template.length == 1){
         // If we got this far and the template has only one item, it means 
         // template had one item which was "#if" so it's valid
         return true;
       }
-
-
-
       // Condition 4.
       // in case there's more than two items, everything between the first and the last item should be #elseif
-
       var they_are_all_elseifs = true;
       for(var i = 1 ; i < template.length-1 ; i++){
         var item = template[i];
@@ -172,17 +151,14 @@
           }
         }
       }
-
       if(!they_are_all_elseifs){
         // There was at least one item that wasn't an elseif
         // therefore invalid
         return false;
       }
-
       // If you've reached this point, it means we have multiple items and everything between the first and the last item
       // are elseifs
       // Now we need to check the validity of the last item
-
       // Condition 5.
       // in case there's more than one item, it should end with #else or #elseif
       var last = template[template.length-1];
@@ -193,22 +169,28 @@
           return false;
         }
       }
-
       // Congrats, if you've reached this point, it's valid
       return true;
-
     },
-  }
-
+  };
   var TRANSFORM = {
-    transform: function(template, data, serialized) {
+    transform: function(template, data, injection, serialized) {
       var selector = null;
       if (/#include/.test(JSON.stringify(template))) {
         selector = function(key, value){ return /#include/.test(key) || /#include/.test(value); };
       }
-      var res = SELECT.select(template, selector, serialized)
-                .transform(data, serialized)
-                .root();
+      var res;
+      if (injection) {
+        var resolved_template = SELECT.select(template, selector, serialized).root();
+        res = SELECT.select(data, null, serialized)
+                    .inject(injection, serialized)
+                    .transformWith(resolved_template, serialized)
+                    .root();
+      } else {
+        res = SELECT.select(template, selector, serialized)
+                  .transform(data, serialized)
+                  .root();
+      }
       if (serialized) {
         // needs to return stringified version
         return JSON.stringify(res);
@@ -309,6 +291,14 @@
             if(fun){
               if(fun.name == "#include"){
                 // this was handled above (before the for loop) so just ignore
+              } else if (fun.name == "#merge") {
+                if (Helper.is_array(template[key])) {
+                  result = [];
+                  template[key].forEach(function(item) {
+                    var res = TRANSFORM.run(item, data);
+                    result = result.concat(res);
+                  })
+                }
               } else if(fun.name == "#each"){
                 // newData will be filled with parsed results
                 var newData = TRANSFORM.fillout(data, "{{" + fun.expression + "}}", true);
@@ -345,9 +335,30 @@
             }
           } else {
             // Helper.is_template(key) was false, which means the key was not a template (hardcoded string)
-            var item = TRANSFORM.run(template[key], data);
-            if(item !== undefined){
-              result[key] = item;
+            if (typeof template[key] === 'string') {
+              var fun = TRANSFORM.tokenize(template[key]);
+              if(fun && fun.name === '#?') {
+                // If the key is a template expression but aren't either #include or #each, 
+                // it needs to be parsed
+                var v = TRANSFORM.fillout(data, "{{" + fun.expression + "}}");
+                if(v === "{{" + fun.expression + "}}") {
+                  // not parsed, which means the evaluation failed.
+                  // which means this key should be excluded
+                } else {
+                  // only include if the evaluation is truthy
+                  result[key] = v;
+                }
+              } else {
+                var item = TRANSFORM.run(template[key], data);
+                if(item !== undefined){
+                  result[key] = item;
+                }
+              }
+            } else {
+              var item = TRANSFORM.run(template[key], data);
+              if(item !== undefined){
+                result[key] = item;
+              }
             }
           }
         }
@@ -357,6 +368,8 @@
           return "null";
         } else if(template === undefined){
           return "undefined";
+        } else if(typeof template === 'function') {
+          return template.toString();
         } else {
           return TRANSFORM.run(template.toString(), data);
         }
@@ -408,11 +421,9 @@
       // Given a template and fill it out with passed slot and its corresponding data
       var re = /\{\{(.*?)\}\}/g;
       var full_re = /^\{\{((?!\}\}).)*\}\}$/;
-
       var variable = options.variable;
       var data = options.data;
       var template = options.template;
-
       try{
           // 1. Evaluate the variable
           var slot = variable.replace(re, "$1");
@@ -420,10 +431,11 @@
           // data must exist. Otherwise replace with blank
           if(data){
             var func;
-
             // Attach $root to each node so that we can reference it from anywhere
-            data["$root"] = root;
-
+            var data_type = typeof data;
+            if(['number','string','array','boolean','function'].indexOf(data_type === -1)) {
+              data["$root"] = root;
+            }
             // If the pattern ends with a return statement, but is NOT wrapped inside another function ([^}]*$), it's a function expression
             var match = /function\([ ]*\)[ ]*\{(.*)\}[ ]*$/g.exec(slot);
             if(match){
@@ -437,12 +449,10 @@
               func = Function("with(this){return (" + slot + ")}").bind(data);
             }
             var evaluated = func();
-
             if(evaluated){
               // In case of primitive types such as String, need to call valueOf() to get the actual value instead of the promoted object
               evaluated = evaluated.valueOf();
             }
-
             if (typeof evaluated == "undefined") {
               // it tried to evaluate since the variable existed, but ended up evaluating to undefined
               // (example: var a = [1,2,3,4]; var b = a[5];)
@@ -481,7 +491,6 @@
               }
             }
           }
-
           // REST OF THE CASES
           // if evaluated is null or undefined,
           // it probably means one of the following:
@@ -498,18 +507,16 @@
         return template;
       }
     }
-  }
-
-
-
+  };
   var SELECT = {
     // current: currently accessed object
     // path: the path leading to this item
     // filter: The filter function to decide whether to select or not
     $val: null,
     $selected: [],
+    $injected: [],
+    $progress: null,
     exec: function(current, path, filter){
-
       // if current matches the pattern, put it in the selected array
       if(typeof current == "string"){
         // leaf node should be ignored
@@ -539,7 +546,22 @@
         }
       }
     },
+    inject: function(obj, serialized) {
+      SELECT.$injected = obj;
+      try{ if (serialized) SELECT.$injected = JSON.parse(obj); }
+      catch (error) { }
 
+      if(SELECT.$injected.length > 0) {
+        // inject variables from "this" context by name
+        var selected;
+        SELECT.$injected.forEach(function(key) {
+          var o = {};
+          o[key] = $context[key];
+          selected = SELECT.select(o)
+        });
+      }
+      return SELECT;
+    },
     // returns the object itself
     select: function(obj, filter, serialized){
       // iterate '$selected'
@@ -558,26 +580,45 @@
         ...
       }]
       */
-
       var json = obj;
       try{ if (serialized) json = JSON.parse(obj); }
       catch (error) { }
 
-
-      SELECT.$val = json;
-      SELECT.$selected_root = json;
-
       if(filter) {
         SELECT.$selected = [];
-        SELECT.exec(SELECT.$selected_root, '', filter);
+        //SELECT.exec(SELECT.$selected_root, '', filter);
+        SELECT.exec(json, '', filter);
       } else {
         SELECT.$selected = null;//{object: SELECT.$selected_root};
       }
+
+      if(json && (Helper.is_array(json) || typeof json === 'object')) {
+        if (!SELECT.$progress) {
+          // initialize
+          if (Helper.is_array(json)) {
+            SELECT.$val = [];
+            SELECT.$selected_root = [];
+          } else {
+            SELECT.$val = {};
+            SELECT.$selected_root = {};
+          }
+        }
+        Object.keys(json).forEach(function(key) {
+        //for(var key in json) {
+          SELECT.$val[key] = json[key];
+          SELECT.$selected_root[key] = json[key];
+        });
+      } else {
+        SELECT.$val = json;
+        SELECT.$selected_root = json;
+      }
+      SELECT.$progress = true; // set the "in progress" flag
 
       return SELECT;
     },
     transformWith: function(obj, serialized){
       SELECT.$parsed = [];
+      SELECT.$progress = null;
       /*
       'selected' is an array that contains items that looks like this:
 
@@ -594,9 +635,12 @@
 
       // Setting $root
       SELECT.$template_root = template;
-      String.prototype.$root = SELECT.$template_root;
-      Array.prototype.$root = SELECT.$template_root;
-      root = SELECT.$template_root;
+      String.prototype.$root = SELECT.$selected_root;
+      Number.prototype.$root = SELECT.$selected_root;
+      Function.prototype.$root = SELECT.$selected_root;
+      Array.prototype.$root = SELECT.$selected_root;
+      Boolean.prototype.$root = SELECT.$selected_root;
+      root = SELECT.$selected_root;
 
       // generate new $selected_root
       if(SELECT.$selected && SELECT.$selected.length > 0) {
@@ -629,6 +673,7 @@
     },
     transform: function(obj, serialized){
       SELECT.$parsed = [];
+      SELECT.$progress = null;
       /*
       'selected' is an array that contains items that looks like this:
 
@@ -647,7 +692,10 @@
       SELECT.$template_root = SELECT.$selected_root;
 
       String.prototype.$root = data;
+      Number.prototype.$root = data;
+      Function.prototype.$root = data;
       Array.prototype.$root = data;
+      Boolean.prototype.$root = data;
       root = data;
 
       if(SELECT.$selected && SELECT.$selected.length > 0) {
@@ -680,6 +728,7 @@
 
     // Terminal methods
     objects: function(){
+      SELECT.$progress = null;
       if(SELECT.$selected) {
         return SELECT.$selected.map(function(item){ return item.object; })
       } else {
@@ -687,6 +736,7 @@
       }
     },
     keys: function(){
+      SELECT.$progress = null;
       if(SELECT.$selected) {
         return SELECT.$selected.map(function(item){ return item.key; });
       } else {
@@ -698,6 +748,7 @@
       }
     },
     paths: function(){
+      SELECT.$progress = null;
       if(SELECT.$selected) {
         return SELECT.$selected.map(function(item){ return item.path; });
       } else {
@@ -715,6 +766,7 @@
       }
     },
     values: function(){
+      SELECT.$progress = null;
       if(SELECT.$selected) {
         return SELECT.$selected.map(function(item){ return item.value; });
       } else {
@@ -722,6 +774,7 @@
       }
     },
     root: function(){
+      SELECT.$progress = null;
       return SELECT.$selected_root;
     }
   };
@@ -729,9 +782,14 @@
   // Native JSON object override
   var _stringify = JSON.stringify;
   JSON.stringify = function(val, replacer, spaces){
+    var t = typeof val;
+    if (['number', 'string', 'function', 'boolean'].indexOf(t) !== -1) {
+      return _stringify(val, replacer, spaces);
+    }
     if(!replacer){
       return _stringify(val, function(key, val){
-        if (key == "$root") { return undefined; }
+        if (SELECT.$injected && SELECT.$injected.length > 0 && SELECT.$injected.indexOf(key) !== -1) { return undefined; }
+        if (key === "$root") { return undefined; }
         else { return val; }
       }, spaces);
     } else {
@@ -739,6 +797,7 @@
     }
   };
   JSON.select = SELECT.select;
+  JSON.inject = SELECT.inject;
   JSON.transform = TRANSFORM.transform;
 
   // Export
