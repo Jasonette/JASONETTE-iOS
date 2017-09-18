@@ -16,7 +16,7 @@
 		04DC19801F54746E0021A7A6 /* JasonScriptAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */; };
 		04EA6DAC1F69A2260067B635 /* xhtml.js in Resources */ = {isa = PBXBuildFile; fileRef = 04EA6DAB1F69A2260067B635 /* xhtml.js */; };
 		04F3BCBE1F2BF9ED00C95170 /* NSObject+JSONPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */; };
-		04F98B4C1F6E136500EE7C33 /* st.js in Resources */ = {isa = PBXBuildFile; fileRef = 04F98B4B1F6E136500EE7C33 /* st.js */; };
+		04F98B4E1F6FAAF500EE7C33 /* st.js in Resources */ = {isa = PBXBuildFile; fileRef = 04F98B4D1F6FAAF500EE7C33 /* st.js */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
 		5E0956301DA34D70007ADC78 /* JasonImageComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562F1DA34D6F007ADC78 /* JasonImageComponent.m */; };
 		5E0956331DA34EEA007ADC78 /* JasonButtonComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0956321DA34EEA007ADC78 /* JasonButtonComponent.m */; };
@@ -96,7 +96,7 @@
 		04EA6DAB1F69A2260067B635 /* xhtml.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = xhtml.js; sourceTree = "<group>"; };
 		04F3BCBC1F2BF9ED00C95170 /* NSObject+JSONPayload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+JSONPayload.h"; sourceTree = "<group>"; };
 		04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+JSONPayload.m"; sourceTree = "<group>"; };
-		04F98B4B1F6E136500EE7C33 /* st.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = st.js; sourceTree = "<group>"; };
+		04F98B4D1F6FAAF500EE7C33 /* st.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = st.js; sourceTree = "<group>"; };
 		1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.release.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.release.xcconfig"; sourceTree = "<group>"; };
 		2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Jasonette.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E025B471DE017EB0016786A /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
@@ -437,7 +437,7 @@
 		5E31778A1D1F204600D87778 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				04F98B4B1F6E136500EE7C33 /* st.js */,
+				04F98B4D1F6FAAF500EE7C33 /* st.js */,
 				5E31769B1D1E411E00D87778 /* csv.js */,
 				5E3176F41D1E411E00D87778 /* rss.js */,
 				04EA6DAB1F69A2260067B635 /* xhtml.js */,
@@ -772,7 +772,7 @@
 				5E3177371D1E411F00D87778 /* icon-info.png in Resources */,
 				5E3177531D1E411F00D87778 /* Next@2x.png in Resources */,
 				5E31773A1D1E411F00D87778 /* icon-success@2x.png in Resources */,
-				04F98B4C1F6E136500EE7C33 /* st.js in Resources */,
+				04F98B4E1F6FAAF500EE7C33 /* st.js in Resources */,
 				5E3177671D1E411F00D87778 /* rss.js in Resources */,
 				5E3177481D1E411F00D87778 /* LaunchScreen.storyboard in Resources */,
 				045C77E91F0278EA00F06598 /* loading.json in Resources */,

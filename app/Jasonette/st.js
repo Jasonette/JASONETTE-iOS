@@ -363,16 +363,7 @@
           }
         }
       } else {
-        // number, boolean, etc => Just turn them into string!
-        if(template === null){
-          return "null";
-        } else if(template === undefined){
-          return "undefined";
-        } else if(typeof template === 'function') {
-          return template.toString();
-        } else {
-          return TRANSFORM.run(template.toString(), data);
-        }
+        return template;
       }
       return result;
     },
