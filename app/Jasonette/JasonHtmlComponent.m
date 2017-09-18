@@ -76,7 +76,7 @@
 }
 + (void) webViewDidFinishLoad:(UIWebView *)webView
 {
-    NSString *summon = @"var JASON={call: function(e){var n=document.createElement(\"IFRAME\");n.setAttribute(\"src\",\"jason:\"+JSON.stringify(e)),document.documentElement.appendChild(n),n.parentNode.removeChild(n),n=null}};";
+    NSString *summon = @"var e = document.createEvent('Event'); e.initEvent('unload', true, true); window.dispatchEvent(e); var JASON={call: function(e){var n=document.createElement(\"IFRAME\");n.setAttribute(\"src\",\"jason:\"+JSON.stringify(e)),document.documentElement.appendChild(n),n.parentNode.removeChild(n),n=null}};";
     [webView stringByEvaluatingJavaScriptFromString:summon];
 }
 + (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
