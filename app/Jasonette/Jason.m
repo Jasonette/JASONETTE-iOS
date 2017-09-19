@@ -1863,6 +1863,8 @@
             } else if([type isEqualToString:@"html"]){
                 if(VC.background && [VC.background isKindOfClass:[UIWebView class]]){
                    // don't do anything, reuse.
+                    NSString *summon = @"var e = document.createEvent('Event'); e.initEvent('unload', true, true); window.dispatchEvent(e); var JASON={call: function(e){var n=document.createElement(\"IFRAME\");n.setAttribute(\"src\",\"jason:\"+JSON.stringify(e)),document.documentElement.appendChild(n),n.parentNode.removeChild(n),n=null}};";
+                    [(UIWebView *)VC.background stringByEvaluatingJavaScriptFromString:summon];
                 } else {
                     if(VC.background){
                         [VC.background removeFromSuperview];
