@@ -2213,7 +2213,9 @@
                 [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
             }
             [btn addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
-            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:btn];
+            UIView *view = [[UIView alloc] initWithFrame:btn.frame];
+            [view addSubview:btn];
+            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
         }
         [self setupMenuBadge:leftBarButton forData:left_menu];
     }
@@ -2272,7 +2274,9 @@
                 [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
             }
             [btn addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
-            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:btn];
+            UIView *view = [[UIView alloc] initWithFrame:btn.frame];
+            [view addSubview:btn];
+            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
         }
         [self setupMenuBadge:rightBarButton forData:right_menu];
     }
@@ -2282,7 +2286,7 @@
     }
     [VC.menu setValue:left_menu forKey:@"left"];
     [VC.menu setValue:right_menu forKey:@"right"];
-    
+
     VC.navigationItem.rightBarButtonItem = rightBarButton;
     VC.navigationItem.leftBarButtonItem = leftBarButton;
     
