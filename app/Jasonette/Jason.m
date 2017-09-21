@@ -2536,8 +2536,10 @@
 # pragma mark - View rendering (tab)
 - (void)setupTabBar: (NSDictionary *)t{
     
-    if(!t && !VC.isFinal) return;
-
+    if(!t && !VC.isFinal) {
+        tabController.tabBar.hidden = YES;
+        return;
+    }
     if(previous_footer && previous_footer[@"tabs"]){
         // if previous footer tab was not null, we diff the tabs to determine whether to re-render
         if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){
