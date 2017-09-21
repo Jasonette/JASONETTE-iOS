@@ -87,7 +87,6 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.sectionHeaderHeight = UITableViewAutomaticDimension;
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
-
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:self.navigationItem.backBarButtonItem.style target:nil action:nil];
     [self.tableView setSeparatorColor:[JasonHelper colorwithHexString:@"#f5f5f5" alpha:1.0]];
     rowcount = [[NSMutableArray alloc] init];
@@ -1063,15 +1062,6 @@
             [self setupAds:body];
             #endif
             
-        
-            if(self.isModal){
-                // Swipe down to dismiss modal
-                UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
-                [self.view addGestureRecognizer:pinchRecognizer];
-                self.tableView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, self.bottomLayoutGuide.length, 0);
-
-            }
-        
             original_bottom_inset = self.tableView.contentInset.bottom;
             if(final) self.isFinal = final;
         });
@@ -1083,26 +1073,6 @@
         NSLog(@"Register = %@", [JasonMemory client]._register);
     }
     
-}
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    CGFloat threshold = -130.0f;
-    if(self.events[@"$pull"]){
-        if(!self.tabBarController.tabBar.hidden || chat_input){
-            threshold = -100.0f;
-        } else {
-            threshold = -170.0f;
-        }
-    }
-    
-    // Swipe down to close modal
-    if([self.tabBarController presentingViewController] && scrollView.isDragging && scrollView.contentOffset.y < threshold){
-        [[Jason client] cancel];
-    }
-}
-- (void) pinch:(UIPinchGestureRecognizer *)recognizer{
-    if(recognizer.scale < 0.3){
-        [[Jason client] cancel];
-    }
 }
 
 - (void)scrollToTop{
