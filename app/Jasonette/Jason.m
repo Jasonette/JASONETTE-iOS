@@ -1444,7 +1444,12 @@
     NSURL *file = [[NSBundle mainBundle] URLForResource:@"Info" withExtension:@"plist"];
     NSDictionary *info_plist = [NSDictionary dictionaryWithContentsOfURL:file];
     dict[@"url_scheme"] = info_plist[@"CFBundleURLTypes"][0][@"CFBundleURLSchemes"][0];
-    
+
+    NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+    NSString *version = [info objectForKey:@"CFBundleShortVersionString"];
+    NSString *build = [info objectForKey:(NSString *)kCFBundleVersionKey];
+    dict[@"app"] = @{ @"build": build, @"version": version };
+
     CGRect bounds = [[UIScreen mainScreen] bounds];
     dict[@"device"] = @{
         @"width": [NSNumber numberWithFloat:bounds.size.width],
@@ -2024,10 +2029,13 @@
 
     if(!nav && !VC.isFinal) return;
 
-    if(VC.rendered){
+    if(VC.rendered && rendered_page){
         if(VC.old_header && [[VC.old_header description] isEqualToString:[nav description]]){
-            // and if the header is the same as the value trying to set, ignore.
-            return;
+            // if the header is the same as the value trying to set,
+            if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[VC.old_header description]]) {
+                // and if the currently visible rendered_page's header is the same as the VC's old_header, ignore.
+                return;
+            }
         }
     }
     
@@ -2207,7 +2215,9 @@
                 [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
             }
             [btn addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
-            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:btn];
+            UIView *view = [[UIView alloc] initWithFrame:btn.frame];
+            [view addSubview:btn];
+            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
         }
         [self setupMenuBadge:leftBarButton forData:left_menu];
     }
@@ -2266,7 +2276,9 @@
                 [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
             }
             [btn addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
-            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:btn];
+            UIView *view = [[UIView alloc] initWithFrame:btn.frame];
+            [view addSubview:btn];
+            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
         }
         [self setupMenuBadge:rightBarButton forData:right_menu];
     }
@@ -2276,7 +2288,7 @@
     }
     [VC.menu setValue:left_menu forKey:@"left"];
     [VC.menu setValue:right_menu forKey:@"right"];
-    
+
     VC.navigationItem.rightBarButtonItem = rightBarButton;
     VC.navigationItem.leftBarButtonItem = leftBarButton;
     
@@ -2526,8 +2538,10 @@
 # pragma mark - View rendering (tab)
 - (void)setupTabBar: (NSDictionary *)t{
     
-    if(!t && !VC.isFinal) return;
-
+    if(!t && !VC.isFinal) {
+        tabController.tabBar.hidden = YES;
+        return;
+    }
     if(previous_footer && previous_footer[@"tabs"]){
         // if previous footer tab was not null, we diff the tabs to determine whether to re-render
         if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){

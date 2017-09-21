@@ -22,7 +22,20 @@
     }
     component.payload = payload;
 
-    
+    NSString *keyboard = json[@"keyboard"];
+    keyboard = keyboard ? keyboard : @"text";
+    if([keyboard isEqualToString:@"text"]){
+        component.keyboardType = UIKeyboardTypeDefault;
+    } else if([keyboard isEqualToString:@"number"]) {
+        component.keyboardType = UIKeyboardTypeNumberPad;
+    } else if([keyboard isEqualToString:@"phone"]) {
+        component.keyboardType = UIKeyboardTypePhonePad;
+    } else if([keyboard isEqualToString:@"url"]) {
+        component.keyboardType = UIKeyboardTypeURL;
+    } else if([keyboard isEqualToString:@"email"]) {
+        component.keyboardType = UIKeyboardTypeEmailAddress;
+    }
+
     if(options && options[@"value"]){
         component.text = options[@"value"];
     } else if(json && json[@"value"]){
