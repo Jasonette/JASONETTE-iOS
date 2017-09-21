@@ -195,7 +195,8 @@
         // needs to return stringified version
         return JSON.stringify(res);
       } else {
-        return JSON.parse(JSON.stringify(res));
+        //return JSON.parse(JSON.stringify(res));
+        return res;
       }
     },
     tokenize: function(str) {
@@ -667,7 +668,7 @@
         // apply the result to root
         SELECT.$selected_root = Helper.resolve(SELECT.$selected_root, '', parsed_object);
       }
-      SELECT.$selected_root = JSON.parse(JSON.stringify(SELECT.$selected_root));
+      //SELECT.$selected_root = JSON.parse(JSON.stringify(SELECT.$selected_root));
       return SELECT;
     },
     transform: function(obj, serialized) {
@@ -722,7 +723,7 @@
         SELECT.$template_root = Helper.resolve(SELECT.$template_root, '', parsed_object);
         SELECT.$selected_root = SELECT.$template_root;
       }
-      SELECT.$selected_root = JSON.parse(JSON.stringify(SELECT.$selected_root));
+      //SELECT.$selected_root = JSON.parse(JSON.stringify(SELECT.$selected_root));
       return SELECT;
     },
 
@@ -802,11 +803,12 @@
       return _stringify(val, replacer, spaces);
     }
   };
+  /*
   var _parse = JSON.parse;
   JSON.parse = function(val, replacer, spaces) {
     if (!replacer) {
       return _parse(val, function(key, val) {
-        if (typeof val === 'string' && val.indexOf('function') >= 0) {
+        if (typeof val === 'string' && /^[ ]*function/.test(val)) {
           return eval(val);
         }
         return val;
@@ -815,6 +817,7 @@
       return _parse(val, replacer, spaces);
     }
   };
+  */
   JSON.select = SELECT.select;
   JSON.inject = SELECT.inject;
   JSON.transform = TRANSFORM.transform;

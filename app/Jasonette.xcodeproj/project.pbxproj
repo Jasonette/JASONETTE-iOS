@@ -12,7 +12,7 @@
 		045C77E91F0278EA00F06598 /* loading.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77E81F0278EA00F06598 /* loading.json */; };
 		045C77EB1F02791D00F06598 /* error.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77EA1F02791D00F06598 /* error.json */; };
 		045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */; };
-		04BDB99E1F737EF2001CEB66 /* st.js in Resources */ = {isa = PBXBuildFile; fileRef = 04BDB99D1F737EF2001CEB66 /* st.js */; };
+		04BDB9A21F73DEBF001CEB66 /* st.js in Resources */ = {isa = PBXBuildFile; fileRef = 04BDB9A11F73DEBF001CEB66 /* st.js */; };
 		04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */; };
 		04DC19801F54746E0021A7A6 /* JasonScriptAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */; };
 		04EA6DAC1F69A2260067B635 /* xhtml.js in Resources */ = {isa = PBXBuildFile; fileRef = 04EA6DAB1F69A2260067B635 /* xhtml.js */; };
@@ -89,7 +89,7 @@
 		045C77EA1F02791D00F06598 /* error.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = error.json; sourceTree = "<group>"; };
 		045E5F3B1E3661060088D5E6 /* JasonReturnAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonReturnAction.h; sourceTree = "<group>"; };
 		045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonReturnAction.m; sourceTree = "<group>"; };
-		04BDB99D1F737EF2001CEB66 /* st.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = st.js; sourceTree = "<group>"; };
+		04BDB9A11F73DEBF001CEB66 /* st.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = st.js; sourceTree = "<group>"; };
 		04D947E91F16ACF50063CC65 /* JASONResponseSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JASONResponseSerializer.h; sourceTree = "<group>"; };
 		04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JASONResponseSerializer.m; sourceTree = "<group>"; };
 		04DC197E1F54746E0021A7A6 /* JasonScriptAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonScriptAction.h; sourceTree = "<group>"; };
@@ -437,7 +437,7 @@
 		5E31778A1D1F204600D87778 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				04BDB99D1F737EF2001CEB66 /* st.js */,
+				04BDB9A11F73DEBF001CEB66 /* st.js */,
 				5E31769B1D1E411E00D87778 /* csv.js */,
 				5E3176F41D1E411E00D87778 /* rss.js */,
 				04EA6DAB1F69A2260067B635 /* xhtml.js */,
@@ -724,6 +724,7 @@
 				TargetAttributes = {
 					5E3176581D1E400C00D87778 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = ECW8LMMJGA;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -772,7 +773,7 @@
 				5E3177371D1E411F00D87778 /* icon-info.png in Resources */,
 				5E3177531D1E411F00D87778 /* Next@2x.png in Resources */,
 				5E31773A1D1E411F00D87778 /* icon-success@2x.png in Resources */,
-				04BDB99E1F737EF2001CEB66 /* st.js in Resources */,
+				04BDB9A21F73DEBF001CEB66 /* st.js in Resources */,
 				5E3177671D1E411F00D87778 /* rss.js in Resources */,
 				5E3177481D1E411F00D87778 /* LaunchScreen.storyboard in Resources */,
 				045C77E91F0278EA00F06598 /* loading.json in Resources */,
@@ -989,6 +990,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = ECW8LMMJGA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1008,6 +1010,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = ECW8LMMJGA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
