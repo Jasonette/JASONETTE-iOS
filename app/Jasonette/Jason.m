@@ -2030,10 +2030,13 @@
 
     if(!nav && !VC.isFinal) return;
 
-    if(VC.rendered){
+    if(VC.rendered && rendered_page){
         if(VC.old_header && [[VC.old_header description] isEqualToString:[nav description]]){
-            // and if the header is the same as the value trying to set, ignore.
-            return;
+            // if the header is the same as the value trying to set,
+            if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[VC.old_header description]]) {
+                // and if the currently visible rendered_page's header is the same as the VC's old_header, ignore.
+                return;
+            }
         }
     }
     
