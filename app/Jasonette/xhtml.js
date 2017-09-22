@@ -18255,10 +18255,10 @@ module.exports = flatten;
 /***/ (function(module, exports, __webpack_require__) {
 
 var cheerio = __webpack_require__(141);
-module.exports = function(type, template, data, serialized) {
+module.exports = function(type, template, data, injection, serialized) {
   if (type === 'html') { $ = cheerio.load(data); }
   else if (type === 'xml') { $ = cheerio.load(data, {xmlMode: true}); }
-  return JSON.transform(template, { $jason: $(data) }, serialized);
+  return JSON.transform(template, { $jason: $(data) }, injection, serialized);
 }
 
 
