@@ -181,8 +181,10 @@
       }
       var res;
       if (injection) {
-        var resolved_template = SELECT.select(template, selector, serialized).root();
-        res = SELECT.select(data, null, serialized)
+        var resolved_template = SELECT.select(template, selector, serialized)
+                                      .transform(data, serialized)
+                                      .root();
+        res = SELECT.select(data, selector, serialized)
           .inject(injection, serialized)
           .transformWith(resolved_template, serialized)
           .root();
