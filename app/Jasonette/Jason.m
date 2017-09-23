@@ -2895,9 +2895,6 @@
         NSString *fresh = href[@"fresh"];
         JasonMemory *memory = [JasonMemory client];
         memory.executing = NO;
-
-        // jscontext must be cleared everytime an href happens.
-        self.jscontext = nil;
         
         if([transition isEqualToString:@"root"]){
             [self start: nil];
