@@ -2027,7 +2027,10 @@
 # pragma mark - View rendering (nav)
 - (void)setupHeader: (NSDictionary *)nav{
 
-    if(!nav && !VC.isFinal) return;
+    if(!nav && !VC.isFinal) {
+        navigationController.navigationBar.hidden = YES;
+        return;
+    }
 
     if(VC.rendered && rendered_page){
         if(VC.old_header && [[VC.old_header description] isEqualToString:[nav description]]){
