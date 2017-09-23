@@ -9,11 +9,13 @@
 /* Begin PBXBuildFile section */
 		042852531E984B890081F742 /* NoPaddingButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 042852521E984B890081F742 /* NoPaddingButton.m */; };
 		043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 043814151EF7455800CC4706 /* JasonGlobalAction.m */; };
+		043AD2B81F7524EB00BA165A /* xhtml.js in Resources */ = {isa = PBXBuildFile; fileRef = 043AD2B71F7524EB00BA165A /* xhtml.js */; };
 		045C77E91F0278EA00F06598 /* loading.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77E81F0278EA00F06598 /* loading.json */; };
 		045C77EB1F02791D00F06598 /* error.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77EA1F02791D00F06598 /* error.json */; };
-		045C77F11F029BEC00F06598 /* parser.js in Resources */ = {isa = PBXBuildFile; fileRef = 045C77F01F029BEC00F06598 /* parser.js */; };
 		045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */; };
+		04BDB9A61F751A7A001CEB66 /* st.js in Resources */ = {isa = PBXBuildFile; fileRef = 04BDB9A51F751A7A001CEB66 /* st.js */; };
 		04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */; };
+		04DC19801F54746E0021A7A6 /* JasonScriptAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */; };
 		04F3BCBE1F2BF9ED00C95170 /* NSObject+JSONPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
 		5E0956301DA34D70007ADC78 /* JasonImageComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562F1DA34D6F007ADC78 /* JasonImageComponent.m */; };
@@ -83,13 +85,16 @@
 		042852521E984B890081F742 /* NoPaddingButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoPaddingButton.m; sourceTree = "<group>"; };
 		043814141EF7455800CC4706 /* JasonGlobalAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonGlobalAction.h; sourceTree = "<group>"; };
 		043814151EF7455800CC4706 /* JasonGlobalAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonGlobalAction.m; sourceTree = "<group>"; };
+		043AD2B71F7524EB00BA165A /* xhtml.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = xhtml.js; sourceTree = "<group>"; };
 		045C77E81F0278EA00F06598 /* loading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loading.json; sourceTree = "<group>"; };
 		045C77EA1F02791D00F06598 /* error.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = error.json; sourceTree = "<group>"; };
-		045C77F01F029BEC00F06598 /* parser.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = parser.js; sourceTree = "<group>"; };
 		045E5F3B1E3661060088D5E6 /* JasonReturnAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonReturnAction.h; sourceTree = "<group>"; };
 		045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonReturnAction.m; sourceTree = "<group>"; };
+		04BDB9A51F751A7A001CEB66 /* st.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = st.js; sourceTree = "<group>"; };
 		04D947E91F16ACF50063CC65 /* JASONResponseSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JASONResponseSerializer.h; sourceTree = "<group>"; };
 		04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JASONResponseSerializer.m; sourceTree = "<group>"; };
+		04DC197E1F54746E0021A7A6 /* JasonScriptAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonScriptAction.h; sourceTree = "<group>"; };
+		04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonScriptAction.m; sourceTree = "<group>"; };
 		04F3BCBC1F2BF9ED00C95170 /* NSObject+JSONPayload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+JSONPayload.h"; sourceTree = "<group>"; };
 		04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+JSONPayload.m"; sourceTree = "<group>"; };
 		1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.release.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.release.xcconfig"; sourceTree = "<group>"; };
@@ -244,6 +249,15 @@
 			name = $return;
 			sourceTree = "<group>";
 		};
+		04DC19811F5474730021A7A6 /* $script */ = {
+			isa = PBXGroup;
+			children = (
+				04DC197E1F54746E0021A7A6 /* JasonScriptAction.h */,
+				04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */,
+			);
+			name = $script;
+			sourceTree = "<group>";
+		};
 		5E0956271DA30970007ADC78 /* Component */ = {
 			isa = PBXGroup;
 			children = (
@@ -363,6 +377,7 @@
 				5EDF644F1DB0480B00C5E403 /* $session */,
 				5E31778F1D1F20AB00D87778 /* $oauth */,
 				045E5F3E1E36610B0088D5E6 /* $return */,
+				04DC19811F5474730021A7A6 /* $script */,
 				5E3177AB1D1F297400D87778 /* $timer */,
 				5E3177AA1D1F296300D87778 /* $util */,
 				043814171EF7455E00CC4706 /* $global */,
@@ -422,9 +437,10 @@
 		5E31778A1D1F204600D87778 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
+				04BDB9A51F751A7A001CEB66 /* st.js */,
 				5E31769B1D1E411E00D87778 /* csv.js */,
-				045C77F01F029BEC00F06598 /* parser.js */,
 				5E3176F41D1E411E00D87778 /* rss.js */,
+				043AD2B71F7524EB00BA165A /* xhtml.js */,
 			);
 			name = Lib;
 			sourceTree = "<group>";
@@ -708,6 +724,7 @@
 				TargetAttributes = {
 					5E3176581D1E400C00D87778 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = ECW8LMMJGA;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -752,10 +769,11 @@
 				5E3177291D1E411F00D87778 /* csv.js in Resources */,
 				5E31771E1D1E411F00D87778 /* JasonVerticalSectionItem.xib in Resources */,
 				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
-				045C77F11F029BEC00F06598 /* parser.js in Resources */,
 				5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */,
 				5E3177371D1E411F00D87778 /* icon-info.png in Resources */,
 				5E3177531D1E411F00D87778 /* Next@2x.png in Resources */,
+				043AD2B81F7524EB00BA165A /* xhtml.js in Resources */,
+				04BDB9A61F751A7A001CEB66 /* st.js in Resources */,
 				5E31773A1D1E411F00D87778 /* icon-success@2x.png in Resources */,
 				5E3177671D1E411F00D87778 /* rss.js in Resources */,
 				5E3177481D1E411F00D87778 /* LaunchScreen.storyboard in Resources */,
@@ -854,6 +872,7 @@
 				5E31771D1D1E411F00D87778 /* JasonVerticalSectionItem.m in Sources */,
 				5E3177A71D1F28C100D87778 /* JasonUtilAction.m in Sources */,
 				5E0956421DA34F4D007ADC78 /* JasonSpaceComponent.m in Sources */,
+				04DC19801F54746E0021A7A6 /* JasonScriptAction.m in Sources */,
 				5E3177701D1E411F00D87778 /* UIBarButtonItem+Badge.m in Sources */,
 				5E0956361DA34EFC007ADC78 /* JasonTextareaComponent.m in Sources */,
 				043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */,
@@ -971,6 +990,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = ECW8LMMJGA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -990,6 +1010,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = ECW8LMMJGA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",

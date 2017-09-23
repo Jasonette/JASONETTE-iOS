@@ -1201,7 +1201,6 @@
    
     // When oauth is in process, let it do its job and don't interfere.
     if(self.oauth_in_process) return self;
-    
     [[NSNotificationCenter defaultCenter] postNotificationName:@"dismissSearchInput" object:nil];
     
     VC = (UIViewController<RussianDollView>*)viewController;
@@ -2893,6 +2892,10 @@
         NSString *fresh = href[@"fresh"];
         JasonMemory *memory = [JasonMemory client];
         memory.executing = NO;
+
+        // jscontext must be cleared everytime an href happens.
+        self.jscontext = nil;
+        
         if([transition isEqualToString:@"root"]){
             [self start: nil];
             return;
