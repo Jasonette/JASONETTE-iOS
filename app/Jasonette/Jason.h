@@ -19,6 +19,8 @@
 #import <NSHash/NSString+NSHash.h>
 #import <FreeStreamer/FSAudioStream.h>
 #import <PBJVision/PBJVision.h>
+#import <JavaScriptCore/JavaScriptCore.h>
+
 #import "MBProgressHud.h"
 #if DEBUG
 #include <FLEX/FLEX.h>
@@ -41,6 +43,7 @@
 
 - (UIViewController *)getVC;
 
+@property (strong, nonatomic) JSContext *jscontext;
 
 + (Jason*)client;
 - (Jason*)attach:(UIViewController<RussianDollView>*)viewController;

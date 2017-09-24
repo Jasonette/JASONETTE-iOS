@@ -87,7 +87,6 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.sectionHeaderHeight = UITableViewAutomaticDimension;
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
-
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:self.navigationItem.backBarButtonItem.style target:nil action:nil];
     [self.tableView setSeparatorColor:[JasonHelper colorwithHexString:@"#f5f5f5" alpha:1.0]];
     rowcount = [[NSMutableArray alloc] init];
@@ -746,17 +745,32 @@
 -(CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     @try{
         NSDictionary *s = [self.sections objectAtIndex:indexPath.section];
-        if([self isHorizontal: s]){
-            NSDictionary *style = s[@"style"];
-            if(style){
-                if(style[@"height"]){
-                    return [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+        
+        if([s[@"items"] count] > 0){
+            // if the row has a style, honor that first.
+            // If not, look to see if it has a class, if it does, look it up on style object
+            
+            NSDictionary *item = [s[@"items"] objectAtIndex:indexPath.row];
+            item = [JasonComponentFactory applyStylesheet: item];
+            NSDictionary *style = item[@"style"];
+            if(style && style[@"height"]){
+                CGFloat h = [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+                if(h <= 1.0) {
+                    return 1.1;
+                } else {
+                    return h;
+                }
+            } else {
+                if([self isHorizontal: s]){
+                    return 100.0f;
+                } else {
+                    return [self getEstimatedHeight:indexPath defaultHeight:60.0f];
                 }
             }
-            return 100.0f;
         } else {
-            return [self getEstimatedHeight:indexPath defaultHeight:60.0f];
+            return 0;
         }
+        
     }
     @catch(NSException *e){
         hasError = YES;
@@ -1048,15 +1062,6 @@
             [self setupAds:body];
             #endif
             
-        
-            if(self.isModal){
-                // Swipe down to dismiss modal
-                UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
-                [self.view addGestureRecognizer:pinchRecognizer];
-                self.tableView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, self.bottomLayoutGuide.length, 0);
-
-            }
-        
             original_bottom_inset = self.tableView.contentInset.bottom;
             if(final) self.isFinal = final;
         });
@@ -1068,26 +1073,6 @@
         NSLog(@"Register = %@", [JasonMemory client]._register);
     }
     
-}
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    CGFloat threshold = -130.0f;
-    if(self.events[@"$pull"]){
-        if(!self.tabBarController.tabBar.hidden || chat_input){
-            threshold = -100.0f;
-        } else {
-            threshold = -170.0f;
-        }
-    }
-    
-    // Swipe down to close modal
-    if([self.tabBarController presentingViewController] && scrollView.isDragging && scrollView.contentOffset.y < threshold){
-        [[Jason client] cancel];
-    }
-}
-- (void) pinch:(UIPinchGestureRecognizer *)recognizer{
-    if(recognizer.scale < 0.3){
-        [[Jason client] cancel];
-    }
 }
 
 - (void)scrollToTop{
