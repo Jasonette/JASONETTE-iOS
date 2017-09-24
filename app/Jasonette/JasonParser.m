@@ -153,14 +153,13 @@
                 context = [[JSContext alloc] init];
             }
             
-            
-
             NSDictionary *globals = [context.globalObject toDictionary];
-            
             if(globals && globals.count > 0) {
+                NSMutableDictionary *mutable_data = [data mutableCopy];
                 for(NSString *key in globals) {
-                    [data setValue:[context.globalObject objectForKeyedSubscript:key] forKey:key];
+                    [mutable_data setValue:[context.globalObject objectForKeyedSubscript:key] forKey:key];
                 }
+                data = mutable_data;
             }
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
                 NSLog(@"%@", value);
