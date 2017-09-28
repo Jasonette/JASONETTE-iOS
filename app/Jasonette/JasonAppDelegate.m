@@ -69,6 +69,7 @@
     
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey]){
         // launched with url. so wait until openURL is called.
+        self.launchURL = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
         
     } else if(launchOptions && launchOptions.count > 0 && [launchOptions objectForKey: UIApplicationLaunchOptionsRemoteNotificationKey]){
         // launched with push notification. so ignore. It's already been taken care of by
@@ -78,7 +79,21 @@
     }
     return YES;
 }
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    if (self.launchURL) {
+        [self openURL:self.launchURL type: @"start"];
+        self.launchURL = nil;
+    }
+}
+
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    if (!url) return NO;
+    return [self openURL:url type: @"go"];
+}
+
+- (BOOL) openURL: (NSURL *) url type: (NSString *) type{
     if([[url absoluteString] containsString:@"://oauth"]){
         [[NSNotificationCenter defaultCenter] postNotificationName:@"oauth_callback" object:nil userInfo:@{@"url": url}];
     } else if ([[url absoluteString] containsString:@"://href?"]){
@@ -96,8 +111,11 @@
             // Default is modal
             href[@"transition"] = @"modal";
         }
-        
-        [[Jason client] go:href];
+        if([type isEqualToString:@"go"]) {
+            [[Jason client] go:href];
+        } else {
+            [[Jason client] start:href];
+        }
     } else {
         // Only start if we're not going through an oauth auth process
         [[Jason client] start:nil];
@@ -108,15 +126,13 @@
 
 #ifdef PUSH
 #pragma mark - Remote Notification Delegate below iOS 9
-
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
     [application registerForRemoteNotifications];
 }
-
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
     NSString *device_token = [[NSString alloc]initWithFormat:@"%@",[[[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""]];
     NSLog(@"Device Token = %@",device_token);
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil userInfo:@{@"device_token": device_token}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil userInfo:@{@"token": device_token}];
 }
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
@@ -131,4 +147,3 @@
 #endif
 
 @end
-
