@@ -2030,20 +2030,32 @@
 # pragma mark - View rendering (nav)
 - (void)setupHeader: (NSDictionary *)nav{
 
+    if(VC.rendered && rendered_page){
+        if(VC.old_header) {
+            if([[VC.old_header description] isEqualToString:[nav description]]){
+                // if the header is the same as the value trying to set,
+                if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[VC.old_header description]]) {
+                    // and if the currently visible rendered_page's header is the same as the VC's old_header, ignore.
+                    return;
+                }
+            } else {
+                // even if the header is not the same, don't decide yet if the view has not rendered finally.
+                // just return here
+                if(!VC.isFinal){
+                    return;
+                }
+            }
+        } else {
+            // no old header. need to re render with empty header, so go on.
+        }
+    }
+    
+    
     if(!nav && !VC.isFinal) {
         navigationController.navigationBar.hidden = YES;
         return;
     }
 
-    if(VC.rendered && rendered_page){
-        if(VC.old_header && [[VC.old_header description] isEqualToString:[nav description]]){
-            // if the header is the same as the value trying to set,
-            if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[VC.old_header description]]) {
-                // and if the currently visible rendered_page's header is the same as the VC's old_header, ignore.
-                return;
-            }
-        }
-    }
     
     if(nav) VC.old_header = nav;
     
@@ -2544,18 +2556,27 @@
 # pragma mark - View rendering (tab)
 - (void)setupTabBar: (NSDictionary *)t{
     
-    if(!t && !VC.isFinal) {
-        tabController.tabBar.hidden = YES;
-        return;
-    }
     if(previous_footer && previous_footer[@"tabs"]){
         // if previous footer tab was not null, we diff the tabs to determine whether to re-render
         if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){
+            // same as the previous view's footer. no need to re-render. return;
             return;
+        } else {
+            // the previous footer had tabs but not the same as the current view's tabs.
+            // in this case, check if it's final render, and render only if it's the final render
+            if(!VC.isFinal) {
+                return;
+            }
         }
     } else {
         // if previous footer tab was null, we need to construct the tab again
     }
+    
+    if(!t && !VC.isFinal) {
+        tabController.tabBar.hidden = YES;
+        return;
+    }
+
     
     if(!VC.old_footer) VC.old_footer = [[NSMutableDictionary alloc] init];
     VC.old_footer[@"tabs"] = t;
