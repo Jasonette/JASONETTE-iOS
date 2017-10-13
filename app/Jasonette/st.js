@@ -115,8 +115,9 @@
       // the first item should have #if as its key
       // the first item should also contain an expression
       var first = template[0];
+      var func;
       for (var key in first) {
-        var func = TRANSFORM.tokenize(key);
+        func = TRANSFORM.tokenize(key);
         if (!func) {
           return false;
         }
@@ -127,8 +128,7 @@
         if (!func.expression || func.expression.length === 0) {
           return false;
         }
-        var func_name = func.name.toLowerCase();
-        if (func_name !== '#if') {
+        if (func.name.toLowerCase() !== '#if') {
           return false;
         }
       }
@@ -143,9 +143,8 @@
       for (var template_index = 1; template_index < template.length-1; template_index++) {
         var template_item = template[template_index];
         for (var template_key in template_item) {
-          var func = TRANSFORM.tokenize(template_key);
-          var func_name = func.name.toLowerCase();
-          if (func_name !== '#elseif') {
+          func = TRANSFORM.tokenize(template_key);
+          if (func.name.toLowerCase() !== '#elseif') {
             they_are_all_elseifs = false;
             break;
           }
@@ -162,10 +161,9 @@
       // Condition 5.
       // in case there's more than one item, it should end with #else or #elseif
       var last = template[template.length-1];
-      for (var key in last) {
-        var func = TRANSFORM.tokenize(key);
-        var func_name = func.name.toLowerCase();
-        if (func_name !== '#else' && func_name !== '#elseif') {
+      for (var last_key in last) {
+        func = TRANSFORM.tokenize(last_key);
+        if (['#else', '#elseif'].indexOf(func.name.toLowerCase()) === -1) {
           return false;
         }
       }
@@ -181,14 +179,18 @@
       }
       var res;
       if (injection) {
+        // resolve template with selector
         var resolved_template = SELECT.select(template, selector, serialized)
-                                      .transform(data, serialized)
-                                      .root();
-        res = SELECT.select(data, selector, serialized)
+          .transform(data, serialized)
+          .root();
+        // apply the resolved template on data
+        res = SELECT.select(data, null, serialized)
           .inject(injection, serialized)
           .transformWith(resolved_template, serialized)
           .root();
       } else {
+        // no need for separate template resolution step
+        // select the template with selector and transform data
         res = SELECT.select(template, selector, serialized)
           .transform(data, serialized)
           .root();
@@ -197,7 +199,6 @@
         // needs to return stringified version
         return JSON.stringify(res);
       } else {
-        //return JSON.parse(JSON.stringify(res));
         return res;
       }
     },
@@ -228,12 +229,13 @@
     },
     run: function(template, data) {
       var result;
+      var fun;
       if (typeof template === 'string') {
         // Leaf node, so call TRANSFORM.fillout()
         if (Helper.is_template(template)) {
-          var include_re = /\{\{([ ]*#include)[ ]*([^ ]*)\}\}/g;
-          if (include_re.test(template)) {
-            var fun = TRANSFORM.tokenize(template);
+          var include_string_re = /\{\{([ ]*#include)[ ]*([^ ]*)\}\}/g;
+          if (include_string_re.test(template)) {
+            fun = TRANSFORM.tokenize(template);
             if (fun.expression) {
               // if #include has arguments, evaluate it before attaching
               result = TRANSFORM.fillout(data, '{{' + fun.expression + '}}', true);
@@ -271,11 +273,11 @@
         // ## Handling #include
         // This needs to precede everything else since it's meant to be overwritten
         // in case of collision
-        var include_re = /\{\{([ ]*#include)[ ]*(.*)\}\}/g;
-        var include_keys = Object.keys(template).filter(function(key) { return include_re.test(key); });
+        var include_object_re = /\{\{([ ]*#include)[ ]*(.*)\}\}/g;
+        var include_keys = Object.keys(template).filter(function(key) { return include_object_re.test(key); });
         if (include_keys.length > 0) {
         // find the first key with #include
-          var fun = TRANSFORM.tokenize(include_keys[0]);
+          fun = TRANSFORM.tokenize(include_keys[0]);
           if (fun.expression) {
             // if #include has arguments, evaluate it before attaching
             result = TRANSFORM.fillout(template[include_keys[0]], '{{' + fun.expression + '}}', true);
@@ -289,23 +291,23 @@
           // Checking to see if the key contains template..
           // Currently the only case for this are '#each' and '#include'
           if (Helper.is_template(key)) {
-            var fun = TRANSFORM.tokenize(key);
+            fun = TRANSFORM.tokenize(key);
             if (fun) {
               if (fun.name === '#include') {
                 // this was handled above (before the for loop) so just ignore
               } else if (fun.name === '#concat') {
                 if (Helper.is_array(template[key])) {
                   result = [];
-                  template[key].forEach(function(item) {
-                    var res = TRANSFORM.run(item, data);
+                  template[key].forEach(function(concat_item) {
+                    var res = TRANSFORM.run(concat_item, data);
                     result = result.concat(res);
                   });
                 }
               } else if (fun.name === '#merge') {
                 if (Helper.is_array(template[key])) {
                   result = {};
-                  template[key].forEach(function(item) {
-                    var res = TRANSFORM.run(item, data);
+                  template[key].forEach(function(merge_item) {
+                    var res = TRANSFORM.run(merge_item, data);
                     for (var key in res) {
                       result[key] = res[key];
                     }
@@ -318,12 +320,12 @@
                 // Ideally newData should be an array since it was prefixed by #each
                 if (newData && Helper.is_array(newData)) {
                   result = [];
-                  for (var i = 0; i < newData.length; i++) {
-                    var item = TRANSFORM.run(template[key], newData[i]);
-                    if (item) {
+                  for (var index = 0; index < newData.length; index++) {
+                    var loop_item = TRANSFORM.run(template[key], newData[index]);
+                    if (loop_item) {
                       // only push when the result is not null
                       // null could mean #if clauses where nothing matched => In this case instead of rendering 'null', should just skip it completely
-                      result.push(item);
+                      result.push(loop_item);
                     }
                   }
                 } else {
@@ -348,17 +350,22 @@
           } else {
             // Helper.is_template(key) was false, which means the key was not a template (hardcoded string)
             if (typeof template[key] === 'string') {
-              var fun = TRANSFORM.tokenize(template[key]);
+              fun = TRANSFORM.tokenize(template[key]);
               if (fun && fun.name === '#?') {
                 // If the key is a template expression but aren't either #include or #each,
                 // it needs to be parsed
-                var v = TRANSFORM.fillout(data, '{{' + fun.expression + '}}');
-                if (v === '{{' + fun.expression + '}}') {
+                var filled = TRANSFORM.fillout(data, '{{' + fun.expression + '}}');
+                if (filled === '{{' + fun.expression + '}}' || !filled) {
+                  // case 1.
                   // not parsed, which means the evaluation failed.
-                  // which means this key should be excluded
+
+                  // case 2.
+                  // returns fasly value
+
+                  // both cases mean this key should be excluded
                 } else {
                   // only include if the evaluation is truthy
-                  result[key] = v;
+                  result[key] = filled;
                 }
               } else {
                 var item = TRANSFORM.run(template[key], data);
@@ -452,6 +459,7 @@
             func = Function('with(this) {return (' + slot + ')}').bind(data);
           }
           var evaluated = func();
+          delete data.$root;  // remove $root now that the parsing is over
           if (evaluated) {
             // In case of primitive types such as String, need to call valueOf() to get the actual value instead of the promoted object
             evaluated = evaluated.valueOf();
@@ -589,10 +597,9 @@
 
       if (filter) {
         SELECT.$selected = [];
-        //SELECT.exec(SELECT.$selected_root, '', filter);
         SELECT.exec(json, '', filter);
       } else {
-        SELECT.$selected = null;//{object: SELECT.$selected_root};
+        SELECT.$selected = null;
       }
 
       if (json && (Helper.is_array(json) || typeof json === 'object')) {
@@ -623,14 +630,13 @@
       SELECT.$parsed = [];
       SELECT.$progress = null;
       /*
-      'selected' is an array that contains items that looks like this:
-
-      {
-        key: The selected key,
-        path: The path leading down to the selected key,
-        object: The entire object that contains the currently selected key/val pair
-        value: The selected value
-      }
+      *  'selected' is an array that contains items that looks like this:
+      *  {
+      *    key: The selected key,
+      *    path: The path leading down to the selected key,
+      *    object: The entire object that contains the currently selected key/val pair
+      *    value: The selected value
+      *  }
       */
       var template = obj;
       try {
@@ -670,7 +676,6 @@
         // apply the result to root
         SELECT.$selected_root = Helper.resolve(SELECT.$selected_root, '', parsed_object);
       }
-      //SELECT.$selected_root = JSON.parse(JSON.stringify(SELECT.$selected_root));
       return SELECT;
     },
     transform: function(obj, serialized) {
@@ -725,7 +730,6 @@
         SELECT.$template_root = Helper.resolve(SELECT.$template_root, '', parsed_object);
         SELECT.$selected_root = SELECT.$template_root;
       }
-      //SELECT.$selected_root = JSON.parse(JSON.stringify(SELECT.$selected_root));
       return SELECT;
     },
 
@@ -805,21 +809,6 @@
       return _stringify(val, replacer, spaces);
     }
   };
-  /*
-  var _parse = JSON.parse;
-  JSON.parse = function(val, replacer, spaces) {
-    if (!replacer) {
-      return _parse(val, function(key, val) {
-        if (typeof val === 'string' && /^[ ]*function/.test(val)) {
-          return eval(val);
-        }
-        return val;
-      }, spaces);
-    } else {
-      return _parse(val, replacer, spaces);
-    }
-  };
-  */
   JSON.select = SELECT.select;
   JSON.inject = SELECT.inject;
   JSON.transform = TRANSFORM.transform;
