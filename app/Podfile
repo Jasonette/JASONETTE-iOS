@@ -32,7 +32,6 @@ target 'Jasonette' do
   pod 'PBJVision'
   pod 'PHFComposeBarView'
   pod 'DAKeyboardControl'
-  pod 'SVPullToRefresh', :git => 'https://github.com/samvermette/SVPullToRefresh.git', :branch => 'master'
   pod 'MBProgressHUD', '~> 1.0'
   pod 'FLEX', '~> 2.0', :configurations => ['Debug']
   #pod 'GoogleMobileAds', '~> 7.8'
