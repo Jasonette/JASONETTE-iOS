@@ -36,6 +36,7 @@
     CGFloat original_bottom_inset;
     BOOL need_to_adjust_frame;
     UIView *currently_focused;
+    UIRefreshControl *refreshControl;
     #ifdef ADS
     NSTimer *intrestialAdTimer;
     #endif
@@ -108,8 +109,7 @@
 
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
-    
-    
+
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"finishRefreshing" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishRefreshing) name:@"finishRefreshing" object:nil];
     
@@ -1023,7 +1023,7 @@
 }
 - (void)finishRefreshing{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.tableView.pullToRefreshView stopAnimating];
+        [refreshControl endRefreshing];
     });
 }
 - (void)refresh {
@@ -1374,16 +1374,16 @@
     [weakSelf loadAssets:body];
     
     if(self.events[@"$pull"]){
-        [self.tableView addPullToRefreshWithActionHandler:^{
-            [weakSelf refresh];
-        }];
+        if(!refreshControl) {
+            refreshControl = [[UIRefreshControl alloc]init];
+            [self.tableView addSubview:refreshControl];
+            [refreshControl addTarget:self action:@selector(refresh) forControlEvents:UIControlEventValueChanged];
+         }
         if(style){
             NSString *cl = style[@"color"];
             if(cl){
                 UIColor *refresh_color = [JasonHelper colorwithHexString:cl alpha:1.0];
-                self.tableView.pullToRefreshView.arrowColor = refresh_color;
-                self.tableView.pullToRefreshView.textColor = refresh_color;
-                self.tableView.pullToRefreshView.activityIndicatorViewColor = refresh_color;
+                refreshControl.tintColor = refresh_color;
             }
         }
     }
