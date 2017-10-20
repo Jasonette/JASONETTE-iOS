@@ -206,7 +206,7 @@
 }
 - (void)keyboardDidShow:(NSNotification *)notification {
     NSDictionary* info = [notification userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     
     if(need_to_adjust_frame){
         // Only for 'textarea' type
@@ -218,6 +218,7 @@
             CGRect aRect = self.view.frame;
             aRect.size.height -= kbSize.height;
             CGRect currently_focused_frame = [currently_focused convertRect:currently_focused.bounds toView:self.tableView];
+            currently_focused_frame.origin.y += 20; // shift offset by 20pts vertically to give some room at the bottom after scroll
             if(!CGRectContainsRect(aRect, currently_focused_frame)){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.tableView scrollRectToVisible:currently_focused_frame animated:YES];
