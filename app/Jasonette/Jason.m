@@ -2545,7 +2545,11 @@
 - (void)setupTabBar: (NSDictionary *)t{
     
     if(!t && !VC.isFinal) {
-        tabController.tabBar.hidden = YES;
+        if(previous_footer && previous_footer[@"tabs"]) {
+            tabController.tabBar.hidden = NO;
+        } else {
+            tabController.tabBar.hidden = YES;
+        }
         return;
     }
     if(previous_footer && previous_footer[@"tabs"]){
