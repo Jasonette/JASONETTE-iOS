@@ -65,6 +65,8 @@
     NSString * colorHex = style[@"color:disabled"];
     UIColor * color = [JasonHelper colorwithHexString:colorHex alpha:1.0];
     [component setTintColor:color];
+    [component setBackgroundColor:color];
+    component.layer.cornerRadius = 16;
   }
   
   return component;
