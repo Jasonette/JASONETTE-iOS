@@ -2546,7 +2546,7 @@
     
     if(!t && !VC.isFinal) {
         if(previous_footer && previous_footer[@"tabs"]) {
-            tabController.tabBar.hidden = NO;
+            // don't touch yet until the view finalizes
         } else {
             tabController.tabBar.hidden = YES;
         }
