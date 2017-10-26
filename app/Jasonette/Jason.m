@@ -18,13 +18,13 @@
     NSString *icon;
     id module;
     UIBarButtonItem *rightButtonItem;
-    PBJVision *vision;
     NSString *ROOT_URL;
     BOOL INITIAL_LOADING;
     BOOL isForeground;
     NSDictionary *rendered_page;
     NSMutableDictionary *previous_footer;
     NSMutableDictionary *previus_header;
+    AVCaptureVideoPreviewLayer *avPreviewLayer;
 }
 @end
 
@@ -894,10 +894,9 @@
 }
 
 - (void)snapshot{
-    if(vision){
-        vision = [PBJVision sharedInstance];
-        vision.cameraMode = PBJCameraModePhoto;
-        [vision capturePhoto];
+    if(self.avCaptureSession){
+        // don't snapshot when camera is running
+        [[Jason client] error];
     } else {
         UIImage *image = [JasonHelper takescreenshot];
         NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
@@ -1305,6 +1304,20 @@
                 // Deprecated
                 if(![old_tabs isEqualToDictionary:VC.rendered[@"tabs"]]) {
                     [self setupTabBar:VC.rendered[@"tabs"]];
+                }
+            }
+            
+            // restart avCaptureSession if the background type is "camera"
+            if(VC.rendered[@"style"] && VC.rendered[@"style"][@"background"]) {
+                if([VC.rendered[@"style"][@"background"] isKindOfClass:[NSString class]]) {
+                    if([VC.rendered[@"style"][@"background"] isEqualToString:@"camera"]) {
+                        [self buildCamera:@{@"type": @"camera"}];
+                    }
+                } else if([VC.rendered[@"style"][@"background"] isKindOfClass:[NSDictionary class]]) {
+                    NSString *type = VC.rendered[@"style"][@"background"][@"type"];
+                    if([type isEqualToString:@"camera"]) {
+                        [self buildCamera:VC.rendered[@"style"][@"background"][@"options"]];
+                    }
                 }
             }
             
@@ -1826,12 +1839,14 @@
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *type = bg[@"type"];
+        if([VC.background.payload[@"background"] isEqual:bg]) {
+            return;
+        }
         if(type) {
             
             if([type isEqualToString:@"camera"]){
-                
+
                 NSDictionary *options = bg[@"options"];
-                AVCaptureVideoPreviewLayer *_previewLayer;
                 
                 if(VC.background){
                     [VC.background removeFromSuperview];
@@ -1839,30 +1854,16 @@
                 }
                 
                 VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-                _previewLayer = [[PBJVision sharedInstance] previewLayer];
-                _previewLayer.frame = VC.background.bounds;
-                _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-                
-                [VC.background.layer addSublayer:_previewLayer];
-                
-                vision = [PBJVision sharedInstance];
-                vision.delegate = self;
-                if(options[@"mode"] && [options[@"mode"] isEqualToString:@"video"]){
-                    vision.cameraMode = PBJCameraModeVideo;
-                } else {
-                    vision.cameraMode = PBJCameraModePhoto;
-                }
-                vision.cameraOrientation = PBJCameraOrientationPortrait;
-                vision.focusMode = PBJFocusModeContinuousAutoFocus;
-                if(options[@"device"] && [options[@"device"] isEqualToString:@"back"]){
-                    vision.cameraDevice = PBJCameraDeviceBack;
-                } else {
-                    vision.cameraDevice = PBJCameraDeviceFront;
-                }
-                
-                [vision startPreview];
-                
+                VC.background.payload = @{@"background": bg};
+                [self buildCamera: options];
+
+
             } else if([type isEqualToString:@"html"]){
+                if(self.avCaptureSession) {
+                    [self.avCaptureSession stopRunning];
+                    self.avCaptureSession = nil;
+                }
+
                 if(VC.background && [VC.background isKindOfClass:[UIWebView class]]){
                     // don't do anything, reuse.
                 } else {
@@ -1934,7 +1935,55 @@
     
     return YES;
 }
+- (void) buildCamera: (NSDictionary *) options {
+    NSError *error = nil;
+    // Find back/front camera
+    // based on options
+    NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    AVCaptureDevicePosition position;
+    if(options[@"device"] && [options[@"device"] isEqualToString:@"back"]){
+        position = AVCaptureDevicePositionBack;
+    } else {
+        position = AVCaptureDevicePositionFront;
+    }
+    for ( AVCaptureDevice *d in devices ) {
+        if ( d.position == position ) {
+            device = d;
+        }
+    }
+    
+    // Create session
+    self.avCaptureSession = [[AVCaptureSession alloc] init];
+    
+    // Add input to the session
+    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+    [self.avCaptureSession addInput: input];
+    
+    // Add output to the session
+    AVCaptureMetadataOutput *output = [[AVCaptureMetadataOutput alloc] init];
+    [self.avCaptureSession addOutput: output];
+    
+    // Listen for different types of barcode detection
+//    [output setMetadataObjectsDelegate:self.services[@"JasonVisionService"] queue:dispatch_get_main_queue()];
 
+    [output setMetadataObjectsDelegate:self.services[@"JasonVisionService"] queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)];
+    [output setMetadataObjectTypes:output.availableMetadataObjectTypes];
+    
+    // Attach session preview layer to the background
+    if(!avPreviewLayer) {
+        avPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_avCaptureSession];
+        avPreviewLayer.frame = VC.background.bounds;
+        avPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+        [VC.background.layer addSublayer:avPreviewLayer];
+    } else {
+        [avPreviewLayer setSession:_avCaptureSession];
+    }
+    // Run
+    [self.avCaptureSession startRunning];
+    
+
+}
 - (void)drawBackground:(NSString *)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -1943,34 +1992,21 @@
                 [VC.background removeFromSuperview];
                 VC.background = nil;
             }
-            
-            AVCaptureVideoPreviewLayer *_previewLayer;
             VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-            _previewLayer = [[PBJVision sharedInstance] previewLayer];
-            _previewLayer.frame = VC.background.bounds;
-            _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-            
-            [VC.background.layer addSublayer:_previewLayer];
-            
-            vision = [PBJVision sharedInstance];
-            vision.delegate = self;
-            vision.cameraMode = PBJCameraModePhoto;
-            vision.cameraOrientation = PBJCameraOrientationPortrait;
-            vision.focusMode = PBJFocusModeContinuousAutoFocus;
-            vision.cameraDevice = PBJCameraDeviceFront;
-            
-            [vision startPreview];
+            [self buildCamera: @{ @"type": bg }];
             
             [VC.view addSubview:VC.background];
             [VC.view sendSubviewToBack:VC.background];
             
         }else if([bg hasPrefix:@"http"] || [bg hasPrefix:@"data:"] || [bg hasPrefix:@"file"]){
-            vision = nil;
+            if(self.avCaptureSession) {
+                [self.avCaptureSession stopRunning];
+                self.avCaptureSession = nil;
+            }
             if(VC.background){
                 [VC.background removeFromSuperview];
                 VC.background = nil;
             }
-            if(vision) [vision stopPreview];
             VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
             VC.background.contentMode = UIViewContentModeScaleAspectFill;
             [VC.view addSubview:VC.background];
@@ -1999,7 +2035,10 @@
                 }];
             }
         } else {
-            vision = nil;
+            if(self.avCaptureSession) {
+                [self.avCaptureSession stopRunning];
+                self.avCaptureSession = nil;
+            }
             if(VC.background){
                 [VC.background removeFromSuperview];
                 VC.background = nil;
@@ -3586,35 +3625,6 @@
         NSError *error;
         [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
     }
-}
-// Delegate for handling snapshot
-- (void)vision:(PBJVision *)vision capturedPhoto:(NSDictionary *)photoDict error:(NSError *)error
-{
-    if (error) {
-        [[Jason client] error];
-        return;
-    }
-    
-    // save to library
-    NSData *photoData = photoDict[PBJVisionPhotoJPEGKey];
-    NSDictionary *metadata = photoDict[PBJVisionPhotoMetadataKey];
-    NSString *contentType = @"image/jpeg";
-    NSString *dataFormatString = @"data:image/jpeg;base64,%@";
-    
-    UIImage *snapshot = [UIImage imageWithData:photoData];
-    VC.background = [[UIImageView alloc] initWithFrame:[VC.view bounds]];
-    VC.background.contentMode = UIViewContentModeScaleAspectFill;
-    [VC.view addSubview:VC.background];
-    [VC.view sendSubviewToBack:VC.background];
-    ((UIImageView*)VC.background).image = snapshot;
-    
-    UIImage *image = [JasonHelper takescreenshot];
-    NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
-    NSString *base64 = [imageData base64EncodedStringWithOptions:0];
-    
-    NSString* dataString = [NSString stringWithFormat:dataFormatString, base64];
-    NSURL* dataURI = [NSURL URLWithString:dataString];
-    [[Jason client] success:@{@"data": base64, @"data_uri": dataURI.absoluteString, @"metadata": metadata, @"content_type" :contentType}];
 }
 
 @end
