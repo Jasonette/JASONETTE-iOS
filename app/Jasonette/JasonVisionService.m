@@ -10,17 +10,19 @@
 
 @implementation JasonVisionService
 - (void) initialize: (NSDictionary *)launchOptions {
+    self.is_open = NO;
 }
 - (void)captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects fromConnection:(AVCaptureConnection *)connection {
     
-    if([JasonMemory client]._stack.count > 0) return;  // Currently Single Threaded. Stop from executing if some other action is in action.
+    if(!self.is_open) return;
     
     NSDictionary *events = [[[Jason client] getVC] valueForKey:@"events"];
     if(![JasonMemory client].executing) {
       for (AVMetadataObject *metadata in metadataObjects) {
         if ([metadata.type isEqualToString:AVMetadataObjectTypeQRCode]) {
             AVMetadataMachineReadableCodeObject *transformed = (AVMetadataMachineReadableCodeObject *)metadata;
-            [[Jason client] call: events[@"$qrcode"] with: @{
+            self.is_open = NO;
+            [[Jason client] call: events[@"$vision.onscan"] with: @{
                 @"$jason": @{
                    @"content": transformed.stringValue,
                    @"corners": transformed.corners,
@@ -33,7 +35,6 @@
                    }
                 }
            }];
-            [[Jason client].avCaptureSession stopRunning];
            return;
         }
       }

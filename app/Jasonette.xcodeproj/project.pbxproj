@@ -16,6 +16,7 @@
 		045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */; };
 		0472FAB11F91217E00F6887D /* st.js in Resources */ = {isa = PBXBuildFile; fileRef = 0472FAB01F91217E00F6887D /* st.js */; };
 		0483D9B01FA0B5DF004DDA37 /* JasonVisionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0483D9AF1FA0B5DF004DDA37 /* JasonVisionService.m */; };
+		0483D9B41FA1672D004DDA37 /* JasonVisionAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 0483D9B31FA1672D004DDA37 /* JasonVisionAction.m */; };
 		04B1568C1F4B8D6600625C61 /* JasonPushAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04B1568B1F4B8D6600625C61 /* JasonPushAction.m */; };
 		04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */; };
 		04DC19801F54746E0021A7A6 /* JasonScriptAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */; };
@@ -98,6 +99,8 @@
 		0472FAB01F91217E00F6887D /* st.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = st.js; sourceTree = "<group>"; };
 		0483D9AE1FA0B5DF004DDA37 /* JasonVisionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonVisionService.h; sourceTree = "<group>"; };
 		0483D9AF1FA0B5DF004DDA37 /* JasonVisionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonVisionService.m; sourceTree = "<group>"; };
+		0483D9B21FA1672D004DDA37 /* JasonVisionAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonVisionAction.h; sourceTree = "<group>"; };
+		0483D9B31FA1672D004DDA37 /* JasonVisionAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonVisionAction.m; sourceTree = "<group>"; };
 		04B1568A1F4B8D6600625C61 /* JasonPushAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonPushAction.h; sourceTree = "<group>"; };
 		04B1568B1F4B8D6600625C61 /* JasonPushAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonPushAction.m; sourceTree = "<group>"; };
 		04D947E91F16ACF50063CC65 /* JASONResponseSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JASONResponseSerializer.h; sourceTree = "<group>"; };
@@ -285,6 +288,15 @@
 			name = $vision;
 			sourceTree = "<group>";
 		};
+		0483D9B51FA16734004DDA37 /* $vision */ = {
+			isa = PBXGroup;
+			children = (
+				0483D9B21FA1672D004DDA37 /* JasonVisionAction.h */,
+				0483D9B31FA1672D004DDA37 /* JasonVisionAction.m */,
+			);
+			name = $vision;
+			sourceTree = "<group>";
+		};
 		04B1568D1F4B8D6A00625C61 /* $push */ = {
 			isa = PBXGroup;
 			children = (
@@ -428,6 +440,7 @@
 				5E3177AB1D1F297400D87778 /* $timer */,
 				5E3177AA1D1F296300D87778 /* $util */,
 				043814171EF7455E00CC4706 /* $global */,
+				0483D9B51FA16734004DDA37 /* $vision */,
 			);
 			name = Action;
 			sourceTree = "<group>";
@@ -905,6 +918,7 @@
 				5E31776F1D1E411F00D87778 /* JasonViewController.m in Sources */,
 				5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */,
 				5E31774D1D1E411F00D87778 /* JasonMemory.m in Sources */,
+				0483D9B41FA1672D004DDA37 /* JasonVisionAction.m in Sources */,
 				5E09563C1DA34F1A007ADC78 /* JasonSliderComponent.m in Sources */,
 				5E3177711D1E411F00D87778 /* JasonHelper.m in Sources */,
 				5E3177521D1E411F00D87778 /* JasonNetworkAction.m in Sources */,

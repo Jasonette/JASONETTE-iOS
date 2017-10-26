@@ -1231,6 +1231,9 @@
         JasonComponentFactory.stylesheet[@"$default"] = @{@"color": VC.view.tintColor};
     }
     
+    [self.avCaptureSession stopRunning];
+    self.avCaptureSession = nil;
+    
     JasonMemory *memory = [JasonMemory client];
     
     if(memory.executing){
@@ -1960,16 +1963,13 @@
     AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
     [self.avCaptureSession addInput: input];
     
-    // Add output to the session
     AVCaptureMetadataOutput *output = [[AVCaptureMetadataOutput alloc] init];
     [self.avCaptureSession addOutput: output];
     
     // Listen for different types of barcode detection
-//    [output setMetadataObjectsDelegate:self.services[@"JasonVisionService"] queue:dispatch_get_main_queue()];
-
-    [output setMetadataObjectsDelegate:self.services[@"JasonVisionService"] queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)];
+    [output setMetadataObjectsDelegate:self.services[@"JasonVisionService"] queue:dispatch_get_main_queue()];    
     [output setMetadataObjectTypes:output.availableMetadataObjectTypes];
-    
+
     // Attach session preview layer to the background
     if(!avPreviewLayer) {
         avPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_avCaptureSession];
@@ -1981,7 +1981,7 @@
     }
     // Run
     [self.avCaptureSession startRunning];
-    
+    [self call:VC.events[@"$vision.ready"]];
 
 }
 - (void)drawBackground:(NSString *)bg{

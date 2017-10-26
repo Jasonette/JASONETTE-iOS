@@ -12,5 +12,5 @@
 #import "JasonMemory.h"
 
 @interface JasonVisionService : NSObject <AVCaptureMetadataOutputObjectsDelegate>
-
+@property (nonatomic, assign) BOOL is_open;
 @end
