@@ -2543,14 +2543,20 @@
 
 # pragma mark - View rendering (tab)
 - (void)setupTabBar: (NSDictionary *)t{
-    
-    if(!t && !VC.isFinal) {
-        if(previous_footer && previous_footer[@"tabs"]) {
-            // don't touch yet until the view finalizes
-        } else {
-            tabController.tabBar.hidden = YES;
+    if(VC.isModal) {
+        // If the current view is modal, it's an entirely new view
+        // so don't need to worry about how tabs should show up.
+        // just skip the exception handling routine below.
+    } else {
+        // handling normal transition (including replace)
+        if(!t && !VC.isFinal) {
+            if(previous_footer && previous_footer[@"tabs"]) {
+                // don't touch yet until the view finalizes
+            } else {
+                tabController.tabBar.hidden = YES;
+            }
+            return;
         }
-        return;
     }
     if(previous_footer && previous_footer[@"tabs"]){
         // if previous footer tab was not null, we diff the tabs to determine whether to re-render
