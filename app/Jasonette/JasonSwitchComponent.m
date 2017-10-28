@@ -21,21 +21,14 @@
     component = [UISwitch new];
   }
   
-  component.payload = [@{@"name": json[@"name"], @"action": json[@"action"]} mutableCopy];
-  
+  component.payload = [[NSMutableDictionary alloc] init];
+  if(json && json[@"name"]) component.payload[@"name"] = json[@"name"];
+  if(json && json[@"action"]) component.payload[@"action"] = json[@"action"];
+
   JasonOptionHelper * data = [[JasonOptionHelper alloc] initWithOptions:options];
   
   BOOL isOn = [data getBoolean:@"value"];
-  
-  if(!isOn)
-  {
-    NSString * value = [data getString:@"value"];
-    if([value isEqualToString:@"true"])
-    {
-      isOn = true;
-    }
-  }
-  
+
   [component setOn:isOn animated:YES];
   
   if(component.isOn)
@@ -72,6 +65,8 @@
     NSString * colorHex = style[@"color:disabled"];
     UIColor * color = [JasonHelper colorwithHexString:colorHex alpha:1.0];
     [component setTintColor:color];
+    [component setBackgroundColor:color];
+    component.layer.cornerRadius = 16;
   }
   
   return component;

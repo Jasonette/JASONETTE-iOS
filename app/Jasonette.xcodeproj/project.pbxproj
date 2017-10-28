@@ -288,7 +288,6 @@
 		5E0956271DA30970007ADC78 /* Component */ = {
 			isa = PBXGroup;
 			children = (
-				EF8C8CFD1F9195010062CA1C /* switch */,
 				5E2CB5C41D9DF5B600DA2B83 /* JasonComponentFactory.h */,
 				5E2CB5C51D9DF5B600DA2B83 /* JasonComponentFactory.m */,
 				5E09562A1DA33264007ADC78 /* JasonComponentProtocol.h */,
@@ -302,6 +301,7 @@
 				5EE85B701DA486C40049EACE /* textarea */,
 				5EE85B711DA486CA0049EACE /* textfield */,
 				5EE85B721DA486D00049EACE /* slider */,
+				EF8C8CFD1F9195010062CA1C /* switch */,
 				5EE85B731DA486D50049EACE /* html */,
 				5EE85B741DA486DA0049EACE /* space */,
 				5EE85B751DA486DF0049EACE /* map */,
