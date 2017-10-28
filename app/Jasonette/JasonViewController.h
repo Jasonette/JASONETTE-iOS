@@ -21,7 +21,6 @@
 #import <DTCoreText/DTCoreText.h>
 #import <PHFComposeBarView/PHFComposeBarView.h>
 #import <DAKeyboardControl/DAKeyboardControl.h>
-#import <SVPullToRefresh/SVPullToRefresh.h>
 #import "JasonLayout.h"
 #import "JasonLayer.h"
 #import "JasonComponentFactory.h"

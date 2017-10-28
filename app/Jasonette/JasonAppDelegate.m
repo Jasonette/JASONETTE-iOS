@@ -59,7 +59,7 @@
     
     // # initialize
     // Run "initialize" for built-in daemon type actions
-    NSArray *native_daemon_actions = @[@"JasonPushService"];
+    NSArray *native_daemon_actions = @[@"JasonPushService", @"JasonVisionService"];
     for(NSString *action in native_daemon_actions) {
         [self init_class:action withLaunchOptions:launchOptions];
     }

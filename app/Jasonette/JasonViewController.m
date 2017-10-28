@@ -36,6 +36,7 @@
     CGFloat original_bottom_inset;
     BOOL need_to_adjust_frame;
     UIView *currently_focused;
+    UIRefreshControl *refreshControl;
     #ifdef ADS
     NSTimer *intrestialAdTimer;
     #endif
@@ -108,8 +109,7 @@
 
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
-    
-    
+
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"finishRefreshing" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishRefreshing) name:@"finishRefreshing" object:nil];
     
@@ -206,7 +206,7 @@
 }
 - (void)keyboardDidShow:(NSNotification *)notification {
     NSDictionary* info = [notification userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     
     if(need_to_adjust_frame){
         // Only for 'textarea' type
@@ -218,6 +218,7 @@
             CGRect aRect = self.view.frame;
             aRect.size.height -= kbSize.height;
             CGRect currently_focused_frame = [currently_focused convertRect:currently_focused.bounds toView:self.tableView];
+            currently_focused_frame.origin.y += 20; // shift offset by 20pts vertically to give some room at the bottom after scroll
             if(!CGRectContainsRect(aRect, currently_focused_frame)){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.tableView scrollRectToVisible:currently_focused_frame animated:YES];
@@ -1023,7 +1024,7 @@
 }
 - (void)finishRefreshing{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.tableView.pullToRefreshView stopAnimating];
+        [refreshControl endRefreshing];
     });
 }
 - (void)refresh {
@@ -1374,16 +1375,16 @@
     [weakSelf loadAssets:body];
     
     if(self.events[@"$pull"]){
-        [self.tableView addPullToRefreshWithActionHandler:^{
-            [weakSelf refresh];
-        }];
+        if(!refreshControl) {
+            refreshControl = [[UIRefreshControl alloc]init];
+            [self.tableView addSubview:refreshControl];
+            [refreshControl addTarget:self action:@selector(refresh) forControlEvents:UIControlEventValueChanged];
+         }
         if(style){
             NSString *cl = style[@"color"];
             if(cl){
                 UIColor *refresh_color = [JasonHelper colorwithHexString:cl alpha:1.0];
-                self.tableView.pullToRefreshView.arrowColor = refresh_color;
-                self.tableView.pullToRefreshView.textColor = refresh_color;
-                self.tableView.pullToRefreshView.activityIndicatorViewColor = refresh_color;
+                refreshControl.tintColor = refresh_color;
             }
         }
     }

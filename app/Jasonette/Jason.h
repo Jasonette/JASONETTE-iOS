@@ -18,8 +18,8 @@
 #import <SafariServices/SafariServices.h>
 #import <NSHash/NSString+NSHash.h>
 #import <FreeStreamer/FSAudioStream.h>
-#import <PBJVision/PBJVision.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <AVFoundation/AVFoundation.h>
 
 #import "MBProgressHud.h"
 #if DEBUG
@@ -28,7 +28,7 @@
 
 @import MediaPlayer;
 
-@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, PBJVisionDelegate, UIWebViewDelegate>
+@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, UIWebViewDelegate>
 
 @property (strong, nonatomic) NSDictionary *parser;
 @property (strong, nonatomic) NSDictionary *data;
@@ -40,6 +40,7 @@
 @property (nonatomic, assign) BOOL searchMode;
 @property (nonatomic, assign) BOOL oauth_in_process;
 @property (strong, nonatomic) NSMutableDictionary *services;
+@property (strong, nonatomic) AVCaptureSession *avCaptureSession;
 
 - (UIViewController *)getVC;
 

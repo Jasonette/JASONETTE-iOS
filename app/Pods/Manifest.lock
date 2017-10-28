@@ -49,7 +49,6 @@ PODS:
   - NSGIF (1.2)
   - NSHash (1.1.0)
   - OMGHTTPURLRQ/UserAgent (3.1.2)
-  - PBJVision (0.4.2)
   - PHFComposeBarView (2.0.2):
     - PHFDelegateChain (~> 1.0)
   - PHFDelegateChain (1.0.1)
@@ -63,7 +62,6 @@ PODS:
   - SDWebImage (3.8.1):
     - SDWebImage/Core (= 3.8.1)
   - SDWebImage/Core (3.8.1)
-  - SVPullToRefresh (0.4.1)
   - SWFrameButton (1.2.2)
   - SWTableViewCell (0.3.7)
   - SZTextView (1.2.2)
@@ -94,13 +92,11 @@ DEPENDENCIES:
   - MBProgressHUD (~> 1.0)
   - NSGIF (~> 1.0)
   - NSHash
-  - PBJVision
   - PHFComposeBarView
   - REMenu
   - RMDateSelectionViewController
   - SBJson
   - SDWebImage (from `https://github.com/rs/SDWebImage.git`)
-  - SVPullToRefresh (from `https://github.com/samvermette/SVPullToRefresh.git`, branch `master`)
   - SWFrameButton
   - SWTableViewCell (from `https://github.com/gliechtenstein/SWTableViewCell.git`)
   - SZTextView
@@ -114,9 +110,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/muhku/FreeStreamer.git
   SDWebImage:
     :git: https://github.com/rs/SDWebImage.git
-  SVPullToRefresh:
-    :branch: master
-    :git: https://github.com/samvermette/SVPullToRefresh.git
   SWTableViewCell:
     :git: https://github.com/gliechtenstein/SWTableViewCell.git
 
@@ -127,9 +120,6 @@ CHECKOUT OPTIONS:
   SDWebImage:
     :commit: c012fc9bb2e5b1775a8a4a847938352187496a05
     :git: https://github.com/rs/SDWebImage.git
-  SVPullToRefresh:
-    :commit: a5f9dfee86a27c4e994d7edf93d0768c881d58bb
-    :git: https://github.com/samvermette/SVPullToRefresh.git
   SWTableViewCell:
     :commit: 1c8845e25f520c959391bd79dc6cf271e0cf9a44
     :git: https://github.com/gliechtenstein/SWTableViewCell.git
@@ -157,7 +147,6 @@ SPEC CHECKSUMS:
   NSGIF: 73b435330174a9d04db9886a232c605a3e8139b5
   NSHash: 61d598c6d48957c5557f1eef0aeafd6ef5ec5fb7
   OMGHTTPURLRQ: 38316b56d88125c600bcdb16df8329147da2b0ee
-  PBJVision: fe43c9a58bb1c1277d16fd802fa836d25e034a45
   PHFComposeBarView: 758c73ce54be681df97223bc61543dd8828ae0d3
   PHFDelegateChain: 491f9cd8a3fb8761f390ff05f74a0e168d48d285
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
@@ -167,7 +156,6 @@ SPEC CHECKSUMS:
   SBJson: 16404e557ff6346b506e9e12f2d83e6782f37f6f
   SCSiriWaveformView: b8b2756af42addcd31900c3945f24edafefb5395
   SDWebImage: 35f9627a3e44b4f292a8a8ce6a531fa488239b91
-  SVPullToRefresh: ba2e718695a43253d8bea6852d2960097dc15d8c
   SWFrameButton: cd3cc4a8961e8975f4800c0f6d1d3c54c213eb87
   SWTableViewCell: 2a94aadc9d47b2b611fa064566bf57948b95b579
   SZTextView: 3a81174dce0710a9ab069bc73a813e6df53b9c82
@@ -176,6 +164,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
 
-PODFILE CHECKSUM: f7bbb72e2dfbfe66d83bc3bd0a0bb4e1afd2e395
+PODFILE CHECKSUM: f30f6f353a554d96aff264c2aa09c8232a79079d
 
 COCOAPODS: 1.2.1
