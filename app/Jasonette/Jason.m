@@ -909,6 +909,17 @@
     }
 }
 
+- (void) scroll {
+    if(self.options && self.options[@"position"]) {
+        NSString *position = self.options[@"position"];
+        if([position isEqualToString:@"top"]) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"scrollToTop" object:nil userInfo:nil];
+        } else if ([position isEqualToString:@"bottom"]) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"scrollToBottom" object:nil userInfo:nil];
+        }
+    }
+}
+
 
 # pragma mark - View initialization & teardown
 
