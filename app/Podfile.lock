@@ -49,7 +49,6 @@ PODS:
   - NSGIF (1.2)
   - NSHash (1.1.0)
   - OMGHTTPURLRQ/UserAgent (3.1.2)
-  - PBJVision (0.4.2)
   - PHFComposeBarView (2.0.2):
     - PHFDelegateChain (~> 1.0)
   - PHFDelegateChain (1.0.1)
@@ -93,7 +92,6 @@ DEPENDENCIES:
   - MBProgressHUD (~> 1.0)
   - NSGIF (~> 1.0)
   - NSHash
-  - PBJVision
   - PHFComposeBarView
   - REMenu
   - RMDateSelectionViewController
@@ -149,7 +147,6 @@ SPEC CHECKSUMS:
   NSGIF: 73b435330174a9d04db9886a232c605a3e8139b5
   NSHash: 61d598c6d48957c5557f1eef0aeafd6ef5ec5fb7
   OMGHTTPURLRQ: 38316b56d88125c600bcdb16df8329147da2b0ee
-  PBJVision: fe43c9a58bb1c1277d16fd802fa836d25e034a45
   PHFComposeBarView: 758c73ce54be681df97223bc61543dd8828ae0d3
   PHFDelegateChain: 491f9cd8a3fb8761f390ff05f74a0e168d48d285
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
@@ -167,6 +164,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
 
-PODFILE CHECKSUM: 42859a31a3e6aef24503e8dcd1dafdd41f798265
+PODFILE CHECKSUM: f30f6f353a554d96aff264c2aa09c8232a79079d
 
 COCOAPODS: 1.2.1
