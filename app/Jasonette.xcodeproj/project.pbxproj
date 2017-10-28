@@ -315,15 +315,6 @@
 			name = $script;
 			sourceTree = "<group>";
 		};
-		04F69A2F1FA2128700B353ED /* $push */ = {
-			isa = PBXGroup;
-			children = (
-				043EFED41F50B75800F5AD48 /* JasonPushService.h */,
-				043EFED51F50B75800F5AD48 /* JasonPushService.m */,
-			);
-			name = $push;
-			sourceTree = "<group>";
-		};
 		5E0956271DA30970007ADC78 /* Component */ = {
 			isa = PBXGroup;
 			children = (
