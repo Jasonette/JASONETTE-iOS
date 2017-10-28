@@ -918,6 +918,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"scrollToBottom" object:nil userInfo:nil];
         }
     }
+    [[Jason client] success];
 }
 
 
