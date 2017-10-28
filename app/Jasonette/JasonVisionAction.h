@@ -8,7 +8,6 @@
 
 #import "JasonAction.h"
 #import "JasonVisionService.h"
-#import <AVFoundation/AVFoundation.h>
 #import "Jason.h"
 
 @interface JasonVisionAction : JasonAction

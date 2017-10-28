@@ -11,17 +11,15 @@
 @implementation JasonVisionAction
 /**
 * {
-*     "type": "$vision.scan",
-*     "options": {
-*         "type": "qrcode"
-*     }
+*     "type": "$vision.scan"
 * }
+*
+* Scans code specified in
+*   https://developer.apple.com/documentation/avfoundation/avmetadataobjecttype?language=objc for iOS
+*   https://developers.google.com/vision/android/barcodes-overview for Android
 */
 
-/* Triggers "$vision.onscan" event */
-
 - (void) scan {
-    // Add output to the session
     JasonVisionService *service = [Jason client].services[@"JasonVisionService"];
     service.is_open = YES;
     [[Jason client] success];
