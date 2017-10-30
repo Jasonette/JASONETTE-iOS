@@ -867,9 +867,9 @@
             // Cache the view after drawing
             [self cache_view];
         }
+        [self success];
     });
     
-    [self success];
     
 }
 - (void)visit{
