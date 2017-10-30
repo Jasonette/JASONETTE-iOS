@@ -299,15 +299,16 @@
 }
 
 -(void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;{
-    
-    if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
-        MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
-        hud.animationType = MBProgressHUDAnimationFade;
-        hud.userInteractionEnabled = NO;
-    }
-    else if(!turnon){
-        [MBProgressHUD hideHUDForView:VC.view animated:true];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
+            MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
+            hud.animationType = MBProgressHUDAnimationFade;
+            hud.userInteractionEnabled = NO;
+        }
+        else if(!turnon){
+            [MBProgressHUD hideHUDForView:VC.view animated:true];
+        }
+    });
 }
 
 # pragma mark - Jason public API (Can be accessed by calling {"type": "$(METHOD_NAME)"}
