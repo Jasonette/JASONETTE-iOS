@@ -1870,6 +1870,7 @@
                 
                 VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
                 VC.background.payload = @{@"background": bg};
+                avPreviewLayer = nil;
                 [self buildCamera: options];
 
 
