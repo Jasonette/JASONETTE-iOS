@@ -14,7 +14,9 @@
     }
     component.continuous = YES;
     component.value = 0.5;
-    component.payload = [@{@"name": json[@"name"], @"action": json[@"action"]} mutableCopy];
+    component.payload = [[NSMutableDictionary alloc] init];
+    if(json && json[@"name"]) component.payload[@"name"] = json[@"name"];
+    if(json && json[@"action"]) component.payload[@"action"] = json[@"action"];
 
     if(options && options[@"value"] && [options[@"value"] length] > 0){
         component.value = [options[@"value"] floatValue];
