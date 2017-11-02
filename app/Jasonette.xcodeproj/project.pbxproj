@@ -81,6 +81,7 @@
 		5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B801DA5C0080049EACE /* JasonLayer.m */; };
 		5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF904351DD10F6E00C8A94E /* JasonLogAction.m */; };
 		9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */; };
+		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
 		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
 /* End PBXBuildFile section */
 
@@ -219,6 +220,8 @@
 		9A16EE0D1E592DC4006D3F73 /* JasonOptionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonOptionHelper.h; sourceTree = "<group>"; };
 		9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonOptionHelper.m; sourceTree = "<group>"; };
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
+		EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSwitchComponent.h; sourceTree = "<group>"; };
+		EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSwitchComponent.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -331,6 +334,7 @@
 				5EE85B701DA486C40049EACE /* textarea */,
 				5EE85B711DA486CA0049EACE /* textfield */,
 				5EE85B721DA486D00049EACE /* slider */,
+				EF8C8CFD1F9195010062CA1C /* switch */,
 				5EE85B731DA486D50049EACE /* html */,
 				5EE85B741DA486DA0049EACE /* space */,
 				5EE85B751DA486DF0049EACE /* map */,
@@ -750,6 +754,15 @@
 			name = Option;
 			sourceTree = "<group>";
 		};
+		EF8C8CFD1F9195010062CA1C /* switch */ = {
+			isa = PBXGroup;
+			children = (
+				EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */,
+				EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */,
+			);
+			name = switch;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -942,6 +955,7 @@
 				04F3BCBE1F2BF9ED00C95170 /* NSObject+JSONPayload.m in Sources */,
 				5E3177A31D1F28C100D87778 /* JasonCacheAction.m in Sources */,
 				045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */,
+				EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */,
 				5E31765E1D1E400C00D87778 /* main.m in Sources */,
 				5EBFBB511D563ABD0074B805 /* UIView+JasonComponentPayload.m in Sources */,
 				5EDF644E1DB0480500C5E403 /* JasonSessionAction.m in Sources */,
