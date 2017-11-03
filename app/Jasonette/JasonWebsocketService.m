@@ -10,6 +10,41 @@
 
 @implementation JasonWebsocketService
 
+/*****************************************
+ 
+ ### Events:
+ - There are 4 events: $websocket.onopen, $websocket.onclose, $websocket.onmessage, $websocket.onerror
+ 
+ [1] $websocket.onopen
+    - Triggered when $websocket.open action succeeds.
+    - You can start sending messages after this event.
+    - Response Payload: none
+ 
+ [2] $websocket.onclose
+    - Triggered when $websocket.close action succeeds or the socket closes
+    - Response Payload: none
+ 
+ [3] $websocket.onerror
+    - Triggered when there's an error
+    - Response Payload:
+     {
+         "$jason": {
+             "error": [THE ERROR MESSAGE]
+         }
+     }
+
+ [4] $websocket.onmessage
+    - Triggered whenever there's an incoming message
+    - Response Payload:
+     {
+         "$jason": {
+             "message": [THE INCOMING MESSAGE STRING]
+         }
+     }
+ 
+ *****************************************/
+
+
 - (void) initialize: (NSDictionary *)launchOptions {
 }
 
@@ -28,7 +63,7 @@
 }
 - (void) send: (NSDictionary *) options {
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        [self.websocket send: options[@"text"]];
+        [self.websocket send: options[@"message"]];
     });
 }
 
@@ -44,7 +79,7 @@
     NSDictionary *events = [[[Jason client] getVC] valueForKey:@"events"];
     [[Jason client] call: events[@"$websocket.onerror"] with: @{
         @"$jason": @{
-            @"message": [error description]
+            @"error": [error description]
         }
     }];
 }
