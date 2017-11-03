@@ -2822,8 +2822,10 @@
     } else {
         [item setTitlePositionAdjustment:UIOffsetMake(0.0, -18.0)];
     }
-    if(badge){
+    if(badge && ![badge isEqualToString:@"0"]){
         [item setBadgeValue:badge];
+    } else {
+        [item setBadgeValue:nil];
     }
 }
 
