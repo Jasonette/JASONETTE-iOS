@@ -23,6 +23,7 @@
     [self.websocket open];
 }
 - (void) close {
+    self.websocket.delegate = nil;
     [self.websocket close];
 }
 - (void) send: (NSDictionary *) options {
