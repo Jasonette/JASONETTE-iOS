@@ -8,30 +8,27 @@
 #import "JasonNetworkAction.h"
 
 @implementation JasonNetworkAction
+
+// Session & Cookie Handling
 - (void)storeSession:(NSDictionary *)session forDomain:(NSString*)domain{
     UICKeyChainStore *keychain = [UICKeyChainStore keyChainStoreWithService:[domain lowercaseString]];
     keychain[@"session"] = [session description];
 }
 - (void)saveCookies{
-    
     NSData *cookiesData = [NSKeyedArchiver archivedDataWithRootObject: [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject: cookiesData forKey: @"sessionCookies"];
     [defaults synchronize];
-    
 }
-
 - (void)loadCookies{
-    
     NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData: [[NSUserDefaults standardUserDefaults] objectForKey: @"sessionCookies"]];
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    
     for (NSHTTPCookie *cookie in cookies){
         [cookieStorage setCookie: cookie];
     }
-    
 }
 
+// $network.request
 - (void)request{
     __weak typeof(self) weakSelf = self;
 
@@ -41,235 +38,90 @@
         [[Jason client] networkLoading:YES with:self.options];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         NSString *url = self.options[@"url"];
+        
         // Instantiate with session if needed
         NSDictionary *session = [JasonHelper sessionForUrl:url];
         
         // Check for valid URL and throw error if invalid
-        if(![url isEqualToString:@""]) {
-            NSURL *urlToCheck = [NSURL URLWithString:url];
-            if(!urlToCheck){
-                NSLog(@"Error = Invalid URL for $network.request call");
-                [[Jason client] networkLoading:NO with:nil];
-                [[Jason client] error: nil];
-                return;
-            }
-        } else {
-            NSLog(@"Error = URL not specified for $network.request call");
+        if([self isInvalid: url]) {
             [[Jason client] networkLoading:NO with:nil];
             [[Jason client] error: nil];
             return;
         }
         
-        // Set Header if specified  "header"
-        NSDictionary *headers = self.options[@"header"];
-        // legacy code : headers is deprecated
-        if(!headers){
-            headers = self.options[@"headers"];
-        }
-        
-        
-        // setting content_type
-        NSString *contentType = self.options[@"contentType"]; // contentType is deprecated. Use content_type
-        if(!contentType){
-            contentType = self.options[@"content_type"];
-        }
-        
-        if(contentType){
-            if([contentType isEqualToString:@"json"]){
-                manager.requestSerializer = [AFJSONRequestSerializer serializer];
-            }
-        }
-        
-        
-        if(headers && headers.count > 0){
-            for(NSString *key in headers){
-                [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
-            }
-        }
-        if(session && session.count > 0 && session[@"header"]){
-            for(NSString *key in session[@"header"]){
-                [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
-            }
-        }
-        NSString *dataType = self.options[@"dataType"];     // dataType is deprecated. Use data_type
-        if(!dataType){
-            dataType = self.options[@"data_type"];
-        }
-        if(dataType && [dataType isEqualToString:@"html"]){
-            manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-            manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"text/html", @"text/plain", nil];
-        } else if(dataType && ([dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
-            AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
-            NSMutableSet *acceptableContentTypes = [NSMutableSet setWithSet:serializer.acceptableContentTypes];
-            [acceptableContentTypes addObject:@"application/rss+xml"];
-            [acceptableContentTypes addObject:@"application/text+xml"];
-            [acceptableContentTypes addObject:@"text/xml"];
-            [acceptableContentTypes addObject:@"application/xml"];
-            [acceptableContentTypes addObject:@"application/soap+xml"];
-            [acceptableContentTypes addObject:@"application/atom+xml"];
-            [acceptableContentTypes addObject:@"application/atomcat+xml"];
-            [acceptableContentTypes addObject:@"application/atomsvc+xml"];
-            serializer.acceptableContentTypes = acceptableContentTypes;
-            manager.responseSerializer = serializer;
-
-        } else if(dataType && [dataType isEqualToString:@"raw"]){
-            manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-            manager.responseSerializer.acceptableContentTypes = nil;
-        } else {
-            JASONResponseSerializer *jsonResponseSerializer = [JASONResponseSerializer serializer];
-            NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
-            [jsonAcceptableContentTypes addObject:@"text/plain"];
-            [jsonAcceptableContentTypes addObject:@"application/vnd.api+json"];
-
-            jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
-            manager.responseSerializer = jsonResponseSerializer;
-        }
-        
+        [self build_header: manager with:session];
+        [self build_content_type: manager];
+        [self build_misc: manager];
+        [self build_timeout: manager];
+        NSString *dataType = [self build_data_type: manager];
+        NSMutableDictionary *parameters = [self build_params: session];
     
-        // Set params if specified  ("data")
-        NSMutableDictionary *parameters;
-        if(self.options[@"data"]){
-            parameters = [self.options[@"data"] mutableCopy];
-        } else {
-            if(session && session.count > 0 && session[@"body"]){
-                parameters = [@{} mutableCopy];
-                for(NSString *key in session[@"body"]){
-                    parameters[key] = session[@"body"][key];
-                }
-            } else {
-                parameters = nil;
-            }
-        }
         
         NSString *method = self.options[@"method"];
-        if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
-            [self loadCookies];
-        }
-        
-        
-        // don't use cached result if fresh is true
-        NSString *fresh = self.options[@"fresh"];
-        if(fresh){
-            [manager.requestSerializer setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
-        }
-        
-        
-        if(method){
-            if([[method lowercaseString] isEqualToString:@"post"]){
-                //dispatch_async(dispatch_queue_create("clientQueue", NULL) , ^{
-                dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                    [manager.operationQueue cancelAllOperations];
-                    [manager POST:url parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
-                        // Nothing
-                    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                        // Ignore if the url is different
-                        if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
-                                [self saveCookies];
-                                NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                                data = [[data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
-                                [[Jason client] success: data withOriginalUrl:original_url];
-                            } else if(dataType && [dataType isEqualToString:@"raw"]){
-                                [self saveCookies];
-                                NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                                [[Jason client] success: data withOriginalUrl:original_url];
-                            } else {
-                                [[Jason client] success: responseObject withOriginalUrl:original_url];
-                            }
-                        });
-                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        [weakSelf processError: error withOriginalUrl:original_url];
-                    }];
-                });
-                return;
-            } else if([[method lowercaseString] isEqualToString:@"put"]){
-                dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                    [manager.operationQueue cancelAllOperations];
-                    [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
-                        // Ignore if the url is different
-                        if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
-                                [self saveCookies];
-                                NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                                data = [[data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
-                                [[Jason client] success: data withOriginalUrl:original_url];
-                                
-                            } else if(dataType && [dataType isEqualToString:@"raw"]){
-                                [self saveCookies];
-                                NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                                [[Jason client] success: data withOriginalUrl:original_url];
-                            } else {
-                                [[Jason client] success: responseObject withOriginalUrl:original_url];
-                            }
-                        });
-                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        [weakSelf processError: error withOriginalUrl:original_url];
-                    }];
-                });
-                return;
-            } else if([[method lowercaseString] isEqualToString:@"delete"]){
-                dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                    [manager.operationQueue cancelAllOperations];
-                    [manager DELETE:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
-                        // Ignore if the url is different
-                        if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
-                                [self saveCookies];
-                                NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                                data = [[data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
-                                [[Jason client] success: data withOriginalUrl:original_url];
-                                
-                            } else if(dataType && [dataType isEqualToString:@"raw"]){
-                                [self saveCookies];
-                                NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                                [[Jason client] success: data withOriginalUrl:original_url];
-                            } else {
-                                [[Jason client] success: responseObject withOriginalUrl:original_url];
-                            }
-                        });
-                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                        [weakSelf processError: error withOriginalUrl:original_url];
-                    }];
-                });
-                return;
-            }
-        }
-        
-        
-        // GET:
-        // If you've reached this part, it means we're left with
-        // the default option : GET
-        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-            [manager.operationQueue cancelAllOperations];
-            [manager GET:url parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
-                // Nothing
-            } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                // Ignore if the url is different
-                if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
-                        [self saveCookies];
-                        NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                        data = [[data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
-                        [[Jason client] success: data withOriginalUrl:original_url];
-                        
-                    } else if(dataType && [dataType isEqualToString:@"raw"]){
-                        [self saveCookies];
-                        NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                        [[Jason client] success: data withOriginalUrl:original_url];
-                    } else {
-                        [[Jason client] success: responseObject withOriginalUrl:original_url];
-                    }
-                });
-            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+        if(!method) method = @"get";
+
+        if([[method lowercaseString] isEqualToString:@"post"]){
+            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                [manager.operationQueue cancelAllOperations];
+                [manager POST:url parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
+                    // Nothing
+                } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                    [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     [weakSelf processError: error withOriginalUrl:original_url];
-                });
-            }];
-        });
+                }];
+            });
+            return;
+        } else if([[method lowercaseString] isEqualToString:@"put"]){
+            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                [manager.operationQueue cancelAllOperations];
+                [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+                    [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    [weakSelf processError: error withOriginalUrl:original_url];
+                }];
+            });
+            return;
+        } else if([[method lowercaseString] isEqualToString:@"delete"]){
+            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                [manager.operationQueue cancelAllOperations];
+                [manager DELETE:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+                    [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    [weakSelf processError: error withOriginalUrl:original_url];
+                }];
+            });
+        } else if([[method lowercaseString] isEqualToString:@"head"]){
+            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                [manager.operationQueue cancelAllOperations];
+                [manager HEAD:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task) {
+                    [self done: task for: url ofType: dataType with: nil original_url: original_url];
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    [weakSelf processError: error withOriginalUrl:original_url];
+                }];
+            });
+        } else if([[method lowercaseString] isEqualToString:@"patch"]){
+            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                [manager.operationQueue cancelAllOperations];
+                [manager PATCH:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+                    [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    [weakSelf processError: error withOriginalUrl:original_url];
+                }];
+            });
+        } else {
+            // GET
+            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                [manager.operationQueue cancelAllOperations];
+                [manager GET:url parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
+                    // Nothing
+                } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                    [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    [weakSelf processError: error withOriginalUrl:original_url];
+                }];
+            });
+        }
     }
 }
 - (void)processError: (NSError *)error withOriginalUrl: (NSString*) original_url{
@@ -403,6 +255,149 @@
 - (void)s3UploadDidSucceed: (NSString *)upload_filename withOriginalUrl: original_url{
     [[Jason client] loading:NO];
     [[Jason client] success: @{@"filename": upload_filename, @"file_name": upload_filename} withOriginalUrl:original_url];
+}
+
+
+// Response Handler
+
+- (void) done: (NSURLSessionDataTask *)task for: (NSString *)url ofType: (NSString *)dataType with: (id)responseObject original_url: (NSString *)original_url {
+    // Ignore if the url is different
+    if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(!responseObject) {
+            [[Jason client] success: @{} withOriginalUrl:original_url];
+        } else if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
+            [self saveCookies];
+            NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
+            data = [[data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
+            [[Jason client] success: data withOriginalUrl:original_url];
+        } else if(dataType && [dataType isEqualToString:@"raw"]){
+            [self saveCookies];
+            NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
+            [[Jason client] success: data withOriginalUrl:original_url];
+        } else {
+            [[Jason client] success: responseObject withOriginalUrl:original_url];
+        }
+    });
+}
+
+
+// Request Builder
+- (void) build_timeout: (AFHTTPSessionManager *) manager {
+    if(self.options[@"timeout"]) {
+        NSTimeInterval timeout = [self.options[@"timeout"] doubleValue];
+        [manager.requestSerializer setTimeoutInterval:[self.options[@"timeout"] integerValue]];
+    }
+}
+- (BOOL) isInvalid: (NSString *) url {
+    if(![url isEqualToString:@""]) {
+        NSURL *urlToCheck = [NSURL URLWithString:url];
+        if(!urlToCheck){
+            NSLog(@"Error = Invalid URL for $network.request call");
+            return YES;
+        }
+    } else {
+        NSLog(@"Error = URL not specified for $network.request call");
+        return YES;
+    }
+    return NO;
+}
+- (NSMutableDictionary *) build_params: (NSDictionary *) session{
+    // Set params if specified  ("data")
+    NSMutableDictionary *parameters;
+    if(self.options[@"data"]){
+        parameters = [self.options[@"data"] mutableCopy];
+    } else {
+        if(session && session.count > 0 && session[@"body"]){
+            parameters = [@{} mutableCopy];
+            for(NSString *key in session[@"body"]){
+                parameters[key] = session[@"body"][key];
+            }
+        } else {
+            parameters = nil;
+        }
+    }
+    return parameters;
+}
+- (void) build_header: (AFHTTPSessionManager *) manager with: (NSDictionary *) session{
+    // Set Header if specified  "header"
+    NSDictionary *headers = self.options[@"header"];
+    // legacy code : headers is deprecated
+    if(!headers){
+        headers = self.options[@"headers"];
+    }
+    
+    
+    // header handling
+    if(headers && headers.count > 0){
+        for(NSString *key in headers){
+            [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
+        }
+    }
+    if(session && session.count > 0 && session[@"header"]){
+        for(NSString *key in session[@"header"]){
+            [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+        }
+    }
+}
+- (void) build_content_type: (AFHTTPSessionManager *)manager {
+    // setting content_type
+    NSString *contentType = self.options[@"contentType"]; // contentType is deprecated. Use content_type
+    if(!contentType){
+        contentType = self.options[@"content_type"];
+    }
+    if(contentType){
+        if([contentType isEqualToString:@"json"]){
+            manager.requestSerializer = [AFJSONRequestSerializer serializer];
+        }
+    }
+}
+- (NSString *) build_data_type: (AFHTTPSessionManager *)manager {
+    // setting data_type
+    NSString *dataType = self.options[@"dataType"];     // dataType is deprecated. Use data_type
+    if(!dataType){
+        dataType = self.options[@"data_type"];
+    }
+    if(dataType && [dataType isEqualToString:@"html"]){
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"text/html", @"text/plain", nil];
+    } else if(dataType && ([dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
+        AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
+        NSMutableSet *acceptableContentTypes = [NSMutableSet setWithSet:serializer.acceptableContentTypes];
+        [acceptableContentTypes addObject:@"application/rss+xml"];
+        [acceptableContentTypes addObject:@"application/text+xml"];
+        [acceptableContentTypes addObject:@"text/xml"];
+        [acceptableContentTypes addObject:@"application/xml"];
+        [acceptableContentTypes addObject:@"application/soap+xml"];
+        [acceptableContentTypes addObject:@"application/atom+xml"];
+        [acceptableContentTypes addObject:@"application/atomcat+xml"];
+        [acceptableContentTypes addObject:@"application/atomsvc+xml"];
+        serializer.acceptableContentTypes = acceptableContentTypes;
+        manager.responseSerializer = serializer;
+        
+    } else if(dataType && [dataType isEqualToString:@"raw"]){
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        manager.responseSerializer.acceptableContentTypes = nil;
+    } else {
+        JASONResponseSerializer *jsonResponseSerializer = [JASONResponseSerializer serializer];
+        NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+        [jsonAcceptableContentTypes addObject:@"text/plain"];
+        [jsonAcceptableContentTypes addObject:@"application/vnd.api+json"];
+        
+        jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+        manager.responseSerializer = jsonResponseSerializer;
+    }
+    if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
+        [self loadCookies];
+    }
+    return dataType;
+}
+- (void) build_misc: (AFHTTPSessionManager *) manager {
+    // don't use cached result if fresh is true
+    NSString *fresh = self.options[@"fresh"];
+    if(fresh){
+        [manager.requestSerializer setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+    }
 }
 
 @end
