@@ -51,8 +51,8 @@
         
         [self build_header: manager with:session];
         [self build_content_type: manager];
-        NSString *dataType = [self build_data_type: manager];
         [self build_misc: manager];
+        NSString *dataType = [self build_data_type: manager];
         NSMutableDictionary *parameters = [self build_params: session];
     
         
@@ -383,6 +383,7 @@
     if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
         [self loadCookies];
     }
+    return dataType;
 }
 - (void) build_misc: (AFHTTPSessionManager *) manager {
     // don't use cached result if fresh is true
