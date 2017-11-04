@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		042852531E984B890081F742 /* NoPaddingButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 042852521E984B890081F742 /* NoPaddingButton.m */; };
+		042A7FD51FAC662F00C1A3F2 /* JasonWebsocketAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 042A7FD41FAC662F00C1A3F2 /* JasonWebsocketAction.m */; };
+		042A7FD91FAC665B00C1A3F2 /* JasonWebsocketService.m in Sources */ = {isa = PBXBuildFile; fileRef = 042A7FD81FAC665B00C1A3F2 /* JasonWebsocketService.m */; };
 		043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 043814151EF7455800CC4706 /* JasonGlobalAction.m */; };
 		043AD2B81F7524EB00BA165A /* xhtml.js in Resources */ = {isa = PBXBuildFile; fileRef = 043AD2B71F7524EB00BA165A /* xhtml.js */; };
 		043EFED61F50B75800F5AD48 /* JasonPushService.m in Sources */ = {isa = PBXBuildFile; fileRef = 043EFED51F50B75800F5AD48 /* JasonPushService.m */; };
@@ -88,6 +90,10 @@
 /* Begin PBXFileReference section */
 		042852511E984B890081F742 /* NoPaddingButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoPaddingButton.h; sourceTree = "<group>"; };
 		042852521E984B890081F742 /* NoPaddingButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoPaddingButton.m; sourceTree = "<group>"; };
+		042A7FD31FAC662F00C1A3F2 /* JasonWebsocketAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonWebsocketAction.h; sourceTree = "<group>"; };
+		042A7FD41FAC662F00C1A3F2 /* JasonWebsocketAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonWebsocketAction.m; sourceTree = "<group>"; };
+		042A7FD71FAC665B00C1A3F2 /* JasonWebsocketService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonWebsocketService.h; sourceTree = "<group>"; };
+		042A7FD81FAC665B00C1A3F2 /* JasonWebsocketService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonWebsocketService.m; sourceTree = "<group>"; };
 		043814141EF7455800CC4706 /* JasonGlobalAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonGlobalAction.h; sourceTree = "<group>"; };
 		043814151EF7455800CC4706 /* JasonGlobalAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonGlobalAction.m; sourceTree = "<group>"; };
 		043AD2B71F7524EB00BA165A /* xhtml.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = xhtml.js; sourceTree = "<group>"; };
@@ -246,6 +252,24 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		042A7FD61FAC663500C1A3F2 /* $websocket */ = {
+			isa = PBXGroup;
+			children = (
+				042A7FD31FAC662F00C1A3F2 /* JasonWebsocketAction.h */,
+				042A7FD41FAC662F00C1A3F2 /* JasonWebsocketAction.m */,
+			);
+			name = $websocket;
+			sourceTree = "<group>";
+		};
+		042A7FDA1FAC665E00C1A3F2 /* $websocket */ = {
+			isa = PBXGroup;
+			children = (
+				042A7FD71FAC665B00C1A3F2 /* JasonWebsocketService.h */,
+				042A7FD81FAC665B00C1A3F2 /* JasonWebsocketService.m */,
+			);
+			name = $websocket;
+			sourceTree = "<group>";
+		};
 		043814171EF7455E00CC4706 /* $global */ = {
 			isa = PBXGroup;
 			children = (
@@ -260,6 +284,7 @@
 			children = (
 				044C21441FA067B9003E450F /* $push */,
 				0483D9B11FA0B5E4004DDA37 /* $vision */,
+				042A7FDA1FAC665E00C1A3F2 /* $websocket */,
 			);
 			name = Service;
 			sourceTree = "<group>";
@@ -432,6 +457,7 @@
 				5E3177A81D1F291200D87778 /* $cache */,
 				5E3177A91D1F294C00D87778 /* $convert */,
 				5E31778C1D1F208A00D87778 /* $geo */,
+				043814171EF7455E00CC4706 /* $global */,
 				5EF904371DD10F7600C8A94E /* $log */,
 				5E31778B1D1F208500D87778 /* $media */,
 				5E31778E1D1F20A400D87778 /* $network */,
@@ -443,8 +469,8 @@
 				04DC19811F5474730021A7A6 /* $script */,
 				5E3177AB1D1F297400D87778 /* $timer */,
 				5E3177AA1D1F296300D87778 /* $util */,
-				043814171EF7455E00CC4706 /* $global */,
 				0483D9B51FA16734004DDA37 /* $vision */,
+				042A7FD61FAC663500C1A3F2 /* $websocket */,
 			);
 			name = Action;
 			sourceTree = "<group>";
@@ -945,6 +971,7 @@
 				5E9862691DCF1F640084CA4A /* JasonNotificationAction.m in Sources */,
 				5E31771D1D1E411F00D87778 /* JasonVerticalSectionItem.m in Sources */,
 				0483D9B01FA0B5DF004DDA37 /* JasonVisionService.m in Sources */,
+				042A7FD51FAC662F00C1A3F2 /* JasonWebsocketAction.m in Sources */,
 				5E3177A71D1F28C100D87778 /* JasonUtilAction.m in Sources */,
 				5E0956421DA34F4D007ADC78 /* JasonSpaceComponent.m in Sources */,
 				04DC19801F54746E0021A7A6 /* JasonScriptAction.m in Sources */,
@@ -964,6 +991,7 @@
 				5E3177241D1E411F00D87778 /* JasonHorizontalSectionItem.m in Sources */,
 				5E3177221D1E411F00D87778 /* JasonHorizontalSection.m in Sources */,
 				04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */,
+				042A7FD91FAC665B00C1A3F2 /* JasonWebsocketService.m in Sources */,
 				5E3177301D1E411F00D87778 /* JasonGeoAction.m in Sources */,
 				5E3177591D1E411F00D87778 /* JasonOauthAction.m in Sources */,
 			);
