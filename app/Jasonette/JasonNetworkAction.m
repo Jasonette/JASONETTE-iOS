@@ -142,6 +142,7 @@
         }
         
         NSString *method = self.options[@"method"];
+        if(!method) method = @"get";
         if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
             [self loadCookies];
         }
@@ -154,6 +155,18 @@
         }
         
         
+        if(self.options[@"debug"]) {
+            [self log:@{
+                @"type": @"request",
+                @"options": @{
+                    @"method": method,
+                    @"url": url,
+                    @"header": manager.requestSerializer.HTTPRequestHeaders,
+                    @"body": (parameters ? parameters : @{})
+                }
+            }];
+        }
+        
         if(method){
             if([[method lowercaseString] isEqualToString:@"post"]){
                 //dispatch_async(dispatch_queue_create("clientQueue", NULL) , ^{
@@ -162,6 +175,14 @@
                     [manager POST:url parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
                         // Nothing
                     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                        if(self.options[@"debug"]) {
+                            [self log:@{
+                                @"type": @"response",
+                                @"options": @{
+                                    @"method": method, @"url": url, @"dataType": (dataType ? dataType : @"json"), @"responseObject": responseObject
+                                }
+                            }];
+                        }
                         // Ignore if the url is different
                         if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
                         dispatch_async(dispatch_get_main_queue(), ^{
@@ -187,6 +208,14 @@
                 dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                     [manager.operationQueue cancelAllOperations];
                     [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+                        if(self.options[@"debug"]) {
+                            [self log:@{
+                                @"type": @"response",
+                                @"options": @{
+                                    @"method": method, @"url": url, @"dataType": (dataType ? dataType : @"json"), @"responseObject": responseObject
+                                }
+                            }];
+                        }
                         // Ignore if the url is different
                         if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
                         dispatch_async(dispatch_get_main_queue(), ^{
@@ -213,6 +242,14 @@
                 dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                     [manager.operationQueue cancelAllOperations];
                     [manager DELETE:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+                        if(self.options[@"debug"]) {
+                            [self log:@{
+                                @"type": @"response",
+                                @"options": @{
+                                    @"method": method, @"url": url, @"dataType": (dataType ? dataType : @"json"), @"responseObject": responseObject
+                                }
+                            }];
+                        }
                         // Ignore if the url is different
                         if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
                         dispatch_async(dispatch_get_main_queue(), ^{
@@ -247,6 +284,14 @@
             [manager GET:url parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
                 // Nothing
             } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                if(self.options[@"debug"]) {
+                    [self log:@{
+                        @"type": @"response",
+                        @"options": @{
+                            @"method": method, @"url": url, @"dataType": (dataType ? dataType : @"json"), @"responseObject": responseObject
+                        }
+                    }];
+                }
                 // Ignore if the url is different
                 if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -405,4 +450,24 @@
     [[Jason client] success: @{@"filename": upload_filename, @"file_name": upload_filename} withOriginalUrl:original_url];
 }
 
+
+// debug mode
+- (void)log: (NSDictionary *) log {
+    if([log[@"type"] isEqualToString:@"request"]){
+        NSString *method = log[@"options"][@"method"];
+        NSLog(@"🔵 Network Request: %@ 🔵", (method == NULL ? @"GET" : [method uppercaseString]));
+        NSLog(@"URL: %@", log[@"options"][@"url"]);
+        if(log[@"options"][@"header"]) {
+            NSLog(@"\nHeader: %@", log[@"options"][@"header"]);
+        }
+        if(log[@"options"][@"body"]) {
+            NSLog(@"\nBody: %@", log[@"options"][@"body"]);
+        }
+    } else if([log[@"type"] isEqualToString:@"response"]) {
+        NSString *method = log[@"options"][@"method"];
+        NSLog(@"🔷 Network Response: %@ 🔷", (method == NULL ? @"GET" : [method uppercaseString]));
+        NSLog(@"DataType: %@", log[@"options"][@"dataType"]);
+        NSLog(@"ResponseObject: \n %@", log[@"options"][@"responseObject"]);
+    }    
+}
 @end
