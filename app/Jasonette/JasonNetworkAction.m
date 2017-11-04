@@ -52,6 +52,7 @@
         [self build_header: manager with:session];
         [self build_content_type: manager];
         [self build_misc: manager];
+        [self build_timeout: manager];
         NSString *dataType = [self build_data_type: manager];
         NSMutableDictionary *parameters = [self build_params: session];
     
@@ -282,6 +283,15 @@
 
 
 // Request Builder
+- (void) build_timeout: (AFHTTPSessionManager *) manager {
+    if(self.options[@"timeout"]) {
+        if([self.options[@"timeout"] isKindOfClass:[NSString class]]) {
+            [manager.requestSerializer setTimeoutInterval:[self.options[@"timeout"] integerValue]];
+        } else {
+            [manager.requestSerializer setTimeoutInterval:self.options[@"timeout"]];
+        }
+    }
+}
 - (BOOL) isInvalid: (NSString *) url {
     if(![url isEqualToString:@""]) {
         NSURL *urlToCheck = [NSURL URLWithString:url];
