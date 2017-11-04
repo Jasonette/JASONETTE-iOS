@@ -51,7 +51,7 @@
         
         [self build_header: manager with:session];
         [self build_content_type: manager];
-        [self build_data_type: manager];
+        NSString *dataType = [self build_data_type: manager];
         [self build_misc: manager];
         NSMutableDictionary *parameters = [self build_params: session];
     
@@ -93,8 +93,8 @@
         } else if([[method lowercaseString] isEqualToString:@"head"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
-                [manager HEAD:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
-                    [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
+                [manager HEAD:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task) {
+                    [self done: task for: url ofType: dataType with: nil original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     [weakSelf processError: error withOriginalUrl:original_url];
                 }];
@@ -263,7 +263,9 @@
     // Ignore if the url is different
     if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) return;
     dispatch_async(dispatch_get_main_queue(), ^{
-        if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
+        if(!responseObject) {
+            [[Jason client] success: @{} withOriginalUrl:original_url];
+        } else if(dataType && ([dataType isEqualToString:@"html"] || [dataType isEqualToString:@"xml"] || [dataType isEqualToString:@"rss"])){
             [self saveCookies];
             NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
             data = [[data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
@@ -343,7 +345,7 @@
         }
     }
 }
-- (void) build_data_type: (AFHTTPSessionManager *)manager {
+- (NSString *) build_data_type: (AFHTTPSessionManager *)manager {
     // setting data_type
     NSString *dataType = self.options[@"dataType"];     // dataType is deprecated. Use data_type
     if(!dataType){
