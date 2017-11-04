@@ -694,7 +694,6 @@
     
 }
 - (void)render{
-    dispatch_async(dispatch_get_main_queue(), ^{
         NSDictionary *stack = [JasonMemory client]._stack;
         
         /**************************************************
@@ -868,9 +867,7 @@
             // Cache the view after drawing
             [self cache_view];
         }
-        [self success];
-    });
-    
+        [self success];    
     
 }
 - (void)visit{
@@ -2090,359 +2087,363 @@
 # pragma mark - View rendering (nav)
 - (void)setupHeader: (NSDictionary *)nav{
 
-    if(!nav && !VC.isFinal) {
-        navigationController.navigationBar.hidden = YES;
-        return;
-    }
+        if(!nav && !VC.isFinal) {
+            navigationController.navigationBar.hidden = YES;
+            return;
+        }
 
-    if(VC.rendered && rendered_page){
-        if(VC.old_header && [[VC.old_header description] isEqualToString:[nav description]]){
-            // if the header is the same as the value trying to set,
-            if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[VC.old_header description]]) {
-                // and if the currently visible rendered_page's header is the same as the VC's old_header, ignore.
+        if(VC.rendered && rendered_page){
+            if(VC.old_header && [[VC.old_header description] isEqualToString:[nav description]]){
+                // if the header is the same as the value trying to set,
+                if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[VC.old_header description]]) {
+                    // and if the currently visible rendered_page's header is the same as the VC's old_header, ignore.
+                    return;
+                }
+            }
+        }
+        
+        if(nav) VC.old_header = nav;
+        
+        
+        
+        UIColor *background = [JasonHelper colorwithHexString:@"#ffffff" alpha:1.0];
+        UIColor *color = [JasonHelper colorwithHexString:@"#000000" alpha:1.0];
+        
+        // Deprecated (using 'nav' instead of 'header')
+        NSArray *items = nav[@"items"];
+        if(items){
+            NSMutableDictionary *dict = [nav mutableCopy];
+            [dict removeObjectForKey:@"items"];
+            for(NSDictionary *item in items){
+                dict[item[@"type"]] = item;
+            }
+            nav = dict;
+        }
+        ////////////////////////////////////////////////////////////////
+        
+        if(!nav) {
+            if(VC.isModal || [tabController presentingViewController]){ // if the current tab bar was modally presented
+                // if it's a modal, need to add X button to close
+                nav = @{@"left": @{}};
+            } else {
+                
+                navigationController.navigationBar.shadowImage = [UIImage new];
+                [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+                navigationController.navigationBar.translucent = NO;
+                [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
+                
+                navigationController.navigationBar.backgroundColor = background;
+                navigationController.navigationBar.barTintColor = background;
+                navigationController.navigationBar.tintColor = color;
+                navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
                 return;
             }
         }
-    }
-    
-    if(nav) VC.old_header = nav;
-    
-    
-    
-    UIColor *background = [JasonHelper colorwithHexString:@"#ffffff" alpha:1.0];
-    UIColor *color = [JasonHelper colorwithHexString:@"#000000" alpha:1.0];
-    
-    // Deprecated (using 'nav' instead of 'header')
-    NSArray *items = nav[@"items"];
-    if(items){
-        NSMutableDictionary *dict = [nav mutableCopy];
-        [dict removeObjectForKey:@"items"];
-        for(NSDictionary *item in items){
-            dict[item[@"type"]] = item;
-        }
-        nav = dict;
-    }
-    ////////////////////////////////////////////////////////////////
-    
-    if(!nav) {
-        if(VC.isModal || [tabController presentingViewController]){ // if the current tab bar was modally presented
-            // if it's a modal, need to add X button to close
-            nav = @{@"left": @{}};
-        } else {
-            
-            navigationController.navigationBar.shadowImage = [UIImage new];
-            [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-            navigationController.navigationBar.translucent = NO;
-            [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
-            
-            navigationController.navigationBar.backgroundColor = background;
-            navigationController.navigationBar.barTintColor = background;
-            navigationController.navigationBar.tintColor = color;
-            navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
-            return;
-        }
-    }
-    
-    navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-    navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
-    [navigationController setNavigationBarHidden:NO];
-    if(nav[@"style"]){
-        NSDictionary *headStyle = nav[@"style"];
-        if(headStyle[@"background"]){
-            NSString *bg = headStyle[@"background"];
-            background = [JasonHelper colorwithHexString:bg alpha:1.0];
-        }
-        if(headStyle[@"color"]){
-            color = [JasonHelper colorwithHexString:headStyle[@"color"] alpha:1.0];
-        }
         
-        if(headStyle[@"theme"]){
-            navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
+        navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
+        [navigationController setNavigationBarHidden:NO];
+        if(nav[@"style"]){
+            NSDictionary *headStyle = nav[@"style"];
+            if(headStyle[@"background"]){
+                NSString *bg = headStyle[@"background"];
+                background = [JasonHelper colorwithHexString:bg alpha:1.0];
+            }
+            if(headStyle[@"color"]){
+                color = [JasonHelper colorwithHexString:headStyle[@"color"] alpha:1.0];
+            }
+            
+            if(headStyle[@"theme"]){
+                navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
+            } else {
+                navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+            }
+            
+            if(headStyle[@"shy"]){
+                navigationController.hidesBarsOnSwipe = YES;
+            } else {
+                navigationController.hidesBarsOnSwipe = NO;
+            }
+            
+            
+            if(headStyle[@"hide"] && [headStyle[@"hide"] boolValue]){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [navigationController setNavigationBarHidden:YES];
+                });
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [navigationController setNavigationBarHidden:NO];
+                });
+                
+            }
+            
+            NSString *font_name = @"HelveticaNeue-CondensedBold";
+            NSString *font_size = @"18";
+            if(headStyle[@"font"]){
+                font_name = headStyle[@"font"];
+            }
+            if(headStyle[@"size"]){
+                font_size = headStyle[@"size"];
+            }
+            navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
         } else {
             navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-        }
-        
-        if(headStyle[@"shy"]){
-            navigationController.hidesBarsOnSwipe = YES;
-        } else {
             navigationController.hidesBarsOnSwipe = NO;
-        }
-        
-        
-        if(headStyle[@"hide"] && [headStyle[@"hide"] boolValue]){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [navigationController setNavigationBarHidden:YES];
-            });
-        } else {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [navigationController setNavigationBarHidden:NO];
             });
-            
+            NSString *font_name = @"HelveticaNeue-CondensedBold";
+            NSString *font_size = @"18";
+            navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
         }
         
-        NSString *font_name = @"HelveticaNeue-CondensedBold";
-        NSString *font_size = @"18";
-        if(headStyle[@"font"]){
-            font_name = headStyle[@"font"];
-        }
-        if(headStyle[@"size"]){
-            font_size = headStyle[@"size"];
-        }
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
-    } else {
-        navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-        navigationController.hidesBarsOnSwipe = NO;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [navigationController setNavigationBarHidden:NO];
-        });
-        NSString *font_name = @"HelveticaNeue-CondensedBold";
-        NSString *font_size = @"18";
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
-    }
-    
-    
-    NSDictionary *left_menu = nav[@"left"];
-    NSDictionary *right_menu;
-    
-    NSArray *navComponents = nav[@"items"];
-    if(navComponents){
-        for(NSDictionary *component in navComponents){
-            NSString *type = component[@"type"];
-            if(type){
-                if([type isEqualToString:@"menu"]){
-                    right_menu = component;
-                    break;
+        
+        NSDictionary *left_menu = nav[@"left"];
+        NSDictionary *right_menu;
+        
+        NSArray *navComponents = nav[@"items"];
+        if(navComponents){
+            for(NSDictionary *component in navComponents){
+                NSString *type = component[@"type"];
+                if(type){
+                    if([type isEqualToString:@"menu"]){
+                        right_menu = component;
+                        break;
+                    }
                 }
             }
         }
-    }
-    right_menu = nav[@"menu"];
-    
-    
-    BBBadgeBarButtonItem *leftBarButton;
-    if(!left_menu || [left_menu count] == 0){
-        // if the current view is in a modal AND is the rootviewcontroller of the navigationcontroller,
-        // Add the X button. Otherwise, ignore this.
-        if([tabController presentingViewController]){ // if the current tab bar was modally presented
-            if([navigationController.viewControllers.firstObject isEqual:VC]){
-                leftBarButton = [[BBBadgeBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(cancel)];
-                [leftBarButton setTintColor:color];
+        right_menu = nav[@"menu"];
+        
+        
+        BBBadgeBarButtonItem *leftBarButton;
+        if(!left_menu || [left_menu count] == 0){
+            // if the current view is in a modal AND is the rootviewcontroller of the navigationcontroller,
+            // Add the X button. Otherwise, ignore this.
+            if([tabController presentingViewController]){ // if the current tab bar was modally presented
+                if([navigationController.viewControllers.firstObject isEqual:VC]){
+                    leftBarButton = [[BBBadgeBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(cancel)];
+                    [leftBarButton setTintColor:color];
+                }
             }
-        }
-    } else {
-        if(left_menu[@"text"]){
-            UIButton *button = [[UIButton alloc] init];
-            [button setTitle:left_menu[@"text"] forState:UIControlStateNormal];
-            [button setTitle:left_menu[@"text"] forState:UIControlStateFocused];
-            NSDictionary *style = left_menu[@"style"];
-            if(style && style[@"color"]){
-                UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                [button setTitleColor:c forState:UIControlStateNormal];
-            } else {
-                [button setTitleColor:color forState:UIControlStateNormal];
-            }
-            CGFloat size = 14.0;
-            NSString *font = @"HelveticaNeue";
-            if(style[@"size"]){
-                size = [style[@"size"] floatValue];
-            }
-            if(style[@"font"]){
-                font = style[@"font"];
-            }
-            button.titleLabel.font = [UIFont fontWithName: font size:size];
-            [button sizeToFit];
-            [button addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
-            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:button];
         } else {
-            UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
-            btn.frame = CGRectMake(0,0,20,20);
-            if(left_menu[@"image"]){
-                NSString *image_src = left_menu[@"image"];
-                
-                if([image_src containsString:@"file://"]){
-                    UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                    [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
-                } else{
-                    SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                    [manager downloadImageWithURL:[NSURL URLWithString:image_src]
-                                          options:0
-                                         progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                         }
-                                        completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                            if (image) {
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [self setMenuButtonImage:image forButton:btn withMenu:left_menu];//
-                                                });
-                                            }
-                                        }];
+            if(left_menu[@"text"]){
+                UIButton *button = [[UIButton alloc] init];
+                [button setTitle:left_menu[@"text"] forState:UIControlStateNormal];
+                [button setTitle:left_menu[@"text"] forState:UIControlStateFocused];
+                NSDictionary *style = left_menu[@"style"];
+                if(style && style[@"color"]){
+                    UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
+                    [button setTitleColor:c forState:UIControlStateNormal];
+                } else {
+                    [button setTitleColor:color forState:UIControlStateNormal];
                 }
-                
+                CGFloat size = 14.0;
+                NSString *font = @"HelveticaNeue";
+                if(style[@"size"]){
+                    size = [style[@"size"] floatValue];
+                }
+                if(style[@"font"]){
+                    font = style[@"font"];
+                }
+                button.titleLabel.font = [UIFont fontWithName: font size:size];
+                [button sizeToFit];
+                [button addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
+                leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:button];
             } else {
-                [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
+                UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
+                btn.frame = CGRectMake(0,0,20,20);
+                if(left_menu[@"image"]){
+                    NSString *image_src = left_menu[@"image"];
+                    
+                    if([image_src containsString:@"file://"]){
+                        UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
+                        [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    } else{
+                        SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                        [manager downloadImageWithURL:[NSURL URLWithString:image_src]
+                                              options:0
+                                             progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                             }
+                                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                if (image) {
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                        [self setMenuButtonImage:image forButton:btn withMenu:left_menu];//
+                                                    });
+                                                }
+                                            }];
+                    }
+                    
+                } else {
+                    [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
+                }
+                [btn addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
+                UIView *view = [[UIView alloc] initWithFrame:btn.frame];
+                [view addSubview:btn];
+                leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
             }
-            [btn addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
-            UIView *view = [[UIView alloc] initWithFrame:btn.frame];
-            [view addSubview:btn];
-            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
+            [self setupMenuBadge:leftBarButton forData:left_menu];
         }
-        [self setupMenuBadge:leftBarButton forData:left_menu];
-    }
-    
-    BBBadgeBarButtonItem *rightBarButton;
-    if(!right_menu || [right_menu count] == 0){
-        rightBarButton = nil;
-    } else {
-        if(right_menu[@"text"]){
-            UIButton *button = [[UIButton alloc] init];
-            [button setTitle:right_menu[@"text"] forState:UIControlStateNormal];
-            [button setTitle:right_menu[@"text"] forState:UIControlStateFocused];
-            NSDictionary *style = right_menu[@"style"];
-            if(style && style[@"color"]){
-                UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                [button setTitleColor:c forState:UIControlStateNormal];
-            } else {
-                [button setTitleColor:color forState:UIControlStateNormal];
-            }
-            CGFloat size = 14.0;
-            NSString *font = @"HelveticaNeue";
-            if(style[@"size"]){
-                size = [style[@"size"] floatValue];
-            }
-            if(style[@"font"]){
-                font = style[@"font"];
-            }
-            button.titleLabel.font = [UIFont fontWithName: font size:size];
-            [button sizeToFit];
-            [button addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
-            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:button];
+        
+        BBBadgeBarButtonItem *rightBarButton;
+        if(!right_menu || [right_menu count] == 0){
+            rightBarButton = nil;
         } else {
-            UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
-            btn.frame = CGRectMake(0,0,25,25);
-            if(right_menu[@"image"]){
-                NSString *image_src = right_menu[@"image"];
-                
-                if([image_src containsString:@"file://"]){
-                    UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                    [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
-                } else{
-                    SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                    [manager downloadImageWithURL:[NSURL URLWithString:image_src]
-                                          options:0
-                                         progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                         }
-                                        completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                            if (image) {
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
-                                                });
-                                            }
-                                        }];
+            if(right_menu[@"text"]){
+                UIButton *button = [[UIButton alloc] init];
+                [button setTitle:right_menu[@"text"] forState:UIControlStateNormal];
+                [button setTitle:right_menu[@"text"] forState:UIControlStateFocused];
+                NSDictionary *style = right_menu[@"style"];
+                if(style && style[@"color"]){
+                    UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
+                    [button setTitleColor:c forState:UIControlStateNormal];
+                } else {
+                    [button setTitleColor:color forState:UIControlStateNormal];
                 }
+                CGFloat size = 14.0;
+                NSString *font = @"HelveticaNeue";
+                if(style[@"size"]){
+                    size = [style[@"size"] floatValue];
+                }
+                if(style[@"font"]){
+                    font = style[@"font"];
+                }
+                button.titleLabel.font = [UIFont fontWithName: font size:size];
+                [button sizeToFit];
+                [button addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
+                rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:button];
             } else {
-                [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
+                UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
+                btn.frame = CGRectMake(0,0,25,25);
+                if(right_menu[@"image"]){
+                    NSString *image_src = right_menu[@"image"];
+                    
+                    if([image_src containsString:@"file://"]){
+                        UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
+                        [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    } else{
+                        SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                        [manager downloadImageWithURL:[NSURL URLWithString:image_src]
+                                              options:0
+                                             progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                             }
+                                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                if (image) {
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                        [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
+                                                    });
+                                                }
+                                            }];
+                    }
+                } else {
+                    [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
+                }
+                [btn addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
+                UIView *view = [[UIView alloc] initWithFrame:btn.frame];
+                [view addSubview:btn];
+                rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
             }
-            [btn addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
-            UIView *view = [[UIView alloc] initWithFrame:btn.frame];
-            [view addSubview:btn];
-            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
+            [self setupMenuBadge:rightBarButton forData:right_menu];
         }
-        [self setupMenuBadge:rightBarButton forData:right_menu];
-    }
-    
-    if(!VC.menu){
-        VC.menu = [[NSMutableDictionary alloc] init];
-    }
-    [VC.menu setValue:left_menu forKey:@"left"];
-    [VC.menu setValue:right_menu forKey:@"right"];
+        
+        if(!VC.menu){
+            VC.menu = [[NSMutableDictionary alloc] init];
+        }
+        [VC.menu setValue:left_menu forKey:@"left"];
+        [VC.menu setValue:right_menu forKey:@"right"];
 
-    VC.navigationItem.rightBarButtonItem = rightBarButton;
-    VC.navigationItem.leftBarButtonItem = leftBarButton;
-    
-    if(nav[@"title"]){
+        VC.navigationItem.rightBarButtonItem = rightBarButton;
+        VC.navigationItem.leftBarButtonItem = leftBarButton;
         
-        if(![[nav[@"title"] description] containsString:@"{{"] && ![[nav[@"title"] description] containsString:@"}}"]){
-            if([nav[@"title"] isKindOfClass:[NSDictionary class]]){
-                // Advanced title
-                NSDictionary *titleDict = nav[@"title"];
-                if(titleDict[@"type"]){
-                    if([titleDict[@"type"] isEqualToString:@"image"]){
-                        NSString *url = titleDict[@"url"];
-                        NSDictionary *style = titleDict[@"style"];
-                        if(url){
-                            
-                            if([url containsString:@"file://"]){
-                                UIImage *localImage = [UIImage imageNamed:[url substringFromIndex:7]];
-                                [self setLogoImage:localImage withStyle:style];
-                            } else{
+        if(nav[@"title"]){
+            
+            if(![[nav[@"title"] description] containsString:@"{{"] && ![[nav[@"title"] description] containsString:@"}}"]){
+                if([nav[@"title"] isKindOfClass:[NSDictionary class]]){
+                    // Advanced title
+                    NSDictionary *titleDict = nav[@"title"];
+                    if(titleDict[@"type"]){
+                        if([titleDict[@"type"] isEqualToString:@"image"]){
+                            NSString *url = titleDict[@"url"];
+                            NSDictionary *style = titleDict[@"style"];
+                            if(url){
                                 
-                                SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                                [manager downloadImageWithURL:[NSURL URLWithString:url]
-                                                      options:0
-                                                     progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                                     }
-                                                    completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                                        if (image) {
-                                                            dispatch_async(dispatch_get_main_queue(), ^{
-                                                                [self setLogoImage:image withStyle:style];
-                                                            });
-                                                        }
-                                                    }];
-                            }
-                        }
-                        
-                    } else if([titleDict[@"type"] isEqualToString:@"label"]) {
-                        
-                        UILabel *tLabel = [[UILabel alloc] init];
-                        tLabel.text = titleDict[@"text"];
-                        NSString *font = @"HelveticaNeue";
-                        CGFloat size = 20;
-                        CGFloat x=0;
-                        CGFloat y=0;
-                        [tLabel sizeToFit];
-                        
-                        
-                        
-                        if(titleDict[@"style"]){
-                            if(titleDict[@"style"][@"size"]){
-                                size = [titleDict[@"style"][@"size"] floatValue];
-                            }
-                            if(titleDict[@"style"][@"font"]){
-                                font = titleDict[@"style"][@"font"];
-                            }
-                            if(titleDict[@"style"][@"left"]){
-                                x = [((NSString *)titleDict[@"style"][@"left"]) floatValue];
-                            }
-                            if(titleDict[@"style"][@"top"]){
-                                y = [((NSString *)titleDict[@"style"][@"top"]) floatValue];
+                                if([url containsString:@"file://"]){
+                                    UIImage *localImage = [UIImage imageNamed:[url substringFromIndex:7]];
+                                    [self setLogoImage:localImage withStyle:style];
+                                } else{
+                                    
+                                    SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                                    [manager downloadImageWithURL:[NSURL URLWithString:url]
+                                                          options:0
+                                                         progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                                         }
+                                                        completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                            if (image) {
+                                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                                    [self setLogoImage:image withStyle:style];
+                                                                });
+                                                            }
+                                                        }];
+                                }
                             }
                             
-                            tLabel.font = [UIFont fontWithName: font size:size];
+                        } else if([titleDict[@"type"] isEqualToString:@"label"]) {
                             
-                            if(titleDict[@"style"][@"align"]) {
-                                if([titleDict[@"style"][@"align"] isEqualToString:@"left"]) {
-                                    UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
-                                    [v addSubview:tLabel];
-                                    VC.navigationItem.titleView = v;
-                                    
-                                    tLabel.frame = CGRectMake(x,y,VC.navigationController.navigationBar.frame.size.width, tLabel.frame.size.height);
-                                    [VC.navigationItem.titleView setFrame: CGRectMake(0, 0, VC.navigationController.navigationBar.frame.size.width, VC.navigationItem.titleView.frame.size.height)];
-                                    tLabel.textAlignment = NSTextAlignmentLeft;
-                                    
+                            UILabel *tLabel = [[UILabel alloc] init];
+                            tLabel.text = titleDict[@"text"];
+                            NSString *font = @"HelveticaNeue";
+                            CGFloat size = 20;
+                            CGFloat x=0;
+                            CGFloat y=0;
+                            [tLabel sizeToFit];
+                            
+                            
+                            
+                            if(titleDict[@"style"]){
+                                if(titleDict[@"style"][@"size"]){
+                                    size = [titleDict[@"style"][@"size"] floatValue];
+                                }
+                                if(titleDict[@"style"][@"font"]){
+                                    font = titleDict[@"style"][@"font"];
+                                }
+                                if(titleDict[@"style"][@"left"]){
+                                    x = [((NSString *)titleDict[@"style"][@"left"]) floatValue];
+                                }
+                                if(titleDict[@"style"][@"top"]){
+                                    y = [((NSString *)titleDict[@"style"][@"top"]) floatValue];
+                                }
+                                
+                                tLabel.font = [UIFont fontWithName: font size:size];
+                                
+                                if(titleDict[@"style"][@"align"]) {
+                                    if([titleDict[@"style"][@"align"] isEqualToString:@"left"]) {
+                                        UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
+                                        [v addSubview:tLabel];
+                                        VC.navigationItem.titleView = v;
+                                        
+                                        tLabel.frame = CGRectMake(x,y,VC.navigationController.navigationBar.frame.size.width, tLabel.frame.size.height);
+                                        [VC.navigationItem.titleView setFrame: CGRectMake(0, 0, VC.navigationController.navigationBar.frame.size.width, VC.navigationItem.titleView.frame.size.height)];
+                                        tLabel.textAlignment = NSTextAlignmentLeft;
+                                        
+                                    } else {
+                                        [self setCenterLogoLabel:tLabel atY:y];
+                                    }
                                 } else {
                                     [self setCenterLogoLabel:tLabel atY:y];
                                 }
                             } else {
                                 [self setCenterLogoLabel:tLabel atY:y];
                             }
-                        } else {
-                            [self setCenterLogoLabel:tLabel atY:y];
                         }
                     }
+                } else if([nav[@"title"] isKindOfClass:[NSString class]]){
+                    // Basic title (simple text)
+                    VC.navigationItem.titleView = nil;
+                    VC.navigationItem.title = nav[@"title"];
+                } else {
+                    VC.navigationItem.titleView = nil;
                 }
-            } else if([nav[@"title"] isKindOfClass:[NSString class]]){
-                // Basic title (simple text)
-                VC.navigationItem.titleView = nil;
-                VC.navigationItem.title = nav[@"title"];
+                
             } else {
                 VC.navigationItem.titleView = nil;
             }
@@ -2451,30 +2452,26 @@
             VC.navigationItem.titleView = nil;
         }
         
-    } else {
-        VC.navigationItem.titleView = nil;
-    }
-    
-    navigationController.navigationBar.shadowImage = [UIImage new];
-    [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    CGFloat red, green, blue, alpha;
-    [background getRed: &red green: &green blue: &blue alpha: &alpha];
-    
-    if(alpha < 1.0){
-        navigationController.navigationBar.translucent = YES;
-        [JasonHelper setStatusBarBackgroundColor: background];
-    } else {
-        navigationController.navigationBar.translucent = NO;
-        [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
-    }
-    
-    navigationController.navigationBar.backgroundColor = background;
-    navigationController.navigationBar.barTintColor = background;
-    navigationController.navigationBar.tintColor = color;
-    
-    navigationController.navigationBarHidden = YES;
-    navigationController.navigationBarHidden = NO;
-    
+        navigationController.navigationBar.shadowImage = [UIImage new];
+        [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+        CGFloat red, green, blue, alpha;
+        [background getRed: &red green: &green blue: &blue alpha: &alpha];
+        
+        if(alpha < 1.0){
+            navigationController.navigationBar.translucent = YES;
+            [JasonHelper setStatusBarBackgroundColor: background];
+        } else {
+            navigationController.navigationBar.translucent = NO;
+            [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
+        }
+        
+        navigationController.navigationBar.backgroundColor = background;
+        navigationController.navigationBar.barTintColor = background;
+        navigationController.navigationBar.tintColor = color;
+        
+        navigationController.navigationBarHidden = YES;
+        navigationController.navigationBarHidden = NO;
+
 }
 - (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y{
     UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
@@ -2603,150 +2600,153 @@
 
 # pragma mark - View rendering (tab)
 - (void)setupTabBar: (NSDictionary *)t{
-    if(VC.isModal) {
-        // If the current view is modal, it's an entirely new view
-        // so don't need to worry about how tabs should show up.
-        // just skip the exception handling routine below.
-    } else {
-        // handling normal transition (including replace)
-        if(!t && !VC.isFinal) {
-            if(previous_footer && previous_footer[@"tabs"]) {
-                // don't touch yet until the view finalizes
-            } else {
-                tabController.tabBar.hidden = YES;
-            }
-            return;
-        }
-    }
-    if(previous_footer && previous_footer[@"tabs"]){
-        // if previous footer tab was not null, we diff the tabs to determine whether to re-render
-        if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){
-            return;
-        }
-    } else {
-        // if previous footer tab was null, we need to construct the tab again
-    }
-    
-    if(!VC.old_footer) VC.old_footer = [[NSMutableDictionary alloc] init];
-    VC.old_footer[@"tabs"] = t;
-    if(!previous_footer) previous_footer = [[NSMutableDictionary alloc] init];
-    previous_footer[@"tabs"] = t;
-    
-    
-    if(!t){
-        tabController.tabBar.hidden = YES;
-        return;
-    } else {
-        tabController.tabBar.hidden = NO;
-    }
-    
-    NSArray *tabs = t[@"items"];
-    NSDictionary *style = t[@"style"];
-    if(style){
-        if(style[@"color"]){
-            UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-            [tabController.tabBar setTintColor:c];
-            [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : c }
-                                                     forState:UIControlStateSelected];
-            
-        }
-        if(style[@"color:disabled"]){
-            UIColor *c = [JasonHelper colorwithHexString:style[@"color:disabled"] alpha:1.0];
-            [[UIView appearanceWhenContainedInInstancesOfClasses:@[[UITabBar class]]] setTintColor:c];
-            [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : c }
-                                                     forState:UIControlStateNormal];
-            
-        }
-        
-        if(style[@"background"]){
-            [tabController.tabBar setClipsToBounds:YES];
-            tabController.tabBar.shadowImage = [[UIImage alloc] init];
-            tabController.tabBar.translucent = NO;
-            tabController.tabBar.backgroundColor =[JasonHelper colorwithHexString:style[@"background"] alpha:1.0];
-            [tabController.tabBar setBarTintColor:[JasonHelper colorwithHexString:style[@"background"] alpha:1.0]];
-        }
-        [[UITabBar appearance] setTranslucent:NO];
-        [[UITabBar appearance] setBarStyle:UIBarStyleBlack];
-    }
-    if(tabs && tabs.count > 1){
-        NSUInteger maxTabCount = tabs.count;
-        if(maxTabCount > 5) maxTabCount = 5;
-        BOOL firstTime;
-        BOOL tabFound = NO; // at least one tab item with the same url as the current VC should exist.
-        NSMutableArray *tabs_array;
-        // if not yet initialized, tabController.tabs.count will be 1, since this is the only view
-        // that was initialized with
-        // In this case, initialize all tabs
-        // Start from index 1 because the first one should already be instantiated via modal href
-        if(tabController.viewControllers.count != maxTabCount){
-            firstTime = YES;
-            tabs_array = [[NSMutableArray alloc] init];
+    dispatch_async(dispatch_get_main_queue(), ^{
+
+        if(VC.isModal) {
+            // If the current view is modal, it's an entirely new view
+            // so don't need to worry about how tabs should show up.
+            // just skip the exception handling routine below.
         } else {
-            firstTime = NO;
-        }
-        NSUInteger indexOfTab = [tabController.viewControllers indexOfObject:navigationController];
-        
-        for(int i = 0 ; i < maxTabCount ; i++){
-            NSDictionary *tab = tabs[i];
-            NSString *url;
-            NSDictionary *options = @{};
-            BOOL loading = NO;
-            if(tab[@"href"]){
-                url = tab[@"href"][@"url"];
-                options = tab[@"href"][@"options"];
-                if(tab[@"href"][@"loading"]){
-                    loading = YES;
+            // handling normal transition (including replace)
+            if(!t && !VC.isFinal) {
+                if(previous_footer && previous_footer[@"tabs"]) {
+                    // don't touch yet until the view finalizes
+                } else {
+                    tabController.tabBar.hidden = YES;
                 }
+                return;
+            }
+        }
+        if(previous_footer && previous_footer[@"tabs"]){
+            // if previous footer tab was not null, we diff the tabs to determine whether to re-render
+            if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){
+                return;
+            }
+        } else {
+            // if previous footer tab was null, we need to construct the tab again
+        }
+        
+        if(!VC.old_footer) VC.old_footer = [[NSMutableDictionary alloc] init];
+        VC.old_footer[@"tabs"] = t;
+        if(!previous_footer) previous_footer = [[NSMutableDictionary alloc] init];
+        previous_footer[@"tabs"] = t;
+        
+        
+        if(!t){
+            tabController.tabBar.hidden = YES;
+            return;
+        } else {
+            tabController.tabBar.hidden = NO;
+        }
+        
+        NSArray *tabs = t[@"items"];
+        NSDictionary *style = t[@"style"];
+        if(style){
+            if(style[@"color"]){
+                UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
+                [tabController.tabBar setTintColor:c];
+                [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : c }
+                                                         forState:UIControlStateSelected];
+                
+            }
+            if(style[@"color:disabled"]){
+                UIColor *c = [JasonHelper colorwithHexString:style[@"color:disabled"] alpha:1.0];
+                [[UIView appearanceWhenContainedInInstancesOfClasses:@[[UITabBar class]]] setTintColor:c];
+                [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : c }
+                                                         forState:UIControlStateNormal];
+                
+            }
+            
+            if(style[@"background"]){
+                [tabController.tabBar setClipsToBounds:YES];
+                tabController.tabBar.shadowImage = [[UIImage alloc] init];
+                tabController.tabBar.translucent = NO;
+                tabController.tabBar.backgroundColor =[JasonHelper colorwithHexString:style[@"background"] alpha:1.0];
+                [tabController.tabBar setBarTintColor:[JasonHelper colorwithHexString:style[@"background"] alpha:1.0]];
+            }
+            [[UITabBar appearance] setTranslucent:NO];
+            [[UITabBar appearance] setBarStyle:UIBarStyleBlack];
+        }
+        if(tabs && tabs.count > 1){
+            NSUInteger maxTabCount = tabs.count;
+            if(maxTabCount > 5) maxTabCount = 5;
+            BOOL firstTime;
+            BOOL tabFound = NO; // at least one tab item with the same url as the current VC should exist.
+            NSMutableArray *tabs_array;
+            // if not yet initialized, tabController.tabs.count will be 1, since this is the only view
+            // that was initialized with
+            // In this case, initialize all tabs
+            // Start from index 1 because the first one should already be instantiated via modal href
+            if(tabController.viewControllers.count != maxTabCount){
+                firstTime = YES;
+                tabs_array = [[NSMutableArray alloc] init];
             } else {
-                url = tab[@"url"];
+                firstTime = NO;
+            }
+            NSUInteger indexOfTab = [tabController.viewControllers indexOfObject:navigationController];
+            
+            for(int i = 0 ; i < maxTabCount ; i++){
+                NSDictionary *tab = tabs[i];
+                NSString *url;
+                NSDictionary *options = @{};
+                BOOL loading = NO;
+                if(tab[@"href"]){
+                    url = tab[@"href"][@"url"];
+                    options = tab[@"href"][@"options"];
+                    if(tab[@"href"][@"loading"]){
+                        loading = YES;
+                    }
+                } else {
+                    url = tab[@"url"];
+                }
+                
+                if(firstTime){
+                    if([VC.url isEqualToString:url] && i==indexOfTab){
+                        tabFound = YES;
+                        // if the tab URL is same as the currently visible VC's url
+                        [tabs_array addObject:navigationController];
+                    } else {
+                        JasonViewController *vc = [[JasonViewController alloc] init];
+                        vc.url = url;
+                        vc.options = [self filloutTemplate:options withData:[self variables]];
+                        vc.loading = loading;
+                        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+                        [tabs_array addObject:nav];
+                    }
+                } else {
+                    if([VC.url isEqualToString:url]){
+                        // Do nothing
+                        tabFound = YES;
+                    } else {
+                        UINavigationController *nav = tabController.viewControllers[i];
+                        UIViewController<RussianDollView> *vc = [[nav viewControllers] firstObject];
+                        vc.url = url;
+                        vc.options = [self filloutTemplate:options withData:[self variables]];
+                        vc.loading = loading;
+                    }
+                }
             }
             
             if(firstTime){
-                if([VC.url isEqualToString:url] && i==indexOfTab){
-                    tabFound = YES;
-                    // if the tab URL is same as the currently visible VC's url
-                    [tabs_array addObject:navigationController];
-                } else {
-                    JasonViewController *vc = [[JasonViewController alloc] init];
-                    vc.url = url;
-                    vc.options = [self filloutTemplate:options withData:[self variables]];
-                    vc.loading = loading;
-                    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
-                    [tabs_array addObject:nav];
-                }
-            } else {
-                if([VC.url isEqualToString:url]){
-                    // Do nothing
-                    tabFound = YES;
-                } else {
-                    UINavigationController *nav = tabController.viewControllers[i];
-                    UIViewController<RussianDollView> *vc = [[nav viewControllers] firstObject];
-                    vc.url = url;
-                    vc.options = [self filloutTemplate:options withData:[self variables]];
-                    vc.loading = loading;
-                }
+                tabController.viewControllers = tabs_array;
             }
+            
+            for(int i = 0 ; i < maxTabCount ; i++){
+                NSDictionary *tab = tabs[i];
+                [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
+            }
+            
+            // Warn that at least one of the tab bar items should contain the same URL as the currently visible URL
+            if(!tabFound){
+                [[Jason client] call:@{@"type": @"$util.alert",
+                                       @"options": @{ @"title": @"Warning", @"description": @"The tab bar should contain at least one item with the same URL as the currently visible view" }}];
+            }
+            
+            tabController.tabBar.hidden = NO;
+        } else {
+            tabController.tabBar.hidden = YES;
         }
-        
-        if(firstTime){
-            tabController.viewControllers = tabs_array;
-        }
-        
-        for(int i = 0 ; i < maxTabCount ; i++){
-            NSDictionary *tab = tabs[i];
-            [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
-        }
-        
-        // Warn that at least one of the tab bar items should contain the same URL as the currently visible URL
-        if(!tabFound){
-            [[Jason client] call:@{@"type": @"$util.alert",
-                                   @"options": @{ @"title": @"Warning", @"description": @"The tab bar should contain at least one item with the same URL as the currently visible view" }}];
-        }
-        
-        tabController.tabBar.hidden = NO;
-    } else {
-        tabController.tabBar.hidden = YES;
-    }
+    });
 }
 
 - (BOOL)tabBarController:(UITabBarController *)theTabBarController shouldSelectViewController:(UIViewController *)viewController{
