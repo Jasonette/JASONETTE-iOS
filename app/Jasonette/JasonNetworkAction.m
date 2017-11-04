@@ -285,11 +285,8 @@
 // Request Builder
 - (void) build_timeout: (AFHTTPSessionManager *) manager {
     if(self.options[@"timeout"]) {
-        if([self.options[@"timeout"] isKindOfClass:[NSString class]]) {
-            [manager.requestSerializer setTimeoutInterval:[self.options[@"timeout"] integerValue]];
-        } else {
-            [manager.requestSerializer setTimeoutInterval:self.options[@"timeout"]];
-        }
+        NSTimeInterval timeout = [self.options[@"timeout"] doubleValue];
+        [manager.requestSerializer setTimeoutInterval:[self.options[@"timeout"] integerValue]];
     }
 }
 - (BOOL) isInvalid: (NSString *) url {
