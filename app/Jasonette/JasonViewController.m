@@ -999,19 +999,20 @@
                                             JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
                                         }
                                         //[self.tableView visibleCells];
-                                        NSArray *indexPathArray = weakSelf.tableView.indexPathsForVisibleRows;
-                                        NSMutableSet *visibleIndexPaths = [[NSMutableSet alloc] initWithArray: indexPathArray];
-                                        [visibleIndexPaths intersectSet:(NSSet *)indexPathsForImage[url]];
-                                        if(visibleIndexPaths.count > 0){
-                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                        dispatch_async(dispatch_get_main_queue(), ^{
+
+                                            NSArray *indexPathArray = weakSelf.tableView.indexPathsForVisibleRows;
+                                            NSMutableSet *visibleIndexPaths = [[NSMutableSet alloc] initWithArray: indexPathArray];
+                                            [visibleIndexPaths intersectSet:(NSSet *)indexPathsForImage[url]];
+                                            if(visibleIndexPaths.count > 0){
                                                 [weakSelf.tableView reloadData];
-                                            });
-                                        }
-                                        if(!top_aligned){
-                                            if(download_image_counter == 0){
-                                                [weakSelf scrollToBottom];
                                             }
-                                        }
+                                            if(!top_aligned){
+                                                if(download_image_counter == 0){
+                                                    [weakSelf scrollToBottom];
+                                                }
+                                            }
+                                       });
                                     }];
                                 }
                             }
