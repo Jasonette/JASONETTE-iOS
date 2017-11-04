@@ -1586,7 +1586,6 @@
 
 # pragma mark - View rendering (high level)
 - (void)reload{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         VC.data = nil;
         if(VC.url){
             [self networkLoading:VC.loading with:nil];
@@ -1713,7 +1712,6 @@
                      }];
             }
         }
-    });
 }
 - (void)drawViewFromJason: (NSDictionary *)jason asFinal: (BOOL) final{
     
@@ -2468,10 +2466,10 @@
         navigationController.navigationBar.backgroundColor = background;
         navigationController.navigationBar.barTintColor = background;
         navigationController.navigationBar.tintColor = color;
-        
-        navigationController.navigationBarHidden = YES;
-        navigationController.navigationBarHidden = NO;
-
+        dispatch_async(dispatch_get_main_queue(), ^{
+            navigationController.navigationBarHidden = YES;
+            navigationController.navigationBarHidden = NO;
+        });
 }
 - (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y{
     UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
@@ -2903,9 +2901,7 @@
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events && events[@"$load"]){
         if(!VC.contentLoaded){
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [self call:events[@"$load"]];
-            });
+            [self call:events[@"$load"]];
         }
     } else {
         [self onShow];
