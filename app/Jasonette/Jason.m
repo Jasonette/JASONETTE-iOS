@@ -299,15 +299,16 @@
 }
 
 -(void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;{
-    
-    if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
-        MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
-        hud.animationType = MBProgressHUDAnimationFade;
-        hud.userInteractionEnabled = NO;
-    }
-    else if(!turnon){
-        [MBProgressHUD hideHUDForView:VC.view animated:true];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
+            MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
+            hud.animationType = MBProgressHUDAnimationFade;
+            hud.userInteractionEnabled = NO;
+        }
+        else if(!turnon){
+            [MBProgressHUD hideHUDForView:VC.view animated:true];
+        }
+    });
 }
 
 # pragma mark - Jason public API (Can be accessed by calling {"type": "$(METHOD_NAME)"}
@@ -693,182 +694,183 @@
     
 }
 - (void)render{
-    NSDictionary *stack = [JasonMemory client]._stack;
-    
-    /**************************************************
-     *
-     * PART 1: Prepare data by filling it in with all the variables
-     *
-     **************************************************/
-    if([JasonMemory client]._register && [JasonMemory client]._register.count > 0){
-        VC.data = [JasonMemory client]._register;
-    }
-    NSMutableDictionary *data_stub;
-    if(VC.data){
-        data_stub = [VC.data mutableCopy];
-    } else {
-        data_stub = [[NSMutableDictionary alloc] init];
-    }
-    
-    NSDictionary *kv = [self variables];
-    for(NSString *key in kv){
-        data_stub[key] = kv[key];
-    }
-    
-    if(stack[@"options"]){
-        if(!stack[@"options"][@"type"] || [stack[@"options"][@"type"] isEqualToString:@"json"]){
-            if(stack[@"options"][@"data"]){
-                /**************************************************
-                 *
-                 * You can pass in 'data' as one of the options for $render action, like so:
-                 *
-                 *    {
-                 *        "type": "$render",
-                 *        "options": {
-                 *           "data": {
-                 *               "results": [{
-                 *                   "id": "1",
-                 *                   "name": "tom"
-                 *               }, {
-                 *                   "id": "2",
-                 *                   "name": "kat"
-                 *               }]
-                 *            }
-                 *        }
-                 *   }
-                 *
-                 * 1. In this case we override the $jason value with the value inside `data`.
-                 *
-                 * In above example, The $jason value at the point of rendering becomes:
-                 *
-                 *   $jason = {
-                 *     "results": [{
-                 *       "id": "1",
-                 *       "name": "tom"
-                 *     }, {
-                 *       "id": "2",
-                 *       "name": "kat"
-                 *     }]
-                 *   }
-                 *
-                 * 2. The `data` can also be a template expression, in which case it will parse whatever data is being passed in to `$render` before using it as the data.
-                 *
-                 *   {
-                 *     "type": "$render",
-                 *     "options": {
-                 *       "data": {
-                 *         "results": {
-                 *		       "{{#each $jason}}": {
-                 *             "id": "{{id}}",
-                 *             "name": "{{name}}"
-                 *           }
-                 *	       }
-                 *       }
-                 *     }
-                 *   }
-                 *
-                 **************************************************/
-                data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
-            }
-        }
-    }
-    VC.data = data_stub;
-    
-    /**************************************************
-     *
-     * PART 2: Get the template
-     *
-     **************************************************/
-    
-    // The default template is 'body'
-    NSString *template_name = @"body";
-    
-    if(stack[@"options"] && stack[@"options"][@"template"]){
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSDictionary *stack = [JasonMemory client]._stack;
+        
         /**************************************************
          *
-         * render can have 'template' attribute as an option, like so:
+         * PART 1: Prepare data by filling it in with all the variables
          *
-         *    {
-         *        "type": "$render",
-         *        "options": {
-         *           "template": "empty"
-         *        }
-         *    }
-         *
-         * In this case we use the specified 'empty' template instead of 'body'
          **************************************************/
-        template_name = stack[@"options"][@"template"];
-    }
-    NSDictionary *body_parser = VC.parser[template_name];
-    
-    
-    /**********************************************************************
-     *
-     * PART 3: Actually render the prepared data with the selected template
-     *
-     **********************************************************************/
-    if(body_parser){
+        if([JasonMemory client]._register && [JasonMemory client]._register.count > 0){
+            VC.data = [JasonMemory client]._register;
+        }
+        NSMutableDictionary *data_stub;
+        if(VC.data){
+            data_stub = [VC.data mutableCopy];
+        } else {
+            data_stub = [[NSMutableDictionary alloc] init];
+        }
         
-        // if self.data is not empty, render
-        if(stack[@"options"] && stack[@"options"][@"type"]){
-            if([stack[@"options"][@"type"] isEqualToString:@"html"]){
-                rendered_page = [JasonHelper parse: data_stub ofType:@"html" with:body_parser];
-            } else if([stack[@"options"][@"type"] isEqualToString:@"xml"]){
-                rendered_page = [JasonHelper parse: data_stub ofType:@"xml" with:body_parser];
+        NSDictionary *kv = [self variables];
+        for(NSString *key in kv){
+            data_stub[key] = kv[key];
+        }
+        
+        if(stack[@"options"]){
+            if(!stack[@"options"][@"type"] || [stack[@"options"][@"type"] isEqualToString:@"json"]){
+                if(stack[@"options"][@"data"]){
+                    /**************************************************
+                     *
+                     * You can pass in 'data' as one of the options for $render action, like so:
+                     *
+                     *    {
+                     *        "type": "$render",
+                     *        "options": {
+                     *           "data": {
+                     *               "results": [{
+                     *                   "id": "1",
+                     *                   "name": "tom"
+                     *               }, {
+                     *                   "id": "2",
+                     *                   "name": "kat"
+                     *               }]
+                     *            }
+                     *        }
+                     *   }
+                     *
+                     * 1. In this case we override the $jason value with the value inside `data`.
+                     *
+                     * In above example, The $jason value at the point of rendering becomes:
+                     *
+                     *   $jason = {
+                     *     "results": [{
+                     *       "id": "1",
+                     *       "name": "tom"
+                     *     }, {
+                     *       "id": "2",
+                     *       "name": "kat"
+                     *     }]
+                     *   }
+                     *
+                     * 2. The `data` can also be a template expression, in which case it will parse whatever data is being passed in to `$render` before using it as the data.
+                     *
+                     *   {
+                     *     "type": "$render",
+                     *     "options": {
+                     *       "data": {
+                     *         "results": {
+                     *               "{{#each $jason}}": {
+                     *             "id": "{{id}}",
+                     *             "name": "{{name}}"
+                     *           }
+                     *           }
+                     *       }
+                     *     }
+                     *   }
+                     *
+                     **************************************************/
+                    data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
+                }
+            }
+        }
+        VC.data = data_stub;
+        
+        /**************************************************
+         *
+         * PART 2: Get the template
+         *
+         **************************************************/
+        
+        // The default template is 'body'
+        NSString *template_name = @"body";
+        
+        if(stack[@"options"] && stack[@"options"][@"template"]){
+            /**************************************************
+             *
+             * render can have 'template' attribute as an option, like so:
+             *
+             *    {
+             *        "type": "$render",
+             *        "options": {
+             *           "template": "empty"
+             *        }
+             *    }
+             *
+             * In this case we use the specified 'empty' template instead of 'body'
+             **************************************************/
+            template_name = stack[@"options"][@"template"];
+        }
+        NSDictionary *body_parser = VC.parser[template_name];
+        
+        
+        /**********************************************************************
+         *
+         * PART 3: Actually render the prepared data with the selected template
+         *
+         **********************************************************************/
+        if(body_parser){
+            
+            // if self.data is not empty, render
+            if(stack[@"options"] && stack[@"options"][@"type"]){
+                if([stack[@"options"][@"type"] isEqualToString:@"html"]){
+                    rendered_page = [JasonHelper parse: data_stub ofType:@"html" with:body_parser];
+                } else if([stack[@"options"][@"type"] isEqualToString:@"xml"]){
+                    rendered_page = [JasonHelper parse: data_stub ofType:@"xml" with:body_parser];
+                } else {
+                    rendered_page = [JasonHelper parse: data_stub with:body_parser];
+                }
             } else {
                 rendered_page = [JasonHelper parse: data_stub with:body_parser];
             }
-        } else {
-            rendered_page = [JasonHelper parse: data_stub with:body_parser];
-        }
-        
-        if(rendered_page){
-            if(rendered_page[@"nav"]) {
-                // Deprecated
-                [self setupHeader:rendered_page[@"nav"]];
-            } else if(rendered_page[@"header"]) {
-                [self setupHeader:rendered_page[@"header"]];
-            } else {
-                [self setupHeader:nil];
-            }
             
-            if(rendered_page[@"footer"]){
-                [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
-            } else if(rendered_page[@"tabs"]){
-                // Deprecated
-                [self setupTabBar:rendered_page[@"tabs"]];
-            } else {
-                [self setupTabBar:nil];
-            }
-            
-            if(rendered_page[@"style"] && rendered_page[@"style"][@"background"]){
-                if([rendered_page[@"style"][@"background"] isKindOfClass:[NSDictionary class]]){
-                    // Advanced background
-                    // example:
-                    //  "background": {
-                    //      "type": "camera",
-                    //      "options": {
-                    //          ...
-                    //      }
-                    //  }
-                    [self drawAdvancedBackground:rendered_page[@"style"][@"background"]];
+            if(rendered_page){
+                if(rendered_page[@"nav"]) {
+                    // Deprecated
+                    [self setupHeader:rendered_page[@"nav"]];
+                } else if(rendered_page[@"header"]) {
+                    [self setupHeader:rendered_page[@"header"]];
                 } else {
-                    [self drawBackground:rendered_page[@"style"][@"background"]];
+                    [self setupHeader:nil];
                 }
-            } else {
-                [self drawBackground:@"#ffffff"];
+                
+                if(rendered_page[@"footer"]){
+                    [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
+                } else if(rendered_page[@"tabs"]){
+                    // Deprecated
+                    [self setupTabBar:rendered_page[@"tabs"]];
+                } else {
+                    [self setupTabBar:nil];
+                }
+                
+                if(rendered_page[@"style"] && rendered_page[@"style"][@"background"]){
+                    if([rendered_page[@"style"][@"background"] isKindOfClass:[NSDictionary class]]){
+                        // Advanced background
+                        // example:
+                        //  "background": {
+                        //      "type": "camera",
+                        //      "options": {
+                        //          ...
+                        //      }
+                        //  }
+                        [self drawAdvancedBackground:rendered_page[@"style"][@"background"]];
+                    } else {
+                        [self drawBackground:rendered_page[@"style"][@"background"]];
+                    }
+                } else {
+                    [self drawBackground:@"#ffffff"];
+                }
             }
+            VC.rendered = rendered_page;
+            
+            if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:VC.contentLoaded];
+            
+            // Cache the view after drawing
+            [self cache_view];
         }
-        VC.rendered = rendered_page;
-        
-        if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:VC.contentLoaded];
-        
-        // Cache the view after drawing
-        [self cache_view];
-    }
+        [self success];
+    });
     
-    
-    [self success];
     
 }
 - (void)visit{
@@ -1583,132 +1585,134 @@
 
 # pragma mark - View rendering (high level)
 - (void)reload{
-    VC.data = nil;
-    if(VC.url){
-        [self networkLoading:VC.loading with:nil];
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        [manager.operationQueue cancelAllOperations];
-        NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
-        
-        // Set Header if specified  "header"
-        NSDictionary *headers = self.options[@"header"];
-        // legacy code : headers is deprecated
-        if(!headers){
-            headers = self.options[@"headers"];
-        }
-        
-        if(headers && headers.count > 0){
-            for(NSString *key in headers){
-                [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        VC.data = nil;
+        if(VC.url){
+            [self networkLoading:VC.loading with:nil];
+            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+            [manager.operationQueue cancelAllOperations];
+            NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
+            
+            // Set Header if specified  "header"
+            NSDictionary *headers = self.options[@"header"];
+            // legacy code : headers is deprecated
+            if(!headers){
+                headers = self.options[@"headers"];
             }
-        }
-        if(session && session.count > 0 && session[@"header"]){
-            for(NSString *key in session[@"header"]){
-                [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
-            }
-        }
-        
-        
-        NSMutableDictionary *parameters;
-        if(VC.options[@"data"]){
-            parameters = [VC.options[@"data"] mutableCopy];
-        } else {
-            if(session && session.count > 0 && session[@"body"]){
-                parameters = [@{} mutableCopy];
-                for(NSString *key in session[@"body"]){
-                    parameters[key] = session[@"body"][key];
+            
+            if(headers && headers.count > 0){
+                for(NSString *key in headers){
+                    [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
                 }
+            }
+            if(session && session.count > 0 && session[@"header"]){
+                for(NSString *key in session[@"header"]){
+                    [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                }
+            }
+            
+            
+            NSMutableDictionary *parameters;
+            if(VC.options[@"data"]){
+                parameters = [VC.options[@"data"] mutableCopy];
             } else {
-                parameters = nil;
-            }
-        }
-        
-        if(VC.fresh){
-            [manager.requestSerializer setCachePolicy: NSURLRequestReloadIgnoringLocalCacheData];
-            if(!parameters){
-                parameters = [@{} mutableCopy];
-            }
-            int timestamp = [[NSDate date] timeIntervalSince1970];
-            
-            parameters[@"timestamp"] = [NSString stringWithFormat:@"%d", timestamp];
-        }
-        
-        VC.contentLoaded=NO;
-        
-        /**************************************************
-         * Experimental : Offline handling
-         * => Only load from cache initially if head contains "offline":"true"
-         ***************************************************/
-        NSString *normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
-        NSData *data = [NSData dataWithContentsOfFile:path];
-        if(data && data.length > 0){
-            NSDictionary *responseObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-            if(responseObject && responseObject[@"$jason"] && responseObject[@"$jason"][@"head"] && responseObject[@"$jason"][@"head"][@"offline"]){
-                // get rid of $load and $show so they don't get triggered
-                if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$load"]){
-                    [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$load"];
+                if(session && session.count > 0 && session[@"body"]){
+                    parameters = [@{} mutableCopy];
+                    for(NSString *key in session[@"body"]){
+                        parameters[key] = session[@"body"][key];
+                    }
+                } else {
+                    parameters = nil;
                 }
-                if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$show"]){
-                    [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$show"];
-                }
-                VC.offline = YES;
-                [self drawViewFromJason: responseObject asFinal:NO];
             }
-        }
-        VC.requires = [[NSMutableDictionary alloc] init];
-        
-        /**************************************************
-         * Handling data uri
-         ***************************************************/
-        if([VC.url hasPrefix:@"data:application/json"]){
-            // if data uri, parse it into NSData
-            NSURL *url = [NSURL URLWithString:VC.url];
-            NSData *jsonData = [NSData dataWithContentsOfURL:url];
-            NSError* error;
-            VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
-            [self drawViewFromJason: VC.original asFinal:YES];
-        } else if([VC.url hasPrefix:@"file://"]) {
-            [self loadViewByFile: VC.url asFinal:YES];
-        }
-        
-        /**************************************************
-         * Normally urls are not in data-uri.
-         ***************************************************/
-        else {
             
-            AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
-            NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+            if(VC.fresh){
+                [manager.requestSerializer setCachePolicy: NSURLRequestReloadIgnoringLocalCacheData];
+                if(!parameters){
+                    parameters = [@{} mutableCopy];
+                }
+                int timestamp = [[NSDate date] timeIntervalSince1970];
+                
+                parameters[@"timestamp"] = [NSString stringWithFormat:@"%d", timestamp];
+            }
             
-            // Assumes that content type is json, even the text/plain ones (Some hosting sites respond with data_type of text/plain even when it's actually a json, so we accept even text/plain as json by default)
-            [jsonAcceptableContentTypes addObject:@"text/plain"];
-            jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+            VC.contentLoaded=NO;
             
-            manager.responseSerializer = jsonResponseSerializer;
+            /**************************************************
+             * Experimental : Offline handling
+             * => Only load from cache initially if head contains "offline":"true"
+             ***************************************************/
+            NSString *normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *documentsDirectory = [paths objectAtIndex:0];
+            NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
+            NSData *data = [NSData dataWithContentsOfFile:path];
+            if(data && data.length > 0){
+                NSDictionary *responseObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                if(responseObject && responseObject[@"$jason"] && responseObject[@"$jason"][@"head"] && responseObject[@"$jason"][@"head"][@"offline"]){
+                    // get rid of $load and $show so they don't get triggered
+                    if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$load"]){
+                        [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$load"];
+                    }
+                    if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$show"]){
+                        [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$show"];
+                    }
+                    VC.offline = YES;
+                    [self drawViewFromJason: responseObject asFinal:NO];
+                }
+            }
+            VC.requires = [[NSMutableDictionary alloc] init];
             
-            [manager GET:VC.url parameters:parameters
-                progress:^(NSProgress * _Nonnull downloadProgress) { }
-                 success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                     // Ignore if the url is different
-                     if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
-                     VC.original = responseObject;
-                     [self include:responseObject andCompletionHandler:^(id res){
-                         dispatch_async(dispatch_get_main_queue(), ^{
-                             VC.contentLoaded = NO;
-                             
-                             VC.original = @{@"$jason": res[@"$jason"]};
-                             [self drawViewFromJason: VC.original asFinal:YES];
-                         });
+            /**************************************************
+             * Handling data uri
+             ***************************************************/
+            if([VC.url hasPrefix:@"data:application/json"]){
+                // if data uri, parse it into NSData
+                NSURL *url = [NSURL URLWithString:VC.url];
+                NSData *jsonData = [NSData dataWithContentsOfURL:url];
+                NSError* error;
+                VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
+                [self drawViewFromJason: VC.original asFinal:YES];
+            } else if([VC.url hasPrefix:@"file://"]) {
+                [self loadViewByFile: VC.url asFinal:YES];
+            }
+            
+            /**************************************************
+             * Normally urls are not in data-uri.
+             ***************************************************/
+            else {
+                
+                AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+                NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                
+                // Assumes that content type is json, even the text/plain ones (Some hosting sites respond with data_type of text/plain even when it's actually a json, so we accept even text/plain as json by default)
+                [jsonAcceptableContentTypes addObject:@"text/plain"];
+                jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+                
+                manager.responseSerializer = jsonResponseSerializer;
+                
+                [manager GET:VC.url parameters:parameters
+                    progress:^(NSProgress * _Nonnull downloadProgress) { }
+                     success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                         // Ignore if the url is different
+                         if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
+                         VC.original = responseObject;
+                         [self include:responseObject andCompletionHandler:^(id res){
+                             dispatch_async(dispatch_get_main_queue(), ^{
+                                 VC.contentLoaded = NO;
+                                 
+                                 VC.original = @{@"$jason": res[@"$jason"]};
+                                 [self drawViewFromJason: VC.original asFinal:YES];
+                             });
+                         }];
+                     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                         if(!VC.offline){
+                             [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
+                         }
                      }];
-                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                     if(!VC.offline){
-                         [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
-                     }
-                 }];
+            }
         }
-    }
+    });
 }
 - (void)drawViewFromJason: (NSDictionary *)jason asFinal: (BOOL) final{
     
@@ -2884,7 +2888,9 @@
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events){
         if(events[@"$show"]){
-            [self call:events[@"$show"]];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                [self call:events[@"$show"]];
+            });
         }
     }
 }
@@ -2893,7 +2899,9 @@
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events && events[@"$load"]){
         if(!VC.contentLoaded){
-            [self call:events[@"$load"]];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                [self call:events[@"$load"]];
+            });
         }
     } else {
         [self onShow];
