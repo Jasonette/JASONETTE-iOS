@@ -83,10 +83,8 @@
 - (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final{
     id jsonResponseObject = [JasonHelper read_local_json:url];
     [self include:jsonResponseObject andCompletionHandler:^(id res){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            VC.original = @{@"$jason": res[@"$jason"]};
-            [self drawViewFromJason: VC.original asFinal:final];
-        });
+        VC.original = @{@"$jason": res[@"$jason"]};
+        [self drawViewFromJason: VC.original asFinal:final];
     }];
 }
 
@@ -2891,7 +2889,14 @@
     if(events){
         if(events[@"$show"]){
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [self call:events[@"$show"]];
+                // Temporary solution to make sure onShow doesn't interrupt rendering.
+                // Will need to put some time into it to figure out a more
+                // fundamental solution.
+                // Similar pattern to using setTimeout(function(){ ... }, 0)
+                // in javascript to schedule a task one clock tick later
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self call:events[@"$show"]];
+                });
             });
         }
     }
