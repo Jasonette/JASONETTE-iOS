@@ -77,6 +77,8 @@
 - (void)start:(NSDictionary *)href;
 
 - (void)loadViewByFile: (NSString *)url asFinal: (BOOL)final;
+- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC:(UIViewController<RussianDollView>*) vc;
+
 - (NSDictionary *)variables;
 @end
 
