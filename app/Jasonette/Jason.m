@@ -79,7 +79,10 @@
     NSLog(@"JasonCore: notifyError: %@", args);
     [[Jason client] error:args];
 }
-
+- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC: (UIViewController<RussianDollView> *)vc{
+    VC = vc;
+    [self loadViewByFile:url asFinal:final];
+}
 - (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final{
     id jsonResponseObject = [JasonHelper read_local_json:url];
     [self include:jsonResponseObject andCompletionHandler:^(id res){
