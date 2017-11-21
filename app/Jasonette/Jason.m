@@ -1909,7 +1909,7 @@
                     payload[@"action"] = bg[@"action"];
                 }
                 JasonAgentService *agent = self.services[@"JasonAgentService"];
-                VC.background = [agent start: payload];
+                VC.background = [agent setup:payload withId:payload[@"id"]];
                 
                 // Need to make the background transparent so that it doesn't flash white when first loading
                 VC.background.opaque = NO;
