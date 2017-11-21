@@ -43,4 +43,5 @@
 + (id) read_local_json: (NSString *)url;
 + (NSString *)normalized_url: (NSString *)url forOptions: (id)options;
 + (CGFloat)parseRatio: (NSString *) ratio;
++ (NSString *) read_local_file: (NSString *)url;
 @end

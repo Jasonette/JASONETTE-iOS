@@ -74,6 +74,8 @@
 @property (strong, nonatomic) UITableView *tableView;
 
 @property (strong, nonatomic) UISearchController *searchController;
+@property (strong, nonatomic) NSMutableDictionary *agents;
+
 #ifdef ADS
 @property (strong, nonatomic) GADBannerView *bannerAd;
 @property (strong, nonatomic) GADInterstitial * interestialAd;

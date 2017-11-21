@@ -106,6 +106,15 @@
     self.form = [[NSMutableDictionary alloc] init];
     self.requires = [[NSMutableDictionary alloc] init];
     self.tableView.delaysContentTouches = false;
+    self.agents = [[NSMutableDictionary alloc] init];
+    
+    // setup web container as an agent
+    JasonAgentService *agent = [Jason client].services[@"JasonAgentService"];
+    WKWebView *webContainer = [agent setup: @{
+        @"type": @"html"
+    } withId:self.url];
+    self.agents[self.url] = webContainer;
+    
 
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
