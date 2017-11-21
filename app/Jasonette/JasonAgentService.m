@@ -11,61 +11,96 @@
 - (void) initialize: (NSDictionary *)launchOptions {
 }
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+    
+    // agent.js handler
+    // triggered by calling "window.webkit.messageHanders[__].postMessage" from agents
+    
+    // Figure out which agent the message is coming from
     NSString *identifier = message.webView.payload[@"identifier"];
-    NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
 
-    // 1. Only support "trigger"
-    // 2. No "success" or "error" callbacks supported
+
+    // Message classification: Only support safe actions
+    // 1. trigger: Trigger Jasonette event
+    // 2. request: Make a request to an agent
+    // 3. response: The message contains a response back from an agent
+    // 4. href: Make an href transition to another Jasonette view
+    
     NSString *type = message.body[@"type"];
+    NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
     if(type) {
-        if([type isEqualToString:@"event"]) {
-            event[@"$source"] = identifier;
-            event[@"trigger"] = message.body[@"event"];
+        // 1. Trigger Jasonette event
+        if([type isEqualToString:@"trigger"]) {
+            event[@"$source"] = @{
+                @"id": identifier
+            };
+            event[@"trigger"] = message.body[@"trigger"];
             if(message.body[@"options"]) {
                 event[@"options"] = message.body[@"options"];
             }
             [[Jason client] call: event];
+        // 2. Make an agent request
         } else if([type isEqualToString:@"request"]) {
-            event[@"method"] = message.body[@"rpc"][@"method"];
-            event[@"params"] = message.body[@"rpc"][@"params"];
-            event[@"id"] = message.body[@"rpc"][@"id"];
-            event[@"$source"] = identifier;
-            event[@"$nonce"] = message.body[@"nonce"];
-            [self request:event];
-        } else if([type isEqualToString:@"return"]) {
-            NSString *identifier = message.webView.payload[@"$source"][@"id"];
-            [self request: @{
-              @"method": [NSString stringWithFormat: @"$agent.callbacks[\"%@\"]", message.webView.payload[@"$source"][@"nonce"]],
-              @"id": identifier,
-              @"params": @[message.body[@"data"]]
-            }];
+            NSDictionary *rpc = message.body[@"rpc"];
+            if(rpc) {
+                event = [rpc mutableCopy];
+                
+                // Coming from an agent, so need to specify $source object
+                // to keep track of the source agent so that a response
+                // can be sent back to the $source later.
+                event[@"$source"] = @{
+                    @"id": identifier,
+                    @"nonce": message.body[@"nonce"]
+                };
+                [self request:event];
+            }
+        // 3. It's a response message from an agent
+        } else if([type isEqualToString:@"response"]) {
+            NSDictionary *source = message.webView.payload[@"$source"];
+            
+            // $source exists => the original request was from an agent
+            if (source) {
+                NSString *identifier = source[@"id"];
+                
+                // $agent.callbacks is a JavaScript object used for keeping track of
+                // all the pending callbacks an agent is waiting on.
+                // Whenever there's a response that targets an agent,
+                // 1. We look up the relevant callback by querying $agent.callbacks[NONCE]
+                // 2. When the callback is found, it's executed with the data passed in
+                
+                [self request: @{
+                    @"method": [NSString stringWithFormat: @"$agent.callbacks[\"%@\"]", source[@"nonce"]],
+                    @"id": identifier,
+                    @"params": @[message.body[@"data"]]
+                }];
+                
+            // $source doesn't exist => the original request was from Jasonette action
+            } else {
+                // Run the caller Jasonette action's "success" callback
+                [[Jason client] success: message.body[@"data"]];
+            }
+            
+        // 4. Tell Jasonette to make an href transition to another view
+        } else if([type isEqualToString:@"href"]) {
+            [[Jason client] go: message.body[@"options"]];
         }
 
     }
 }
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    // After loading, trigger $agent.[ID].ready event
-
-    NSString *url = webView.payload[@"content"];
-    if(url) {
-        NSString *urlArrayString = [JasonHelper stringify:@[url]];
-        NSString *inject = [JasonHelper read_local_file:@"file://inject.js"];
-        NSString *injectionScript = [NSString stringWithFormat: inject, urlArrayString];
-        [webView evaluateJavaScript:injectionScript completionHandler:^(id _Nullable res, NSError * _Nullable error) {
-            NSLog(@"Injected");
-        }];
-    }
     
+    // Inject agent.js into agent context
     NSString *identifier = webView.payload[@"identifier"];
     NSString *raw = [JasonHelper read_local_file:@"file://agent.js"];
-    NSString *summon = [NSString stringWithFormat: raw, identifier, identifier, identifier];
+    NSString *summon = [NSString stringWithFormat: raw, identifier, identifier, identifier, identifier];
     [webView evaluateJavaScript:summon completionHandler:^(id _Nullable res, NSError * _Nullable error) {
         NSLog(@"Injected");
     }];
 
+    // After loading, trigger $agent.[ID].ready event
     [[Jason client] call: @{
-        @"trigger": [NSString stringWithFormat: @"$agent.%@.ready", identifier],
+        @"trigger": @"$agent.ready",
         @"options": @{
+            @"id": identifier,
             @"url": webView.URL
         }
     }];
@@ -212,28 +247,41 @@
     NSString *method = options[@"method"];
     NSString *identifier = options[@"id"];
     NSArray *params = options[@"params"];
+    
+    // Turn params into string so it can be turned into a JS callstring
     NSString *arguments = @"";
     if(params) {
         arguments = [JasonHelper stringify:params];
     }
+    
+    // Construct JS Callstring
     NSString *callstring = [NSString stringWithFormat:@"%@.apply(this, %@);", method, arguments];
+
+    // Agents are tied to a view. First get the current view.
     JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
 
-    // Find the container and execute
+    // Find the agent by id
     WKWebView *agent = vc.agents[identifier];
-    
-    if(options[@"$source"]) {
-        agent.payload[@"$source"] = @{
-            @"id": options[@"$source"],
-            @"nonce": options[@"$nonce"]
-        };
+
+    // Agent exists
+    if (agent) {
+        // If "$source" attribute exists, it means the request came from another agent
+        // Therefore must set the nonce and $source id for later retrievability
+        agent.payload[@"$source"] = options[@"$source"];
+        
+        // Evaluate JavaScript on the agent
+        [agent evaluateJavaScript:callstring completionHandler:^(id _Nullable res, NSError * _Nullable error) {
+            // If there's a synchronous return value for the called function,
+            // run the "success" callback with that return value as "$jason"
+            // Otherwise, wait until $agent.response is manually called alter.
+            if(res) {
+                [[Jason client] success: res];
+            }
+        }];
+    // Agent doesn't exist, return with the error callback
+    } else {
+        [[Jason client] error];
     }
-    [vc.agents[identifier] evaluateJavaScript:callstring completionHandler:^(id _Nullable res, NSError * _Nullable error) {
-        NSLog(@"Called");
-        if(res) {
-            [[Jason client] success: res];
-        }
-    }];
 }
 
 @end

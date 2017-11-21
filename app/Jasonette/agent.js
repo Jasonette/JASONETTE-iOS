@@ -5,9 +5,14 @@ $agent={
   request: function(rpc, callback) {
 
     // set nonce to only respond to the return value I requested for
-    var nonce = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    var nonce = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
     $agent.callbacks[nonce] = function(data) {
-      callback(data)
+        // Execute the callback
+        callback(data);
+        
+        // Delete itself to free up memory
+        delete $agent.callbacks[nonce];
     }
 
     // send message
@@ -30,8 +35,8 @@ $agent={
   // One way event fireoff to Jasonette
   trigger: function(event, options) {
     window.webkit.messageHandlers["%@"].postMessage({
-      type: "event",
-      event: event,
+      type: "trigger",
+      trigger: event,
       options: options
     })
   },
