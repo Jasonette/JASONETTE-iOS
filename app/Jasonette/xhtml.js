@@ -18258,7 +18258,7 @@ var cheerio = __webpack_require__(141);
 module.exports = function(type, template, data, injection, serialized) {
   if (type === 'html') { $ = cheerio.load(data); }
   else if (type === 'xml') { $ = cheerio.load(data, {xmlMode: true}); }
-  return JSON.transform(template, { $jason: $(data) }, injection, serialized);
+  return ST.transform(template, { $jason: $(data) }, injection, serialized);
 }
 
 
