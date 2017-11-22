@@ -2898,7 +2898,8 @@
                 // Similar pattern to using setTimeout(function(){ ... }, 0)
                 // in javascript to schedule a task one clock tick later
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self call:events[@"$show"]];
+                    NSDictionary *variables = [self variables];
+                    [self call:events[@"$show"] with:variables];
                 });
             });
         }
@@ -2909,7 +2910,8 @@
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events && events[@"$load"]){
         if(!VC.contentLoaded){
-            [self call:events[@"$load"]];
+            NSDictionary *variables = [self variables];
+            [self call:events[@"$load"] with:variables];
         }
     } else {
         [self onShow];
