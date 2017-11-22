@@ -18,9 +18,7 @@ $agent={
 
     // send message
     $agent.interface.postMessage({
-      type: "request",
-      rpc: rpc,
-      nonce: nonce
+      request: { data: rpc, nonce: nonce }
     })
 
   },
@@ -28,25 +26,21 @@ $agent={
   // Return response to Jasonette or the caller agent
   response: function(data) {
     $agent.interface.postMessage({
-      type: "response",
-      data: data
+      response: { data: data }
     })
   },
 
   // One way event fireoff to Jasonette
   trigger: function(event, options) {
     $agent.interface.postMessage({
-      type: "trigger",
-      trigger: event,
-      options: options
+      trigger: { name: event, data: options }
     })
   },
     
   // Trigger Jasonette href
   href: function(href) {
     $agent.interface.postMessage({
-      type: "href",
-      options: href
+      href: { data: href }
     })
   }
 }

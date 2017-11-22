@@ -25,65 +25,62 @@
     // 3. response: The message contains a response back from an agent
     // 4. href: Make an href transition to another Jasonette view
     
-    NSString *type = message.body[@"type"];
     NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
-    if(type) {
-        // 1. Trigger Jasonette event
-        if([type isEqualToString:@"trigger"]) {
-            event[@"$source"] = @{
-                @"id": identifier
-            };
-            event[@"trigger"] = message.body[@"trigger"];
-            if(message.body[@"options"]) {
-                event[@"options"] = message.body[@"options"];
-            }
-            [[Jason client] call: event];
-        // 2. Make an agent request
-        } else if([type isEqualToString:@"request"]) {
-            NSDictionary *rpc = message.body[@"rpc"];
-            if(rpc) {
-                event = [rpc mutableCopy];
-                
-                // Coming from an agent, so need to specify $source object
-                // to keep track of the source agent so that a response
-                // can be sent back to the $source later.
-                event[@"$source"] = @{
-                    @"id": identifier,
-                    @"nonce": message.body[@"nonce"]
-                };
-                [self request:event];
-            }
-        // 3. It's a response message from an agent
-        } else if([type isEqualToString:@"response"]) {
-            NSDictionary *source = message.webView.payload[@"$source"];
-            
-            // $source exists => the original request was from an agent
-            if (source) {
-                NSString *identifier = source[@"id"];
-                
-                // $agent.callbacks is a JavaScript object used for keeping track of
-                // all the pending callbacks an agent is waiting on.
-                // Whenever there's a response that targets an agent,
-                // 1. We look up the relevant callback by querying $agent.callbacks[NONCE]
-                // 2. When the callback is found, it's executed with the data passed in
-                
-                [self request: @{
-                    @"method": [NSString stringWithFormat: @"$agent.callbacks[\"%@\"]", source[@"nonce"]],
-                    @"id": identifier,
-                    @"params": @[message.body[@"data"]]
-                }];
-                
-            // $source doesn't exist => the original request was from Jasonette action
-            } else {
-                // Run the caller Jasonette action's "success" callback
-                [[Jason client] success: message.body[@"data"]];
-            }
-            
-        // 4. Tell Jasonette to make an href transition to another view
-        } else if([type isEqualToString:@"href"]) {
-            [[Jason client] go: message.body[@"options"]];
+    // 1. Trigger Jasonette event
+    if(message.body[@"trigger"]) {
+        NSDictionary *m = message.body[@"trigger"];
+        event[@"$source"] = @{ @"id": identifier };
+        event[@"trigger"] = m[@"name"];
+        if(m[@"data"]) {
+            event[@"options"] = m[@"data"];
         }
-
+        [[Jason client] call: event];
+    // 2. Make an agent request
+    } else if(message.body[@"request"]) {
+        NSDictionary *m = message.body[@"request"];
+        NSDictionary *rpc = m[@"data"];
+        if(rpc) {
+            event = [rpc mutableCopy];
+            
+            // Coming from an agent, so need to specify $source object
+            // to keep track of the source agent so that a response
+            // can be sent back to the $source later.
+            event[@"$source"] = @{
+                @"id": identifier,
+                @"nonce": m[@"nonce"]
+            };
+            [self request:event];
+        }
+    // 3. It's a response message from an agent
+    } else if(message.body[@"response"]) {
+        NSDictionary *m = message.body[@"response"];
+        NSDictionary *source = message.webView.payload[@"$source"];
+        
+        // $source exists => the original request was from an agent
+        if (source) {
+            NSString *identifier = source[@"id"];
+            
+            // $agent.callbacks is a JavaScript object used for keeping track of
+            // all the pending callbacks an agent is waiting on.
+            // Whenever there's a response that targets an agent,
+            // 1. We look up the relevant callback by querying $agent.callbacks[NONCE]
+            // 2. When the callback is found, it's executed with the data passed in
+            
+            [self request: @{
+                @"method": [NSString stringWithFormat: @"$agent.callbacks[\"%@\"]", source[@"nonce"]],
+                @"id": identifier,
+                @"params": @[m[@"data"]]
+            }];
+            
+        // $source doesn't exist => the original request was from Jasonette action
+        } else {
+            // Run the caller Jasonette action's "success" callback
+            [[Jason client] success: m[@"data"]];
+        }
+        
+    // 4. Tell Jasonette to make an href transition to another view
+    } else if(message.body[@"href"]) {
+        [[Jason client] go: message.body[@"href"][@"data"]];
     }
 }
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
