@@ -273,7 +273,7 @@
         // ## Handling #include
         // This needs to precede everything else since it's meant to be overwritten
         // in case of collision
-        var include_object_re = /\{\{([ ]*#include)[ ]*(.*)\}\}/g;
+        var include_object_re = /\{\{([ ]*#include)[ ]*(.*)\}\}/;
         var include_keys = Object.keys(template).filter(function(key) { return include_object_re.test(key); });
         if (include_keys.length > 0) {
         // find the first key with #include
@@ -302,6 +302,14 @@
                     var res = TRANSFORM.run(concat_item, data);
                     result = result.concat(res);
                   });
+
+                  if (/\{\{(.*?)\}\}/.test(JSON.stringify(result))) {
+                    // concat should only trigger if all of its children
+                    // have successfully parsed.
+                    // so check for any template expression in the end result
+                    // and if there is one, revert to the original template
+                    result = template;
+                  }
                 }
               } else if (fun.name === '#merge') {
                 if (Helper.is_array(template[key])) {
@@ -312,6 +320,19 @@
                       result[key] = res[key];
                     }
                   });
+                  // clean up $index from the result
+                  // necessary because #merge merges multiple objects into one,
+                  // and one of them may be 'this', in which case the $index attribute
+                  // will have snuck into the final result
+                  if(typeof data === 'object') {
+                    delete result["$index"];
+                  } else {
+                    delete String.prototype.$index;
+                    delete Number.prototype.$index;
+                    delete Function.prototype.$index;
+                    delete Array.prototype.$index;
+                    delete Boolean.prototype.$index;
+                  }
                 }
               } else if (fun.name === '#each') {
                 // newData will be filled with parsed results
@@ -321,7 +342,31 @@
                 if (newData && Helper.is_array(newData)) {
                   result = [];
                   for (var index = 0; index < newData.length; index++) {
+                    // temporarily set $index
+                    if(typeof newData[index] === 'object') {
+                      newData[index]["$index"] = index;
+                    } else {
+                      String.prototype.$index = index;
+                      Number.prototype.$index = index;
+                      Function.prototype.$index = index;
+                      Array.prototype.$index = index;
+                      Boolean.prototype.$index = index;
+                    }
+
+                    // run
                     var loop_item = TRANSFORM.run(template[key], newData[index]);
+
+                    // clean up $index
+                    if(typeof newData[index] === 'object') {
+                      delete newData[index]["$index"];
+                    } else {
+                      delete String.prototype.$index;
+                      delete Number.prototype.$index;
+                      delete Function.prototype.$index;
+                      delete Array.prototype.$index;
+                      delete Boolean.prototype.$index;
+                    }
+
                     if (loop_item) {
                       // only push when the result is not null
                       // null could mean #if clauses where nothing matched => In this case instead of rendering 'null', should just skip it completely
@@ -676,6 +721,11 @@
         // apply the result to root
         SELECT.$selected_root = Helper.resolve(SELECT.$selected_root, '', parsed_object);
       }
+      delete String.prototype.$root;
+      delete Number.prototype.$root;
+      delete Function.prototype.$root;
+      delete Array.prototype.$root;
+      delete Boolean.prototype.$root;
       return SELECT;
     },
     transform: function(obj, serialized) {
@@ -730,6 +780,11 @@
         SELECT.$template_root = Helper.resolve(SELECT.$template_root, '', parsed_object);
         SELECT.$selected_root = SELECT.$template_root;
       }
+      delete String.prototype.$root;
+      delete Number.prototype.$root;
+      delete Function.prototype.$root;
+      delete Array.prototype.$root;
+      delete Boolean.prototype.$root;
       return SELECT;
     },
 
@@ -796,7 +851,7 @@
     if (!replacer) {
       return _stringify(val, function(key, val) {
         if (SELECT.$injected && SELECT.$injected.length > 0 && SELECT.$injected.indexOf(key) !== -1) { return undefined; }
-        if (key === '$root') {
+        if (key === '$root' || key === '$index') {
           return undefined;
         }
         if (typeof val === 'function') {
@@ -809,24 +864,26 @@
       return _stringify(val, replacer, spaces);
     }
   };
-  JSON.select = SELECT.select;
-  JSON.inject = SELECT.inject;
-  JSON.transform = TRANSFORM.transform;
 
   // Export
   if (typeof exports !== 'undefined') {
     var x = {
       TRANSFORM: TRANSFORM,
+      transform: TRANSFORM,
       SELECT: SELECT,
       Conditional: Conditional,
       Helper: Helper,
+      inject: SELECT.inject,
+      select: SELECT.select,
+      transform: TRANSFORM.transform,
     };
     if (typeof module !== 'undefined' && module.exports) { exports = module.exports = x; }
     exports = x;
   } else {
     $context.ST = {
-      select: SELECT,
-      transform: TRANSFORM,
+      select: SELECT.select,
+      inject: SELECT.inject,
+      transform: TRANSFORM.transform,
     };
   }
 }());
