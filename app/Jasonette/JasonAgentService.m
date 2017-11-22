@@ -169,7 +169,9 @@
     
     [controller addScriptMessageHandler:self name:identifier];
     config.userContentController = controller;
-    
+    [config setAllowsInlineMediaPlayback: YES];
+    [config setMediaTypesRequiringUserActionForPlayback:WKAudiovisualMediaTypeNone];
+
     WKWebView *agent;
     JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
 
@@ -275,7 +277,18 @@
             // run the "success" callback with that return value as "$jason"
             // Otherwise, wait until $agent.response is manually called alter.
             if(res) {
-                [[Jason client] success: res];
+                // source exists => from agent
+                if (agent.payload[@"$source"]) {
+                    [self request: @{
+                         @"method": [NSString stringWithFormat: @"$agent.callbacks[\"%@\"]", agent.payload[@"$source"][@"nonce"]],
+                         @"id": agent.payload[@"$source"][@"id"],
+                         @"params": @[res]
+                    }];
+                    
+                // $source doesn't exist => From Jasonette
+                } else {
+                    [[Jason client] success: res];
+                }
             }
         }];
     // Agent doesn't exist, return with the error callback
