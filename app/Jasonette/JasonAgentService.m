@@ -91,7 +91,9 @@
     // Inject agent.js into agent context
     NSString *identifier = webView.payload[@"identifier"];
     NSString *raw = [JasonHelper read_local_file:@"file://agent.js"];
-    NSString *summon = [NSString stringWithFormat: raw, identifier, identifier, identifier, identifier];
+    NSString *interface = [NSString stringWithFormat:@"$agent.interface = window.webkit.messageHandlers[\"%@\"];", identifier];
+    NSString *summon = [raw stringByAppendingString:interface];
+
     [webView evaluateJavaScript:summon completionHandler:^(id _Nullable res, NSError * _Nullable error) {
         NSLog(@"Injected");
     }];

@@ -1,6 +1,7 @@
 $agent={
   callbacks: {},
-
+  interface: null,
+  
   // Make requests to another agent
   request: function(rpc, callback) {
 
@@ -16,7 +17,7 @@ $agent={
     }
 
     // send message
-    window.webkit.messageHandlers["%@"].postMessage({
+    $agent.interface.postMessage({
       type: "request",
       rpc: rpc,
       nonce: nonce
@@ -26,7 +27,7 @@ $agent={
     
   // Return response to Jasonette or the caller agent
   response: function(data) {
-    window.webkit.messageHandlers["%@"].postMessage({
+    $agent.interface.postMessage({
       type: "response",
       data: data
     })
@@ -34,7 +35,7 @@ $agent={
 
   // One way event fireoff to Jasonette
   trigger: function(event, options) {
-    window.webkit.messageHandlers["%@"].postMessage({
+    $agent.interface.postMessage({
       type: "trigger",
       trigger: event,
       options: options
@@ -43,7 +44,7 @@ $agent={
     
   // Trigger Jasonette href
   href: function(href) {
-    window.webkit.messageHandlers["%@"].postMessage({
+    $agent.interface.postMessage({
       type: "href",
       options: href
     })
