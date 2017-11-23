@@ -36,6 +36,8 @@ target 'Jasonette' do
   pod 'MBProgressHUD', '~> 1.0'
   pod 'FLEX', '~> 2.0', :configurations => ['Debug']
   pod 'SocketRocket'
+  pod 'Valet'
+
   #pod 'GoogleMobileAds', '~> 7.8'
 
   post_install do |installer|
