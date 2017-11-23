@@ -250,7 +250,7 @@
     NSArray *params = options[@"params"];
     
     // Turn params into string so it can be turned into a JS callstring
-    NSString *arguments = @"";
+    NSString *arguments = @"null";
     if(params) {
         arguments = [JasonHelper stringify:params];
     }
