@@ -1,6 +1,0 @@
-framework module DHSmartScreenshot {
-  umbrella header "DHSmartScreenshot-umbrella.h"
-
-  export *
-  module * { export * }
-}

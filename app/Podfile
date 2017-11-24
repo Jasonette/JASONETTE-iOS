@@ -37,6 +37,7 @@ target 'Jasonette' do
   pod 'FLEX', '~> 2.0', :configurations => ['Debug']
   pod 'SocketRocket'
   pod 'Valet'
+  pod 'LTHPasscodeViewController'
 
   #pod 'GoogleMobileAds', '~> 7.8'
 
