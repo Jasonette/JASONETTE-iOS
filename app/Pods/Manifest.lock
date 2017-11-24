@@ -45,6 +45,7 @@ PODS:
   - JDStatusBarNotification (1.5.3)
   - JSCoreBom (1.1.1)
   - libPhoneNumber-iOS (0.8.13)
+  - LTHPasscodeViewController (3.8.10)
   - MBProgressHUD (1.0.0)
   - NSGIF (1.2)
   - NSHash (1.1.0)
@@ -91,6 +92,7 @@ DEPENDENCIES:
   - JDStatusBarNotification
   - JSCoreBom (~> 1.1.1)
   - libPhoneNumber-iOS
+  - LTHPasscodeViewController
   - MBProgressHUD (~> 1.0)
   - NSGIF (~> 1.0)
   - NSHash
@@ -147,6 +149,7 @@ SPEC CHECKSUMS:
   JDStatusBarNotification: 29413865af11c862c17180610b0f46a21118b412
   JSCoreBom: 712590b897ecd74d9fa9cb0f16857491411c932b
   libPhoneNumber-iOS: 3a37004baf779b4262ab29a31a87d2ae668159d4
+  LTHPasscodeViewController: 17b0d49903dc1db6d35b95ccc4ecc4253791601f
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   NSGIF: 73b435330174a9d04db9886a232c605a3e8139b5
   NSHash: 61d598c6d48957c5557f1eef0aeafd6ef5ec5fb7
@@ -170,6 +173,6 @@ SPEC CHECKSUMS:
   UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
   Valet: 14463ef24fab8fd5809044ecedb61484b799fdd6
 
-PODFILE CHECKSUM: 6c98a994cb222d228b7d0cfb3100a7f0b35d3d16
+PODFILE CHECKSUM: 7d9696470faf43bf68f028d33c97fe9de563dacf
 
 COCOAPODS: 1.2.1

@@ -1,0 +1,28 @@
+/*
+ LTHPasscodeViewController.strings
+ */
+"Enter Passcode" = "Digite sua senha";
+
+"Enter your old passcode" = "Digite sua senha antiga";
+
+"Enter your passcode" = "Digite sua senha";
+
+"Enable Passcode" = "Ativar senha";
+
+"Change Passcode" = "Alterar senha";
+
+"Turn Off Passcode" = "Desativar senha";
+
+"Re-enter your passcode" = "Repetir senha";
+
+"Re-enter your new passcode" = "Repetir sua nova senha";
+
+"Enter your new passcode" = "Digite sua nova senha";
+
+"Passcodes did not match. Try again." = "Senhas não são equivalentes. Por favor tente novamente.";
+
+"1 Passcode Failed Attempt" = "1 falha ao digitar a senha";
+
+"%i Passcode Failed Attempts" = "%i falhas ao digitar a senha";
+
+"Unlock using Touch ID" = "Desbloquear usando o Touch ID";

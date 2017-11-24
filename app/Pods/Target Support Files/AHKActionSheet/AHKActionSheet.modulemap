@@ -1,0 +1,6 @@
+framework module AHKActionSheet {
+  umbrella header "AHKActionSheet-umbrella.h"
+
+  export *
+  module * { export * }
+}

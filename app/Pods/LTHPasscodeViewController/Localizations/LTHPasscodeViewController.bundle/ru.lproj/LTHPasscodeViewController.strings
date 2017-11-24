@@ -1,0 +1,26 @@
+/*
+ LTHPasscodeViewController.strings
+ */
+"Enter Passcode" = "Введите пароль";
+
+"Enter your old passcode" = "Введите старый пароль";
+
+"Enter your passcode" = "Введите свой пароль";
+
+"Enable Passcode" = "Включить пароль";
+
+"Change Passcode" = "Изменить пароль";
+
+"Turn Off Passcode" = "Выключить пароль";
+
+"Re-enter your passcode" = "Повторно введите пароль";
+
+"Re-enter your new passcode" = "Повторно введите новый пароль";
+
+"Enter your new passcode" = "Введите новый пароль";
+
+"Passcodes did not match. Try again." = "Пароли не совпадают. Попробуйте снова.";
+
+"1 Passcode Failed Attempt" = "1 Неудачная попытка ввода пароля";
+
+"%i Passcode Failed Attempts" = "%i Неудачная попытка ";

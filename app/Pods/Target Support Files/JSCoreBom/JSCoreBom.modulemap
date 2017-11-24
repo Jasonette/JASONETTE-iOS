@@ -1,0 +1,6 @@
+framework module JSCoreBom {
+  umbrella header "JSCoreBom-umbrella.h"
+
+  export *
+  module * { export * }
+}

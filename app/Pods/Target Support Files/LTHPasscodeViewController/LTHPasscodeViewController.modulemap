@@ -1,0 +1,6 @@
+framework module LTHPasscodeViewController {
+  umbrella header "LTHPasscodeViewController-umbrella.h"
+
+  export *
+  module * { export * }
+}

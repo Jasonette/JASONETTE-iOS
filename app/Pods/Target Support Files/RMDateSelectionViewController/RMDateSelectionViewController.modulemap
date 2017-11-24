@@ -1,0 +1,6 @@
+framework module RMDateSelectionViewController {
+  umbrella header "RMDateSelectionViewController-umbrella.h"
+
+  export *
+  module * { export * }
+}

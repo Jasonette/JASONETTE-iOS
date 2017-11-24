@@ -1,0 +1,28 @@
+/*
+ LTHPasscodeViewController.strings
+ */
+"Enter Passcode" = "パスコードを入力";
+
+"Enter your old passcode" = "古いパスコードを入力";
+
+"Enter your passcode" = "パスコードを入力";
+
+"Enable Passcode" = "パスコードを設定";
+
+"Change Passcode" = "パスコードを変更";
+
+"Turn Off Passcode" = "パスコードをオフ";
+
+"Re-enter your passcode" = "パスコードを再入力";
+
+"Re-enter your new passcode" = "新しいパスコードを再入力";
+
+"Enter your new passcode" = "新しいパスコードを入力";
+
+"Passcodes did not match. Try again." = "パスコードが一致しません。\nもう一度入力してください。";
+
+"1 Passcode Failed Attempt" = "パスコード入力に1回失敗";
+
+"%i Passcode Failed Attempts" = "パスコード入力に%i回失敗";
+
+"Unlock using Touch ID" = "Touch IDで解除";

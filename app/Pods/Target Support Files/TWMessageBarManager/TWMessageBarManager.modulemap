@@ -1,0 +1,6 @@
+framework module TWMessageBarManager {
+  umbrella header "TWMessageBarManager-umbrella.h"
+
+  export *
+  module * { export * }
+}

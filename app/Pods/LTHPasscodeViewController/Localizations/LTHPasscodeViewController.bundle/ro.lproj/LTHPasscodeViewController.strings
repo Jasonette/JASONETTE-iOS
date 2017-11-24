@@ -1,0 +1,28 @@
+/*
+ LTHPasscodeViewController.strings
+ */
+"Enter Passcode" = "Introduceți parola";
+
+"Enter your old passcode" = "Introduceți parola veche";
+
+"Enter your passcode" = "Introduceți parola";
+
+"Enable Passcode" = "Activați parola";
+
+"Change Passcode" = "Schimbați parola";
+
+"Turn Off Passcode" = "Dezactivați parola";
+
+"Re-enter your passcode" = "Reintroduceți parola";
+
+"Re-enter your new passcode" = "Reintroduceți parola nouă";
+
+"Enter your new passcode" = "Introduceți parola nouă";
+
+"Passcodes did not match. Try again." = "Parolele nu coincid. Incercați din nou.";
+
+"1 Passcode Failed Attempt" = "1 încercare eșuată";
+
+"%i Passcode Failed Attempts" = "%i încercări eșuate";
+
+"Cannot reuse the same passcode" = "Nu puteți refolosi aceeași parolă";
