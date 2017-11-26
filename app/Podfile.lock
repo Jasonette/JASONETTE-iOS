@@ -72,7 +72,6 @@ PODS:
   - TTTAttributedLabel (2.0.0)
   - TWMessageBarManager (1.8.1)
   - UICKeyChainStore (2.1.0)
-  - Valet (2.4.2)
 
 DEPENDENCIES:
   - AFNetworking
@@ -109,7 +108,6 @@ DEPENDENCIES:
   - TTTAttributedLabel
   - TWMessageBarManager
   - UICKeyChainStore
-  - Valet
 
 EXTERNAL SOURCES:
   FreeStreamer:
@@ -171,8 +169,7 @@ SPEC CHECKSUMS:
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
-  Valet: 14463ef24fab8fd5809044ecedb61484b799fdd6
 
-PODFILE CHECKSUM: 7d9696470faf43bf68f028d33c97fe9de563dacf
+PODFILE CHECKSUM: ba82972a11ef499ab9fab03ac4de5a0eceed8f5a
 
 COCOAPODS: 1.2.1
