@@ -154,6 +154,23 @@
     }]
 **********************************************/
 
+- (void) refresh: (NSString *) identifier forVC: (JasonViewController *)vc{
+    if(vc.agents && vc.agents[identifier]) {
+        [vc.agents[identifier] reload];
+        [[Jason client] success];
+    } else {
+        [[Jason client] error: @{@"message": @"An agent with the ID doesn't exist"}];
+    }
+}
+- (void) clear: (NSString *) identifier forVC: (JasonViewController *)vc{
+    if(vc.agents && vc.agents[identifier]) {
+        [vc.agents[identifier] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
+        [[Jason client] success];
+    } else {
+        [[Jason client] error: @{@"message": @"An agent with the ID doesn't exist"}];
+    }
+}
+
 - (WKWebView *) setup: (NSDictionary *)options withId: (NSString *)identifier{
     NSString *text = options[@"text"];
     NSString *type = options[@"type"];
@@ -272,23 +289,8 @@
         
         // Evaluate JavaScript on the agent
         [agent evaluateJavaScript:callstring completionHandler:^(id _Nullable res, NSError * _Nullable error) {
-            // If there's a synchronous return value for the called function,
-            // run the "success" callback with that return value as "$jason"
-            // Otherwise, wait until $agent.response is manually called alter.
-            if(res) {
-                // source exists => from agent
-                if (agent.payload[@"$source"]) {
-                    [self request: @{
-                         @"method": [NSString stringWithFormat: @"$agent.callbacks[\"%@\"]", agent.payload[@"$source"][@"nonce"]],
-                         @"id": agent.payload[@"$source"][@"id"],
-                         @"params": @[res]
-                    }];
-                    
-                // $source doesn't exist => From Jasonette
-                } else {
-                    [[Jason client] success: res];
-                }
-            }
+            // Don't process return value.
+            // Instead all communication back to Jasonette is taken care of by an explicit $agent.response() call
         }];
     // Agent doesn't exist, return with the error callback
     } else {

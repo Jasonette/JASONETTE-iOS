@@ -59,4 +59,20 @@ var whoareyou = function(firstname, lastname) {
     JasonAgentService *service = [Jason client].services[@"JasonAgentService"];
     [service request: self.options];
 }
+- (void) clear {
+    JasonAgentService *service = [Jason client].services[@"JasonAgentService"];
+    if (self.options && self.options[@"id"]) {
+        [service clear:self.options[@"id"] forVC:[[Jason client] getVC]];
+    } else {
+        [[Jason client] error: @{@"message": @"Please specify an ID of the agent to clear"}];
+    }
+}
+- (void) refresh {
+    JasonAgentService *service = [Jason client].services[@"JasonAgentService"];
+    if (self.options && self.options[@"id"]) {
+        [service refresh:self.options[@"id"] forVC:[[Jason client] getVC]];
+    } else {
+        [[Jason client] error: @{@"message": @"Please specify an ID of the agent to refresh"}];
+    }
+}
 @end
