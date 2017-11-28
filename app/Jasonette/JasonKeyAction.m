@@ -88,7 +88,18 @@
 }
 *******************/
 - (void) add {
+
+    if (!self.options || self.options.count == 0) {
+        [[Jason client] error: @{@"message": @"Must specify an item to add"}];
+        return;
+    }
+    
     NSArray *components = self.options[@"components"];
+    if (!components) {
+        [[Jason client] error: @{@"message": @"A key item must have at least one component"}];
+        return;
+    }
+    
     if (components && components.count > 0) {
         NSDictionary *parsed = [self _parse];
         NSString *url = parsed[@"url"];
