@@ -19,8 +19,13 @@
     
     // Figure out which agent the message is coming from
     NSString *identifier = message.webView.payload[@"identifier"];
+    JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
 
-
+    // If the source agent has a different parent than the current view, ignore.
+    if (![message.webView.payload[@"parent"] isEqualToString:vc.url]) {
+        return;
+    }
+    
     // Message classification: Only support safe actions
     // 1. trigger: Trigger Jasonette event
     // 2. request: Make a request to an agent
@@ -207,11 +212,11 @@
         [vc.view sendSubviewToBack:agent];
         agent.hidden = YES;
         
-        // Setup Payload
-        agent.payload = [@{@"identifier": identifier, @"state": @"empty"} mutableCopy];
 
     }
-    
+    // Setup Payload
+    agent.payload = [@{@"identifier": identifier, @"state": @"empty", @"parent": vc.url} mutableCopy];
+
     // Set action payload
     // This needs to be handled separately than other payloads since "action" is empty in the beginning.
     if(action) {

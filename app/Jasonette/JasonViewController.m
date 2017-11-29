@@ -61,18 +61,18 @@
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat: @"H:|[tableView]|" options:0 metrics:nil views:@{@"tableView": self.tableView}]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat: @"V:|[tableView]|" options:0 metrics:nil views:@{@"tableView": self.tableView}]];
 
-    if(self.url){
-        NSString *normalized_url = [JasonHelper normalized_url:self.url forOptions:self.options];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
-        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:path];
-        if(!fileExists){
-            [[Jason client] loadViewByFile: @"file://loading.json" asFinal:NO onVC:self];
-        }
-    } else {
-        [[Jason client] loadViewByFile: @"file://loading.json" asFinal:NO onVC:self];
-    }
+//    if(self.url){
+//        NSString *normalized_url = [JasonHelper normalized_url:self.url forOptions:self.options];
+//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//        NSString *documentsDirectory = [paths objectAtIndex:0];
+//        NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
+//        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:path];
+//        if(!fileExists){
+//            [[Jason client] loadViewByFile: @"file://loading.json" asFinal:NO onVC:self];
+//        }
+//    } else {
+//        [[Jason client] loadViewByFile: @"file://loading.json" asFinal:NO onVC:self];
+//    }
     empty_view = [[UIView alloc] initWithFrame:CGRectZero];
 
     estimatedRowHeightCache = [[NSMutableDictionary alloc] init];
@@ -108,12 +108,6 @@
     self.tableView.delaysContentTouches = false;
     self.agents = [[NSMutableDictionary alloc] init];
     
-    // setup web container as an agent
-    JasonAgentService *agent = [Jason client].services[@"JasonAgentService"];
-    WKWebView *webContainer = [agent setup: @{
-        @"type": @"html"
-    } withId:@"$webcontainer"];
-    self.agents[@"$webcontainer"] = webContainer;
     
 
     self.automaticallyAdjustsScrollViewInsets = YES;
@@ -1074,7 +1068,6 @@
             #endif
             
             original_bottom_inset = self.tableView.contentInset.bottom;
-            if(final) self.isFinal = final;
         });
     }
     @catch(NSException *e){

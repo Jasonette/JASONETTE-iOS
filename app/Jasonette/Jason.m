@@ -1208,6 +1208,13 @@
     
     [VC.view endEditing:YES];
     
+    // Reset Agent
+    for(NSString *key in ((JasonViewController*)VC).agents) {
+        JasonAgentService *agent = self.services[@"JasonAgentService"];
+        [agent clear:key forVC:VC];
+    }
+
+    
     return self;
 }
 
@@ -1281,6 +1288,24 @@
     {
         VC.data = nil;
         
+        
+        /************************************
+         Setup head as quickly as possible
+         And set the headSetup flag to true, so that it doesn't try to set it up again later
+         **************************************/
+        if (VC.original && VC.original[@"$jason"] && VC.original[@"$jason"][@"head"]) {
+            VC.agentReady = NO;
+            [self setupHead:VC.original[@"$jason"][@"head"]];
+        }
+
+        // setup web container as an agent
+        JasonAgentService *agent = self.services[@"JasonAgentService"];
+        WKWebView *webContainer = [agent setup: @{
+                                                  @"type": @"html"
+                                                  } withId:@"$webcontainer"];
+        ((JasonViewController *)VC).agents[@"$webcontainer"] = webContainer;
+
+        
         /*********************************************************************************************************
          *
          * VC.rendered: contains the rendered Jason DOM if it's been dynamically rendered.
@@ -1288,7 +1313,7 @@
          * If VC.rendered is not nil, it means it's been already fully rendered.
          *
          ********************************************************************************************************/
-        if(VC.isFinal && VC.rendered && rendered_page){
+        if(VC.rendered && rendered_page){
             
             /*********************************************************************************************************
              *
@@ -1365,7 +1390,7 @@
              *  2. re-setup event listener
              *
              ********************************************************************************************************/
-            if(VC.contentLoaded && VC.isFinal){
+            if(VC.contentLoaded){
                 // If content already loaded,
                 // 1. just setup the navbar so the navbar will have the correct style
                 // 2. trigger load events ($show or $load)
@@ -1735,7 +1760,7 @@
          ****************************************************************************/
         NSDictionary *head = dom[@"head"];
         if(head){
-            [self setupHead: head];            
+            [self setupHead: head];
             [self onLoad: final];
         }
         
@@ -2057,11 +2082,15 @@
         [VC setValue:style forKey:@"style"];
         
         // 3. agents
-        if(head[@"agents"] && [head[@"agents"] isKindOfClass:[NSDictionary class]] && [head[@"agents"] count] > 0) {
-            for(NSString *key in head[@"agents"]) {
-                JasonAgentService *agent = self.services[@"JasonAgentService"];
-                [agent setup: head[@"agents"][key] withId: key];
+        if (!VC.agentReady) {
+         // Agents must be setup ONLY once, AFTER the true view has finished loading.
+            if(head[@"agents"] && [head[@"agents"] isKindOfClass:[NSDictionary class]] && [head[@"agents"] count] > 0) {
+                for(NSString *key in head[@"agents"]) {
+                    JasonAgentService *agent = self.services[@"JasonAgentService"];
+                    [agent setup: head[@"agents"][key] withId: key];
+                }
             }
+            VC.agentReady = YES;
         }
 
         // 4. templates
@@ -2076,7 +2105,7 @@
 # pragma mark - View rendering (nav)
 - (void)setupHeader: (NSDictionary *)nav{
     
-    if(!nav && !VC.isFinal) {
+    if(!nav) {
         navigationController.navigationBar.hidden = YES;
         return;
     }
@@ -2597,7 +2626,7 @@
             // just skip the exception handling routine below.
         } else {
             // handling normal transition (including replace)
-            if(!t && !VC.isFinal) {
+            if(!t) {
                 if(previous_footer && previous_footer[@"tabs"]) {
                     // don't touch yet until the view finalizes
                 } else {
