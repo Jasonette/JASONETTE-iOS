@@ -2411,7 +2411,9 @@
                                 if(titleDict[@"style"][@"top"]){
                                     y = [((NSString *)titleDict[@"style"][@"top"]) floatValue];
                                 }
-                                
+                                if(titleDict[@"style"][@"color"]) {
+                                    tLabel.textColor = [JasonHelper colorwithHexString:titleDict[@"style"][@"color"] alpha:1.0];
+                                }
                                 tLabel.font = [UIFont fontWithName: font size:size];
                                 
                                 if(titleDict[@"style"][@"align"]) {
