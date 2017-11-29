@@ -6,6 +6,8 @@
 //
 
 #import "JasonAgentService.h"
+#import "JasonViewController.h"
+
 
 @implementation JasonAgentService
 - (void) initialize: (NSDictionary *)launchOptions {
@@ -156,7 +158,8 @@
 
 - (void) refresh: (NSString *) identifier forVC: (JasonViewController *)vc{
     if(vc.agents && vc.agents[identifier]) {
-        [vc.agents[identifier] reload];
+        WKWebView *agent = vc.agents[identifier];
+        [agent reload];
         [[Jason client] success];
     } else {
         [[Jason client] error: @{@"message": @"An agent with the ID doesn't exist"}];
@@ -164,7 +167,8 @@
 }
 - (void) clear: (NSString *) identifier forVC: (JasonViewController *)vc{
     if(vc.agents && vc.agents[identifier]) {
-        [vc.agents[identifier] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
+        WKWebView *agent = vc.agents[identifier];
+        [agent loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
         [[Jason client] success];
     } else {
         [[Jason client] error: @{@"message": @"An agent with the ID doesn't exist"}];
@@ -173,9 +177,7 @@
 
 - (WKWebView *) setup: (NSDictionary *)options withId: (NSString *)identifier{
     NSString *text = options[@"text"];
-    NSString *type = options[@"type"];
     NSString *url = options[@"url"];
-    NSArray *components = options[@"components"];
     NSDictionary *action = options[@"action"];
     
     // Initialize

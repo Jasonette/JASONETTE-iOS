@@ -112,8 +112,8 @@
     JasonAgentService *agent = [Jason client].services[@"JasonAgentService"];
     WKWebView *webContainer = [agent setup: @{
         @"type": @"html"
-    } withId:self.url];
-    self.agents[self.url] = webContainer;
+    } withId:@"$webcontainer"];
+    self.agents[@"$webcontainer"] = webContainer;
     
 
     self.automaticallyAdjustsScrollViewInsets = YES;

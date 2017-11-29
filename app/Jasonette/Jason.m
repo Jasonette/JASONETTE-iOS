@@ -1903,7 +1903,7 @@
                     payload[@"id"] = bg[@"id"];
                 } else {
                     // if no id is specified, just use the current url as the id
-                    payload[@"id"] = VC.url;
+                    payload[@"id"] = @"$webcontainer";
                 }
                 if(bg[@"action"]) {
                     payload[@"action"] = bg[@"action"];

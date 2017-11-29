@@ -7,7 +7,8 @@
 
 #import <Foundation/Foundation.h>
 #import "Jason.h"
-#import "JasonViewController.h"
+@class JasonViewController;
+
 @import WebKit;
 
 @interface JasonAgentService : NSObject <WKNavigationDelegate, WKScriptMessageHandler>
