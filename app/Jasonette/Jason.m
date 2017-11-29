@@ -1735,20 +1735,7 @@
          ****************************************************************************/
         NSDictionary *head = dom[@"head"];
         if(head){
-            [self setupHead: head];
-            
-            /****************************************************************************
-             *
-             * VC.parser = Template
-             *
-             ****************************************************************************/
-            if(head[@"templates"]){
-                VC.parser = head[@"templates"];
-            } else {
-                VC.parser = nil;
-            }
-            
-            // 3. Set up event
+            [self setupHead: head];            
             [self onLoad: final];
         }
         
@@ -2075,6 +2062,13 @@
                 JasonAgentService *agent = self.services[@"JasonAgentService"];
                 [agent setup: head[@"agents"][key] withId: key];
             }
+        }
+
+        // 4. templates
+        if(head[@"templates"]){
+            VC.parser = head[@"templates"];
+        } else {
+            VC.parser = nil;
         }
     }
 }
