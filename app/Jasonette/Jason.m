@@ -2319,7 +2319,7 @@
                     
                     if([image_src containsString:@"file://"]){
                         UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                        [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                        [self setMenuButtonImage:localImage forButton:btn withMenu:right_menu];
                     } else{
                         SDWebImageManager *manager = [SDWebImageManager sharedManager];
                         [manager downloadImageWithURL:[NSURL URLWithString:image_src]
@@ -2329,7 +2329,7 @@
                                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                                 if (image) {
                                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                                        [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
+                                                        [self setMenuButtonImage:image forButton:btn withMenu:right_menu];
                                                     });
                                                 }
                                             }];
