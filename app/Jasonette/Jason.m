@@ -1288,7 +1288,7 @@
          * If VC.rendered is not nil, it means it's been already fully rendered.
          *
          ********************************************************************************************************/
-        if(VC.isFinal && VC.rendered && rendered_page){
+        if(VC.rendered && rendered_page){
             
             /*********************************************************************************************************
              *
@@ -1365,7 +1365,7 @@
              *  2. re-setup event listener
              *
              ********************************************************************************************************/
-            if(VC.contentLoaded && VC.isFinal){
+            if(VC.contentLoaded){
                 // If content already loaded,
                 // 1. just setup the navbar so the navbar will have the correct style
                 // 2. trigger load events ($show or $load)
@@ -1378,6 +1378,13 @@
              *
              ********************************************************************************************************/
             else {
+                if (VC.preload && VC.preload[@"style"] && VC.preload[@"style"][@"background"]) {
+                    if ([VC.preload[@"style"][@"background"] isKindOfClass:[NSDictionary class]]) {
+                        [self drawAdvancedBackground:VC.preload[@"style"][@"background"]];
+                    } else {
+                        [self drawBackground:VC.preload[@"style"][@"background"]];
+                    }
+                }
                 [self reload];
             }
             
@@ -2086,7 +2093,7 @@
 # pragma mark - View rendering (nav)
 - (void)setupHeader: (NSDictionary *)nav{
 
-        if(!nav && !VC.isFinal) {
+        if(!nav) {
             navigationController.navigationBar.hidden = YES;
             return;
         }
@@ -2609,7 +2616,7 @@
             // just skip the exception handling routine below.
         } else {
             // handling normal transition (including replace)
-            if(!t && !VC.isFinal) {
+            if(!t) {
                 if(previous_footer && previous_footer[@"tabs"]) {
                     // don't touch yet until the view finalizes
                 } else {
@@ -2691,14 +2698,20 @@
                 NSString *url;
                 NSDictionary *options = @{};
                 BOOL loading = NO;
+                NSDictionary *preload;
                 if(tab[@"href"]){
                     url = tab[@"href"][@"url"];
                     options = tab[@"href"][@"options"];
-                    if(tab[@"href"][@"loading"]){
+                    if(tab[@"href"][@"preload"]) {
+                        preload = tab[@"href"][@"preload"];
+                    } else if(tab[@"href"][@"loading"]){
                         loading = YES;
                     }
                 } else {
                     url = tab[@"url"];
+                    if(tab[@"preload"]) {
+                        preload = tab[@"preload"];
+                    }
                 }
                 
                 if(firstTime){
@@ -2711,6 +2724,7 @@
                         vc.url = url;
                         vc.options = [self filloutTemplate:options withData:[self variables]];
                         vc.loading = loading;
+                        vc.preload = preload;
                         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
                         [tabs_array addObject:nav];
                     }
@@ -2724,6 +2738,7 @@
                         vc.url = url;
                         vc.options = [self filloutTemplate:options withData:[self variables]];
                         vc.loading = loading;
+                        vc.preload = preload;
                     }
                 }
             }
@@ -3052,7 +3067,9 @@
                             NSString *url = [JasonHelper linkify:href[@"url"]];
                             if([vc respondsToSelector:@selector(url)]) vc.url = url;
                         }
-                        if(href[@"loading"]){
+                        if (href[@"preload"]) {
+                            vc.preload = href[@"preload"];
+                        } else if(href[@"loading"]){
                             vc.loading = [href[@"loading"] boolValue];
                         }
                         if([vc respondsToSelector: @selector(options)]) vc.options = href[@"options"];
@@ -3087,7 +3104,9 @@
                         if(href[@"options"]){
                             vc.options = [JasonHelper parse:memory._register with:href[@"options"]];
                         }
-                        if(href[@"loading"]){
+                        if (href[@"preload"]) {
+                            vc.preload = href[@"preload"];
+                        } else if(href[@"loading"]){
                             vc.loading = [href[@"loading"] boolValue];
                         }
                         
