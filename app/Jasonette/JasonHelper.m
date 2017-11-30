@@ -951,4 +951,14 @@
     NSString *contents = [NSString stringWithContentsOfFile:fullPath encoding:NSUTF8StringEncoding error:NULL];
     return contents;
 }
++ (id) getPlistSettings: (NSString *)key {
+    NSDictionary * infoPlistSettings = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"settings"];
+    if (infoPlistSettings != nil){
+        return infoPlistSettings[key];
+    } else {
+        NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
+        NSDictionary *settingsPlistSettings = [NSDictionary dictionaryWithContentsOfURL:file];
+        return settingsPlistSettings[key];
+    }
+}
 @end
