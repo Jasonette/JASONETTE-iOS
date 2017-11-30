@@ -12,7 +12,7 @@
 		042A7FD91FAC665B00C1A3F2 /* JasonWebsocketService.m in Sources */ = {isa = PBXBuildFile; fileRef = 042A7FD81FAC665B00C1A3F2 /* JasonWebsocketService.m */; };
 		043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 043814151EF7455800CC4706 /* JasonGlobalAction.m */; };
 		043EFED61F50B75800F5AD48 /* JasonPushService.m in Sources */ = {isa = PBXBuildFile; fileRef = 043EFED51F50B75800F5AD48 /* JasonPushService.m */; };
-		045C77E91F0278EA00F06598 /* loading.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77E81F0278EA00F06598 /* loading.json */; };
+		045C77E91F0278EA00F06598 /* preload.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77E81F0278EA00F06598 /* preload.json */; };
 		045C77EB1F02791D00F06598 /* error.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77EA1F02791D00F06598 /* error.json */; };
 		045E092C1FC4930B003A6341 /* agent.js in Resources */ = {isa = PBXBuildFile; fileRef = 045E092B1FC4930B003A6341 /* agent.js */; };
 		045E092F1FC4A87D003A6341 /* JasonAgentAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E092E1FC4A87D003A6341 /* JasonAgentAction.m */; };
@@ -101,7 +101,7 @@
 		043814151EF7455800CC4706 /* JasonGlobalAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonGlobalAction.m; sourceTree = "<group>"; };
 		043EFED41F50B75800F5AD48 /* JasonPushService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonPushService.h; sourceTree = "<group>"; };
 		043EFED51F50B75800F5AD48 /* JasonPushService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonPushService.m; sourceTree = "<group>"; };
-		045C77E81F0278EA00F06598 /* loading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loading.json; sourceTree = "<group>"; };
+		045C77E81F0278EA00F06598 /* preload.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = preload.json; sourceTree = "<group>"; };
 		045C77EA1F02791D00F06598 /* error.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = error.json; sourceTree = "<group>"; };
 		045E092B1FC4930B003A6341 /* agent.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = agent.js; sourceTree = "<group>"; };
 		045E092D1FC4A87D003A6341 /* JasonAgentAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonAgentAction.h; sourceTree = "<group>"; };
@@ -665,7 +665,7 @@
 			isa = PBXGroup;
 			children = (
 				5E31777B1D1F199D00D87778 /* Images */,
-				045C77E81F0278EA00F06598 /* loading.json */,
+				045C77E81F0278EA00F06598 /* preload.json */,
 				045C77EA1F02791D00F06598 /* error.json */,
 			);
 			name = "file://";
@@ -905,7 +905,7 @@
 				5E31773A1D1E411F00D87778 /* icon-success@2x.png in Resources */,
 				5E3177671D1E411F00D87778 /* rss.js in Resources */,
 				5E3177481D1E411F00D87778 /* LaunchScreen.storyboard in Resources */,
-				045C77E91F0278EA00F06598 /* loading.json in Resources */,
+				045C77E91F0278EA00F06598 /* preload.json in Resources */,
 				045C77EB1F02791D00F06598 /* error.json in Resources */,
 				5E3177361D1E411F00D87778 /* icon-error@2x.png in Resources */,
 				5E31775F1D1E411F00D87778 /* placeholder@2x.png in Resources */,
