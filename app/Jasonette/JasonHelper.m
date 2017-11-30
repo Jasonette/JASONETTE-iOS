@@ -945,5 +945,14 @@
     normalized_url = [[normalized_url componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@""];
     return normalized_url;
 }
-
++ (id) getPlistSettings: (NSString *)key {
+    NSDictionary * infoPlistSettings = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"settings"];
+    if (infoPlistSettings != nil){
+        return infoPlistSettings[key];
+    } else {
+        NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
+        NSDictionary *settingsPlistSettings = [NSDictionary dictionaryWithContentsOfURL:file];
+        return settingsPlistSettings[key];
+    }
+}
 @end
