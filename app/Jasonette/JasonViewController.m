@@ -1020,7 +1020,7 @@
 }
 - (void)finishRefreshing{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [refreshControl endRefreshing];
+        [refreshControl performSelector:@selector(endRefreshing) withObject:nil afterDelay:0.0];
     });
 }
 - (void)refresh {
