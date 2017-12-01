@@ -94,6 +94,9 @@
     self.form = [[NSMutableDictionary alloc] init];
     self.requires = [[NSMutableDictionary alloc] init];
     self.tableView.delaysContentTouches = false;
+    self.agents = [[NSMutableDictionary alloc] init];
+    
+    
 
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
@@ -138,12 +141,6 @@
     
     if (self.preload) {
         [self reload:self.preload final:YES];
-    } else {
-        NSString *preload_url = [JasonHelper getPlistSettings:@"preload"];
-        if (preload_url) {
-            NSDictionary *preload = [JasonHelper read_local_json:preload_url];
-            [self reload:preload final:YES];
-        }
     }
 }
 - (void)adjustViewForKeyboard:(NSNotification *)notification{
