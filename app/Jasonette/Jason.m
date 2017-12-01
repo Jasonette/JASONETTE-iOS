@@ -1939,7 +1939,14 @@
                 VC.background.opaque = NO;
                 VC.background.backgroundColor = [UIColor clearColor];
                 VC.background.hidden = NO;
-                VC.background.frame = [UIScreen mainScreen].bounds;
+                
+                int height = [UIScreen mainScreen].bounds.size.height;
+                if (!tabController.tabBar.hidden) {
+                    height = height - tabController.tabBar.frame.size.height;
+                }
+                CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, height);
+                VC.background.frame = rect;
+
             }
             [VC.view addSubview:VC.background];
             [VC.view sendSubviewToBack:VC.background];
