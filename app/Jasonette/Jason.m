@@ -330,8 +330,8 @@
 }
 - (void)href{
     JasonMemory *memory = [JasonMemory client];
+    VC.callback = memory._stack;
     NSDictionary *href = [self options];
-    VC.callback = href[@"success"];     // Preserve callback so when the view returns it will continue executing the next action from where it left off.
     memory._stack = @{}; // empty stack before visiting
     [self go:href];
 }
@@ -383,6 +383,9 @@
     JasonMemory *memory = [JasonMemory client];
     if(memory._stack && memory._stack.count > 0){
         memory.need_to_exec = YES;
+        if (self.options && self.options.count > 0) {
+            memory._register = @{@"$jason": self.options};
+        }
     } else {
         [self unlock];
     }
@@ -393,7 +396,11 @@
         }
     }
     [navigationController setToolbarHidden:YES];
-    [navigationController dismissViewControllerAnimated:YES completion:nil];
+    if(VC.isModal){
+        [navigationController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        [navigationController popViewControllerAnimated:YES];
+    }
 }
 - (void)ok: (NSDictionary *)data{
     JasonMemory *memory = [JasonMemory client];
@@ -1281,21 +1288,17 @@
         // Check if there's any action left in the action call chain. If there is, execute it.
         
         // If there's a callback waiting to be executing for the current VC, set it as stack
-        if(VC.callback)
-        {
+        if(VC.callback) {
             // 1. Replace with VC.callback
             memory._stack = VC.callback;
-            
-            // 2. Fill it out with return values via options
-            memory._stack = [self options];
         }
-        
         if(memory._stack && memory._stack.count > 0){
             [self next];
         } else {
             [[NSNotificationCenter defaultCenter] postNotificationName:@"finishRefreshing" object:nil];
             [self reload];
         }
+        
         memory.need_to_exec = NO;
     }
     
@@ -3669,8 +3672,13 @@
 }
 - (void)unlock{
     [self loading:NO];
+    JasonMemory *mem = [JasonMemory client];
+    if (mem && mem._stack && mem._stack[@"type"] && [mem._stack[@"type"] isEqualToString:@"$ok"]) {
+        // don't touch the return value;
+    } else {
+        [JasonMemory client]._register = @{};
+    }
     [JasonMemory client]._stack = @{};
-    [JasonMemory client]._register = @{};
     [JasonMemory client].locked = NO;
     [JasonMemory client].executing = NO;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"finishRefreshing" object:nil];
