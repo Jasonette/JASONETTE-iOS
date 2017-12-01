@@ -250,14 +250,21 @@
 *********************************/
 - (void) clear {
     NSDictionary *parsed = [self _parse];
+    NSString *url = parsed[@"url"];
+    BOOL isRemote = [parsed[@"remote"] boolValue];
     
-    if (authenticated) {
-        NSArray *items = [[NSArray alloc] init];
-        [self serialize:items atUrl:url];
-        [[Jason client] success: @{@"items": items}];
-
+    // Can only add keys locally
+    if (isRemote) {
+        [[Jason client] error: @{@"message": @"You can only clear keys from the owner view"}];
     } else {
-        [self auth: @"clear"];
+        if (authenticated) {
+            NSArray *items = [[NSArray alloc] init];
+            [self serialize:items atUrl:url];
+            [[Jason client] success: @{@"items": items}];
+            
+        } else {
+            [self auth: @"clear"];
+        }
     }
 }
 /*
