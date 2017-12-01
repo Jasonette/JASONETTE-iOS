@@ -104,7 +104,9 @@
     NSDictionary *plist = [self getSettings];
     ROOT_URL = plist[@"url"];
     INITIAL_LOADING = [plist[@"loading"] boolValue];
-    
+    NSString *launch_url = plist[@"launch"];
+    NSDictionary *launch = [JasonHelper read_local_json:launch_url];
+
     // FLEX DEBUGGER
 #if DEBUG
     if(plist[@"debug"] && [plist[@"debug"] boolValue]){
@@ -127,6 +129,7 @@
         vc.url = ROOT_URL;
         vc.loading = INITIAL_LOADING;
     }
+    vc.preload = launch;
     vc.view.backgroundColor = [UIColor whiteColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
