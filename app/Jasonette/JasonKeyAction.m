@@ -158,7 +158,7 @@
 
 /*********************************
 {
-	"type": "$key.set",
+	"type": "$key.update",
 	"options": {
 		"index": "{{$jason.index}}",
 		"components": [{
@@ -171,7 +171,7 @@
 	}
 }
 *********************************/
-- (void) set {
+- (void) update {
     NSDictionary *parsed = [self _parse];
     NSString *url = parsed[@"url"];
     BOOL isRemote = [parsed[@"remote"] boolValue];
@@ -235,28 +235,29 @@
             }
 
         } else {
-            [self auth:@"set"];
+            [self auth:@"update"];
         }
     }
 }
 
-- (void) reset {
+/*********************************
+{
+	"type": "$key.clear",
+	"success": {
+		"type": "$render"
+	}
+}
+*********************************/
+- (void) clear {
     NSDictionary *parsed = [self _parse];
-    NSString *url = parsed[@"url"];
-    BOOL isRemote = [parsed[@"remote"] boolValue];
     
-    // Can only add keys locally
-    if (isRemote) {
-        [[Jason client] error: @{@"message": @"You can only reset keys from the owner view"}];
-    } else {
-        if (authenticated) {
-            NSArray *items = [[NSArray alloc] init];
-            [self serialize:items atUrl:url];
-            [[Jason client] success: @{@"items": items}];
+    if (authenticated) {
+        NSArray *items = [[NSArray alloc] init];
+        [self serialize:items atUrl:url];
+        [[Jason client] success: @{@"items": items}];
 
-        } else {
-            [self auth: @"reset"];
-        }
+    } else {
+        [self auth: @"clear"];
     }
 }
 /*
@@ -401,10 +402,10 @@
         [self request];
     } else if ([origin isEqualToString:@"remove"]) {
         [self remove];
-    } else if ([origin isEqualToString:@"set"]) {
-        [self set];
-    } else if ([origin isEqualToString:@"reset"]) {
-        [self reset];
+    } else if ([origin isEqualToString:@"update"]) {
+        [self update];
+    } else if ([origin isEqualToString:@"clear"]) {
+        [self clear];
     }
 }
 
