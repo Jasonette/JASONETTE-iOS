@@ -104,7 +104,9 @@
     NSDictionary *plist = [self getSettings];
     ROOT_URL = plist[@"url"];
     INITIAL_LOADING = [plist[@"loading"] boolValue];
-    
+    NSString *launch_url = plist[@"launch"];
+    NSDictionary *launch = [JasonHelper read_local_json:launch_url];
+
     // FLEX DEBUGGER
 #if DEBUG
     if(plist[@"debug"] && [plist[@"debug"] boolValue]){
@@ -127,6 +129,7 @@
         vc.url = ROOT_URL;
         vc.loading = INITIAL_LOADING;
     }
+    vc.preload = launch;
     vc.view.backgroundColor = [UIColor whiteColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
@@ -1208,6 +1211,26 @@
     
     [VC.view endEditing:YES];
     
+    // Reset Agent
+    for(NSString *key in ((JasonViewController*)VC).agents) {
+        JasonAgentService *agent = self.services[@"JasonAgentService"];
+        if ([key isEqualToString:@"$webcontainer"]) {
+            // Web container is a special case agent => because it may function as a full-fledged view of the app,
+            // we can't just kill the entire thing just because the app transitioned from view A to B.
+            // View A should always be ready when we come back from view B.
+            if (VC.isMovingFromParentViewController || VC.isBeingDismissed) {
+                // Web container AND coming back from the child view therefore it's ok to kill the child view's web container agent
+                [agent clear:key forVC:VC];
+            } else {
+                // Otherwise it could be:
+                // 1. Going from view A to view B (Don't kill view A's agent)
+            }
+        } else {
+            [agent clear:key forVC:VC];
+        }
+    }
+
+    
     return self;
 }
 
@@ -1281,6 +1304,16 @@
     {
         VC.data = nil;
         
+        
+        /************************************
+         Setup head as quickly as possible
+         And set the headSetup flag to true, so that it doesn't try to set it up again later
+         **************************************/
+        if (VC.original && VC.original[@"$jason"] && VC.original[@"$jason"][@"head"]) {
+            VC.agentReady = NO;
+            [self setupHead:VC.original[@"$jason"][@"head"]];
+        }
+
         /*********************************************************************************************************
          *
          * VC.rendered: contains the rendered Jason DOM if it's been dynamically rendered.
@@ -1743,19 +1776,6 @@
         NSDictionary *head = dom[@"head"];
         if(head){
             [self setupHead: head];
-            
-            /****************************************************************************
-             *
-             * VC.parser = Template
-             *
-             ****************************************************************************/
-            if(head[@"templates"]){
-                VC.parser = head[@"templates"];
-            } else {
-                VC.parser = nil;
-            }
-            
-            // 3. Set up event
             [self onLoad: final];
         }
         
@@ -1891,50 +1911,45 @@
                     self.avCaptureSession = nil;
                 }
 
-                if(VC.background && [VC.background isKindOfClass:[UIWebView class]]){
+                if(VC.background && [VC.background isKindOfClass:[WKWebView class]]){
                     // don't do anything, reuse.
                 } else {
                     if(VC.background){
                         [VC.background removeFromSuperview];
                         VC.background = nil;
                     }
-                    VC.background = [[UIWebView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-                    ((UIWebView*)VC.background).delegate = self;
-                    
-                    // Need to make the background transparent so that it doesn't flash white when first loading
-                    VC.background.opaque = NO;
-                    VC.background.backgroundColor = [UIColor clearColor];
                 }
-                if(bg[@"text"]){
-                    NSString *html = bg[@"text"];
-                    if(VC.background.payload && VC.background.payload[@"html"] && [VC.background.payload[@"html"] isEqualToString:html]) {
-                        // same html, no need to reload
-                    } else {
-                        // different html, reload
-                        [((UIWebView*)VC.background) loadHTMLString:html baseURL:nil];
-                    }
                     
-                    VC.background.payload = @{@"html": html};
-                    
+                NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+                if(bg[@"url"]) {
+                    payload[@"url"] = bg[@"url"];
+                } else if(bg[@"text"]) {
+                    payload[@"text"] = bg[@"text"];
                 }
-                
-                // allow autoplay
-                ((UIWebView*)VC.background).mediaPlaybackRequiresUserAction = NO;
-                
-                // allow inline playback
-                ((UIWebView*)VC.background).allowsInlineMediaPlayback = YES;
-                
-                // user interaction enable/disable => disabled by default
-                VC.background.userInteractionEnabled = NO;
-                if(bg[@"action"]){
-                    NSString *action_type = bg[@"action"][@"type"];
-                    if(action_type){
-                        if([action_type isEqualToString:@"$default"]){
-                            // enable input only when action type is $default
-                            VC.background.userInteractionEnabled = YES;
-                        }
-                    }
+                if(bg[@"id"]) {
+                    payload[@"id"] = bg[@"id"];
+                } else {
+                    // if no id is specified, just use the current url as the id
+                    payload[@"id"] = @"$webcontainer";
                 }
+                if(bg[@"action"]) {
+                    payload[@"action"] = bg[@"action"];
+                }
+                JasonAgentService *agent = self.services[@"JasonAgentService"];
+                VC.background = [agent setup:payload withId:payload[@"id"]];
+                
+                // Need to make the background transparent so that it doesn't flash white when first loading
+                VC.background.opaque = NO;
+                VC.background.backgroundColor = [UIColor clearColor];
+                VC.background.hidden = NO;
+                
+                int height = [UIScreen mainScreen].bounds.size.height;
+                if (!tabController.tabBar.hidden) {
+                    height = height - tabController.tabBar.frame.size.height;
+                }
+                CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, height);
+                VC.background.frame = rect;
+
             }
             [VC.view addSubview:VC.background];
             [VC.view sendSubviewToBack:VC.background];
@@ -2087,6 +2102,25 @@
         }
         NSDictionary *style = head[@"styles"];
         [VC setValue:style forKey:@"style"];
+        
+        // 3. agents
+        if (!VC.agentReady) {
+         // Agents must be setup ONLY once, AFTER the true view has finished loading.
+            if(head[@"agents"] && [head[@"agents"] isKindOfClass:[NSDictionary class]] && [head[@"agents"] count] > 0) {
+                for(NSString *key in head[@"agents"]) {
+                    JasonAgentService *agent = self.services[@"JasonAgentService"];
+                    [agent setup: head[@"agents"][key] withId: key];
+    }
+}
+            VC.agentReady = YES;
+        }
+
+        // 4. templates
+        if(head[@"templates"]){
+            VC.parser = head[@"templates"];
+        } else {
+            VC.parser = nil;
+        }
     }
 }
 
@@ -3686,3 +3720,4 @@
 }
 
 @end
+
