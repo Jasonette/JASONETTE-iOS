@@ -91,15 +91,12 @@
     }
 }
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    
+
     // Inject agent.js into agent context
     NSString *identifier = webView.payload[@"identifier"];
     NSString *raw = [JasonHelper read_local_file:@"file://agent.js"];
     NSString *interface = [NSString stringWithFormat:@"$agent.interface = window.webkit.messageHandlers[\"%@\"];\n", identifier];
-    NSString *meta = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
-
     NSString *summon = [raw stringByAppendingString:interface];
-    summon = [summon stringByAppendingString:meta];
     webView.payload[@"state"] = @"rendered";
     [webView evaluateJavaScript:summon completionHandler:^(id _Nullable res, NSError * _Nullable error) {
         NSLog(@"Injected");
