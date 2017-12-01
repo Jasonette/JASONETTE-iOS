@@ -95,9 +95,12 @@
     // Inject agent.js into agent context
     NSString *identifier = webView.payload[@"identifier"];
     NSString *raw = [JasonHelper read_local_file:@"file://agent.js"];
-    NSString *interface = [NSString stringWithFormat:@"$agent.interface = window.webkit.messageHandlers[\"%@\"];", identifier];
-    NSString *summon = [raw stringByAppendingString:interface];
+    NSString *interface = [NSString stringWithFormat:@"$agent.interface = window.webkit.messageHandlers[\"%@\"];\n", identifier];
+    NSString *meta = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
 
+    NSString *summon = [raw stringByAppendingString:interface];
+    summon = [summon stringByAppendingString:meta];
+    webView.payload[@"state"] = @"rendered";
     [webView evaluateJavaScript:summon completionHandler:^(id _Nullable res, NSError * _Nullable error) {
         NSLog(@"Injected");
     }];
@@ -123,14 +126,18 @@
                 if([navigationAction.sourceFrame isEqual:navigationAction.targetFrame]) {
                     // normal navigation
                     // Need to handle JASON action
-                    decisionHandler(WKNavigationActionPolicyCancel);
-                    NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
-                    NSString *identifier = webView.payload[@"identifier"];
-                    if(action[@"trigger"]) {
-                        event[@"$id"] = identifier;
-                        event[@"trigger"] = action[@"trigger"];
-                        event[@"options"] = @{ @"url": navigationAction.request.URL.absoluteString };
-                        [[Jason client] call: event];
+                    if (![webView.payload[@"state"] isEqualToString:@"rendered"]) {
+                        decisionHandler(WKNavigationActionPolicyAllow);
+                    } else {
+                        decisionHandler(WKNavigationActionPolicyCancel);
+                        NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
+                        NSString *identifier = webView.payload[@"identifier"];
+                        if(action[@"trigger"]) {
+                            event[@"$id"] = identifier;
+                            event[@"trigger"] = action[@"trigger"];
+                            event[@"options"] = @{ @"url": navigationAction.request.URL.absoluteString };
+                            [[Jason client] call: event];
+                        }
                     }
                 } else {
                     // different frame, maybe a parent frame requesting its child iframe request
@@ -212,10 +219,13 @@
         [vc.view sendSubviewToBack:agent];
         agent.hidden = YES;
         
+        // Setup Payload
+        agent.payload = [@{@"identifier": identifier, @"state": @"empty"} mutableCopy];
 
     }
-    // Setup Payload
-    agent.payload = [@{@"identifier": identifier, @"state": @"empty", @"parent": vc.url} mutableCopy];
+    if (vc.url) {
+        agent.payload[@"parent"] = vc.url;
+    }
 
     // Set action payload
     // This needs to be handled separately than other payloads since "action" is empty in the beginning.

@@ -1211,7 +1211,20 @@
     // Reset Agent
     for(NSString *key in ((JasonViewController*)VC).agents) {
         JasonAgentService *agent = self.services[@"JasonAgentService"];
-        [agent clear:key forVC:VC];
+        if ([key isEqualToString:@"$webcontainer"]) {
+            // Web container is a special case agent => because it may function as a full-fledged view of the app,
+            // we can't just kill the entire thing just because the app transitioned from view A to B.
+            // View A should always be ready when we come back from view B.
+            if (VC.isMovingFromParentViewController || VC.isBeingDismissed) {
+                // Web container AND coming back from the child view therefore it's ok to kill the child view's web container agent
+                [agent clear:key forVC:VC];
+            } else {
+                // Otherwise it could be:
+                // 1. Going from view A to view B (Don't kill view A's agent)
+            }
+        } else {
+            [agent clear:key forVC:VC];
+        }
     }
 
     
@@ -1298,14 +1311,6 @@
             [self setupHead:VC.original[@"$jason"][@"head"]];
         }
 
-        // setup web container as an agent
-        JasonAgentService *agent = self.services[@"JasonAgentService"];
-        WKWebView *webContainer = [agent setup: @{
-                                                  @"type": @"html"
-                                                  } withId:@"$webcontainer"];
-        ((JasonViewController *)VC).agents[@"$webcontainer"] = webContainer;
-
-        
         /*********************************************************************************************************
          *
          * VC.rendered: contains the rendered Jason DOM if it's been dynamically rendered.
@@ -1920,10 +1925,10 @@
                 }
                 if(bg[@"id"]) {
                     payload[@"id"] = bg[@"id"];
-                    } else {
+                } else {
                     // if no id is specified, just use the current url as the id
                     payload[@"id"] = @"$webcontainer";
-                    }
+                }
                 if(bg[@"action"]) {
                     payload[@"action"] = bg[@"action"];
                 }
@@ -1935,7 +1940,7 @@
                 VC.background.backgroundColor = [UIColor clearColor];
                 VC.background.hidden = NO;
                 VC.background.frame = [UIScreen mainScreen].bounds;
-                        }
+            }
             [VC.view addSubview:VC.background];
             [VC.view sendSubviewToBack:VC.background];
         }
