@@ -13,8 +13,11 @@
 		04325CA91FC8D7FE00820096 /* JasonKeyAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04325CA81FC8D7FE00820096 /* JasonKeyAction.m */; };
 		043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 043814151EF7455800CC4706 /* JasonGlobalAction.m */; };
 		043EFED61F50B75800F5AD48 /* JasonPushService.m in Sources */ = {isa = PBXBuildFile; fileRef = 043EFED51F50B75800F5AD48 /* JasonPushService.m */; };
-		045C77E91F0278EA00F06598 /* loading.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77E81F0278EA00F06598 /* loading.json */; };
+		045C77E91F0278EA00F06598 /* preload.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77E81F0278EA00F06598 /* preload.json */; };
 		045C77EB1F02791D00F06598 /* error.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77EA1F02791D00F06598 /* error.json */; };
+		045E092C1FC4930B003A6341 /* agent.js in Resources */ = {isa = PBXBuildFile; fileRef = 045E092B1FC4930B003A6341 /* agent.js */; };
+		045E092F1FC4A87D003A6341 /* JasonAgentAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E092E1FC4A87D003A6341 /* JasonAgentAction.m */; };
+		045E09331FC4A93F003A6341 /* JasonAgentService.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E09321FC4A93F003A6341 /* JasonAgentService.m */; };
 		045E09381FC5F840003A6341 /* st.js in Resources */ = {isa = PBXBuildFile; fileRef = 045E09371FC5F840003A6341 /* st.js */; };
 		045E093A1FC5F98A003A6341 /* xhtml.js in Resources */ = {isa = PBXBuildFile; fileRef = 045E09391FC5F989003A6341 /* xhtml.js */; };
 		045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */; };
@@ -101,8 +104,13 @@
 		043814151EF7455800CC4706 /* JasonGlobalAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonGlobalAction.m; sourceTree = "<group>"; };
 		043EFED41F50B75800F5AD48 /* JasonPushService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonPushService.h; sourceTree = "<group>"; };
 		043EFED51F50B75800F5AD48 /* JasonPushService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonPushService.m; sourceTree = "<group>"; };
-		045C77E81F0278EA00F06598 /* loading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loading.json; sourceTree = "<group>"; };
+		045C77E81F0278EA00F06598 /* preload.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = preload.json; sourceTree = "<group>"; };
 		045C77EA1F02791D00F06598 /* error.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = error.json; sourceTree = "<group>"; };
+		045E092B1FC4930B003A6341 /* agent.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = agent.js; sourceTree = "<group>"; };
+		045E092D1FC4A87D003A6341 /* JasonAgentAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonAgentAction.h; sourceTree = "<group>"; };
+		045E092E1FC4A87D003A6341 /* JasonAgentAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonAgentAction.m; sourceTree = "<group>"; };
+		045E09311FC4A93F003A6341 /* JasonAgentService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonAgentService.h; sourceTree = "<group>"; };
+		045E09321FC4A93F003A6341 /* JasonAgentService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonAgentService.m; sourceTree = "<group>"; };
 		045E09371FC5F840003A6341 /* st.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = st.js; sourceTree = "<group>"; };
 		045E09391FC5F989003A6341 /* xhtml.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = xhtml.js; sourceTree = "<group>"; };
 		045E5F3B1E3661060088D5E6 /* JasonReturnAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonReturnAction.h; sourceTree = "<group>"; };
@@ -294,6 +302,7 @@
 		043EFED71F50B75C00F5AD48 /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				045E09341FC4A943003A6341 /* $agent */,
 				044C21441FA067B9003E450F /* $push */,
 				0483D9B11FA0B5E4004DDA37 /* $vision */,
 				042A7FDA1FAC665E00C1A3F2 /* $websocket */,
@@ -308,6 +317,24 @@
 				043EFED51F50B75800F5AD48 /* JasonPushService.m */,
 			);
 			name = $push;
+			sourceTree = "<group>";
+		};
+		045E09301FC4A882003A6341 /* $agent */ = {
+			isa = PBXGroup;
+			children = (
+				045E092D1FC4A87D003A6341 /* JasonAgentAction.h */,
+				045E092E1FC4A87D003A6341 /* JasonAgentAction.m */,
+			);
+			name = $agent;
+			sourceTree = "<group>";
+		};
+		045E09341FC4A943003A6341 /* $agent */ = {
+			isa = PBXGroup;
+			children = (
+				045E09311FC4A93F003A6341 /* JasonAgentService.h */,
+				045E09321FC4A93F003A6341 /* JasonAgentService.m */,
+			);
+			name = $agent;
 			sourceTree = "<group>";
 		};
 		045E5F3E1E36610B0088D5E6 /* $return */ = {
@@ -465,6 +492,7 @@
 				5EE85B761DA5803F0049EACE /* JasonActionProtocol.h */,
 				5EE85B771DA582930049EACE /* JasonAction.h */,
 				5EE85B781DA582930049EACE /* JasonAction.m */,
+				045E09301FC4A882003A6341 /* $agent */,
 				5E31778D1D1F209000D87778 /* $audio */,
 				5E3177A81D1F291200D87778 /* $cache */,
 				5E3177A91D1F294C00D87778 /* $convert */,
@@ -542,6 +570,7 @@
 			children = (
 				5E31769B1D1E411E00D87778 /* csv.js */,
 				5E3176F41D1E411E00D87778 /* rss.js */,
+				045E092B1FC4930B003A6341 /* agent.js */,
 				045E09371FC5F840003A6341 /* st.js */,
 				045E09391FC5F989003A6341 /* xhtml.js */,
 			);
@@ -649,7 +678,7 @@
 			isa = PBXGroup;
 			children = (
 				5E31777B1D1F199D00D87778 /* Images */,
-				045C77E81F0278EA00F06598 /* loading.json */,
+				045C77E81F0278EA00F06598 /* preload.json */,
 				045C77EA1F02791D00F06598 /* error.json */,
 			);
 			name = "file://";
@@ -877,6 +906,7 @@
 				5E3177511D1E411F00D87778 /* more@2x.png in Resources */,
 				5E3177781D1E414C00D87778 /* Media.xcassets in Resources */,
 				5E3840751D3A3D2200D1C421 /* placeholderr@2x.png in Resources */,
+				045E092C1FC4930B003A6341 /* agent.js in Resources */,
 				5E3177291D1E411F00D87778 /* csv.js in Resources */,
 				5E31771E1D1E411F00D87778 /* JasonVerticalSectionItem.xib in Resources */,
 				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
@@ -888,7 +918,7 @@
 				5E31773A1D1E411F00D87778 /* icon-success@2x.png in Resources */,
 				5E3177671D1E411F00D87778 /* rss.js in Resources */,
 				5E3177481D1E411F00D87778 /* LaunchScreen.storyboard in Resources */,
-				045C77E91F0278EA00F06598 /* loading.json in Resources */,
+				045C77E91F0278EA00F06598 /* preload.json in Resources */,
 				045C77EB1F02791D00F06598 /* error.json in Resources */,
 				5E3177361D1E411F00D87778 /* icon-error@2x.png in Resources */,
 				5E31775F1D1E411F00D87778 /* placeholder@2x.png in Resources */,
@@ -955,6 +985,7 @@
 			files = (
 				5EE85B6A1DA444770049EACE /* JasonMapComponent.m in Sources */,
 				5E0956301DA34D70007ADC78 /* JasonImageComponent.m in Sources */,
+				045E092F1FC4A87D003A6341 /* JasonAgentAction.m in Sources */,
 				5E31776D1D1E411F00D87778 /* JasonStack.m in Sources */,
 				5E2CB5C91D9ED6FB00DA2B83 /* JasonLayout.m in Sources */,
 				5E0956391DA34F0C007ADC78 /* JasonTextfieldComponent.m in Sources */,
@@ -1001,6 +1032,7 @@
 				5EDF644E1DB0480500C5E403 /* JasonSessionAction.m in Sources */,
 				043EFED61F50B75800F5AD48 /* JasonPushService.m in Sources */,
 				5E31774C1D1E411F00D87778 /* JasonMediaAction.m in Sources */,
+				045E09331FC4A93F003A6341 /* JasonAgentService.m in Sources */,
 				5E3177241D1E411F00D87778 /* JasonHorizontalSectionItem.m in Sources */,
 				5E3177221D1E411F00D87778 /* JasonHorizontalSection.m in Sources */,
 				04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */,

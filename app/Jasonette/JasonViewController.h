@@ -63,8 +63,10 @@
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL fresh;
 @property (nonatomic, assign) BOOL loading;
+@property (nonatomic, strong) NSDictionary *preload;
 @property (nonatomic, assign) BOOL offline;
-@property (nonatomic, assign) BOOL isFinal;
+@property (nonatomic, assign) BOOL agentReady;
+
 @property (strong, nonatomic) NSMutableDictionary *menu;
 @property (strong, nonatomic) NSMutableDictionary *form;
 @property (strong, nonatomic) NSMutableDictionary *requires;
@@ -74,6 +76,8 @@
 @property (strong, nonatomic) UITableView *tableView;
 
 @property (strong, nonatomic) UISearchController *searchController;
+@property (strong, nonatomic) NSMutableDictionary *agents;
+
 #ifdef ADS
 @property (strong, nonatomic) GADBannerView *bannerAd;
 @property (strong, nonatomic) GADInterstitial * interestialAd;

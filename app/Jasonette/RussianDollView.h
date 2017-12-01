@@ -25,8 +25,9 @@
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL fresh;
 @property (nonatomic, assign) BOOL loading;
+@property (nonatomic, strong) NSDictionary *preload;
 @property (nonatomic, assign) BOOL offline;
-@property (nonatomic, assign) BOOL isFinal;
+@property (nonatomic, assign) BOOL agentReady;
 
 @property (strong, nonatomic) NSMutableDictionary *old_header;
 @property (strong, nonatomic) NSMutableDictionary *old_footer;

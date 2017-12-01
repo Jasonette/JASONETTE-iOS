@@ -104,7 +104,9 @@
     NSDictionary *plist = [self getSettings];
     ROOT_URL = plist[@"url"];
     INITIAL_LOADING = [plist[@"loading"] boolValue];
-    
+    NSString *launch_url = plist[@"launch"];
+    NSDictionary *launch = [JasonHelper read_local_json:launch_url];
+
     // FLEX DEBUGGER
 #if DEBUG
     if(plist[@"debug"] && [plist[@"debug"] boolValue]){
@@ -127,6 +129,7 @@
         vc.url = ROOT_URL;
         vc.loading = INITIAL_LOADING;
     }
+    vc.preload = launch;
     vc.view.backgroundColor = [UIColor whiteColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
@@ -1208,6 +1211,26 @@
     
     [VC.view endEditing:YES];
     
+    // Reset Agent
+    for(NSString *key in ((JasonViewController*)VC).agents) {
+        JasonAgentService *agent = self.services[@"JasonAgentService"];
+        if ([key isEqualToString:@"$webcontainer"]) {
+            // Web container is a special case agent => because it may function as a full-fledged view of the app,
+            // we can't just kill the entire thing just because the app transitioned from view A to B.
+            // View A should always be ready when we come back from view B.
+            if (VC.isMovingFromParentViewController || VC.isBeingDismissed) {
+                // Web container AND coming back from the child view therefore it's ok to kill the child view's web container agent
+                [agent clear:key forVC:VC];
+            } else {
+                // Otherwise it could be:
+                // 1. Going from view A to view B (Don't kill view A's agent)
+            }
+        } else {
+            [agent clear:key forVC:VC];
+        }
+    }
+
+    
     return self;
 }
 
@@ -1281,6 +1304,16 @@
     {
         VC.data = nil;
         
+        
+        /************************************
+         Setup head as quickly as possible
+         And set the headSetup flag to true, so that it doesn't try to set it up again later
+         **************************************/
+        if (VC.original && VC.original[@"$jason"] && VC.original[@"$jason"][@"head"]) {
+            VC.agentReady = NO;
+            [self setupHead:VC.original[@"$jason"][@"head"]];
+        }
+
         /*********************************************************************************************************
          *
          * VC.rendered: contains the rendered Jason DOM if it's been dynamically rendered.
@@ -1288,7 +1321,7 @@
          * If VC.rendered is not nil, it means it's been already fully rendered.
          *
          ********************************************************************************************************/
-        if(VC.isFinal && VC.rendered && rendered_page){
+        if(VC.rendered && rendered_page){
             
             /*********************************************************************************************************
              *
@@ -1365,7 +1398,7 @@
              *  2. re-setup event listener
              *
              ********************************************************************************************************/
-            if(VC.contentLoaded && VC.isFinal){
+            if(VC.contentLoaded){
                 // If content already loaded,
                 // 1. just setup the navbar so the navbar will have the correct style
                 // 2. trigger load events ($show or $load)
@@ -1378,6 +1411,13 @@
              *
              ********************************************************************************************************/
             else {
+                if (VC.preload && VC.preload[@"style"] && VC.preload[@"style"][@"background"]) {
+                    if ([VC.preload[@"style"][@"background"] isKindOfClass:[NSDictionary class]]) {
+                        [self drawAdvancedBackground:VC.preload[@"style"][@"background"]];
+                    } else {
+                        [self drawBackground:VC.preload[@"style"][@"background"]];
+                    }
+                }
                 [self reload];
             }
             
@@ -1736,19 +1776,6 @@
         NSDictionary *head = dom[@"head"];
         if(head){
             [self setupHead: head];
-            
-            /****************************************************************************
-             *
-             * VC.parser = Template
-             *
-             ****************************************************************************/
-            if(head[@"templates"]){
-                VC.parser = head[@"templates"];
-            } else {
-                VC.parser = nil;
-            }
-            
-            // 3. Set up event
             [self onLoad: final];
         }
         
@@ -1884,50 +1911,45 @@
                     self.avCaptureSession = nil;
                 }
 
-                if(VC.background && [VC.background isKindOfClass:[UIWebView class]]){
+                if(VC.background && [VC.background isKindOfClass:[WKWebView class]]){
                     // don't do anything, reuse.
                 } else {
                     if(VC.background){
                         [VC.background removeFromSuperview];
                         VC.background = nil;
                     }
-                    VC.background = [[UIWebView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-                    ((UIWebView*)VC.background).delegate = self;
-                    
-                    // Need to make the background transparent so that it doesn't flash white when first loading
-                    VC.background.opaque = NO;
-                    VC.background.backgroundColor = [UIColor clearColor];
                 }
-                if(bg[@"text"]){
-                    NSString *html = bg[@"text"];
-                    if(VC.background.payload && VC.background.payload[@"html"] && [VC.background.payload[@"html"] isEqualToString:html]) {
-                        // same html, no need to reload
-                    } else {
-                        // different html, reload
-                        [((UIWebView*)VC.background) loadHTMLString:html baseURL:nil];
-                    }
                     
-                    VC.background.payload = @{@"html": html};
-                    
+                NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+                if(bg[@"url"]) {
+                    payload[@"url"] = bg[@"url"];
+                } else if(bg[@"text"]) {
+                    payload[@"text"] = bg[@"text"];
                 }
-                
-                // allow autoplay
-                ((UIWebView*)VC.background).mediaPlaybackRequiresUserAction = NO;
-                
-                // allow inline playback
-                ((UIWebView*)VC.background).allowsInlineMediaPlayback = YES;
-                
-                // user interaction enable/disable => disabled by default
-                VC.background.userInteractionEnabled = NO;
-                if(bg[@"action"]){
-                    NSString *action_type = bg[@"action"][@"type"];
-                    if(action_type){
-                        if([action_type isEqualToString:@"$default"]){
-                            // enable input only when action type is $default
-                            VC.background.userInteractionEnabled = YES;
-                        }
-                    }
+                if(bg[@"id"]) {
+                    payload[@"id"] = bg[@"id"];
+                } else {
+                    // if no id is specified, just use the current url as the id
+                    payload[@"id"] = @"$webcontainer";
                 }
+                if(bg[@"action"]) {
+                    payload[@"action"] = bg[@"action"];
+                }
+                JasonAgentService *agent = self.services[@"JasonAgentService"];
+                VC.background = [agent setup:payload withId:payload[@"id"]];
+                
+                // Need to make the background transparent so that it doesn't flash white when first loading
+                VC.background.opaque = NO;
+                VC.background.backgroundColor = [UIColor clearColor];
+                VC.background.hidden = NO;
+                
+                int height = [UIScreen mainScreen].bounds.size.height;
+                if (!tabController.tabBar.hidden) {
+                    height = height - tabController.tabBar.frame.size.height;
+                }
+                CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, height);
+                VC.background.frame = rect;
+
             }
             [VC.view addSubview:VC.background];
             [VC.view sendSubviewToBack:VC.background];
@@ -2080,13 +2102,32 @@
         }
         NSDictionary *style = head[@"styles"];
         [VC setValue:style forKey:@"style"];
+        
+        // 3. agents
+        if (!VC.agentReady) {
+         // Agents must be setup ONLY once, AFTER the true view has finished loading.
+            if(head[@"agents"] && [head[@"agents"] isKindOfClass:[NSDictionary class]] && [head[@"agents"] count] > 0) {
+                for(NSString *key in head[@"agents"]) {
+                    JasonAgentService *agent = self.services[@"JasonAgentService"];
+                    [agent setup: head[@"agents"][key] withId: key];
+    }
+}
+            VC.agentReady = YES;
+        }
+
+        // 4. templates
+        if(head[@"templates"]){
+            VC.parser = head[@"templates"];
+        } else {
+            VC.parser = nil;
+        }
     }
 }
 
 # pragma mark - View rendering (nav)
 - (void)setupHeader: (NSDictionary *)nav{
 
-        if(!nav && !VC.isFinal) {
+        if(!nav) {
             navigationController.navigationBar.hidden = YES;
             return;
         }
@@ -2319,7 +2360,7 @@
                     
                     if([image_src containsString:@"file://"]){
                         UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                        [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                        [self setMenuButtonImage:localImage forButton:btn withMenu:right_menu];
                     } else{
                         SDWebImageManager *manager = [SDWebImageManager sharedManager];
                         [manager downloadImageWithURL:[NSURL URLWithString:image_src]
@@ -2329,7 +2370,7 @@
                                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                                 if (image) {
                                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                                        [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
+                                                        [self setMenuButtonImage:image forButton:btn withMenu:right_menu];
                                                     });
                                                 }
                                             }];
@@ -2411,7 +2452,9 @@
                                 if(titleDict[@"style"][@"top"]){
                                     y = [((NSString *)titleDict[@"style"][@"top"]) floatValue];
                                 }
-                                
+                                if(titleDict[@"style"][@"color"]) {
+                                    tLabel.textColor = [JasonHelper colorwithHexString:titleDict[@"style"][@"color"] alpha:1.0];
+                                }
                                 tLabel.font = [UIFont fontWithName: font size:size];
                                 
                                 if(titleDict[@"style"][@"align"]) {
@@ -2607,7 +2650,7 @@
             // just skip the exception handling routine below.
         } else {
             // handling normal transition (including replace)
-            if(!t && !VC.isFinal) {
+            if(!t) {
                 if(previous_footer && previous_footer[@"tabs"]) {
                     // don't touch yet until the view finalizes
                 } else {
@@ -2689,14 +2732,20 @@
                 NSString *url;
                 NSDictionary *options = @{};
                 BOOL loading = NO;
+                NSDictionary *preload;
                 if(tab[@"href"]){
                     url = tab[@"href"][@"url"];
                     options = tab[@"href"][@"options"];
-                    if(tab[@"href"][@"loading"]){
+                    if(tab[@"href"][@"preload"]) {
+                        preload = tab[@"href"][@"preload"];
+                    } else if(tab[@"href"][@"loading"]){
                         loading = YES;
                     }
                 } else {
                     url = tab[@"url"];
+                    if(tab[@"preload"]) {
+                        preload = tab[@"preload"];
+                    }
                 }
                 
                 if(firstTime){
@@ -2709,6 +2758,7 @@
                         vc.url = url;
                         vc.options = [self filloutTemplate:options withData:[self variables]];
                         vc.loading = loading;
+                        vc.preload = preload;
                         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
                         [tabs_array addObject:nav];
                     }
@@ -2722,6 +2772,7 @@
                         vc.url = url;
                         vc.options = [self filloutTemplate:options withData:[self variables]];
                         vc.loading = loading;
+                        vc.preload = preload;
                     }
                 }
             }
@@ -3050,7 +3101,9 @@
                             NSString *url = [JasonHelper linkify:href[@"url"]];
                             if([vc respondsToSelector:@selector(url)]) vc.url = url;
                         }
-                        if(href[@"loading"]){
+                        if (href[@"preload"]) {
+                            vc.preload = href[@"preload"];
+                        } else if(href[@"loading"]){
                             vc.loading = [href[@"loading"] boolValue];
                         }
                         if([vc respondsToSelector: @selector(options)]) vc.options = href[@"options"];
@@ -3085,7 +3138,9 @@
                         if(href[@"options"]){
                             vc.options = [JasonHelper parse:memory._register with:href[@"options"]];
                         }
-                        if(href[@"loading"]){
+                        if (href[@"preload"]) {
+                            vc.preload = href[@"preload"];
+                        } else if(href[@"loading"]){
                             vc.loading = [href[@"loading"] boolValue];
                         }
                         
@@ -3665,3 +3720,4 @@
 }
 
 @end
+
