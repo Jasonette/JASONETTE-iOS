@@ -53,26 +53,45 @@ var whoareyou = function(firstname, lastname) {
     }
 }
 
-*************************************/
-
+ *************************************/
 - (void) request {
     JasonAgentService *service = [Jason client].services[@"JasonAgentService"];
     [service request: self.options];
 }
+
+ /*************************************
+ 
+ $agent.inject: Inject JavaScript into $agent context
+ 
+    {
+        "type": "$agent.inject",
+        "options": {
+            "id": "app",
+            "items": [{
+                "url": "file://authentication.js"
+            }]
+        },
+        "success": {
+            "type": "$agent.request",
+            "options": {
+                "id": "app",
+                "method": "login",
+                "params": ["eth", "12341234"]
+            }
+        }
+    }
+  
+*************************************/
+- (void) inject {
+    JasonAgentService *service = [Jason client].services[@"JasonAgentService"];
+    [service inject: self.options];
+}
 - (void) clear {
     JasonAgentService *service = [Jason client].services[@"JasonAgentService"];
-    if (self.options && self.options[@"id"]) {
-        [service clear:self.options[@"id"] forVC:[[Jason client] getVC]];
-    } else {
-        [[Jason client] error: @{@"message": @"Please specify an ID of the agent to clear"}];
-    }
+    [service clear: self.options];
 }
 - (void) refresh {
     JasonAgentService *service = [Jason client].services[@"JasonAgentService"];
-    if (self.options && self.options[@"id"]) {
-        [service refresh:self.options[@"id"] forVC:[[Jason client] getVC]];
-    } else {
-        [[Jason client] error: @{@"message": @"Please specify an ID of the agent to refresh"}];
-    }
+    [service refresh: self.options];
 }
 @end
