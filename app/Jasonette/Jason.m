@@ -710,7 +710,7 @@
 }
 - (void)render{
         NSDictionary *stack = [JasonMemory client]._stack;
-        
+    
         /**************************************************
          *
          * PART 1: Prepare data by filling it in with all the variables
@@ -725,12 +725,12 @@
         } else {
             data_stub = [[NSMutableDictionary alloc] init];
         }
-        
+    
         NSDictionary *kv = [self variables];
         for(NSString *key in kv){
             data_stub[key] = kv[key];
         }
-        
+    
         if(stack[@"options"]){
             if(!stack[@"options"][@"type"] || [stack[@"options"][@"type"] isEqualToString:@"json"]){
                 if(stack[@"options"][@"data"]){
@@ -789,16 +789,16 @@
             }
         }
         VC.data = data_stub;
-        
+    
         /**************************************************
          *
          * PART 2: Get the template
          *
          **************************************************/
-        
+    
         // The default template is 'body'
         NSString *template_name = @"body";
-        
+    
         if(stack[@"options"] && stack[@"options"][@"template"]){
             /**************************************************
              *
@@ -816,8 +816,8 @@
             template_name = stack[@"options"][@"template"];
         }
         NSDictionary *body_parser = VC.parser[template_name];
-        
-        
+    
+    
         /**********************************************************************
          *
          * PART 3: Actually render the prepared data with the selected template
@@ -882,7 +882,7 @@
             // Cache the view after drawing
             [self cache_view];
         }
-        [self success];    
+        [self success];
     
 }
 - (void)visit{
@@ -1926,7 +1926,7 @@
                         VC.background = nil;
                     }
                 }
-                    
+                
                 NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
                 if(bg[@"url"]) {
                     payload[@"url"] = bg[@"url"];
@@ -1956,33 +1956,30 @@
                 }
                 CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, height);
                 VC.background.frame = rect;
+                
+                UIProgressView *progressView = [VC.background viewWithTag:42];
+                if (!progressView) {
+                    progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+                    [progressView setTrackTintColor:[UIColor colorWithWhite:1.0f alpha:0.0f]];
+                    [progressView setFrame:CGRectMake(0,VC.background.frame.size.height-progressView.frame.size.height, VC.background.frame.size.width, progressView.frame.size.height)];
+                    [progressView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
+                    [progressView setTag: 42];
+                    [VC.background addSubview:progressView];
+                }
+                if (bg[@"style"]) {
+                    if (bg[@"style"][@"background"]) {
+                        VC.background.backgroundColor = [JasonHelper colorwithHexString:bg[@"style"][@"background"] alpha:1.0];
+                    }
+                    if (bg[@"style"][@"progress"]) {
+                        progressView.tintColor = [JasonHelper colorwithHexString:bg[@"style"][@"progress"] alpha:1.0];
+                    }
+                }
 
             }
             [VC.view addSubview:VC.background];
             [VC.view sendSubviewToBack:VC.background];
         }
     });
-}
-- (void) webViewDidFinishLoad:(UIWebView *)webView
-{
-    NSString *summon = @"var JASON={call: function(e){var n=document.createElement(\"IFRAME\");n.setAttribute(\"src\",\"jason:\"+JSON.stringify(e)),document.documentElement.appendChild(n),n.parentNode.removeChild(n),n=null}};";
-    [webView stringByEvaluatingJavaScriptFromString:summon];
-}
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    
-    if ([[[request URL] absoluteString] hasPrefix:@"jason:"]) {
-        // Extract the selector name from the URL
-        NSString *json = [[[request URL] absoluteString] substringFromIndex:6];
-        json = [json stringByRemovingPercentEncoding];
-        
-        NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *action = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        [[Jason client] call: action];
-        
-        return NO;
-    }
-    
-    return YES;
 }
 - (void) buildCamera: (NSDictionary *) options {
     NSError *error = nil;
@@ -2013,7 +2010,7 @@
     [self.avCaptureSession addOutput: output];
     
     // Listen for different types of barcode detection
-    [output setMetadataObjectsDelegate:self.services[@"JasonVisionService"] queue:dispatch_get_main_queue()];    
+    [output setMetadataObjectsDelegate:self.services[@"JasonVisionService"] queue:dispatch_get_main_queue()];
     [output setMetadataObjectTypes:output.availableMetadataObjectTypes];
 
     // Attach session preview layer to the background
@@ -2148,14 +2145,14 @@
                 }
             }
         }
-        
+    
         if(nav) VC.old_header = nav;
-        
-        
-        
+    
+    
+    
         UIColor *background = [JasonHelper colorwithHexString:@"#ffffff" alpha:1.0];
         UIColor *color = [JasonHelper colorwithHexString:@"#000000" alpha:1.0];
-        
+    
         // Deprecated (using 'nav' instead of 'header')
         NSArray *items = nav[@"items"];
         if(items){
@@ -2167,7 +2164,7 @@
             nav = dict;
         }
         ////////////////////////////////////////////////////////////////
-        
+    
         if(!nav) {
             if(VC.isModal || [tabController presentingViewController]){ // if the current tab bar was modally presented
                 // if it's a modal, need to add X button to close
@@ -2186,7 +2183,7 @@
                 return;
             }
         }
-        
+    
         navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
         navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
         [navigationController setNavigationBarHidden:NO];
@@ -2243,11 +2240,11 @@
             NSString *font_size = @"18";
             navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
         }
-        
-        
+    
+    
         NSDictionary *left_menu = nav[@"left"];
         NSDictionary *right_menu;
-        
+    
         NSArray *navComponents = nav[@"items"];
         if(navComponents){
             for(NSDictionary *component in navComponents){
@@ -2261,8 +2258,8 @@
             }
         }
         right_menu = nav[@"menu"];
-        
-        
+    
+    
         BBBadgeBarButtonItem *leftBarButton;
         if(!left_menu || [left_menu count] == 0){
             // if the current view is in a modal AND is the rootviewcontroller of the navigationcontroller,
@@ -2331,7 +2328,7 @@
             }
             [self setupMenuBadge:leftBarButton forData:left_menu];
         }
-        
+    
         BBBadgeBarButtonItem *rightBarButton;
         if(!right_menu || [right_menu count] == 0){
             rightBarButton = nil;
@@ -2392,7 +2389,7 @@
             }
             [self setupMenuBadge:rightBarButton forData:right_menu];
         }
-        
+    
         if(!VC.menu){
             VC.menu = [[NSMutableDictionary alloc] init];
         }
@@ -2401,7 +2398,7 @@
 
         VC.navigationItem.rightBarButtonItem = rightBarButton;
         VC.navigationItem.leftBarButtonItem = leftBarButton;
-        
+    
         if(nav[@"title"]){
             
             if(![[nav[@"title"] description] containsString:@"{{"] && ![[nav[@"title"] description] containsString:@"}}"]){
@@ -2500,12 +2497,12 @@
         } else {
             VC.navigationItem.titleView = nil;
         }
-        
+    
         navigationController.navigationBar.shadowImage = [UIImage new];
         [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
         CGFloat red, green, blue, alpha;
         [background getRed: &red green: &green blue: &blue alpha: &alpha];
-        
+    
         if(alpha < 1.0){
             navigationController.navigationBar.translucent = YES;
             [JasonHelper setStatusBarBackgroundColor: background];
@@ -2513,7 +2510,7 @@
             navigationController.navigationBar.translucent = NO;
             [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
         }
-        
+    
         navigationController.navigationBar.backgroundColor = background;
         navigationController.navigationBar.barTintColor = background;
         navigationController.navigationBar.tintColor = color;
@@ -3732,4 +3729,3 @@
 }
 
 @end
-
