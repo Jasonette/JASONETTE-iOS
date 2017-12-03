@@ -78,7 +78,7 @@
 
 - (void)loadViewByFile: (NSString *)url asFinal: (BOOL)final;
 - (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC:(UIViewController<RussianDollView>*) vc;
-
+- (id)filloutTemplate: (id)template withData:(id)data;
 - (NSDictionary *)variables;
 @end
 
