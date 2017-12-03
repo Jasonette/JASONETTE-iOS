@@ -256,6 +256,7 @@
 - (void) clear: (NSString *) identifier forVC: (JasonViewController *) vc{
     if(vc.agents && vc.agents[identifier]) {
         WKWebView *agent = vc.agents[identifier];
+        [agent removeObserver:self forKeyPath:NSStringFromSelector(@selector(estimatedProgress))];
         [agent loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
         [[Jason client] success];
     } else {
@@ -297,6 +298,9 @@
         // New Agent
         agent = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, 0, 0) configuration:config];
         agent.navigationDelegate = self;
+        
+        // Adding progressView
+        [agent addObserver:self forKeyPath:NSStringFromSelector(@selector(estimatedProgress)) options:NSKeyValueObservingOptionNew context:NULL];
 
         // Inject in to the current view
         [vc.view addSubview:agent];
@@ -434,5 +438,20 @@
         [[Jason client] error];
     }
 }
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    UIProgressView *progressView = (UIProgressView*)[object viewWithTag:42];
+    if (progressView) {
+        [progressView setAlpha:1.0f];
+        [progressView setProgress:((WKWebView*)object).estimatedProgress animated:YES];
+        NSLog(@"%f", progressView.progress);
+        if(((WKWebView*)object).estimatedProgress >= 1.0f) {
+            [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionCurveEaseOut animations:^{
+                [progressView setAlpha:0.0f];
+            } completion:^(BOOL finished) {
+                [progressView setProgress:0.0f animated:NO];
+            }];
+        }
 
+    }
+}
 @end
