@@ -47,18 +47,20 @@
 
     NSDictionary *parsed = [self _parse];
     NSString *url = parsed[@"url"];
+    NSArray *items = self.options[@"items"];
     BOOL isRemote = [parsed[@"remote"] boolValue];
+    
     // 1. If the request is for a remote url
     //   - No need to ask for passcode
     //   - But only return public objects
     if (isRemote) {
-        [self _fetch:url remote:isRemote];
+        [self _fetch:url withQuery: items remote:isRemote];
     
     // 2. If the request is for the current url
     //   - MUST ask for passcode, since it will be returning private content as well
     } else {
         if (authenticated) {
-            [self _fetch:url remote:isRemote];
+            [self _fetch:url withQuery: items remote:isRemote];
         } else {
             [self auth: @"request"];
         }
@@ -71,19 +73,22 @@
 {
 	"type": "$key.add",
 	"options": {
-		"components": [{
-			"key": "type",
-			"val": "ETH"
-		}, {
-			"key": "publickey",
-			"val": "0xjdnfenfkdewfhk384b4"
-		}, {
-			"key": "name",
-			"val": "Ethereum"
-		}, {
-			"key": "privatekey",
-			"val": "0x8dbgjenb8fngjwev742gfh47gh8ds87fh3bv"
-		}]
+        "index": 1,
+        "item": {
+            "type": {
+                "value": "ETH",
+                "read": "public"
+            },
+            "publickey": {
+                "value": "0xjdnfenfkdewfhk384b4"
+            },
+            "name": {
+                "value": "Ethereum"
+            },
+            "privatekey": {
+                "value": "0x8dbgjenb8fngjwev742gfh47gh8ds87fh3bv"
+            }
+        }
 	}
 }
 *******************/
@@ -94,13 +99,7 @@
         return;
     }
     
-    NSArray *components = self.options[@"components"];
-    if (!components) {
-        [[Jason client] error: @{@"message": @"A key item must have at least one component"}];
-        return;
-    }
-    
-    if (components && components.count > 0) {
+    if (self.options[@"item"]) {
         NSDictionary *parsed = [self _parse];
         NSString *url = parsed[@"url"];
         BOOL isRemote = [parsed[@"remote"] boolValue];
@@ -109,12 +108,16 @@
             [[Jason client] error: @{@"message": @"You are not allowed to add keys remotely"}];
         } else {
             NSMutableArray *items = [[self deserialize:url] mutableCopy];
-            [items addObject:self.options];
+            if (self.options[@"index"]) {
+                [items insertObject:self.options[@"item"] atIndex:[self.options[@"index"] intValue]];
+            } else {
+                [items addObject:self.options[@"item"]];
+            }
             [self serialize:items atUrl:url];
             [[Jason client] success: @{@"items": items}];
         }
     } else {
-        [[Jason client] error: @{@"message": @"A key must have at least a single component"}];
+        [[Jason client] error: @{@"message": @"Must specify an item to add"}];
     }
 }
 /*******************
@@ -161,10 +164,11 @@
 	"type": "$key.update",
 	"options": {
 		"index": "{{$jason.index}}",
-		"components": [{
-			"key": "name",
-			"val": "{{$jason.new_value}}"
-		}]
+		"item": {
+            "name": {
+                "value": "{{$jason.new_value}}"
+            }
+		}
 	},
 	"success": {
 		"type": "$render"
@@ -185,47 +189,38 @@
                 int index = [self.options[@"index"] intValue];
                 NSMutableArray *items = [[self deserialize:url] mutableCopy];
                 if (items.count > index) {
-                    NSDictionary *item = items[index];
-                    NSMutableArray *components = item[@"components"];
+                    NSDictionary *item = [items[index] mutableCopy];
                     
-                    
-                    /*
-                     item := {
-                         components: [{
-                             "key": "",
-                             "val": ""
-                         }, {
-                             "key": "",
-                             "val": ""
-                         }]
-                     }
-                     */
-                    
-                    if (self.options[@"components"] && [self.options[@"components"] isKindOfClass:[NSArray class]] && [self.options[@"components"] count] > 0) {
-                        for (int i=0; i<[self.options[@"components"] count]; i++) {
-                            // Find the component to update
-                            NSDictionary *new_component = self.options[@"components"][i];
-                            for (int j=0; j<components.count; j++) {
-                                if ([components[j][@"key"] isEqualToString:new_component[@"key"]]) {
-                                    // Match found!
-                                    // 1. Make a temp component
-                                    NSMutableDictionary *to_update = [components[j] mutableCopy];
-                                    // 2. Update the temp component's val
-                                    to_update[@"val"] = new_component[@"val"];
-                                    // 3. Update the original component with the updated component
-                                    components[j] = to_update;
-                                    break;
-                                }
+                    if (self.options[@"item"]) {
+
+                        NSDictionary *query_item = self.options[@"item"];
+
+                        /**
+                         
+                        query_item := {
+                            "name": {
+                                "value": "{{$jason.new_value}}",
+                                "read": "public"
+                            },
+                            "type": {
+                                "value": "BTC"
+                            }
+                        }
+                         
+                         **/
+
+                        for (NSString *key in query_item) {
+                            for (NSString *attr_key in query_item[key]) {
+                                item[key][attr_key] = query_item[key][attr_key];
                             }
                         }
                         
-                        // replace the item at index with the new set of components
-                        [items replaceObjectAtIndex:index withObject:@{@"components": components}];
+                        items[index] = item;
                         [self serialize:items atUrl:url];
                         [[Jason client] success: @{@"items": items}];
                         
                     } else {
-                        [[Jason client] error: @{@"message": @"Please specify at least one component to update"}];
+                        [[Jason client] error: @{@"message": @"Please specify a query"}];
                     }
                 } else {
                     [[Jason client] error: @{@"message": @"Invalid index"}];
@@ -322,7 +317,95 @@
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:@{@"items": items}];
     [keychain setData:data forKey:@"$key"];
 }
-- (void) _fetch: (NSString *) url remote: (BOOL) isRemote{
+- (NSArray *) _filter_public: (NSArray *)items {
+    
+    /**
+     
+    items := [{
+        "type": {
+            "value": "BTC",
+            "read": "public"
+        },
+        "name": {
+            "value": "Bitcoin",
+            "read": "public"
+        },
+        "publickey": {
+            "value": "0xm4ng83ng8wengn3kngdn3ngknal32ng".
+            "read": "public"
+        },
+        "privatekey": {
+            "value": "0xngn4bgbebgbgbejbgjbjbjbebsdjbdskb328fg3bgjewh2112hfdhg"
+        }
+    }, {
+        ...
+    }, {
+        ...
+    }]
+     
+     **/
+    
+    NSMutableArray *filtered_items = [[NSMutableArray alloc] init];
+    for(int i=0; i<items.count; i++) {
+        NSDictionary *item = items[i];
+        NSMutableDictionary *filtered_item = [[NSMutableDictionary alloc] init];
+        for(NSString *key in item) {
+            if (item[key][@"read"] && [item[key][@"read"] isEqualToString:@"public"]) {
+                // it's a match!
+                filtered_item[key] = item[key];
+            }
+        }
+        [filtered_items addObject:filtered_item];
+    }
+    items = filtered_items;
+    return items;
+}
+- (NSArray *) _filter: (NSArray *) items withQuery: (NSArray *) query_items {
+
+    /**
+     
+        query_items := [{
+            "type": {
+                "value": "BTC"
+            },
+            "name": {
+                "value": "Bitcoin"
+            }
+        }, {
+            "type": {
+                "value": "ETH"
+            }
+        }]
+
+     **/
+    if (query_items) {
+        NSMutableArray *filtered_items = [[NSMutableArray alloc] init];
+        for(int i=0; i<items.count; i++) {
+            NSDictionary *item = items[i];
+            for(int j=0; j<query_items.count; j++) {
+                NSDictionary *query_item = query_items[j];
+                BOOL its_a_match = YES;
+                for(NSString *key in query_item) {
+                    if([query_item[key][@"value"] isEqual:item[key][@"value"]]) {
+                        // this condition must match, every time.
+                        // Otherwise it needs to fail out.
+                    } else {
+                        its_a_match = NO;
+                        break;
+                    }
+                }
+                if (its_a_match) {
+                    [filtered_items addObject:item];
+                }
+            }
+        }
+        return filtered_items;
+    } else {
+        return items;
+    }
+}
+
+- (void) _fetch: (NSString *) url withQuery: (NSArray *) query_items remote: (BOOL) isRemote{
     
     UICKeyChainStore *keychain = [UICKeyChainStore keyChainStoreWithService:url];
     NSData *data = [keychain dataForKey:@"$key"];
@@ -334,34 +417,14 @@
     } else {
         if (isRemote) {
             // Get only the public components
-            NSMutableArray *filtered_items = [[NSMutableArray alloc] init];
-            for(int i=0; i<items.count; i++) {
-                if (!items[i][@"components"]) {
-                    [[Jason client] error: @{@"message": @"Invalid format"}];
-                    return;
-                }
-                
-                NSArray *components = items[i][@"components"];
-                
-                // Filtering only the public components
-                NSMutableArray *filtered_components = [[NSMutableArray alloc] init];
-                for(int j=0; j<components.count; j++) {
-                    NSString *read = components[j][@"read"];
-                    // If "read": "public", add the component to the filtered components array
-                    if (read && [read isEqualToString:@"public"]) {
-                        [filtered_components addObject:components[j]];
-                    }
-                }
-
-                // Add the filtered item into filtered_items array
-                [filtered_items addObject:@{@"components": filtered_components}];
-            }
-            items = filtered_items;
+            items = [self _filter_public: items];
         } else {
             // Current view, so return the entire array of public/private parts
             // Therefore don't need to do anything here
         }
     }
+    
+    items = [self _filter: items withQuery: query_items];
     
     [[Jason client] success: @{@"items": items}];
 
