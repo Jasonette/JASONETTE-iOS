@@ -1634,6 +1634,7 @@
 # pragma mark - View rendering (high level)
 - (void)reload{
         VC.data = nil;
+        VC.form = nil;
         if(VC.url){
             [self networkLoading:VC.loading with:nil];
             AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
