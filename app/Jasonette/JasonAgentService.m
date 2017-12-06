@@ -141,20 +141,16 @@
                 if([navigationAction.sourceFrame isEqual:navigationAction.targetFrame]) {
                     // normal navigation
                     // Need to handle JASON action
-                    if (![webView.payload[@"state"] isEqualToString:@"rendered"]) {
-                        decisionHandler(WKNavigationActionPolicyAllow);
-                    } else {
-                        if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
-                            decisionHandler(WKNavigationActionPolicyCancel);
-                            NSMutableDictionary *event = [action mutableCopy];
-                            NSString *identifier = webView.payload[@"identifier"];
-                            if(action[@"trigger"] || action[@"type"]) {
-                                event[@"$id"] = identifier;
-                                [[Jason client] call: event];
-                            }
-                        } else {
-                            decisionHandler(WKNavigationActionPolicyAllow);
+                    if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
+                        decisionHandler(WKNavigationActionPolicyCancel);
+                        NSMutableDictionary *event = [action mutableCopy];
+                        NSString *identifier = webView.payload[@"identifier"];
+                        if(action[@"trigger"] || action[@"type"]) {
+                            event[@"$id"] = identifier;
+                            [[Jason client] call: event];
                         }
+                    } else {
+                        decisionHandler(WKNavigationActionPolicyAllow);
                     }
                 } else {
                     // different frame, maybe a parent frame requesting its child iframe request
