@@ -6,7 +6,6 @@
 //
 #import <UIKit/UIKit.h>
 #import "UIBarButtonItem+Badge.h"
-#import "RussianDollView.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "JasonHelper.h"
 #import "UIView+JasonComponentPayload.h"
@@ -30,7 +29,7 @@
 #import <GoogleMobileAds/GoogleMobileAds.h>
 #endif
 
-@interface JasonViewController : UIViewController <TTTAttributedLabelDelegate, UISearchBarDelegate, RussianDollView, SWTableViewCellDelegate, UISearchResultsUpdating, PHFComposeBarViewDelegate, UITableViewDelegate, UITableViewDataSource
+@interface JasonViewController : UIViewController <TTTAttributedLabelDelegate, UISearchBarDelegate, SWTableViewCellDelegate, UISearchResultsUpdating, PHFComposeBarViewDelegate, UITableViewDelegate, UITableViewDataSource
 #ifdef ADS
     , GADBannerViewDelegate, GADInterstitialDelegate
 #endif
@@ -77,6 +76,7 @@
 
 @property (strong, nonatomic) UISearchController *searchController;
 @property (strong, nonatomic) NSMutableDictionary *agents;
+@property (strong, nonatomic) PHFComposeBarView *composeBarView;
 
 #ifdef ADS
 @property (strong, nonatomic) GADBannerView *bannerAd;

@@ -12,7 +12,7 @@
     UINavigationController *navigationController;
     UITabBarController *tabController;
     REMenu *menu_component;
-    UIViewController<RussianDollView> *VC;
+    JasonViewController *VC;
     NSString *title;
     NSString *desc;
     NSString *icon;
@@ -79,7 +79,7 @@
     NSLog(@"JasonCore: notifyError: %@", args);
     [[Jason client] error:args];
 }
-- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC: (UIViewController<RussianDollView> *)vc{
+- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC: (JasonViewController *)vc{
     VC = vc;
     [self loadViewByFile:url asFinal:final];
 }
@@ -1195,9 +1195,9 @@
     return include_resolved;
 }
 
-- (Jason *)detach:(UIViewController<RussianDollView>*)viewController{
+- (Jason *)detach:(JasonViewController*)viewController{
     // Need to clean up before leaving the view
-    VC = (UIViewController<RussianDollView>*)viewController;
+    VC = (JasonViewController*)viewController;
     
     // Reset Timers
     for(NSString *timer_name in VC.timers){
@@ -1244,13 +1244,13 @@
     return self;
 }
 
-- (Jason *)attach:(UIViewController<RussianDollView>*)viewController{
+- (Jason *)attach:(JasonViewController*)viewController{
     
     // When oauth is in process, let it do its job and don't interfere.
     if(self.oauth_in_process) return self;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"dismissSearchInput" object:nil];
     
-    VC = (UIViewController<RussianDollView>*)viewController;
+    VC = (JasonViewController*)viewController;
     navigationController = viewController.navigationController;
     
     tabController = navigationController.tabBarController;
@@ -1953,19 +1953,25 @@
                 if (!tabController.tabBar.hidden) {
                     height = height - tabController.tabBar.frame.size.height;
                 }
+                if (VC.composeBarView) {
+                    // footer.input exists
+                    height = height - VC.composeBarView.frame.size.height;
+                }
                 CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, height);
                 VC.background.frame = rect;
                 
                 UIProgressView *progressView = [VC.background viewWithTag:42];
                 if (!progressView) {
                     progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-                    [progressView setTrackTintColor:[UIColor colorWithWhite:1.0f alpha:0.0f]];
-                    // agent top + navigation height + status bar size (fixed at 20)
-                    [progressView setFrame:CGRectMake(0,VC.background.frame.origin.y + navigationController.navigationBar.frame.size.height+20, VC.background.frame.size.width, progressView.frame.size.height)];
-                    [progressView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
                     [progressView setTag: 42];
                     [VC.background addSubview:progressView];
                 }
+                
+                [progressView setTrackTintColor:[UIColor colorWithWhite:1.0f alpha:0.0f]];
+                // agent top + navigation height + status bar size (fixed at 20)
+                [progressView setFrame:CGRectMake(0,VC.background.frame.origin.y + navigationController.navigationBar.frame.size.height+20, VC.background.frame.size.width, progressView.frame.size.height)];
+                [progressView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
+
                 if (bg[@"style"]) {
                     if (bg[@"style"][@"background"]) {
                         VC.background.backgroundColor = [JasonHelper colorwithHexString:bg[@"style"][@"background"] alpha:1.0];
@@ -2625,20 +2631,11 @@
     // Set state as the return value
     // Will be processed in the caller viewcontroller's reload
     JasonMemory *memory = [JasonMemory client];
-    if(![VC url]){
-        // If it's a default VC without URL, call callback
-        if([VC respondsToSelector:@selector(right:)]) [VC right:action];
-    } else {
-        if(action){
-            if([VC respondsToSelector:@selector(right:)]){
-                [VC right: action];
-            } else {
-                [memory set_stack:action];
-                [self exec];
-            }
-        } else if(href){
-            [self go:href];
-        }
+    if(action){
+        [memory set_stack:action];
+        [self exec];
+    } else if(href){
+        [self go:href];
     }
 }
 
@@ -2772,7 +2769,7 @@
                         tabFound = YES;
                     } else {
                         UINavigationController *nav = tabController.viewControllers[i];
-                        UIViewController<RussianDollView> *vc = [[nav viewControllers] firstObject];
+                        JasonViewController *vc = [[nav viewControllers] firstObject];
                         vc.url = url;
                         vc.options = [self filloutTemplate:options withData:[self variables]];
                         vc.loading = loading;
@@ -3088,7 +3085,7 @@
                      ****************************************************************************/
                     
                     Class v = NSClassFromString(viewClass);
-                    UIViewController<RussianDollView> *vc = [[v alloc] init];
+                    JasonViewController *vc = [[v alloc] init];
                     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
                     UITabBarController *tab = [[UITabBarController alloc] init];
                     tab.viewControllers = @[nav];
@@ -3133,7 +3130,7 @@
                      *
                      ****************************************************************************/
                     Class v = NSClassFromString(viewClass);
-                    UIViewController<RussianDollView> *vc = [[v alloc] init];
+                    JasonViewController *vc = [[v alloc] init];
                     if(href){
                         if(href[@"url"]){
                             NSString *url = [JasonHelper linkify:href[@"url"]];
@@ -3273,7 +3270,7 @@
                  ****************************************************************************/
                 
                 // Instantiate ViewController
-                UIViewController<RussianDollView> *vc;
+                JasonViewController *vc;
                 UINavigationController *nav;
                 NSArray *tokens = [href[@"view"] componentsSeparatedByString:@"."];
                 // 1. via "view": "[STORYBOARD_NAME].[VIEWCONTROLLER_STORYBOARD_ID]" format

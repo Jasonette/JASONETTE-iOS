@@ -23,7 +23,6 @@
     NSMutableDictionary *indexPathsForImage;
     UIImageView *backgroundImageView;
     NSArray *raw_sections;
-    PHFComposeBarView *composeBarView;
     CGFloat keyboardSize;
     NSInteger download_image_counter;
     BOOL isEditing;
@@ -1449,26 +1448,26 @@
                 field = chat_input; // to be deprecated
             }
             
-            if(!composeBarView){
+            if(!self.composeBarView){
                 CGRect viewBounds = [self.view bounds];
                 CGRect frame = CGRectMake(0.0f,
                                           viewBounds.size.height - PHFComposeBarViewInitialHeight,
                                           viewBounds.size.width,
                                           PHFComposeBarViewInitialHeight);
-                composeBarView = [[PHFComposeBarView alloc] initWithFrame:frame];
+                self.composeBarView = [[PHFComposeBarView alloc] initWithFrame:frame];
                 if(field[@"name"]){
-                    composeBarView.textView.payload = [@{@"name": field[@"name"]} mutableCopy];
+                    self.composeBarView.textView.payload = [@{@"name": field[@"name"]} mutableCopy];
                 }
-                [composeBarView setDelegate:self];
-                [self.view addSubview:composeBarView];
-                [self.view bringSubviewToFront:composeBarView];
+                [self.composeBarView setDelegate:self];
+                [self.view addSubview:self.composeBarView];
+                [self.view bringSubviewToFront:self.composeBarView];
             }
             
             
             // First set the background style. The order is important because we will override some background colors below
             if(chat_input[@"style"]){
                 if(chat_input[@"style"][@"background"]){
-                    [self force_background:chat_input[@"style"][@"background"] intoView:composeBarView];
+                    [self force_background:chat_input[@"style"][@"background"] intoView:self.composeBarView];
                 }
             }
             
@@ -1477,7 +1476,7 @@
                 
                 //PHFComposeBarView hack to find relevant views and apply style
                 //[JasonHelper force_background:@"#000000" intoView:composeBarView];
-                for(UIView *v in composeBarView.subviews){
+                for(UIView *v in self.composeBarView.subviews){
                     for(UIView *vv in v.subviews){
                         if([vv isKindOfClass:[UITextView class]]){
                             vv.superview.layer.borderWidth = 0;
@@ -1501,13 +1500,13 @@
                 
                 // text color
                 if(field[@"style"][@"color"]){
-                    composeBarView.textView.textColor = [JasonHelper colorwithHexString:field[@"style"][@"color"] alpha:1.0];
+                    self.composeBarView.textView.textColor = [JasonHelper colorwithHexString:field[@"style"][@"color"] alpha:1.0];
                 }
                     
             }
             
             if(field[@"placeholder"]){
-                [composeBarView setPlaceholder:field[@"placeholder"]];
+                [self.composeBarView setPlaceholder:field[@"placeholder"]];
             }
             
             if(chat_input[@"left"]){
@@ -1521,7 +1520,7 @@
                             localImage = [JasonHelper colorize:localImage into:newColor];
                         }
                         UIImage *resizedImage = [JasonHelper scaleImage:localImage ToSize:CGSizeMake(30,30)];
-                        [composeBarView setUtilityButtonImage:resizedImage];
+                        [self.composeBarView setUtilityButtonImage:resizedImage];
                     } else {
                         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
                             SDWebImageManager *manager = [SDWebImageManager sharedManager];
@@ -1540,7 +1539,7 @@
                                                     
                                                     UIImage *resizedImage = [JasonHelper scaleImage:image ToSize:CGSizeMake(30,30)];
                                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                                        [composeBarView setUtilityButtonImage:resizedImage];
+                                                        [self.composeBarView setUtilityButtonImage:resizedImage];
                                                     });
                                                 }
                              ];
@@ -1559,7 +1558,7 @@
                     }
                      */
                     
-                    NSArray *buttons = [JasonHelper childOf:composeBarView withClassName:@"PHFComposeBarView_Button"];
+                    NSArray *buttons = [JasonHelper childOf:self.composeBarView withClassName:@"PHFComposeBarView_Button"];
                     for(UIButton *button in buttons){
                         if([button.subviews.firstObject isKindOfClass:[UILabel class]]){
                             
@@ -1578,14 +1577,14 @@
                         }
                     }
                     
-                    [composeBarView setButtonTitle:chat_input[@"right"][@"text"]];
+                    [self.composeBarView setButtonTitle:chat_input[@"right"][@"text"]];
                 }
             }
             
             // The background for the entire footer input
             if(chat_input[@"style"]){
                 if(chat_input[@"style"][@"background"]){
-                    composeBarView.backgroundColor = [JasonHelper colorwithHexString:chat_input[@"style"][@"background"] alpha:1.0];
+                    self.composeBarView.backgroundColor = [JasonHelper colorwithHexString:chat_input[@"style"][@"background"] alpha:1.0];
                 }
             }
 
