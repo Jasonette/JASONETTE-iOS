@@ -192,7 +192,6 @@
 		5E3176EE1D1E411E00D87778 /* JasonPortraitPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonPortraitPicker.h; sourceTree = "<group>"; };
 		5E3176EF1D1E411E00D87778 /* JasonPortraitPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonPortraitPicker.m; sourceTree = "<group>"; };
 		5E3176F41D1E411E00D87778 /* rss.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = rss.js; sourceTree = "<group>"; };
-		5E3176F61D1E411E00D87778 /* RussianDollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RussianDollView.h; sourceTree = "<group>"; };
 		5E3176FD1D1E411E00D87778 /* JasonStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonStack.h; sourceTree = "<group>"; };
 		5E3176FE1D1E411E00D87778 /* JasonStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonStack.m; sourceTree = "<group>"; };
 		5E3177001D1E411E00D87778 /* JasonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonViewController.h; sourceTree = "<group>"; };
@@ -514,7 +513,6 @@
 				5E3176FE1D1E411E00D87778 /* JasonStack.m */,
 				5E3176E21D1E411E00D87778 /* JasonParser.h */,
 				5E3176E41D1E411E00D87778 /* JasonParser.m */,
-				5E3176F61D1E411E00D87778 /* RussianDollView.h */,
 				5E3177AC1D1F2A8200D87778 /* file:// */,
 				5E31778A1D1F204600D87778 /* Lib */,
 			);

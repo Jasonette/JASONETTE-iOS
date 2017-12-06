@@ -6,7 +6,6 @@
 //
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "RussianDollView.h"
 #import "REMenu.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "JasonHelper.h"
@@ -47,8 +46,8 @@
 @property (strong, nonatomic) JSContext *jscontext;
 
 + (Jason*)client;
-- (Jason*)attach:(UIViewController<RussianDollView>*)viewController;
-- (Jason*)detach:(UIViewController<RussianDollView>*)viewController;
+- (Jason*)attach:(JasonViewController*)viewController;
+- (Jason*)detach:(JasonViewController*)viewController;
 
 - (void)cancel;
 - (void)ok;
@@ -77,7 +76,7 @@
 - (void)start:(NSDictionary *)href;
 
 - (void)loadViewByFile: (NSString *)url asFinal: (BOOL)final;
-- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC:(UIViewController<RussianDollView>*) vc;
+- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC:(JasonViewController*) vc;
 - (id)filloutTemplate: (id)template withData:(id)data;
 - (NSDictionary *)variables;
 @end
