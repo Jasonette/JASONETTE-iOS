@@ -42,6 +42,8 @@
         component.text = options[@"value"];
     } else if(json && json[@"value"]){
         component.text = json[@"value"];
+    } else {
+        component.text = @"";
     }
     
     if(component.text){
