@@ -123,8 +123,26 @@
                 id event = vc.events[action[@"trigger"]];
                 NSDictionary *resolved;
                 NSMutableDictionary *data_stub = [[Jason client] variables];
-                data_stub[@"$jason"] = @{ @"url": navigationAction.request.URL.absoluteString };
                 
+                // Prepare the url to return
+                NSString *url;
+                if([navigationAction.request.URL.absoluteString hasPrefix:@"file://"]) {
+                    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+                    if ([navigationAction.request.URL.absoluteString containsString:resourcePath]) {
+                        // it's an internal path. Convert it to regular file format
+                        url = [navigationAction.request.URL.absoluteString stringByReplacingOccurrencesOfString:resourcePath withString:@""];
+                        
+                        // Turn 'file:///' into 'file://'
+                        url = [url stringByReplacingOccurrencesOfString:@"file:///" withString:@"file://"];
+                    } else {
+                        // it's a regular file url, like: file://local.json
+                        url = navigationAction.request.URL.absoluteString;
+                    }
+                } else {
+                    url = navigationAction.request.URL.absoluteString;
+                }
+                data_stub[@"$jason"] = @{ @"url": url };
+
                 if ([event isKindOfClass:[NSArray class]]) {
                     // if it's a trigger, must figure out whether it resolves to type: "$default"
                     resolved = [[Jason client] filloutTemplate: event withData: data_stub];
@@ -196,9 +214,7 @@
             // contains "url" attribute
             if([url containsString:@"file://"]) {
                 // File URL
-                NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-                NSString *loc = @"file:/";
-                NSString *path = [url stringByReplacingOccurrencesOfString:loc withString:resourcePath];
+                NSString *path = [JasonHelper get_local_path:url];
                 NSURL *u = [NSURL fileURLWithPath:path isDirectory:NO];
                 [agent loadFileURL:u allowingReadAccessToURL:u];
             } else {

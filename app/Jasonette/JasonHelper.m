@@ -946,10 +946,14 @@
     return normalized_url;
 }
 + (NSString *) read_local_file: (NSString *)url {
-    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *fullPath = [url stringByReplacingOccurrencesOfString:@"file:/" withString:resourcePath];
+    NSString *fullPath = [self get_local_path:url];
     NSString *contents = [NSString stringWithContentsOfFile:fullPath encoding:NSUTF8StringEncoding error:NULL];
     return contents;
+}
++ (NSString *) get_local_path: (NSString *) url {
+    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString *fullPath = [url stringByReplacingOccurrencesOfString:@"file:/" withString:resourcePath];
+    return fullPath;
 }
 + (id) getPlistSettings: (NSString *)key {
     NSDictionary * infoPlistSettings = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"settings"];
