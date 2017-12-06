@@ -1960,7 +1960,8 @@
                 if (!progressView) {
                     progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
                     [progressView setTrackTintColor:[UIColor colorWithWhite:1.0f alpha:0.0f]];
-                    [progressView setFrame:CGRectMake(0,VC.background.frame.size.height-progressView.frame.size.height, VC.background.frame.size.width, progressView.frame.size.height)];
+                    // agent top + navigation height + status bar size (fixed at 20)
+                    [progressView setFrame:CGRectMake(0,VC.background.frame.origin.y + navigationController.navigationBar.frame.size.height+20, VC.background.frame.size.width, progressView.frame.size.height)];
                     [progressView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
                     [progressView setTag: 42];
                     [VC.background addSubview:progressView];
