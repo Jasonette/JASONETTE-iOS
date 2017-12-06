@@ -123,7 +123,7 @@
         }
     }];
     UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-        [[Jason client] finish];
+        [[Jason client] error];
         [alert dismissViewControllerAnimated:YES completion:nil];
     }];
     [alert addAction:ok];
