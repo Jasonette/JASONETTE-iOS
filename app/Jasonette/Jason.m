@@ -138,7 +138,7 @@
     navigationController.navigationBar.shadowImage = [UIImage new];
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     navigationController.navigationBar.translucent = NO;
-    navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
+    navigationController.navigationBar.backgroundColor = [UIColor clearColor];
     [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
@@ -1264,7 +1264,7 @@
         tabController.tabBar.backgroundColor = [UIColor whiteColor];
         tabController.tabBar.shadowImage = [[UIImage alloc] init];
     }
-    navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
+    navigationController.navigationBar.backgroundColor = [UIColor clearColor];
     navigationController.navigationBar.shadowImage = [UIImage new];
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     
