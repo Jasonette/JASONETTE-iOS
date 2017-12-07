@@ -7,14 +7,17 @@
             "layers": [
                 {
                     "type": "label",
-                    "text": "Offline",
+                    "text": "You're offline.\nFind the internet.\n\n<< Back",
                     "style": {
-                        "top": "50%-30",
+                        "top": "50%-100",
                         "align": "center",
                         "font": "AvenirNext-Regular",
-                        "size": "20",
-                        "left": "50%-50",
-                        "width": "100"
+                        "size": "16",
+                        "left": "50%-100",
+                        "width": "200"
+                    },
+                    "action": {
+                      "type": "$back"
                     }
                 },
                 {
@@ -24,6 +27,9 @@
                         "width": "100",
                         "top": "50%",
                         "left": "50%-50"
+                    },
+                    "action": {
+                      "type": "$back"
                     }
                 }
             ]
