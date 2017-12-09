@@ -49,8 +49,8 @@
             return;
         }
         
-        [self build_header: manager with:session];
         [self build_content_type: manager];
+        [self build_header: manager with:session];
         [self build_misc: manager];
         [self build_timeout: manager];
         NSString *dataType = [self build_data_type: manager];
