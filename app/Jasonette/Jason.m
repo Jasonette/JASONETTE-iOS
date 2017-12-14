@@ -165,10 +165,7 @@
 }
 - (void)call: (id)action with: (NSDictionary*)data{
     JasonMemory *memory = [JasonMemory client];
-    
-    // Ignore if there's another action being executed
-    if (memory.executing) return;
-    
+        
     if(data && data.count > 0){
         memory._register = data;
     }
