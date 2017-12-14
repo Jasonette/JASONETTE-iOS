@@ -79,5 +79,10 @@
 - (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC:(JasonViewController*) vc;
 - (id)filloutTemplate: (id)template withData:(id)data;
 - (NSDictionary *)variables;
+
+- (void)setupTabBar: (NSDictionary *)t forVC: (JasonViewController*) vc;
+- (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController*) vc;
+- (void)drawBackground:(NSString *)bg forVC: (JasonViewController *)vc;
+- (void)drawAdvancedBackground:(NSDictionary *)bg forVC: (JasonViewController *)vc;
 @end
 

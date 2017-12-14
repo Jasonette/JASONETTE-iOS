@@ -1366,12 +1366,12 @@
             if(VC.rendered[@"style"] && VC.rendered[@"style"][@"background"]) {
                 if([VC.rendered[@"style"][@"background"] isKindOfClass:[NSString class]]) {
                     if([VC.rendered[@"style"][@"background"] isEqualToString:@"camera"]) {
-                        [self buildCamera:@{@"type": @"camera"}];
+                        [self buildCamera:@{@"type": @"camera"} forVC: VC];
                     }
                 } else if([VC.rendered[@"style"][@"background"] isKindOfClass:[NSDictionary class]]) {
                     NSString *type = VC.rendered[@"style"][@"background"][@"type"];
                     if([type isEqualToString:@"camera"]) {
-                        [self buildCamera:VC.rendered[@"style"][@"background"][@"options"]];
+                        [self buildCamera:VC.rendered[@"style"][@"background"][@"options"] forVC: VC];
                     }
                 }
             }
@@ -1888,8 +1888,12 @@
 }
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
+        [self drawAdvancedBackground:bg forVC:VC];
+    });
+}
+- (void)drawAdvancedBackground:(NSDictionary *)bg forVC: (JasonViewController *)vc {
         NSString *type = bg[@"type"];
-        if([VC.background.payload[@"background"] isEqual:bg]) {
+        if([vc.background.payload[@"background"] isEqual:bg]) {
             return;
         }
         if(type) {
@@ -1898,15 +1902,15 @@
 
                 NSDictionary *options = bg[@"options"];
                 
-                if(VC.background){
-                    [VC.background removeFromSuperview];
-                    VC.background = nil;
+                if(vc.background){
+                    [vc.background removeFromSuperview];
+                    vc.background = nil;
                 }
                 
-                VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-                VC.background.payload = @{@"background": bg};
+                vc.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+                vc.background.payload = @{@"background": bg};
                 avPreviewLayer = nil;
-                [self buildCamera: options];
+                [self buildCamera: options forVC: vc];
 
 
             } else if([type isEqualToString:@"html"]){
@@ -1915,12 +1919,12 @@
                     self.avCaptureSession = nil;
                 }
 
-                if(VC.background && [VC.background isKindOfClass:[WKWebView class]]){
+                if(vc.background && [vc.background isKindOfClass:[WKWebView class]]){
                     // don't do anything, reuse.
                 } else {
-                    if(VC.background){
-                        [VC.background removeFromSuperview];
-                        VC.background = nil;
+                    if(vc.background){
+                        [vc.background removeFromSuperview];
+                        vc.background = nil;
                     }
                 }
                 
@@ -1940,29 +1944,29 @@
                     payload[@"action"] = bg[@"action"];
                 }
                 JasonAgentService *agent = self.services[@"JasonAgentService"];
-                VC.background = [agent setup:payload withId:payload[@"id"]];
+                vc.background = [agent setup:payload withId:payload[@"id"]];
                 
                 // Need to make the background transparent so that it doesn't flash white when first loading
-                VC.background.opaque = NO;
-                VC.background.backgroundColor = [UIColor clearColor];
-                VC.background.hidden = NO;
+                vc.background.opaque = NO;
+                vc.background.backgroundColor = [UIColor clearColor];
+                vc.background.hidden = NO;
                 
                 int height = [UIScreen mainScreen].bounds.size.height;
                 if (!tabController.tabBar.hidden) {
                     height = height - tabController.tabBar.frame.size.height;
                 }
-                if (VC.composeBarView) {
+                if (vc.composeBarView) {
                     // footer.input exists
-                    height = height - VC.composeBarView.frame.size.height;
+                    height = height - vc.composeBarView.frame.size.height;
                 }
                 CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, height);
-                VC.background.frame = rect;
+                vc.background.frame = rect;
                 
-                UIProgressView *progressView = [VC.background viewWithTag:42];
+                UIProgressView *progressView = [vc.background viewWithTag:42];
                 if (!progressView) {
                     progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
                     [progressView setTag: 42];
-                    [VC.background addSubview:progressView];
+                    [vc.background addSubview:progressView];
                 }
                 
                 [progressView setTrackTintColor:[UIColor colorWithWhite:1.0f alpha:0.0f]];
@@ -1971,12 +1975,12 @@
                 if (navigationController.navigationBar.hidden) {
                     navHeight = 0;
                 }
-                [progressView setFrame:CGRectMake(0,VC.background.frame.origin.y + navHeight + 20, VC.background.frame.size.width, progressView.frame.size.height)];
+                [progressView setFrame:CGRectMake(0,vc.background.frame.origin.y + navHeight + 20, vc.background.frame.size.width, progressView.frame.size.height)];
                 [progressView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
 
                 if (bg[@"style"]) {
                     if (bg[@"style"][@"background"]) {
-                        VC.background.backgroundColor = [JasonHelper colorwithHexString:bg[@"style"][@"background"] alpha:1.0];
+                        vc.background.backgroundColor = [JasonHelper colorwithHexString:bg[@"style"][@"background"] alpha:1.0];
                     }
                     if (bg[@"style"][@"progress"]) {
                         progressView.tintColor = [JasonHelper colorwithHexString:bg[@"style"][@"progress"] alpha:1.0];
@@ -1984,12 +1988,11 @@
                 }
 
             }
-            [VC.view addSubview:VC.background];
-            [VC.view sendSubviewToBack:VC.background];
+            [vc.view addSubview:vc.background];
+            [vc.view sendSubviewToBack:vc.background];
         }
-    });
 }
-- (void) buildCamera: (NSDictionary *) options {
+- (void) buildCamera: (NSDictionary *) options forVC: (JasonViewController *)vc{
     NSError *error = nil;
     // Find back/front camera
     // based on options
@@ -2024,44 +2027,49 @@
     // Attach session preview layer to the background
     if(!avPreviewLayer) {
         avPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_avCaptureSession];
-        avPreviewLayer.frame = VC.background.bounds;
+        avPreviewLayer.frame = vc.background.bounds;
         avPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-        [VC.background.layer addSublayer:avPreviewLayer];
+        [vc.background.layer addSublayer:avPreviewLayer];
     } else {
         [avPreviewLayer setSession:_avCaptureSession];
     }
     // Run
     [self.avCaptureSession startRunning];
-    [self call:VC.events[@"$vision.ready"]];
+    [self call:vc.events[@"$vision.ready"]];
 
 }
 - (void)drawBackground:(NSString *)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
-        
+        [self drawBackground:bg forVC:VC];
+    });
+}
+- (void)drawBackground:(NSString *)bg forVC: (JasonViewController *)vc {
+    
+    
         if([bg isEqualToString:@"camera"]){
-            if(VC.background){
-                [VC.background removeFromSuperview];
-                VC.background = nil;
+            if(vc.background){
+                [vc.background removeFromSuperview];
+                vc.background = nil;
             }
-            VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-            [self buildCamera: @{ @"type": bg }];
+            vc.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+            [self buildCamera: @{ @"type": bg } forVC: vc];
             
-            [VC.view addSubview:VC.background];
-            [VC.view sendSubviewToBack:VC.background];
+            [vc.view addSubview:vc.background];
+            [vc.view sendSubviewToBack:vc.background];
             
         }else if([bg hasPrefix:@"http"] || [bg hasPrefix:@"data:"] || [bg hasPrefix:@"file"]){
             if(self.avCaptureSession) {
                 [self.avCaptureSession stopRunning];
                 self.avCaptureSession = nil;
             }
-            if(VC.background){
-                [VC.background removeFromSuperview];
-                VC.background = nil;
+            if(vc.background){
+                [vc.background removeFromSuperview];
+                vc.background = nil;
             }
-            VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-            VC.background.contentMode = UIViewContentModeScaleAspectFill;
-            [VC.view addSubview:VC.background];
-            [VC.view sendSubviewToBack:VC.background];
+            vc.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+            vc.background.contentMode = UIViewContentModeScaleAspectFill;
+            [vc.view addSubview:vc.background];
+            [vc.view sendSubviewToBack:vc.background];
             
             if([bg containsString:@"file://"]){
                 NSString *localImageName = [bg substringFromIndex:7];
@@ -2079,10 +2087,10 @@
                     localImage = [UIImage imageNamed:localImageName];
                 }
                 
-                [(UIImageView *)VC.background setImage:localImage];
+                [(UIImageView *)vc.background setImage:localImage];
             } else {
                 UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
-                [((UIImageView *)VC.background) sd_setImageWithURL:[NSURL URLWithString:bg] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                [((UIImageView *)vc.background) sd_setImageWithURL:[NSURL URLWithString:bg] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 }];
             }
         } else {
@@ -2090,13 +2098,12 @@
                 [self.avCaptureSession stopRunning];
                 self.avCaptureSession = nil;
             }
-            if(VC.background){
-                [VC.background removeFromSuperview];
-                VC.background = nil;
+            if(vc.background){
+                [vc.background removeFromSuperview];
+                vc.background = nil;
             }
-            VC.view.backgroundColor = [JasonHelper colorwithHexString:bg alpha:1.0];
+            vc.view.backgroundColor = [JasonHelper colorwithHexString:bg alpha:1.0];
         }
-    });
     
 }
 
@@ -2138,23 +2145,27 @@
 
 # pragma mark - View rendering (nav)
 - (void)setupHeader: (NSDictionary *)nav{
-
+    [self setupHeader:nav forVC:VC];
+}
+- (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController *)v{
+    navigationController = v.navigationController;
+    tabController = v.tabBarController;
         if(!nav) {
             navigationController.navigationBar.hidden = YES;
             return;
         }
 
-        if(VC.rendered && rendered_page){
-            if(VC.old_header && [[VC.old_header description] isEqualToString:[nav description]]){
+        if(v.rendered && rendered_page){
+            if(v.old_header && [[v.old_header description] isEqualToString:[nav description]]){
                 // if the header is the same as the value trying to set,
-                if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[VC.old_header description]]) {
+                if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[v.old_header description]]) {
                     // and if the currently visible rendered_page's header is the same as the VC's old_header, ignore.
                     return;
                 }
             }
         }
     
-        if(nav) VC.old_header = nav;
+        if(nav) v.old_header = nav;
     
     
     
@@ -2174,7 +2185,7 @@
         ////////////////////////////////////////////////////////////////
     
         if(!nav) {
-            if(VC.isModal || [tabController presentingViewController]){ // if the current tab bar was modally presented
+            if(v.isModal || [tabController presentingViewController]){ // if the current tab bar was modally presented
                 // if it's a modal, need to add X button to close
                 nav = @{@"left": @{}};
             } else {
@@ -2273,7 +2284,7 @@
             // if the current view is in a modal AND is the rootviewcontroller of the navigationcontroller,
             // Add the X button. Otherwise, ignore this.
             if([tabController presentingViewController]){ // if the current tab bar was modally presented
-                if([navigationController.viewControllers.firstObject isEqual:VC]){
+                if([navigationController.viewControllers.firstObject isEqual:v]){
                     leftBarButton = [[BBBadgeBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(cancel)];
                     [leftBarButton setTintColor:color];
                 }
@@ -2398,14 +2409,14 @@
             [self setupMenuBadge:rightBarButton forData:right_menu];
         }
     
-        if(!VC.menu){
-            VC.menu = [[NSMutableDictionary alloc] init];
+        if(!v.menu){
+            v.menu = [[NSMutableDictionary alloc] init];
         }
-        [VC.menu setValue:left_menu forKey:@"left"];
-        [VC.menu setValue:right_menu forKey:@"right"];
+        [v.menu setValue:left_menu forKey:@"left"];
+        [v.menu setValue:right_menu forKey:@"right"];
 
-        VC.navigationItem.rightBarButtonItem = rightBarButton;
-        VC.navigationItem.leftBarButtonItem = leftBarButton;
+        v.navigationItem.rightBarButtonItem = rightBarButton;
+        v.navigationItem.leftBarButtonItem = leftBarButton;
     
         if(nav[@"title"]){
             
@@ -2421,7 +2432,7 @@
                                 
                                 if([url containsString:@"file://"]){
                                     UIImage *localImage = [UIImage imageNamed:[url substringFromIndex:7]];
-                                    [self setLogoImage:localImage withStyle:style];
+                                    [self setLogoImage:localImage withStyle:style forVC:v];
                                 } else{
                                     
                                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
@@ -2432,7 +2443,7 @@
                                                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                                             if (image) {
                                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                                    [self setLogoImage:image withStyle:style];
+                                                                    [self setLogoImage:image withStyle:style forVC:v];
                                                                 });
                                                             }
                                                         }];
@@ -2471,39 +2482,39 @@
                                 
                                 if(titleDict[@"style"][@"align"]) {
                                     if([titleDict[@"style"][@"align"] isEqualToString:@"left"]) {
-                                        UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
-                                        [v addSubview:tLabel];
-                                        VC.navigationItem.titleView = v;
+                                        UIView *titleView = [[UIView alloc] initWithFrame:tLabel.frame];
+                                        [titleView addSubview:tLabel];
+                                        v.navigationItem.titleView = titleView;
                                         
-                                        tLabel.frame = CGRectMake(x,y,VC.navigationController.navigationBar.frame.size.width, tLabel.frame.size.height);
-                                        [VC.navigationItem.titleView setFrame: CGRectMake(0, 0, VC.navigationController.navigationBar.frame.size.width, VC.navigationItem.titleView.frame.size.height)];
+                                        tLabel.frame = CGRectMake(x,y,v.navigationController.navigationBar.frame.size.width, tLabel.frame.size.height);
+                                        [v.navigationItem.titleView setFrame: CGRectMake(0, 0, v.navigationController.navigationBar.frame.size.width, v.navigationItem.titleView.frame.size.height)];
                                         tLabel.textAlignment = NSTextAlignmentLeft;
                                         
                                     } else {
-                                        [self setCenterLogoLabel:tLabel atY:y];
+                                        [self setCenterLogoLabel:tLabel atY:y forVC: v];
                                     }
                                 } else {
-                                    [self setCenterLogoLabel:tLabel atY:y];
+                                    [self setCenterLogoLabel:tLabel atY:y forVC: v];
                                 }
                             } else {
-                                [self setCenterLogoLabel:tLabel atY:y];
+                                [self setCenterLogoLabel:tLabel atY:y forVC: v];
                             }
                         }
                     }
                 } else if([nav[@"title"] isKindOfClass:[NSString class]]){
                     // Basic title (simple text)
-                    VC.navigationItem.titleView = nil;
-                    VC.navigationItem.title = nav[@"title"];
+                    v.navigationItem.titleView = nil;
+                    v.navigationItem.title = nav[@"title"];
                 } else {
-                    VC.navigationItem.titleView = nil;
+                    v.navigationItem.titleView = nil;
                 }
                 
             } else {
-                VC.navigationItem.titleView = nil;
+                v.navigationItem.titleView = nil;
             }
             
         } else {
-            VC.navigationItem.titleView = nil;
+            v.navigationItem.titleView = nil;
         }
     
         navigationController.navigationBar.shadowImage = [UIImage new];
@@ -2527,15 +2538,15 @@
             navigationController.navigationBarHidden = NO;
         });
 }
-- (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y{
-    UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
-    [v addSubview:tLabel];
-    VC.navigationItem.titleView = v;
+- (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y forVC: (JasonViewController *)v{
+    UIView *view = [[UIView alloc] initWithFrame:tLabel.frame];
+    [view addSubview:tLabel];
+    v.navigationItem.titleView = view;
     tLabel.frame = CGRectMake(0,y,tLabel.frame.size.width, tLabel.frame.size.height);
     [tLabel sizeToFit];
-    v.frame = CGRectMake(0,0,tLabel.frame.size.width, tLabel.frame.size.height+y);
+    view.frame = CGRectMake(0,0,tLabel.frame.size.width, tLabel.frame.size.height+y);
 }
-- (void)setLogoImage: (UIImage *)image withStyle:(NSDictionary *)style {
+- (void)setLogoImage: (UIImage *)image withStyle:(NSDictionary *)style forVC: (JasonViewController *)v{
     CGFloat width = 0;
     CGFloat height = 0;
     CGFloat x = 0;
@@ -2567,11 +2578,11 @@
     logoImageView.frame = frame;
     
     [logoView addSubview:logoImageView];
-    VC.navigationItem.titleView = logoView;
+    v.navigationItem.titleView = logoView;
     
     if(style[@"align"]) {
         if([style[@"align"] isEqualToString:@"left"]) {
-            [VC.navigationItem.titleView setFrame: CGRectMake(0, 0, VC.navigationController.navigationBar.frame.size.width, VC.navigationItem.titleView.frame.size.height)];
+            [v.navigationItem.titleView setFrame: CGRectMake(0, 0, v.navigationController.navigationBar.frame.size.width, v.navigationItem.titleView.frame.size.height)];
         }
     }
 }
@@ -2645,15 +2656,21 @@
 
 # pragma mark - View rendering (tab)
 - (void)setupTabBar: (NSDictionary *)t{
+    [self setupTabBar:t forVC: VC];
+}
+
+- (void)setupTabBar: (NSDictionary *)t forVC: (JasonViewController *)v{
     dispatch_async(dispatch_get_main_queue(), ^{
 
-        if(VC.isModal) {
+        if(v.isModal) {
             // If the current view is modal, it's an entirely new view
             // so don't need to worry about how tabs should show up.
             // just skip the exception handling routine below.
         } else {
             // handling normal transition (including replace)
-            if(!t) {
+            // If the tabs are empty AND the view hasn't been rendered yet, then wait until it finishes rendering
+
+            if(!t && !v.rendered) {
                 if(previous_footer && previous_footer[@"tabs"]) {
                     // don't touch yet until the view finalizes
                 } else {
@@ -2664,15 +2681,15 @@
         }
         if(previous_footer && previous_footer[@"tabs"]){
             // if previous footer tab was not null, we diff the tabs to determine whether to re-render
-            if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){
+            if(v.old_footer && v.old_footer[@"tabs"] && [[v.old_footer[@"tabs"] description] isEqualToString:[t description]]){
                 return;
             }
         } else {
             // if previous footer tab was null, we need to construct the tab again
         }
         
-        if(!VC.old_footer) VC.old_footer = [[NSMutableDictionary alloc] init];
-        VC.old_footer[@"tabs"] = t;
+        if(!v.old_footer) v.old_footer = [[NSMutableDictionary alloc] init];
+        v.old_footer[@"tabs"] = t;
         if(!previous_footer) previous_footer = [[NSMutableDictionary alloc] init];
         previous_footer[@"tabs"] = t;
         
@@ -2752,7 +2769,7 @@
                 }
                 
                 if(firstTime){
-                    if([VC.url isEqualToString:url] && i==indexOfTab){
+                    if([v.url isEqualToString:url] && i==indexOfTab){
                         tabFound = YES;
                         // if the tab URL is same as the currently visible VC's url
                         [tabs_array addObject:navigationController];
@@ -2766,7 +2783,7 @@
                         [tabs_array addObject:nav];
                     }
                 } else {
-                    if([VC.url isEqualToString:url]){
+                    if([v.url isEqualToString:url]){
                         // Do nothing
                         tabFound = YES;
                     } else {
