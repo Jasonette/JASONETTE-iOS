@@ -48,8 +48,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
-    
     original_height = self.view.frame.size.height;
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -140,7 +138,16 @@
     
     if (self.preload) {
         [self reload:self.preload final:YES];
+        [[Jason client] setupHeader: self.preload[@"header"] forVC: self];
+        if([self.preload[@"style"][@"background"] isKindOfClass:[NSDictionary class]]){
+            [[Jason client] drawAdvancedBackground:self.preload[@"style"][@"background"] forVC: self];
+        } else {
+            [[Jason client] drawBackground:self.preload[@"style"][@"background"] forVC: self];
+        }
+        [[Jason client] setupTabBar: self.preload[@"footer"][@"tabs"] forVC: self];
+        self.tableView.backgroundColor = [UIColor clearColor];
     }
+
 }
 - (void)adjustViewForKeyboard:(NSNotification *)notification{
     currently_focused = notification.userInfo[@"view"];
