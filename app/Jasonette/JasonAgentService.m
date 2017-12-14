@@ -268,7 +268,11 @@
 - (void) clear: (NSString *) identifier forVC: (JasonViewController *) vc{
     if(vc.agents && vc.agents[identifier]) {
         WKWebView *agent = vc.agents[identifier];
-        [agent removeObserver:self forKeyPath:NSStringFromSelector(@selector(estimatedProgress))];
+        @try {
+            [agent removeObserver:self forKeyPath:NSStringFromSelector(@selector(estimatedProgress))];
+        } @catch (id exception) {
+            
+        }
         [agent loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
         [[Jason client] success];
     } else {
