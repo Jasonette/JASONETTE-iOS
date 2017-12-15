@@ -55,6 +55,9 @@
 @property (nonatomic, assign) BOOL isModal;
 @property (nonatomic, strong) NSMutableDictionary *action_callback;
 @property (nonatomic, strong) NSMutableDictionary *events;
+@property (nonatomic, strong) UIView *focusField;
+
+
 @property (strong, nonatomic) NSDictionary *style;
 @property (strong, nonatomic) NSDictionary *rendered;
 @property (strong, nonatomic) NSDictionary *original;
