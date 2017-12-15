@@ -93,8 +93,8 @@
     self.tableView.delaysContentTouches = false;
     self.agents = [[NSMutableDictionary alloc] init];
     
+    self.focusField = nil;
     
-
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
 
@@ -519,7 +519,14 @@
     NSString *type = s[@"type"];
     return (type && [type isEqualToString:@"horizontal"]);
 }
+-(void)tableViewRendered:(UITableView*)tableView{
+    if (self.focusField) {
+        [self.focusField becomeFirstResponder];
+    }
+}
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(tableViewRendered:) object:tableView];
+    [self performSelector:@selector(tableViewRendered:) withObject:tableView afterDelay:0];
     NSDictionary *s = [self.sections objectAtIndex:section];
     if([self isHorizontal: s]){
         return 1;
