@@ -63,7 +63,7 @@
     }
     return self;
 }
-- (UIViewController *)getVC {
+- (JasonViewController *)getVC {
     return VC;
 }
 

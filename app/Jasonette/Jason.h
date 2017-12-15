@@ -41,7 +41,7 @@
 @property (strong, nonatomic) NSMutableDictionary *services;
 @property (strong, nonatomic) AVCaptureSession *avCaptureSession;
 
-- (UIViewController *)getVC;
+- (JasonViewController *)getVC;
 
 @property (strong, nonatomic) JSContext *jscontext;
 

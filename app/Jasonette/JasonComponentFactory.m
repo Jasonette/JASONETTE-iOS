@@ -19,6 +19,11 @@ static NSMutableDictionary *_stylesheet = nil;
         Class<JasonComponentProtocol> ComponentClass = NSClassFromString(componentClassName);
         child = [self applyStylesheet:child];
         UIView *generated_component = [ComponentClass build:component withJSON:child withOptions:options];
+        
+        if (child[@"focus"]) {
+            [[Jason client] getVC].focusField = generated_component;
+        }
+        
         [generated_component setNeedsLayout];
         [generated_component layoutIfNeeded];
         return generated_component;
