@@ -172,6 +172,7 @@
     },
   };
   var TRANSFORM = {
+    memory: {},
     transform: function(template, data, injection, serialized) {
       var selector = null;
       if (/#include/.test(JSON.stringify(template))) {
@@ -295,6 +296,23 @@
             if (fun) {
               if (fun.name === '#include') {
                 // this was handled above (before the for loop) so just ignore
+              } else if (fun.name === '#let') {
+                if (Helper.is_array(template[key]) && template[key].length == 2) {
+                  var defs = template[key][0];
+                  var real_template = template[key][1];
+
+                  // 1. Parse the first item to assign variables
+                  var parsed_keys = TRANSFORM.run(defs, data);
+
+                  // 2. modify the data
+                  for(var parsed_key in parsed_keys) {
+                    TRANSFORM.memory[parsed_key] = parsed_keys[parsed_key];
+                    data[parsed_key] = parsed_keys[parsed_key];
+                  }
+
+                  // 2. Pass it into TRANSFORM.run
+                  result = TRANSFORM.run(real_template, data);
+                }
               } else if (fun.name === '#concat') {
                 if (Helper.is_array(template[key])) {
                   result = [];
@@ -326,12 +344,26 @@
                   // will have snuck into the final result
                   if(typeof data === 'object') {
                     delete result["$index"];
+
+                    // #let handling
+                    for (var declared_vars in TRANSFORM.memory) {
+                      delete result[declared_vars];
+                    }
                   } else {
                     delete String.prototype.$index;
                     delete Number.prototype.$index;
                     delete Function.prototype.$index;
                     delete Array.prototype.$index;
                     delete Boolean.prototype.$index;
+
+                    // #let handling
+                    for (var declared_vars in TRANSFORM.memory) {
+                      delete String.prototype[declared_vars];
+                      delete Number.prototype[declared_vars];
+                      delete Function.prototype[declared_vars];
+                      delete Array.prototype[declared_vars];
+                      delete Boolean.prototype[declared_vars];
+                    }
                   }
                 }
               } else if (fun.name === '#each') {
@@ -345,12 +377,24 @@
                     // temporarily set $index
                     if(typeof newData[index] === 'object') {
                       newData[index]["$index"] = index;
+                      // #let handling
+                      for (var declared_vars in TRANSFORM.memory) {
+                        newData[index][declared_vars] = TRANSFORM.memory[declared_vars];
+                      }
                     } else {
                       String.prototype.$index = index;
                       Number.prototype.$index = index;
                       Function.prototype.$index = index;
                       Array.prototype.$index = index;
                       Boolean.prototype.$index = index;
+                      // #let handling
+                      for (var declared_vars in TRANSFORM.memory) {
+                        String.prototype[declared_vars] = TRANSFORM.memory[declared_vars];
+                        Number.prototype[declared_vars] = TRANSFORM.memory[declared_vars];
+                        Function.prototype[declared_vars] = TRANSFORM.memory[declared_vars];
+                        Array.prototype[declared_vars] = TRANSFORM.memory[declared_vars];
+                        Boolean.prototype[declared_vars] = TRANSFORM.memory[declared_vars];
+                      }
                     }
 
                     // run
@@ -359,12 +403,24 @@
                     // clean up $index
                     if(typeof newData[index] === 'object') {
                       delete newData[index]["$index"];
+                      // #let handling
+                      for (var declared_vars in TRANSFORM.memory) {
+                        delete newData[index][declared_vars];
+                      }
                     } else {
                       delete String.prototype.$index;
                       delete Number.prototype.$index;
                       delete Function.prototype.$index;
                       delete Array.prototype.$index;
                       delete Boolean.prototype.$index;
+                      // #let handling
+                      for (var declared_vars in TRANSFORM.memory) {
+                        delete String.prototype[declared_vars];
+                        delete Number.prototype[declared_vars];
+                        delete Function.prototype[declared_vars];
+                        delete Array.prototype[declared_vars];
+                        delete Boolean.prototype[declared_vars];
+                      }
                     }
 
                     if (loop_item) {
@@ -607,13 +663,8 @@
         if (serialized) SELECT.$injected = JSON.parse(obj);
       } catch (error) { }
 
-      if (SELECT.$injected.length > 0) {
-        // inject variables from 'this' context by name
-        SELECT.$injected.forEach(function(key) {
-          var o = {};
-          o[key] = $context[key];
-          SELECT.select(o);
-        });
+      if (Object.keys(SELECT.$injected).length > 0) {
+        SELECT.select(SELECT.$injected);
       }
       return SELECT;
     },
@@ -852,6 +903,9 @@
       return _stringify(val, function(key, val) {
         if (SELECT.$injected && SELECT.$injected.length > 0 && SELECT.$injected.indexOf(key) !== -1) { return undefined; }
         if (key === '$root' || key === '$index') {
+          return undefined;
+        }
+        if (key in TRANSFORM.memory) {
           return undefined;
         }
         if (typeof val === 'function') {
