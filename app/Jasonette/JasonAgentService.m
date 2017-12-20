@@ -318,15 +318,20 @@
         // Adding progressView
         [agent addObserver:self forKeyPath:NSStringFromSelector(@selector(estimatedProgress)) options:NSKeyValueObservingOptionNew context:NULL];
 
+        agent.hidden = YES;
+        
+
+    }
+
+    // Setup Payload
+    agent.payload = [@{@"identifier": identifier, @"state": @"empty"} mutableCopy];
+
+    if(![agent isDescendantOfView: vc.view]) {
         // Inject in to the current view
         [vc.view addSubview:agent];
         [vc.view sendSubviewToBack:agent];
-        agent.hidden = YES;
-        
-        // Setup Payload
-        agent.payload = [@{@"identifier": identifier, @"state": @"empty"} mutableCopy];
-
     }
+    
     if (vc.url) {
         agent.payload[@"parent"] = vc.url;
     }
