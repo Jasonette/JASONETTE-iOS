@@ -21,6 +21,7 @@
     NSString *ROOT_URL;
     BOOL INITIAL_LOADING;
     BOOL isForeground;
+    BOOL header_needs_refresh;
     NSDictionary *rendered_page;
     NSMutableDictionary *previous_footer;
     NSMutableDictionary *previus_header;
@@ -1287,6 +1288,22 @@
     } else if(memory.need_to_exec){
         // Check if there's any action left in the action call chain. If there is, execute it.
         
+        if (VC.original && VC.original[@"$jason"] && VC.original[@"$jason"][@"head"]) {
+            VC.agentReady = NO;
+            [self setupHead:VC.original[@"$jason"][@"head"]];
+        }
+        
+        // Header update (Bugfix for when coming back from an href)
+        header_needs_refresh = YES;
+        if(VC.rendered[@"nav"]) {
+            // Deprecated
+            [self setupHeader:VC.rendered[@"nav"]];
+        } else if(VC.rendered[@"header"]) {
+            [self setupHeader:VC.rendered[@"header"]];
+        } else {
+            [self setupHeader:nil];
+        }
+
         // If there's a callback waiting to be executing for the current VC, set it as stack
         if(VC.callback) {
             // 1. Replace with VC.callback
@@ -2150,11 +2167,14 @@
 - (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController *)v{
     navigationController = v.navigationController;
     tabController = v.tabBarController;
-        if(!nav) {
-            navigationController.navigationBar.hidden = YES;
-            return;
-        }
+    if(!nav) {
+        navigationController.navigationBar.hidden = YES;
+        return;
+    }
 
+    
+    // if coming back from href, need_to_exec is true. In this case, shouldn't skip setupHeader.
+    if(!header_needs_refresh) {
         if(v.rendered && rendered_page){
             if(v.old_header && [[v.old_header description] isEqualToString:[nav description]]){
                 // if the header is the same as the value trying to set,
@@ -2164,6 +2184,8 @@
                 }
             }
         }
+    }
+    header_needs_refresh = NO;
     
         if(nav) v.old_header = nav;
     
@@ -2205,7 +2227,7 @@
     
         navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
         navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
-        [navigationController setNavigationBarHidden:NO];
+        navigationController.navigationBar.hidden = NO;
         if(nav[@"style"]){
             NSDictionary *headStyle = nav[@"style"];
             if(headStyle[@"background"]){
@@ -2228,18 +2250,6 @@
                 navigationController.hidesBarsOnSwipe = NO;
             }
             
-            
-            if(headStyle[@"hide"] && [headStyle[@"hide"] boolValue]){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [navigationController setNavigationBarHidden:YES];
-                });
-            } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [navigationController setNavigationBarHidden:NO];
-                });
-                
-            }
-            
             NSString *font_name = @"HelveticaNeue-CondensedBold";
             NSString *font_size = @"18";
             if(headStyle[@"font"]){
@@ -2252,9 +2262,6 @@
         } else {
             navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
             navigationController.hidesBarsOnSwipe = NO;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [navigationController setNavigationBarHidden:NO];
-            });
             NSString *font_name = @"HelveticaNeue-CondensedBold";
             NSString *font_size = @"18";
             navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
@@ -2533,10 +2540,8 @@
         navigationController.navigationBar.backgroundColor = background;
         navigationController.navigationBar.barTintColor = background;
         navigationController.navigationBar.tintColor = color;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            navigationController.navigationBarHidden = YES;
-            navigationController.navigationBarHidden = NO;
-        });
+        navigationController.navigationBarHidden = YES;
+        navigationController.navigationBarHidden = NO;
 }
 - (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y forVC: (JasonViewController *)v{
     UIView *view = [[UIView alloc] initWithFrame:tLabel.frame];
