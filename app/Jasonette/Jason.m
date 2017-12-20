@@ -2819,12 +2819,6 @@
                 [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
             }
             
-            // Warn that at least one of the tab bar items should contain the same URL as the currently visible URL
-            if(!tabFound){
-                [[Jason client] call:@{@"type": @"$util.alert",
-                                       @"options": @{ @"title": @"Warning", @"description": @"The tab bar should contain at least one item with the same URL as the currently visible view" }}];
-            }
-            
             tabController.tabBar.hidden = NO;
         } else {
             tabController.tabBar.hidden = YES;
