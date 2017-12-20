@@ -347,7 +347,7 @@
     [self go:@{@"transition": @"root"}];
 }
 - (void)close{
-    [self ok];
+    [self okWithMode: @"close"];
 }
 - (void)back{
     /********************************************************************************
@@ -368,7 +368,7 @@
     [self unlock];
     [self ok];
 }
-- (void)ok{
+- (void) okWithMode: (NSString *) mode {
     // When user decides to close on intro without "Open"ing, should respect the decision and
     // remove local_jason
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -397,11 +397,19 @@
         }
     }
     [navigationController setToolbarHidden:YES];
-    if(VC.isModal){
+
+    if ([mode isEqualToString:@"close"]) {
         [navigationController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     } else {
-        [navigationController popViewControllerAnimated:YES];
+        if(VC.isModal){
+            [navigationController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [navigationController popViewControllerAnimated:YES];
+        }
     }
+}
+- (void)ok{
+    [self okWithMode: @"normal"];
 }
 - (void)ok: (NSDictionary *)data{
     JasonMemory *memory = [JasonMemory client];
