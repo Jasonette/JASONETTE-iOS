@@ -20,7 +20,7 @@
     // Figure out which agent the message is coming from
     NSString *identifier = message.webView.payload[@"identifier"];
     JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
-
+    
     // If the source agent has a different parent than the current view, ignore.
     if (![message.webView.payload[@"parent"] isEqualToString:vc.url]) {
         return;
@@ -42,7 +42,7 @@
             event[@"options"] = m[@"data"];
         }
         [[Jason client] call: event];
-    // 2. Make an agent request
+        // 2. Make an agent request
     } else if(message.body[@"request"]) {
         NSDictionary *m = message.body[@"request"];
         NSDictionary *rpc = m[@"data"];
@@ -53,12 +53,12 @@
             // to keep track of the source agent so that a response
             // can be sent back to the $source later.
             event[@"$source"] = @{
-                @"id": identifier,
-                @"nonce": m[@"nonce"]
-            };
+                                  @"id": identifier,
+                                  @"nonce": m[@"nonce"]
+                                  };
             [self request:event];
         }
-    // 3. It's a response message from an agent
+        // 3. It's a response message from an agent
     } else if(message.body[@"response"]) {
         NSDictionary *m = message.body[@"response"];
         NSDictionary *source = message.webView.payload[@"$source"];
@@ -74,24 +74,24 @@
             // 2. When the callback is found, it's executed with the data passed in
             
             [self request: @{
-                @"method": [NSString stringWithFormat: @"$agent.callbacks[\"%@\"]", source[@"nonce"]],
-                @"id": identifier,
-                @"params": @[m[@"data"]]
-            }];
+                             @"method": [NSString stringWithFormat: @"$agent.callbacks[\"%@\"]", source[@"nonce"]],
+                             @"id": identifier,
+                             @"params": @[m[@"data"]]
+                             }];
             
-        // $source doesn't exist => the original request was from Jasonette action
+            // $source doesn't exist => the original request was from Jasonette action
         } else {
             // Run the caller Jasonette action's "success" callback
             [[Jason client] success: m[@"data"]];
         }
         
-    // 4. Tell Jasonette to make an href transition to another view
+        // 4. Tell Jasonette to make an href transition to another view
     } else if(message.body[@"href"]) {
         [[Jason client] go: message.body[@"href"][@"data"]];
     }
 }
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-
+    
     // Inject agent.js into agent context
     NSString *identifier = webView.payload[@"identifier"];
     NSString *raw = [JasonHelper read_local_file:@"file://agent.js"];
@@ -101,15 +101,15 @@
     [webView evaluateJavaScript:summon completionHandler:^(id _Nullable res, NSError * _Nullable error) {
         NSLog(@"Injected");
     }];
-
-    // After loading, trigger $agent.[ID].ready event
-    [[Jason client] call: @{
-        @"trigger": @"$agent.ready",
-        @"options": @{
-            @"id": identifier,
-            @"url": webView.URL
-        }
-    }];
+    
+    // If there's a pending agent (because the method was called before the agent was initialized)
+    // Try the request again.
+    JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
+    WKWebView *agent = vc.agents[identifier];
+    if(agent && agent.payload && agent.payload[@"pending"]) {
+        [self request:agent.payload[@"pending"]];
+        agent.payload[@"pending"] = nil;
+    }
     
 }
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
@@ -142,7 +142,7 @@
                     url = navigationAction.request.URL.absoluteString;
                 }
                 data_stub[@"$jason"] = @{ @"url": url };
-
+                
                 if ([event isKindOfClass:[NSArray class]]) {
                     // if it's a trigger, must figure out whether it resolves to type: "$default"
                     resolved = [[Jason client] filloutTemplate: event withData: data_stub];
@@ -178,32 +178,32 @@
         } else {
             decisionHandler(WKNavigationActionPolicyAllow);
         }
-
+        
     } else {
         decisionHandler(WKNavigationActionPolicyAllow);
     }
 }
 /**********************************************
-    "url": "file://app.html",
-    "id": "view",
-    "action": [{
-        "{{#if /localhost/.test($jason)}}": {
-            "type": "$href",
-            "options": {
-                "url": "{{$env.view.url}}",
-                "options": {
-                    "url": "{{$jason}}"
-                }
-            }
-        }
-    }]
-**********************************************/
+ "url": "file://app.html",
+ "id": "view",
+ "action": [{
+ "{{#if /localhost/.test($jason)}}": {
+ "type": "$href",
+ "options": {
+ "url": "{{$env.view.url}}",
+ "options": {
+ "url": "{{$jason}}"
+ }
+ }
+ }
+ }]
+ **********************************************/
 
 - (void) refresh: (WKWebView *)agent withOptions: (NSDictionary *)options {
     NSString *text = options[@"text"];
     NSString *url = options[@"url"];
     NSDictionary *action = options[@"action"];
-
+    
     BOOL isempty = NO;
     
     // 2. Fill in the container with HTML or JS
@@ -274,15 +274,13 @@
             
         }
         [agent loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
-        [[Jason client] success];
-    } else {
-        [[Jason client] error: @{@"message": @"An agent with the ID doesn't exist"}];
     }
 }
 - (void) clear: (NSDictionary *)options {
     if (options[@"id"]) {
         JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
         [self clear: options[@"id"] forVC: vc];
+        [[Jason client] success];
     } else {
         [[Jason client] error: @{@"message": @"Please support an ID to clear"}];
     }
@@ -302,10 +300,10 @@
     config.userContentController = controller;
     [config setAllowsInlineMediaPlayback: YES];
     [config setMediaTypesRequiringUserActionForPlayback:WKAudiovisualMediaTypeNone];
-
+    
     WKWebView *agent;
     JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
-
+    
     // 1. Initialize
     if(vc.agents && vc.agents[identifier]) {
         // Already existing agent, juse reuse the old one
@@ -317,15 +315,15 @@
         
         // Adding progressView
         [agent addObserver:self forKeyPath:NSStringFromSelector(@selector(estimatedProgress)) options:NSKeyValueObservingOptionNew context:NULL];
-
+        
         agent.hidden = YES;
         
-
+        
     }
-
+    
     // Setup Payload
     agent.payload = [@{@"identifier": identifier, @"state": @"empty"} mutableCopy];
-
+    
     if(![agent isDescendantOfView: vc.view]) {
         // Inject in to the current view
         [vc.view addSubview:agent];
@@ -335,7 +333,7 @@
     if (vc.url) {
         agent.payload[@"parent"] = vc.url;
     }
-
+    
     // Set action payload
     // This needs to be handled separately than other payloads since "action" is empty in the beginning.
     if(action) {
@@ -348,7 +346,7 @@
     [self refresh:agent withOptions:options];
     
     vc.agents[identifier] = agent;
-
+    
     return agent;
 }
 
@@ -436,13 +434,13 @@
     
     // Construct JS Callstring
     NSString *callstring = [NSString stringWithFormat:@"%@.apply(this, %@);", method, arguments];
-
+    
     // Agents are tied to a view. First get the current view.
     JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
-
+    
     // Find the agent by id
     WKWebView *agent = vc.agents[identifier];
-
+    
     // Agent exists
     if (agent) {
         // If "$source" attribute exists, it means the request came from another agent
@@ -453,8 +451,13 @@
         [agent evaluateJavaScript:callstring completionHandler:^(id _Nullable res, NSError * _Nullable error) {
             // Don't process return value.
             // Instead all communication back to Jasonette is taken care of by an explicit $agent.response() call
+            if (error) {
+                NSLog(@"%@", error);
+                agent.payload[@"pending"] = options;
+                // The agent might not be ready. Put it in a queue.
+            }
         }];
-    // Agent doesn't exist, return with the error callback
+        // Agent doesn't exist, return with the error callback
     } else {
         [[Jason client] error];
     }
@@ -472,7 +475,8 @@
                 [progressView setProgress:0.0f animated:NO];
             }];
         }
-
+        
     }
 }
 @end
+
