@@ -28,6 +28,8 @@
         component.keyboardType = UIKeyboardTypeDefault;
     } else if([keyboard isEqualToString:@"number"]) {
         component.keyboardType = UIKeyboardTypeNumberPad;
+    } else if([keyboard isEqualToString:@"decimal"]) {
+        component.keyboardType = UIKeyboardTypeDecimalPad;
     } else if([keyboard isEqualToString:@"phone"]) {
         component.keyboardType = UIKeyboardTypePhonePad;
     } else if([keyboard isEqualToString:@"url"]) {
@@ -40,6 +42,8 @@
         component.text = options[@"value"];
     } else if(json && json[@"value"]){
         component.text = json[@"value"];
+    } else {
+        component.text = @"";
     }
     
     if(component.text){

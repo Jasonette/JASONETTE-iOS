@@ -6,7 +6,6 @@
 //
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "RussianDollView.h"
 #import "REMenu.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "JasonHelper.h"
@@ -18,9 +17,9 @@
 #import <SafariServices/SafariServices.h>
 #import <NSHash/NSString+NSHash.h>
 #import <FreeStreamer/FSAudioStream.h>
-#import <PBJVision/PBJVision.h>
 #import <JavaScriptCore/JavaScriptCore.h>
-
+#import <AVFoundation/AVFoundation.h>
+#import "JasonAgentService.h"
 #import "MBProgressHud.h"
 #if DEBUG
 #include <FLEX/FLEX.h>
@@ -28,7 +27,7 @@
 
 @import MediaPlayer;
 
-@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, PBJVisionDelegate, UIWebViewDelegate>
+@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, UIWebViewDelegate>
 
 @property (strong, nonatomic) NSDictionary *parser;
 @property (strong, nonatomic) NSDictionary *data;
@@ -40,14 +39,15 @@
 @property (nonatomic, assign) BOOL searchMode;
 @property (nonatomic, assign) BOOL oauth_in_process;
 @property (strong, nonatomic) NSMutableDictionary *services;
+@property (strong, nonatomic) AVCaptureSession *avCaptureSession;
 
-- (UIViewController *)getVC;
+- (JasonViewController *)getVC;
 
 @property (strong, nonatomic) JSContext *jscontext;
 
 + (Jason*)client;
-- (Jason*)attach:(UIViewController<RussianDollView>*)viewController;
-- (Jason*)detach:(UIViewController<RussianDollView>*)viewController;
+- (Jason*)attach:(JasonViewController*)viewController;
+- (Jason*)detach:(JasonViewController*)viewController;
 
 - (void)cancel;
 - (void)ok;
@@ -76,6 +76,13 @@
 - (void)start:(NSDictionary *)href;
 
 - (void)loadViewByFile: (NSString *)url asFinal: (BOOL)final;
+- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC:(JasonViewController*) vc;
+- (id)filloutTemplate: (id)template withData:(id)data;
 - (NSDictionary *)variables;
+
+- (void)setupTabBar: (NSDictionary *)t forVC: (JasonViewController*) vc;
+- (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController*) vc;
+- (void)drawBackground:(NSString *)bg forVC: (JasonViewController *)vc;
+- (void)drawAdvancedBackground:(NSDictionary *)bg forVC: (JasonViewController *)vc;
 @end
 

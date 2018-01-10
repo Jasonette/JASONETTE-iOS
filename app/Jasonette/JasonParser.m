@@ -172,7 +172,7 @@
 
 
             [context evaluateScript:js];
-            JSValue *parse = context[@"JSON"][@"transform"];
+            JSValue *parse = context[@"ST"][@"transform"];
             JSValue *val = [parse callWithArguments:@[parser, data]];
             
             @try{
