@@ -876,6 +876,13 @@
                     } else {
                         [self drawBackground:rendered_page[@"style"][@"background"]];
                     }
+                } else if (rendered_page[@"background"]) {
+                    if ([rendered_page[@"background"] isKindOfClass:[NSDictionary class]]) {
+                        // advanced background
+                        [self drawAdvancedBackground:rendered_page[@"background"]];
+                    } else {
+                        [self drawBackground:rendered_page[@"background"]];
+                    }
                 } else {
                     [self drawBackground:@"#ffffff"];
                 }
@@ -1399,6 +1406,17 @@
                         [self buildCamera:VC.rendered[@"style"][@"background"][@"options"] forVC: VC];
                     }
                 }
+            } else if (VC.rendered[@"background"]) {
+                if ([VC.rendered[@"background"] isKindOfClass:[NSString class]]) {
+                    if ([VC.rendered[@"background"] isEqualToString:@"camera"]) {
+                        [self buildCamera:@{@"type": @"camera"} forVC:VC];
+                    }
+                } else if ([VC.rendered[@"background"] isKindOfClass:[NSDictionary class]]) {
+                    NSString *type = VC.rendered[@"background"][@"type"];
+                    if ([type isEqualToString:@"camera"]) {
+                        [self buildCamera:VC.rendered[@"background"][@"options"] forVC:VC];
+                    }
+                }
             }
             
             // set "rendered_page" to VC.rendered for cases when we're coming back from another view
@@ -1444,6 +1462,12 @@
                         [self drawAdvancedBackground:VC.preload[@"style"][@"background"]];
                     } else {
                         [self drawBackground:VC.preload[@"style"][@"background"]];
+                    }
+                } else if (VC.preload && VC.preload[@"background"]) {
+                    if ([VC.preload[@"background"] isKindOfClass:[NSDictionary class]]) {
+                        [self drawAdvancedBackground:VC.preload[@"background"]];
+                    } else {
+                        [self drawBackground:VC.preload[@"background"]];
                     }
                 }
                 [self reload];
@@ -1805,7 +1829,6 @@
         NSDictionary *head = dom[@"head"];
         if(head){
             [self setupHead: head];
-            [self onLoad: final];
         }
         
         /****************************************************************************
@@ -1878,6 +1901,13 @@
                 } else {
                     [self drawBackground:rendered_page[@"style"][@"background"]];
                 }
+            } else if(rendered_page[@"background"]){
+                if([rendered_page[@"background"] isKindOfClass:[NSDictionary class]]){
+                    // Advanced background
+                    [self drawAdvancedBackground:rendered_page[@"background"]];
+                } else {
+                    [self drawBackground:rendered_page[@"background"]];
+                }
             } else {
                 [self drawBackground:@"#ffffff"];
             }
@@ -1905,6 +1935,10 @@
             
             // Cache the view after drawing
             if(final) [self cache_view];
+        }
+        
+        if(head){
+            [self onLoad: final];
         }
         
     }

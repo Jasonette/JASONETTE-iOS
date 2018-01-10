@@ -139,10 +139,18 @@
     if (self.preload) {
         [self reload:self.preload final:YES];
         [[Jason client] setupHeader: self.preload[@"header"] forVC: self];
-        if([self.preload[@"style"][@"background"] isKindOfClass:[NSDictionary class]]){
-            [[Jason client] drawAdvancedBackground:self.preload[@"style"][@"background"] forVC: self];
-        } else {
-            [[Jason client] drawBackground:self.preload[@"style"][@"background"] forVC: self];
+        if(self.preload[@"style"] && self.preload[@"style"][@"background"]) {
+            if([self.preload[@"style"][@"background"] isKindOfClass:[NSDictionary class]]){
+                [[Jason client] drawAdvancedBackground:self.preload[@"style"][@"background"] forVC: self];
+            } else {
+                [[Jason client] drawBackground:self.preload[@"style"][@"background"] forVC: self];
+            }
+        } else if (self.preload[@"background"]) {
+            if ([self.preload[@"background"] isKindOfClass: [NSDictionary class]]){
+                [[Jason client] drawAdvancedBackground: self.preload[@"background"] forVC: self];
+            } else {
+                [[Jason client] drawBackground:self.preload[@"background"] forVC: self];
+            }
         }
         [[Jason client] setupTabBar: self.preload[@"footer"][@"tabs"] forVC: self];
         self.tableView.backgroundColor = [UIColor clearColor];
@@ -1383,7 +1391,10 @@
     } else {
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         self.tableView.separatorColor = [JasonHelper colorwithHexString:@"rgb(224,224,224)" alpha:1.0];
-        self.view.backgroundColor = [UIColor whiteColor];
+
+        if (!body[@"background"]) {
+            self.view.backgroundColor = [UIColor whiteColor];
+        }
     }
     self.tableView.backgroundColor = [UIColor clearColor];
     
