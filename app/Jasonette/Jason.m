@@ -1805,7 +1805,6 @@
         NSDictionary *head = dom[@"head"];
         if(head){
             [self setupHead: head];
-            [self onLoad: final];
         }
         
         /****************************************************************************
@@ -1905,6 +1904,10 @@
             
             // Cache the view after drawing
             if(final) [self cache_view];
+        }
+        
+        if(head){
+            [self onLoad: final];
         }
         
     }
