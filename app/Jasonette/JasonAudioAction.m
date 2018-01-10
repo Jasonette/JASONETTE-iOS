@@ -138,12 +138,13 @@
     if(self.options){
         NSString *url = self.options[@"url"];
         if(url){
+            FSAudioStream *audioStream;
             if(self.VC.audios[url]){
                 if([self.VC.audios[url] isPlaying]){
-                    FSAudioStream *audioStream = (FSAudioStream *)self.VC.audios[url];
+                    audioStream = (FSAudioStream *)self.VC.audios[url];
                     [audioStream pause];
                 } else {
-                    FSAudioStream *audioStream = (FSAudioStream *)self.VC.audios[url];
+                    audioStream = (FSAudioStream *)self.VC.audios[url];
                     [audioStream pause];
                     [audioStream play];
                 }
@@ -210,13 +211,15 @@
                     
                     
                 }
-                self.VC.audios[url] = audioStream;
-                [[Jason client] success];
             }
-        } else {
-            [[Jason client] finish];
+            self.VC.audios[url] = audioStream;
+            [[Jason client] success];
+
+        }  // end of if(url)
+        else {
+            [[Jason client] error];
         }
-    }
+    }   // end of if (self.options)
 }
 
 -(void)audioRecorderController:(IQAudioRecorderViewController *)controller didFinishWithAudioAtPath:(NSString *)filePath

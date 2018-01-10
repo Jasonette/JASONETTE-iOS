@@ -10,6 +10,8 @@
 	<string>https://jasonette.github.io/Jasonpedia/hello.json</string>
 	<key>loading</key>
 	<false/>
+	<key>launch</key>
+	<string>file://preload.json</string>
 	<key>debug</key>
 	<false/>
 </dict>

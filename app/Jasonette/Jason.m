@@ -12,19 +12,20 @@
     UINavigationController *navigationController;
     UITabBarController *tabController;
     REMenu *menu_component;
-    UIViewController<RussianDollView> *VC;
+    JasonViewController *VC;
     NSString *title;
     NSString *desc;
     NSString *icon;
     id module;
     UIBarButtonItem *rightButtonItem;
-    PBJVision *vision;
     NSString *ROOT_URL;
     BOOL INITIAL_LOADING;
     BOOL isForeground;
+    BOOL header_needs_refresh;
     NSDictionary *rendered_page;
     NSMutableDictionary *previous_footer;
     NSMutableDictionary *previus_header;
+    AVCaptureVideoPreviewLayer *avPreviewLayer;
 }
 @end
 
@@ -63,7 +64,7 @@
     }
     return self;
 }
-- (UIViewController *)getVC {
+- (JasonViewController *)getVC {
     return VC;
 }
 
@@ -79,14 +80,15 @@
     NSLog(@"JasonCore: notifyError: %@", args);
     [[Jason client] error:args];
 }
-
+- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC: (JasonViewController *)vc{
+    VC = vc;
+    [self loadViewByFile:url asFinal:final];
+}
 - (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final{
     id jsonResponseObject = [JasonHelper read_local_json:url];
     [self include:jsonResponseObject andCompletionHandler:^(id res){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            VC.original = @{@"$jason": res[@"$jason"]};
-            [self drawViewFromJason: VC.original asFinal:final];
-        });
+        VC.original = @{@"$jason": res[@"$jason"]};
+        [self drawViewFromJason: VC.original asFinal:final];
     }];
 }
 
@@ -103,7 +105,9 @@
     NSDictionary *plist = [self getSettings];
     ROOT_URL = plist[@"url"];
     INITIAL_LOADING = [plist[@"loading"] boolValue];
-    
+    NSString *launch_url = plist[@"launch"];
+    NSDictionary *launch = [JasonHelper read_local_json:launch_url];
+
     // FLEX DEBUGGER
 #if DEBUG
     if(plist[@"debug"] && [plist[@"debug"] boolValue]){
@@ -126,6 +130,7 @@
         vc.url = ROOT_URL;
         vc.loading = INITIAL_LOADING;
     }
+    vc.preload = launch;
     vc.view.backgroundColor = [UIColor whiteColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
@@ -134,7 +139,7 @@
     navigationController.navigationBar.shadowImage = [UIImage new];
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     navigationController.navigationBar.translucent = NO;
-    navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
+    navigationController.navigationBar.backgroundColor = [UIColor clearColor];
     [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
@@ -161,7 +166,7 @@
 }
 - (void)call: (id)action with: (NSDictionary*)data{
     JasonMemory *memory = [JasonMemory client];
-    
+        
     if(data && data.count > 0){
         memory._register = data;
     }
@@ -299,15 +304,16 @@
 }
 
 -(void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;{
-    
-    if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
-        MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
-        hud.animationType = MBProgressHUDAnimationFade;
-        hud.userInteractionEnabled = NO;
-    }
-    else if(!turnon){
-        [MBProgressHUD hideHUDForView:VC.view animated:true];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
+            MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
+            hud.animationType = MBProgressHUDAnimationFade;
+            hud.userInteractionEnabled = NO;
+        }
+        else if(!turnon){
+            [MBProgressHUD hideHUDForView:VC.view animated:true];
+        }
+    });
 }
 
 # pragma mark - Jason public API (Can be accessed by calling {"type": "$(METHOD_NAME)"}
@@ -325,8 +331,8 @@
 }
 - (void)href{
     JasonMemory *memory = [JasonMemory client];
+    VC.callback = memory._stack;
     NSDictionary *href = [self options];
-    VC.callback = href[@"success"];     // Preserve callback so when the view returns it will continue executing the next action from where it left off.
     memory._stack = @{}; // empty stack before visiting
     [self go:href];
 }
@@ -341,7 +347,7 @@
     [self go:@{@"transition": @"root"}];
 }
 - (void)close{
-    [self ok];
+    [self okWithMode: @"close"];
 }
 - (void)back{
     /********************************************************************************
@@ -362,7 +368,7 @@
     [self unlock];
     [self ok];
 }
-- (void)ok{
+- (void) okWithMode: (NSString *) mode {
     // When user decides to close on intro without "Open"ing, should respect the decision and
     // remove local_jason
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -378,6 +384,9 @@
     JasonMemory *memory = [JasonMemory client];
     if(memory._stack && memory._stack.count > 0){
         memory.need_to_exec = YES;
+        if (self.options && self.options.count > 0) {
+            memory._register = @{@"$jason": self.options};
+        }
     } else {
         [self unlock];
     }
@@ -388,7 +397,19 @@
         }
     }
     [navigationController setToolbarHidden:YES];
-    [navigationController dismissViewControllerAnimated:YES completion:nil];
+
+    if ([mode isEqualToString:@"close"]) {
+        [navigationController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        if(VC.isModal){
+            [navigationController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [navigationController popViewControllerAnimated:YES];
+        }
+    }
+}
+- (void)ok{
+    [self okWithMode: @"normal"];
 }
 - (void)ok: (NSDictionary *)data{
     JasonMemory *memory = [JasonMemory client];
@@ -693,182 +714,180 @@
     
 }
 - (void)render{
-    NSDictionary *stack = [JasonMemory client]._stack;
+        NSDictionary *stack = [JasonMemory client]._stack;
     
-    /**************************************************
-     *
-     * PART 1: Prepare data by filling it in with all the variables
-     *
-     **************************************************/
-    if([JasonMemory client]._register && [JasonMemory client]._register.count > 0){
-        VC.data = [JasonMemory client]._register;
-    }
-    NSMutableDictionary *data_stub;
-    if(VC.data){
-        data_stub = [VC.data mutableCopy];
-    } else {
-        data_stub = [[NSMutableDictionary alloc] init];
-    }
-    
-    NSDictionary *kv = [self variables];
-    for(NSString *key in kv){
-        data_stub[key] = kv[key];
-    }
-    
-    if(stack[@"options"]){
-        if(!stack[@"options"][@"type"] || [stack[@"options"][@"type"] isEqualToString:@"json"]){
-            if(stack[@"options"][@"data"]){
-                /**************************************************
-                 *
-                 * You can pass in 'data' as one of the options for $render action, like so:
-                 *
-                 *    {
-                 *        "type": "$render",
-                 *        "options": {
-                 *           "data": {
-                 *               "results": [{
-                 *                   "id": "1",
-                 *                   "name": "tom"
-                 *               }, {
-                 *                   "id": "2",
-                 *                   "name": "kat"
-                 *               }]
-                 *            }
-                 *        }
-                 *   }
-                 *
-                 * 1. In this case we override the $jason value with the value inside `data`.
-                 *
-                 * In above example, The $jason value at the point of rendering becomes:
-                 *
-                 *   $jason = {
-                 *     "results": [{
-                 *       "id": "1",
-                 *       "name": "tom"
-                 *     }, {
-                 *       "id": "2",
-                 *       "name": "kat"
-                 *     }]
-                 *   }
-                 *
-                 * 2. The `data` can also be a template expression, in which case it will parse whatever data is being passed in to `$render` before using it as the data.
-                 *
-                 *   {
-                 *     "type": "$render",
-                 *     "options": {
-                 *       "data": {
-                 *         "results": {
-                 *		       "{{#each $jason}}": {
-                 *             "id": "{{id}}",
-                 *             "name": "{{name}}"
-                 *           }
-                 *	       }
-                 *       }
-                 *     }
-                 *   }
-                 *
-                 **************************************************/
-                data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
-            }
-        }
-    }
-    VC.data = data_stub;
-    
-    /**************************************************
-     *
-     * PART 2: Get the template
-     *
-     **************************************************/
-    
-    // The default template is 'body'
-    NSString *template_name = @"body";
-    
-    if(stack[@"options"] && stack[@"options"][@"template"]){
         /**************************************************
          *
-         * render can have 'template' attribute as an option, like so:
+         * PART 1: Prepare data by filling it in with all the variables
          *
-         *    {
-         *        "type": "$render",
-         *        "options": {
-         *           "template": "empty"
-         *        }
-         *    }
-         *
-         * In this case we use the specified 'empty' template instead of 'body'
          **************************************************/
-        template_name = stack[@"options"][@"template"];
-    }
-    NSDictionary *body_parser = VC.parser[template_name];
+        if([JasonMemory client]._register && [JasonMemory client]._register.count > 0){
+            VC.data = [JasonMemory client]._register;
+        }
+        NSMutableDictionary *data_stub;
+        if(VC.data){
+            data_stub = [VC.data mutableCopy];
+        } else {
+            data_stub = [[NSMutableDictionary alloc] init];
+        }
+    
+        NSDictionary *kv = [self variables];
+        for(NSString *key in kv){
+            data_stub[key] = kv[key];
+        }
+    
+        if(stack[@"options"]){
+            if(!stack[@"options"][@"type"] || [stack[@"options"][@"type"] isEqualToString:@"json"]){
+                if(stack[@"options"][@"data"]){
+                    /**************************************************
+                     *
+                     * You can pass in 'data' as one of the options for $render action, like so:
+                     *
+                     *    {
+                     *        "type": "$render",
+                     *        "options": {
+                     *           "data": {
+                     *               "results": [{
+                     *                   "id": "1",
+                     *                   "name": "tom"
+                     *               }, {
+                     *                   "id": "2",
+                     *                   "name": "kat"
+                     *               }]
+                     *            }
+                     *        }
+                     *   }
+                     *
+                     * 1. In this case we override the $jason value with the value inside `data`.
+                     *
+                     * In above example, The $jason value at the point of rendering becomes:
+                     *
+                     *   $jason = {
+                     *     "results": [{
+                     *       "id": "1",
+                     *       "name": "tom"
+                     *     }, {
+                     *       "id": "2",
+                     *       "name": "kat"
+                     *     }]
+                     *   }
+                     *
+                     * 2. The `data` can also be a template expression, in which case it will parse whatever data is being passed in to `$render` before using it as the data.
+                     *
+                     *   {
+                     *     "type": "$render",
+                     *     "options": {
+                     *       "data": {
+                     *         "results": {
+                     *               "{{#each $jason}}": {
+                     *             "id": "{{id}}",
+                     *             "name": "{{name}}"
+                     *           }
+                     *           }
+                     *       }
+                     *     }
+                     *   }
+                     *
+                     **************************************************/
+                    data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
+                }
+            }
+        }
+        VC.data = data_stub;
+    
+        /**************************************************
+         *
+         * PART 2: Get the template
+         *
+         **************************************************/
+    
+        // The default template is 'body'
+        NSString *template_name = @"body";
+    
+        if(stack[@"options"] && stack[@"options"][@"template"]){
+            /**************************************************
+             *
+             * render can have 'template' attribute as an option, like so:
+             *
+             *    {
+             *        "type": "$render",
+             *        "options": {
+             *           "template": "empty"
+             *        }
+             *    }
+             *
+             * In this case we use the specified 'empty' template instead of 'body'
+             **************************************************/
+            template_name = stack[@"options"][@"template"];
+        }
+        NSDictionary *body_parser = VC.parser[template_name];
     
     
-    /**********************************************************************
-     *
-     * PART 3: Actually render the prepared data with the selected template
-     *
-     **********************************************************************/
-    if(body_parser){
-        
-        // if self.data is not empty, render
-        if(stack[@"options"] && stack[@"options"][@"type"]){
-            if([stack[@"options"][@"type"] isEqualToString:@"html"]){
-                rendered_page = [JasonHelper parse: data_stub ofType:@"html" with:body_parser];
-            } else if([stack[@"options"][@"type"] isEqualToString:@"xml"]){
-                rendered_page = [JasonHelper parse: data_stub ofType:@"xml" with:body_parser];
+        /**********************************************************************
+         *
+         * PART 3: Actually render the prepared data with the selected template
+         *
+         **********************************************************************/
+        if(body_parser){
+            
+            // if self.data is not empty, render
+            if(stack[@"options"] && stack[@"options"][@"type"]){
+                if([stack[@"options"][@"type"] isEqualToString:@"html"]){
+                    rendered_page = [JasonHelper parse: data_stub ofType:@"html" with:body_parser];
+                } else if([stack[@"options"][@"type"] isEqualToString:@"xml"]){
+                    rendered_page = [JasonHelper parse: data_stub ofType:@"xml" with:body_parser];
+                } else {
+                    rendered_page = [JasonHelper parse: data_stub with:body_parser];
+                }
             } else {
                 rendered_page = [JasonHelper parse: data_stub with:body_parser];
             }
-        } else {
-            rendered_page = [JasonHelper parse: data_stub with:body_parser];
-        }
-        
-        if(rendered_page){
-            if(rendered_page[@"nav"]) {
-                // Deprecated
-                [self setupHeader:rendered_page[@"nav"]];
-            } else if(rendered_page[@"header"]) {
-                [self setupHeader:rendered_page[@"header"]];
-            } else {
-                [self setupHeader:nil];
-            }
             
-            if(rendered_page[@"footer"]){
-                [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
-            } else if(rendered_page[@"tabs"]){
-                // Deprecated
-                [self setupTabBar:rendered_page[@"tabs"]];
-            } else {
-                [self setupTabBar:nil];
-            }
-            
-            if(rendered_page[@"style"] && rendered_page[@"style"][@"background"]){
-                if([rendered_page[@"style"][@"background"] isKindOfClass:[NSDictionary class]]){
-                    // Advanced background
-                    // example:
-                    //  "background": {
-                    //      "type": "camera",
-                    //      "options": {
-                    //          ...
-                    //      }
-                    //  }
-                    [self drawAdvancedBackground:rendered_page[@"style"][@"background"]];
+            if(rendered_page){
+                if(rendered_page[@"nav"]) {
+                    // Deprecated
+                    [self setupHeader:rendered_page[@"nav"]];
+                } else if(rendered_page[@"header"]) {
+                    [self setupHeader:rendered_page[@"header"]];
                 } else {
-                    [self drawBackground:rendered_page[@"style"][@"background"]];
+                    [self setupHeader:nil];
                 }
-            } else {
-                [self drawBackground:@"#ffffff"];
+                
+                if(rendered_page[@"footer"]){
+                    [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
+                } else if(rendered_page[@"tabs"]){
+                    // Deprecated
+                    [self setupTabBar:rendered_page[@"tabs"]];
+                } else {
+                    [self setupTabBar:nil];
+                }
+                
+                if(rendered_page[@"style"] && rendered_page[@"style"][@"background"]){
+                    if([rendered_page[@"style"][@"background"] isKindOfClass:[NSDictionary class]]){
+                        // Advanced background
+                        // example:
+                        //  "background": {
+                        //      "type": "camera",
+                        //      "options": {
+                        //          ...
+                        //      }
+                        //  }
+                        [self drawAdvancedBackground:rendered_page[@"style"][@"background"]];
+                    } else {
+                        [self drawBackground:rendered_page[@"style"][@"background"]];
+                    }
+                } else {
+                    [self drawBackground:@"#ffffff"];
+                }
             }
+            VC.rendered = rendered_page;
+            
+            if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:VC.contentLoaded];
+            
+            // Cache the view after drawing
+            [self cache_view];
         }
-        VC.rendered = rendered_page;
-        
-        if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:VC.contentLoaded];
-        
-        // Cache the view after drawing
-        [self cache_view];
-    }
-    
-    
-    [self success];
+        [self success];
     
 }
 - (void)visit{
@@ -894,10 +913,9 @@
 }
 
 - (void)snapshot{
-    if(vision){
-        vision = [PBJVision sharedInstance];
-        vision.cameraMode = PBJCameraModePhoto;
-        [vision capturePhoto];
+    if(self.avCaptureSession){
+        // don't snapshot when camera is running
+        [[Jason client] error];
     } else {
         UIImage *image = [JasonHelper takescreenshot];
         NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
@@ -908,6 +926,18 @@
         NSURL* dataURI = [NSURL URLWithString:dataString];
         [[Jason client] success:@{@"data": base64data, @"data_uri": dataURI.absoluteString, @"content_type" :contentType}];
     }
+}
+
+- (void) scroll {
+    if(self.options && self.options[@"position"]) {
+        NSString *position = self.options[@"position"];
+        if([position isEqualToString:@"top"]) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"scrollToTop" object:nil userInfo:nil];
+        } else if ([position isEqualToString:@"bottom"]) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"scrollToBottom" object:nil userInfo:nil];
+        }
+    }
+    [[Jason client] success];
 }
 
 
@@ -1171,9 +1201,9 @@
     return include_resolved;
 }
 
-- (Jason *)detach:(UIViewController<RussianDollView>*)viewController{
+- (Jason *)detach:(JasonViewController*)viewController{
     // Need to clean up before leaving the view
-    VC = (UIViewController<RussianDollView>*)viewController;
+    VC = (JasonViewController*)viewController;
     
     // Reset Timers
     for(NSString *timer_name in VC.timers){
@@ -1197,16 +1227,36 @@
     
     [VC.view endEditing:YES];
     
+    // Reset Agent
+    for(NSString *key in ((JasonViewController*)VC).agents) {
+        JasonAgentService *agent = self.services[@"JasonAgentService"];
+        if ([key isEqualToString:@"$webcontainer"]) {
+            // Web container is a special case agent => because it may function as a full-fledged view of the app,
+            // we can't just kill the entire thing just because the app transitioned from view A to B.
+            // View A should always be ready when we come back from view B.
+            if (VC.isMovingFromParentViewController || VC.isBeingDismissed) {
+                // Web container AND coming back from the child view therefore it's ok to kill the child view's web container agent
+                [agent clear:key forVC:VC];
+            } else {
+                // Otherwise it could be:
+                // 1. Going from view A to view B (Don't kill view A's agent)
+            }
+        } else {
+            [agent clear:key forVC:VC];
+        }
+    }
+
+    
     return self;
 }
 
-- (Jason *)attach:(UIViewController<RussianDollView>*)viewController{
+- (Jason *)attach:(JasonViewController*)viewController{
     
     // When oauth is in process, let it do its job and don't interfere.
     if(self.oauth_in_process) return self;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"dismissSearchInput" object:nil];
     
-    VC = (UIViewController<RussianDollView>*)viewController;
+    VC = (JasonViewController*)viewController;
     navigationController = viewController.navigationController;
     
     tabController = navigationController.tabBarController;
@@ -1220,7 +1270,7 @@
         tabController.tabBar.backgroundColor = [UIColor whiteColor];
         tabController.tabBar.shadowImage = [[UIImage alloc] init];
     }
-    navigationController.navigationBar.backgroundColor = [UIColor whiteColor];
+    navigationController.navigationBar.backgroundColor = [UIColor clearColor];
     navigationController.navigationBar.shadowImage = [UIImage new];
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     
@@ -1232,6 +1282,13 @@
         JasonComponentFactory.stylesheet[@"$default"] = @{@"color": VC.view.tintColor};
     }
     
+    [self.avCaptureSession stopRunning];
+    self.avCaptureSession = nil;
+    
+    if(self.services[@"JasonWebsocketService"]) {
+        [self.services[@"JasonWebsocketService"] close];
+    }
+    
     JasonMemory *memory = [JasonMemory client];
     
     if(memory.executing){
@@ -1239,22 +1296,34 @@
     } else if(memory.need_to_exec){
         // Check if there's any action left in the action call chain. If there is, execute it.
         
-        // If there's a callback waiting to be executing for the current VC, set it as stack
-        if(VC.callback)
-        {
-            // 1. Replace with VC.callback
-            memory._stack = VC.callback;
-            
-            // 2. Fill it out with return values via options
-            memory._stack = [self options];
+        if (VC.original && VC.original[@"$jason"] && VC.original[@"$jason"][@"head"]) {
+            VC.agentReady = NO;
+            [self setupHead:VC.original[@"$jason"][@"head"]];
         }
         
+        // Header update (Bugfix for when coming back from an href)
+        header_needs_refresh = YES;
+        if(VC.rendered[@"nav"]) {
+            // Deprecated
+            [self setupHeader:VC.rendered[@"nav"]];
+        } else if(VC.rendered[@"header"]) {
+            [self setupHeader:VC.rendered[@"header"]];
+        } else {
+            [self setupHeader:nil];
+        }
+
+        // If there's a callback waiting to be executing for the current VC, set it as stack
+        if(VC.callback) {
+            // 1. Replace with VC.callback
+            memory._stack = VC.callback;
+        }
         if(memory._stack && memory._stack.count > 0){
             [self next];
         } else {
             [[NSNotificationCenter defaultCenter] postNotificationName:@"finishRefreshing" object:nil];
             [self reload];
         }
+        
         memory.need_to_exec = NO;
     }
     
@@ -1263,6 +1332,16 @@
     {
         VC.data = nil;
         
+        
+        /************************************
+         Setup head as quickly as possible
+         And set the headSetup flag to true, so that it doesn't try to set it up again later
+         **************************************/
+        if (VC.original && VC.original[@"$jason"] && VC.original[@"$jason"][@"head"]) {
+            VC.agentReady = NO;
+            [self setupHead:VC.original[@"$jason"][@"head"]];
+        }
+
         /*********************************************************************************************************
          *
          * VC.rendered: contains the rendered Jason DOM if it's been dynamically rendered.
@@ -1270,7 +1349,7 @@
          * If VC.rendered is not nil, it means it's been already fully rendered.
          *
          ********************************************************************************************************/
-        if(VC.isFinal && VC.rendered && rendered_page){
+        if(VC.rendered && rendered_page){
             
             /*********************************************************************************************************
              *
@@ -1308,6 +1387,20 @@
                 }
             }
             
+            // restart avCaptureSession if the background type is "camera"
+            if(VC.rendered[@"style"] && VC.rendered[@"style"][@"background"]) {
+                if([VC.rendered[@"style"][@"background"] isKindOfClass:[NSString class]]) {
+                    if([VC.rendered[@"style"][@"background"] isEqualToString:@"camera"]) {
+                        [self buildCamera:@{@"type": @"camera"} forVC: VC];
+                    }
+                } else if([VC.rendered[@"style"][@"background"] isKindOfClass:[NSDictionary class]]) {
+                    NSString *type = VC.rendered[@"style"][@"background"][@"type"];
+                    if([type isEqualToString:@"camera"]) {
+                        [self buildCamera:VC.rendered[@"style"][@"background"][@"options"] forVC: VC];
+                    }
+                }
+            }
+            
             // set "rendered_page" to VC.rendered for cases when we're coming back from another view
             // so that rendered_page will be always in sync even when there is no $show handler to refresh the view.
             
@@ -1333,7 +1426,7 @@
              *  2. re-setup event listener
              *
              ********************************************************************************************************/
-            if(VC.contentLoaded && VC.isFinal){
+            if(VC.contentLoaded){
                 // If content already loaded,
                 // 1. just setup the navbar so the navbar will have the correct style
                 // 2. trigger load events ($show or $load)
@@ -1346,6 +1439,13 @@
              *
              ********************************************************************************************************/
             else {
+                if (VC.preload && VC.preload[@"style"] && VC.preload[@"style"][@"background"]) {
+                    if ([VC.preload[@"style"][@"background"] isKindOfClass:[NSDictionary class]]) {
+                        [self drawAdvancedBackground:VC.preload[@"style"][@"background"]];
+                    } else {
+                        [self drawBackground:VC.preload[@"style"][@"background"]];
+                    }
+                }
                 [self reload];
             }
             
@@ -1555,132 +1655,133 @@
 
 # pragma mark - View rendering (high level)
 - (void)reload{
-    VC.data = nil;
-    if(VC.url){
-        [self networkLoading:VC.loading with:nil];
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        [manager.operationQueue cancelAllOperations];
-        NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
-        
-        // Set Header if specified  "header"
-        NSDictionary *headers = self.options[@"header"];
-        // legacy code : headers is deprecated
-        if(!headers){
-            headers = self.options[@"headers"];
-        }
-        
-        if(headers && headers.count > 0){
-            for(NSString *key in headers){
-                [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
+        VC.data = nil;
+        VC.form = [[NSMutableDictionary alloc] init];
+        if(VC.url){
+            [self networkLoading:VC.loading with:nil];
+            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+            [manager.operationQueue cancelAllOperations];
+            NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
+            
+            // Set Header if specified  "header"
+            NSDictionary *headers = self.options[@"header"];
+            // legacy code : headers is deprecated
+            if(!headers){
+                headers = self.options[@"headers"];
             }
-        }
-        if(session && session.count > 0 && session[@"header"]){
-            for(NSString *key in session[@"header"]){
-                [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
-            }
-        }
-        
-        
-        NSMutableDictionary *parameters;
-        if(VC.options[@"data"]){
-            parameters = [VC.options[@"data"] mutableCopy];
-        } else {
-            if(session && session.count > 0 && session[@"body"]){
-                parameters = [@{} mutableCopy];
-                for(NSString *key in session[@"body"]){
-                    parameters[key] = session[@"body"][key];
+            
+            if(headers && headers.count > 0){
+                for(NSString *key in headers){
+                    [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
                 }
+            }
+            if(session && session.count > 0 && session[@"header"]){
+                for(NSString *key in session[@"header"]){
+                    [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                }
+            }
+            
+            
+            NSMutableDictionary *parameters;
+            if(VC.options[@"data"]){
+                parameters = [VC.options[@"data"] mutableCopy];
             } else {
-                parameters = nil;
-            }
-        }
-        
-        if(VC.fresh){
-            [manager.requestSerializer setCachePolicy: NSURLRequestReloadIgnoringLocalCacheData];
-            if(!parameters){
-                parameters = [@{} mutableCopy];
-            }
-            int timestamp = [[NSDate date] timeIntervalSince1970];
-            
-            parameters[@"timestamp"] = [NSString stringWithFormat:@"%d", timestamp];
-        }
-        
-        VC.contentLoaded=NO;
-        
-        /**************************************************
-         * Experimental : Offline handling
-         * => Only load from cache initially if head contains "offline":"true"
-         ***************************************************/
-        NSString *normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
-        NSData *data = [NSData dataWithContentsOfFile:path];
-        if(data && data.length > 0){
-            NSDictionary *responseObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-            if(responseObject && responseObject[@"$jason"] && responseObject[@"$jason"][@"head"] && responseObject[@"$jason"][@"head"][@"offline"]){
-                // get rid of $load and $show so they don't get triggered
-                if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$load"]){
-                    [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$load"];
+                if(session && session.count > 0 && session[@"body"]){
+                    parameters = [@{} mutableCopy];
+                    for(NSString *key in session[@"body"]){
+                        parameters[key] = session[@"body"][key];
+                    }
+                } else {
+                    parameters = nil;
                 }
-                if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$show"]){
-                    [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$show"];
-                }
-                VC.offline = YES;
-                [self drawViewFromJason: responseObject asFinal:NO];
             }
-        }
-        VC.requires = [[NSMutableDictionary alloc] init];
-        
-        /**************************************************
-         * Handling data uri
-         ***************************************************/
-        if([VC.url hasPrefix:@"data:application/json"]){
-            // if data uri, parse it into NSData
-            NSURL *url = [NSURL URLWithString:VC.url];
-            NSData *jsonData = [NSData dataWithContentsOfURL:url];
-            NSError* error;
-            VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
-            [self drawViewFromJason: VC.original asFinal:YES];
-        } else if([VC.url hasPrefix:@"file://"]) {
-            [self loadViewByFile: VC.url asFinal:YES];
-        }
-        
-        /**************************************************
-         * Normally urls are not in data-uri.
-         ***************************************************/
-        else {
             
-            AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
-            NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+            if(VC.fresh){
+                [manager.requestSerializer setCachePolicy: NSURLRequestReloadIgnoringLocalCacheData];
+                if(!parameters){
+                    parameters = [@{} mutableCopy];
+                }
+                int timestamp = [[NSDate date] timeIntervalSince1970];
+                
+                parameters[@"timestamp"] = [NSString stringWithFormat:@"%d", timestamp];
+            }
             
-            // Assumes that content type is json, even the text/plain ones (Some hosting sites respond with data_type of text/plain even when it's actually a json, so we accept even text/plain as json by default)
-            [jsonAcceptableContentTypes addObject:@"text/plain"];
-            jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+            VC.contentLoaded=NO;
             
-            manager.responseSerializer = jsonResponseSerializer;
+            /**************************************************
+             * Experimental : Offline handling
+             * => Only load from cache initially if head contains "offline":"true"
+             ***************************************************/
+            NSString *normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *documentsDirectory = [paths objectAtIndex:0];
+            NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
+            NSData *data = [NSData dataWithContentsOfFile:path];
+            if(data && data.length > 0){
+                NSDictionary *responseObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                if(responseObject && responseObject[@"$jason"] && responseObject[@"$jason"][@"head"] && responseObject[@"$jason"][@"head"][@"offline"]){
+                    // get rid of $load and $show so they don't get triggered
+                    if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$load"]){
+                        [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$load"];
+                    }
+                    if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$show"]){
+                        [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$show"];
+                    }
+                    VC.offline = YES;
+                    [self drawViewFromJason: responseObject asFinal:NO];
+                }
+            }
+            VC.requires = [[NSMutableDictionary alloc] init];
             
-            [manager GET:VC.url parameters:parameters
-                progress:^(NSProgress * _Nonnull downloadProgress) { }
-                 success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                     // Ignore if the url is different
-                     if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
-                     VC.original = responseObject;
-                     [self include:responseObject andCompletionHandler:^(id res){
-                         dispatch_async(dispatch_get_main_queue(), ^{
-                             VC.contentLoaded = NO;
-                             
-                             VC.original = @{@"$jason": res[@"$jason"]};
-                             [self drawViewFromJason: VC.original asFinal:YES];
-                         });
+            /**************************************************
+             * Handling data uri
+             ***************************************************/
+            if([VC.url hasPrefix:@"data:application/json"]){
+                // if data uri, parse it into NSData
+                NSURL *url = [NSURL URLWithString:VC.url];
+                NSData *jsonData = [NSData dataWithContentsOfURL:url];
+                NSError* error;
+                VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
+                [self drawViewFromJason: VC.original asFinal:YES];
+            } else if([VC.url hasPrefix:@"file://"]) {
+                [self loadViewByFile: VC.url asFinal:YES];
+            }
+            
+            /**************************************************
+             * Normally urls are not in data-uri.
+             ***************************************************/
+            else {
+                
+                AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
+                NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                
+                // Assumes that content type is json, even the text/plain ones (Some hosting sites respond with data_type of text/plain even when it's actually a json, so we accept even text/plain as json by default)
+                [jsonAcceptableContentTypes addObject:@"text/plain"];
+                jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
+                
+                manager.responseSerializer = jsonResponseSerializer;
+                
+                [manager GET:VC.url parameters:parameters
+                    progress:^(NSProgress * _Nonnull downloadProgress) { }
+                     success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                         // Ignore if the url is different
+                         if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
+                         VC.original = responseObject;
+                         [self include:responseObject andCompletionHandler:^(id res){
+                             dispatch_async(dispatch_get_main_queue(), ^{
+                                 VC.contentLoaded = NO;
+                                 
+                                 VC.original = @{@"$jason": res[@"$jason"]};
+                                 [self drawViewFromJason: VC.original asFinal:YES];
+                             });
+                         }];
+                     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                         if(!VC.offline){
+                             [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
+                         }
                      }];
-                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                     if(!VC.offline){
-                         [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
-                     }
-                 }];
+            }
         }
-    }
 }
 - (void)drawViewFromJason: (NSDictionary *)jason asFinal: (BOOL) final{
     
@@ -1704,19 +1805,6 @@
         NSDictionary *head = dom[@"head"];
         if(head){
             [self setupHead: head];
-            
-            /****************************************************************************
-             *
-             * VC.parser = Template
-             *
-             ****************************************************************************/
-            if(head[@"templates"]){
-                VC.parser = head[@"templates"];
-            } else {
-                VC.parser = nil;
-            }
-            
-            // 3. Set up event
             [self onLoad: final];
         }
         
@@ -1825,156 +1913,188 @@
 }
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
+        [self drawAdvancedBackground:bg forVC:VC];
+    });
+}
+- (void)drawAdvancedBackground:(NSDictionary *)bg forVC: (JasonViewController *)vc {
         NSString *type = bg[@"type"];
+        if([vc.background.payload[@"background"] isEqual:bg]) {
+            return;
+        }
         if(type) {
             
             if([type isEqualToString:@"camera"]){
-                
+
                 NSDictionary *options = bg[@"options"];
-                AVCaptureVideoPreviewLayer *_previewLayer;
                 
-                if(VC.background){
-                    [VC.background removeFromSuperview];
-                    VC.background = nil;
+                if(vc.background){
+                    [vc.background removeFromSuperview];
+                    vc.background = nil;
                 }
                 
-                VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-                _previewLayer = [[PBJVision sharedInstance] previewLayer];
-                _previewLayer.frame = VC.background.bounds;
-                _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-                
-                [VC.background.layer addSublayer:_previewLayer];
-                
-                vision = [PBJVision sharedInstance];
-                vision.delegate = self;
-                if(options[@"mode"] && [options[@"mode"] isEqualToString:@"video"]){
-                    vision.cameraMode = PBJCameraModeVideo;
-                } else {
-                    vision.cameraMode = PBJCameraModePhoto;
-                }
-                vision.cameraOrientation = PBJCameraOrientationPortrait;
-                vision.focusMode = PBJFocusModeContinuousAutoFocus;
-                if(options[@"device"] && [options[@"device"] isEqualToString:@"back"]){
-                    vision.cameraDevice = PBJCameraDeviceBack;
-                } else {
-                    vision.cameraDevice = PBJCameraDeviceFront;
-                }
-                
-                [vision startPreview];
-                
+                vc.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+                vc.background.payload = @{@"background": bg};
+                avPreviewLayer = nil;
+                [self buildCamera: options forVC: vc];
+
+
             } else if([type isEqualToString:@"html"]){
-                if(VC.background && [VC.background isKindOfClass:[UIWebView class]]){
+                if(self.avCaptureSession) {
+                    [self.avCaptureSession stopRunning];
+                    self.avCaptureSession = nil;
+                }
+
+                if(vc.background && [vc.background isKindOfClass:[WKWebView class]]){
                     // don't do anything, reuse.
                 } else {
-                    if(VC.background){
-                        [VC.background removeFromSuperview];
-                        VC.background = nil;
-                    }
-                    VC.background = [[UIWebView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-                    ((UIWebView*)VC.background).delegate = self;
-                    
-                    // Need to make the background transparent so that it doesn't flash white when first loading
-                    VC.background.opaque = NO;
-                    VC.background.backgroundColor = [UIColor clearColor];
-                }
-                if(bg[@"text"]){
-                    NSString *html = bg[@"text"];
-                    if(VC.background.payload && VC.background.payload[@"html"] && [VC.background.payload[@"html"] isEqualToString:html]) {
-                        // same html, no need to reload
-                    } else {
-                        // different html, reload
-                        [((UIWebView*)VC.background) loadHTMLString:html baseURL:nil];
-                    }
-                    
-                    VC.background.payload = @{@"html": html};
-                    
-                }
-                
-                // allow autoplay
-                ((UIWebView*)VC.background).mediaPlaybackRequiresUserAction = NO;
-                
-                // allow inline playback
-                ((UIWebView*)VC.background).allowsInlineMediaPlayback = YES;
-                
-                // user interaction enable/disable => disabled by default
-                VC.background.userInteractionEnabled = NO;
-                if(bg[@"action"]){
-                    NSString *action_type = bg[@"action"][@"type"];
-                    if(action_type){
-                        if([action_type isEqualToString:@"$default"]){
-                            // enable input only when action type is $default
-                            VC.background.userInteractionEnabled = YES;
-                        }
+                    if(vc.background){
+                        [vc.background removeFromSuperview];
+                        vc.background = nil;
                     }
                 }
+                
+                NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+                if(bg[@"url"]) {
+                    payload[@"url"] = bg[@"url"];
+                } else if(bg[@"text"]) {
+                    payload[@"text"] = bg[@"text"];
+                }
+                if(bg[@"id"]) {
+                    payload[@"id"] = bg[@"id"];
+                } else {
+                    // if no id is specified, just use the current url as the id
+                    payload[@"id"] = @"$webcontainer";
+                }
+                if(bg[@"action"]) {
+                    payload[@"action"] = bg[@"action"];
+                }
+                JasonAgentService *agent = self.services[@"JasonAgentService"];
+                vc.background = [agent setup:payload withId:payload[@"id"]];
+                
+                // Need to make the background transparent so that it doesn't flash white when first loading
+                vc.background.opaque = NO;
+                vc.background.backgroundColor = [UIColor clearColor];
+                vc.background.hidden = NO;
+                
+                int height = [UIScreen mainScreen].bounds.size.height;
+                if (!tabController.tabBar.hidden) {
+                    height = height - tabController.tabBar.frame.size.height;
+                }
+                if (vc.composeBarView) {
+                    // footer.input exists
+                    height = height - vc.composeBarView.frame.size.height;
+                }
+                CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, height);
+                vc.background.frame = rect;
+                
+                UIProgressView *progressView = [vc.background viewWithTag:42];
+                if (!progressView) {
+                    progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+                    [progressView setTag: 42];
+                    [vc.background addSubview:progressView];
+                }
+                
+                [progressView setTrackTintColor:[UIColor colorWithWhite:1.0f alpha:0.0f]];
+                // agent top + navigation height + status bar size (fixed at 20)
+                CGFloat navHeight = navigationController.navigationBar.frame.size.height;
+                if (navigationController.navigationBar.hidden) {
+                    navHeight = 0;
+                }
+                [progressView setFrame:CGRectMake(0,vc.background.frame.origin.y + navHeight + 20, vc.background.frame.size.width, progressView.frame.size.height)];
+                [progressView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
+
+                if (bg[@"style"]) {
+                    if (bg[@"style"][@"background"]) {
+                        vc.background.backgroundColor = [JasonHelper colorwithHexString:bg[@"style"][@"background"] alpha:1.0];
+                    }
+                    if (bg[@"style"][@"progress"]) {
+                        progressView.tintColor = [JasonHelper colorwithHexString:bg[@"style"][@"progress"] alpha:1.0];
+                    }
+                }
+
             }
-            [VC.view addSubview:VC.background];
-            [VC.view sendSubviewToBack:VC.background];
+            [vc.view addSubview:vc.background];
+            [vc.view sendSubviewToBack:vc.background];
         }
-    });
 }
-- (void) webViewDidFinishLoad:(UIWebView *)webView
-{
-    NSString *summon = @"var JASON={call: function(e){var n=document.createElement(\"IFRAME\");n.setAttribute(\"src\",\"jason:\"+JSON.stringify(e)),document.documentElement.appendChild(n),n.parentNode.removeChild(n),n=null}};";
-    [webView stringByEvaluatingJavaScriptFromString:summon];
-}
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    
-    if ([[[request URL] absoluteString] hasPrefix:@"jason:"]) {
-        // Extract the selector name from the URL
-        NSString *json = [[[request URL] absoluteString] substringFromIndex:6];
-        json = [json stringByRemovingPercentEncoding];
-        
-        NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *action = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        [[Jason client] call: action];
-        
-        return NO;
+- (void) buildCamera: (NSDictionary *) options forVC: (JasonViewController *)vc{
+    NSError *error = nil;
+    // Find back/front camera
+    // based on options
+    NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    AVCaptureDevicePosition position;
+    if(options[@"device"] && [options[@"device"] isEqualToString:@"back"]){
+        position = AVCaptureDevicePositionBack;
+    } else {
+        position = AVCaptureDevicePositionFront;
+    }
+    for ( AVCaptureDevice *d in devices ) {
+        if ( d.position == position ) {
+            device = d;
+        }
     }
     
-    return YES;
-}
+    // Create session
+    self.avCaptureSession = [[AVCaptureSession alloc] init];
+    
+    // Add input to the session
+    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+    [self.avCaptureSession addInput: input];
+    
+    AVCaptureMetadataOutput *output = [[AVCaptureMetadataOutput alloc] init];
+    [self.avCaptureSession addOutput: output];
+    
+    // Listen for different types of barcode detection
+    [output setMetadataObjectsDelegate:self.services[@"JasonVisionService"] queue:dispatch_get_main_queue()];
+    [output setMetadataObjectTypes:output.availableMetadataObjectTypes];
 
+    // Attach session preview layer to the background
+    if(!avPreviewLayer) {
+        avPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_avCaptureSession];
+        avPreviewLayer.frame = vc.background.bounds;
+        avPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+        [vc.background.layer addSublayer:avPreviewLayer];
+    } else {
+        [avPreviewLayer setSession:_avCaptureSession];
+    }
+    // Run
+    [self.avCaptureSession startRunning];
+    [self call:vc.events[@"$vision.ready"]];
+
+}
 - (void)drawBackground:(NSString *)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
-        
+        [self drawBackground:bg forVC:VC];
+    });
+}
+- (void)drawBackground:(NSString *)bg forVC: (JasonViewController *)vc {
+    
+    
         if([bg isEqualToString:@"camera"]){
-            if(VC.background){
-                [VC.background removeFromSuperview];
-                VC.background = nil;
+            if(vc.background){
+                [vc.background removeFromSuperview];
+                vc.background = nil;
             }
+            vc.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+            [self buildCamera: @{ @"type": bg } forVC: vc];
             
-            AVCaptureVideoPreviewLayer *_previewLayer;
-            VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-            _previewLayer = [[PBJVision sharedInstance] previewLayer];
-            _previewLayer.frame = VC.background.bounds;
-            _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-            
-            [VC.background.layer addSublayer:_previewLayer];
-            
-            vision = [PBJVision sharedInstance];
-            vision.delegate = self;
-            vision.cameraMode = PBJCameraModePhoto;
-            vision.cameraOrientation = PBJCameraOrientationPortrait;
-            vision.focusMode = PBJFocusModeContinuousAutoFocus;
-            vision.cameraDevice = PBJCameraDeviceFront;
-            
-            [vision startPreview];
-            
-            [VC.view addSubview:VC.background];
-            [VC.view sendSubviewToBack:VC.background];
+            [vc.view addSubview:vc.background];
+            [vc.view sendSubviewToBack:vc.background];
             
         }else if([bg hasPrefix:@"http"] || [bg hasPrefix:@"data:"] || [bg hasPrefix:@"file"]){
-            vision = nil;
-            if(VC.background){
-                [VC.background removeFromSuperview];
-                VC.background = nil;
+            if(self.avCaptureSession) {
+                [self.avCaptureSession stopRunning];
+                self.avCaptureSession = nil;
             }
-            if(vision) [vision stopPreview];
-            VC.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-            VC.background.contentMode = UIViewContentModeScaleAspectFill;
-            [VC.view addSubview:VC.background];
-            [VC.view sendSubviewToBack:VC.background];
+            if(vc.background){
+                [vc.background removeFromSuperview];
+                vc.background = nil;
+            }
+            vc.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+            vc.background.contentMode = UIViewContentModeScaleAspectFill;
+            [vc.view addSubview:vc.background];
+            [vc.view sendSubviewToBack:vc.background];
             
             if([bg containsString:@"file://"]){
                 NSString *localImageName = [bg substringFromIndex:7];
@@ -1992,21 +2112,23 @@
                     localImage = [UIImage imageNamed:localImageName];
                 }
                 
-                [(UIImageView *)VC.background setImage:localImage];
+                [(UIImageView *)vc.background setImage:localImage];
             } else {
                 UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
-                [((UIImageView *)VC.background) sd_setImageWithURL:[NSURL URLWithString:bg] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                [((UIImageView *)vc.background) sd_setImageWithURL:[NSURL URLWithString:bg] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 }];
             }
         } else {
-            vision = nil;
-            if(VC.background){
-                [VC.background removeFromSuperview];
-                VC.background = nil;
+            if(self.avCaptureSession) {
+                [self.avCaptureSession stopRunning];
+                self.avCaptureSession = nil;
             }
-            VC.view.backgroundColor = [JasonHelper colorwithHexString:bg alpha:1.0];
+            if(vc.background){
+                [vc.background removeFromSuperview];
+                vc.background = nil;
+            }
+            vc.view.backgroundColor = [JasonHelper colorwithHexString:bg alpha:1.0];
         }
-    });
     
 }
 
@@ -2024,407 +2146,420 @@
         }
         NSDictionary *style = head[@"styles"];
         [VC setValue:style forKey:@"style"];
+        
+        // 3. agents
+        if (!VC.agentReady) {
+         // Agents must be setup ONLY once, AFTER the true view has finished loading.
+            if(head[@"agents"] && [head[@"agents"] isKindOfClass:[NSDictionary class]] && [head[@"agents"] count] > 0) {
+                for(NSString *key in head[@"agents"]) {
+                    JasonAgentService *agent = self.services[@"JasonAgentService"];
+                    [agent setup: head[@"agents"][key] withId: key];
+    }
+}
+            VC.agentReady = YES;
+        }
+
+        // 4. templates
+        if(head[@"templates"]){
+            VC.parser = head[@"templates"];
+        } else {
+            VC.parser = nil;
+        }
     }
 }
 
 # pragma mark - View rendering (nav)
 - (void)setupHeader: (NSDictionary *)nav{
-
-    if(!nav && !VC.isFinal) {
+    [self setupHeader:nav forVC:VC];
+}
+- (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController *)v{
+    navigationController = v.navigationController;
+    tabController = v.tabBarController;
+    if(!nav) {
         navigationController.navigationBar.hidden = YES;
         return;
     }
 
-    if(VC.rendered && rendered_page){
-        if(VC.old_header && [[VC.old_header description] isEqualToString:[nav description]]){
-            // if the header is the same as the value trying to set,
-            if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[VC.old_header description]]) {
-                // and if the currently visible rendered_page's header is the same as the VC's old_header, ignore.
+    
+    // if coming back from href, need_to_exec is true. In this case, shouldn't skip setupHeader.
+    if(!header_needs_refresh) {
+        if(v.rendered && rendered_page){
+            if(v.old_header && [[v.old_header description] isEqualToString:[nav description]]){
+                // if the header is the same as the value trying to set,
+                if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[v.old_header description]]) {
+                    // and if the currently visible rendered_page's header is the same as the VC's old_header, ignore.
+                    return;
+                }
+            }
+        }
+    }
+    header_needs_refresh = NO;
+    
+        if(nav) v.old_header = nav;
+    
+    
+    
+        UIColor *background = [JasonHelper colorwithHexString:@"#ffffff" alpha:1.0];
+        UIColor *color = [JasonHelper colorwithHexString:@"#000000" alpha:1.0];
+    
+        // Deprecated (using 'nav' instead of 'header')
+        NSArray *items = nav[@"items"];
+        if(items){
+            NSMutableDictionary *dict = [nav mutableCopy];
+            [dict removeObjectForKey:@"items"];
+            for(NSDictionary *item in items){
+                dict[item[@"type"]] = item;
+            }
+            nav = dict;
+        }
+        ////////////////////////////////////////////////////////////////
+    
+        if(!nav) {
+            if(v.isModal || [tabController presentingViewController]){ // if the current tab bar was modally presented
+                // if it's a modal, need to add X button to close
+                nav = @{@"left": @{}};
+            } else {
+                
+                navigationController.navigationBar.shadowImage = [UIImage new];
+                [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+                navigationController.navigationBar.translucent = NO;
+                [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
+                
+                navigationController.navigationBar.backgroundColor = background;
+                navigationController.navigationBar.barTintColor = background;
+                navigationController.navigationBar.tintColor = color;
+                navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
                 return;
             }
         }
-    }
     
-    if(nav) VC.old_header = nav;
-    
-    
-    
-    UIColor *background = [JasonHelper colorwithHexString:@"#ffffff" alpha:1.0];
-    UIColor *color = [JasonHelper colorwithHexString:@"#000000" alpha:1.0];
-    
-    // Deprecated (using 'nav' instead of 'header')
-    NSArray *items = nav[@"items"];
-    if(items){
-        NSMutableDictionary *dict = [nav mutableCopy];
-        [dict removeObjectForKey:@"items"];
-        for(NSDictionary *item in items){
-            dict[item[@"type"]] = item;
-        }
-        nav = dict;
-    }
-    ////////////////////////////////////////////////////////////////
-    
-    if(!nav) {
-        if(VC.isModal || [tabController presentingViewController]){ // if the current tab bar was modally presented
-            // if it's a modal, need to add X button to close
-            nav = @{@"left": @{}};
-        } else {
+        navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
+        navigationController.navigationBar.hidden = NO;
+        if(nav[@"style"]){
+            NSDictionary *headStyle = nav[@"style"];
+            if(headStyle[@"background"]){
+                NSString *bg = headStyle[@"background"];
+                background = [JasonHelper colorwithHexString:bg alpha:1.0];
+            }
+            if(headStyle[@"color"]){
+                color = [JasonHelper colorwithHexString:headStyle[@"color"] alpha:1.0];
+            }
             
-            navigationController.navigationBar.shadowImage = [UIImage new];
-            [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-            navigationController.navigationBar.translucent = NO;
-            [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
+            if(headStyle[@"theme"]){
+                navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
+            } else {
+                navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+            }
             
-            navigationController.navigationBar.backgroundColor = background;
-            navigationController.navigationBar.barTintColor = background;
-            navigationController.navigationBar.tintColor = color;
-            navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
-            return;
-        }
-    }
-    
-    navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-    navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
-    [navigationController setNavigationBarHidden:NO];
-    if(nav[@"style"]){
-        NSDictionary *headStyle = nav[@"style"];
-        if(headStyle[@"background"]){
-            NSString *bg = headStyle[@"background"];
-            background = [JasonHelper colorwithHexString:bg alpha:1.0];
-        }
-        if(headStyle[@"color"]){
-            color = [JasonHelper colorwithHexString:headStyle[@"color"] alpha:1.0];
-        }
-        
-        if(headStyle[@"theme"]){
-            navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
+            if(headStyle[@"shy"]){
+                navigationController.hidesBarsOnSwipe = YES;
+            } else {
+                navigationController.hidesBarsOnSwipe = NO;
+            }
+            
+            NSString *font_name = @"HelveticaNeue-CondensedBold";
+            NSString *font_size = @"18";
+            if(headStyle[@"font"]){
+                font_name = headStyle[@"font"];
+            }
+            if(headStyle[@"size"]){
+                font_size = headStyle[@"size"];
+            }
+            navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
         } else {
             navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-        }
-        
-        if(headStyle[@"shy"]){
-            navigationController.hidesBarsOnSwipe = YES;
-        } else {
             navigationController.hidesBarsOnSwipe = NO;
+            NSString *font_name = @"HelveticaNeue-CondensedBold";
+            NSString *font_size = @"18";
+            navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
         }
-        
-        
-        if(headStyle[@"hide"] && [headStyle[@"hide"] boolValue]){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [navigationController setNavigationBarHidden:YES];
-            });
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [navigationController setNavigationBarHidden:NO];
-            });
-            
-        }
-        
-        NSString *font_name = @"HelveticaNeue-CondensedBold";
-        NSString *font_size = @"18";
-        if(headStyle[@"font"]){
-            font_name = headStyle[@"font"];
-        }
-        if(headStyle[@"size"]){
-            font_size = headStyle[@"size"];
-        }
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
-    } else {
-        navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-        navigationController.hidesBarsOnSwipe = NO;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [navigationController setNavigationBarHidden:NO];
-        });
-        NSString *font_name = @"HelveticaNeue-CondensedBold";
-        NSString *font_size = @"18";
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
-    }
     
     
-    NSDictionary *left_menu = nav[@"left"];
-    NSDictionary *right_menu;
+        NSDictionary *left_menu = nav[@"left"];
+        NSDictionary *right_menu;
     
-    NSArray *navComponents = nav[@"items"];
-    if(navComponents){
-        for(NSDictionary *component in navComponents){
-            NSString *type = component[@"type"];
-            if(type){
-                if([type isEqualToString:@"menu"]){
-                    right_menu = component;
-                    break;
-                }
-            }
-        }
-    }
-    right_menu = nav[@"menu"];
-    
-    
-    BBBadgeBarButtonItem *leftBarButton;
-    if(!left_menu || [left_menu count] == 0){
-        // if the current view is in a modal AND is the rootviewcontroller of the navigationcontroller,
-        // Add the X button. Otherwise, ignore this.
-        if([tabController presentingViewController]){ // if the current tab bar was modally presented
-            if([navigationController.viewControllers.firstObject isEqual:VC]){
-                leftBarButton = [[BBBadgeBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(cancel)];
-                [leftBarButton setTintColor:color];
-            }
-        }
-    } else {
-        if(left_menu[@"text"]){
-            UIButton *button = [[UIButton alloc] init];
-            [button setTitle:left_menu[@"text"] forState:UIControlStateNormal];
-            [button setTitle:left_menu[@"text"] forState:UIControlStateFocused];
-            NSDictionary *style = left_menu[@"style"];
-            if(style && style[@"color"]){
-                UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                [button setTitleColor:c forState:UIControlStateNormal];
-            } else {
-                [button setTitleColor:color forState:UIControlStateNormal];
-            }
-            CGFloat size = 14.0;
-            NSString *font = @"HelveticaNeue";
-            if(style[@"size"]){
-                size = [style[@"size"] floatValue];
-            }
-            if(style[@"font"]){
-                font = style[@"font"];
-            }
-            button.titleLabel.font = [UIFont fontWithName: font size:size];
-            [button sizeToFit];
-            [button addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
-            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:button];
-        } else {
-            UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
-            btn.frame = CGRectMake(0,0,20,20);
-            if(left_menu[@"image"]){
-                NSString *image_src = left_menu[@"image"];
-                
-                if([image_src containsString:@"file://"]){
-                    UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                    [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
-                } else{
-                    SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                    [manager downloadImageWithURL:[NSURL URLWithString:image_src]
-                                          options:0
-                                         progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                         }
-                                        completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                            if (image) {
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [self setMenuButtonImage:image forButton:btn withMenu:left_menu];//
-                                                });
-                                            }
-                                        }];
-                }
-                
-            } else {
-                [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
-            }
-            [btn addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
-            UIView *view = [[UIView alloc] initWithFrame:btn.frame];
-            [view addSubview:btn];
-            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
-        }
-        [self setupMenuBadge:leftBarButton forData:left_menu];
-    }
-    
-    BBBadgeBarButtonItem *rightBarButton;
-    if(!right_menu || [right_menu count] == 0){
-        rightBarButton = nil;
-    } else {
-        if(right_menu[@"text"]){
-            UIButton *button = [[UIButton alloc] init];
-            [button setTitle:right_menu[@"text"] forState:UIControlStateNormal];
-            [button setTitle:right_menu[@"text"] forState:UIControlStateFocused];
-            NSDictionary *style = right_menu[@"style"];
-            if(style && style[@"color"]){
-                UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                [button setTitleColor:c forState:UIControlStateNormal];
-            } else {
-                [button setTitleColor:color forState:UIControlStateNormal];
-            }
-            CGFloat size = 14.0;
-            NSString *font = @"HelveticaNeue";
-            if(style[@"size"]){
-                size = [style[@"size"] floatValue];
-            }
-            if(style[@"font"]){
-                font = style[@"font"];
-            }
-            button.titleLabel.font = [UIFont fontWithName: font size:size];
-            [button sizeToFit];
-            [button addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
-            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:button];
-        } else {
-            UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
-            btn.frame = CGRectMake(0,0,25,25);
-            if(right_menu[@"image"]){
-                NSString *image_src = right_menu[@"image"];
-                
-                if([image_src containsString:@"file://"]){
-                    UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
-                    [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
-                } else{
-                    SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                    [manager downloadImageWithURL:[NSURL URLWithString:image_src]
-                                          options:0
-                                         progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                         }
-                                        completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                            if (image) {
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
-                                                });
-                                            }
-                                        }];
-                }
-            } else {
-                [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
-            }
-            [btn addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
-            UIView *view = [[UIView alloc] initWithFrame:btn.frame];
-            [view addSubview:btn];
-            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
-        }
-        [self setupMenuBadge:rightBarButton forData:right_menu];
-    }
-    
-    if(!VC.menu){
-        VC.menu = [[NSMutableDictionary alloc] init];
-    }
-    [VC.menu setValue:left_menu forKey:@"left"];
-    [VC.menu setValue:right_menu forKey:@"right"];
-
-    VC.navigationItem.rightBarButtonItem = rightBarButton;
-    VC.navigationItem.leftBarButtonItem = leftBarButton;
-    
-    if(nav[@"title"]){
-        
-        if(![[nav[@"title"] description] containsString:@"{{"] && ![[nav[@"title"] description] containsString:@"}}"]){
-            if([nav[@"title"] isKindOfClass:[NSDictionary class]]){
-                // Advanced title
-                NSDictionary *titleDict = nav[@"title"];
-                if(titleDict[@"type"]){
-                    if([titleDict[@"type"] isEqualToString:@"image"]){
-                        NSString *url = titleDict[@"url"];
-                        NSDictionary *style = titleDict[@"style"];
-                        if(url){
-                            
-                            if([url containsString:@"file://"]){
-                                UIImage *localImage = [UIImage imageNamed:[url substringFromIndex:7]];
-                                [self setLogoImage:localImage withStyle:style];
-                            } else{
-                                
-                                SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                                [manager downloadImageWithURL:[NSURL URLWithString:url]
-                                                      options:0
-                                                     progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                                     }
-                                                    completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                                        if (image) {
-                                                            dispatch_async(dispatch_get_main_queue(), ^{
-                                                                [self setLogoImage:image withStyle:style];
-                                                            });
-                                                        }
-                                                    }];
-                            }
-                        }
-                        
-                    } else if([titleDict[@"type"] isEqualToString:@"label"]) {
-                        
-                        UILabel *tLabel = [[UILabel alloc] init];
-                        tLabel.text = titleDict[@"text"];
-                        NSString *font = @"HelveticaNeue";
-                        CGFloat size = 20;
-                        CGFloat x=0;
-                        CGFloat y=0;
-                        [tLabel sizeToFit];
-                        
-                        
-                        
-                        if(titleDict[@"style"]){
-                            if(titleDict[@"style"][@"size"]){
-                                size = [titleDict[@"style"][@"size"] floatValue];
-                            }
-                            if(titleDict[@"style"][@"font"]){
-                                font = titleDict[@"style"][@"font"];
-                            }
-                            if(titleDict[@"style"][@"left"]){
-                                x = [((NSString *)titleDict[@"style"][@"left"]) floatValue];
-                            }
-                            if(titleDict[@"style"][@"top"]){
-                                y = [((NSString *)titleDict[@"style"][@"top"]) floatValue];
-                            }
-                            
-                            tLabel.font = [UIFont fontWithName: font size:size];
-                            
-                            if(titleDict[@"style"][@"align"]) {
-                                if([titleDict[@"style"][@"align"] isEqualToString:@"left"]) {
-                                    UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
-                                    [v addSubview:tLabel];
-                                    VC.navigationItem.titleView = v;
-                                    
-                                    tLabel.frame = CGRectMake(x,y,VC.navigationController.navigationBar.frame.size.width, tLabel.frame.size.height);
-                                    [VC.navigationItem.titleView setFrame: CGRectMake(0, 0, VC.navigationController.navigationBar.frame.size.width, VC.navigationItem.titleView.frame.size.height)];
-                                    tLabel.textAlignment = NSTextAlignmentLeft;
-                                    
-                                } else {
-                                    [self setCenterLogoLabel:tLabel atY:y];
-                                }
-                            } else {
-                                [self setCenterLogoLabel:tLabel atY:y];
-                            }
-                        } else {
-                            [self setCenterLogoLabel:tLabel atY:y];
-                        }
+        NSArray *navComponents = nav[@"items"];
+        if(navComponents){
+            for(NSDictionary *component in navComponents){
+                NSString *type = component[@"type"];
+                if(type){
+                    if([type isEqualToString:@"menu"]){
+                        right_menu = component;
+                        break;
                     }
                 }
-            } else if([nav[@"title"] isKindOfClass:[NSString class]]){
-                // Basic title (simple text)
-                VC.navigationItem.titleView = nil;
-                VC.navigationItem.title = nav[@"title"];
+            }
+        }
+        right_menu = nav[@"menu"];
+    
+    
+        BBBadgeBarButtonItem *leftBarButton;
+        if(!left_menu || [left_menu count] == 0){
+            // if the current view is in a modal AND is the rootviewcontroller of the navigationcontroller,
+            // Add the X button. Otherwise, ignore this.
+            if([tabController presentingViewController]){ // if the current tab bar was modally presented
+                if([navigationController.viewControllers.firstObject isEqual:v]){
+                    leftBarButton = [[BBBadgeBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(cancel)];
+                    [leftBarButton setTintColor:color];
+                }
+            }
+        } else {
+            if(left_menu[@"text"]){
+                UIButton *button = [[UIButton alloc] init];
+                [button setTitle:left_menu[@"text"] forState:UIControlStateNormal];
+                [button setTitle:left_menu[@"text"] forState:UIControlStateFocused];
+                NSDictionary *style = left_menu[@"style"];
+                if(style && style[@"color"]){
+                    UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
+                    [button setTitleColor:c forState:UIControlStateNormal];
+                } else {
+                    [button setTitleColor:color forState:UIControlStateNormal];
+                }
+                CGFloat size = 14.0;
+                NSString *font = @"HelveticaNeue";
+                if(style[@"size"]){
+                    size = [style[@"size"] floatValue];
+                }
+                if(style[@"font"]){
+                    font = style[@"font"];
+                }
+                button.titleLabel.font = [UIFont fontWithName: font size:size];
+                [button sizeToFit];
+                [button addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
+                leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:button];
             } else {
-                VC.navigationItem.titleView = nil;
+                UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
+                btn.frame = CGRectMake(0,0,20,20);
+                if(left_menu[@"image"]){
+                    NSString *image_src = left_menu[@"image"];
+                    
+                    if([image_src containsString:@"file://"]){
+                        UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
+                        [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
+                    } else{
+                        SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                        [manager downloadImageWithURL:[NSURL URLWithString:image_src]
+                                              options:0
+                                             progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                             }
+                                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                if (image) {
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                        [self setMenuButtonImage:image forButton:btn withMenu:left_menu];//
+                                                    });
+                                                }
+                                            }];
+                    }
+                    
+                } else {
+                    [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
+                }
+                [btn addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
+                UIView *view = [[UIView alloc] initWithFrame:btn.frame];
+                [view addSubview:btn];
+                leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
+            }
+            [self setupMenuBadge:leftBarButton forData:left_menu];
+        }
+    
+        BBBadgeBarButtonItem *rightBarButton;
+        if(!right_menu || [right_menu count] == 0){
+            rightBarButton = nil;
+        } else {
+            if(right_menu[@"text"]){
+                UIButton *button = [[UIButton alloc] init];
+                [button setTitle:right_menu[@"text"] forState:UIControlStateNormal];
+                [button setTitle:right_menu[@"text"] forState:UIControlStateFocused];
+                NSDictionary *style = right_menu[@"style"];
+                if(style && style[@"color"]){
+                    UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
+                    [button setTitleColor:c forState:UIControlStateNormal];
+                } else {
+                    [button setTitleColor:color forState:UIControlStateNormal];
+                }
+                CGFloat size = 14.0;
+                NSString *font = @"HelveticaNeue";
+                if(style[@"size"]){
+                    size = [style[@"size"] floatValue];
+                }
+                if(style[@"font"]){
+                    font = style[@"font"];
+                }
+                button.titleLabel.font = [UIFont fontWithName: font size:size];
+                [button sizeToFit];
+                [button addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
+                rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:button];
+            } else {
+                UIButton *btn =  [UIButton buttonWithType:UIButtonTypeCustom];
+                btn.frame = CGRectMake(0,0,25,25);
+                if(right_menu[@"image"]){
+                    NSString *image_src = right_menu[@"image"];
+                    
+                    if([image_src containsString:@"file://"]){
+                        UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
+                        [self setMenuButtonImage:localImage forButton:btn withMenu:right_menu];
+                    } else{
+                        SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                        [manager downloadImageWithURL:[NSURL URLWithString:image_src]
+                                              options:0
+                                             progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                             }
+                                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                if (image) {
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                        [self setMenuButtonImage:image forButton:btn withMenu:right_menu];
+                                                    });
+                                                }
+                                            }];
+                    }
+                } else {
+                    [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
+                }
+                [btn addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
+                UIView *view = [[UIView alloc] initWithFrame:btn.frame];
+                [view addSubview:btn];
+                rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
+            }
+            [self setupMenuBadge:rightBarButton forData:right_menu];
+        }
+    
+        if(!v.menu){
+            v.menu = [[NSMutableDictionary alloc] init];
+        }
+        [v.menu setValue:left_menu forKey:@"left"];
+        [v.menu setValue:right_menu forKey:@"right"];
+
+        v.navigationItem.rightBarButtonItem = rightBarButton;
+        v.navigationItem.leftBarButtonItem = leftBarButton;
+    
+        if(nav[@"title"]){
+            
+            if(![[nav[@"title"] description] containsString:@"{{"] && ![[nav[@"title"] description] containsString:@"}}"]){
+                if([nav[@"title"] isKindOfClass:[NSDictionary class]]){
+                    // Advanced title
+                    NSDictionary *titleDict = nav[@"title"];
+                    if(titleDict[@"type"]){
+                        if([titleDict[@"type"] isEqualToString:@"image"]){
+                            NSString *url = titleDict[@"url"];
+                            NSDictionary *style = titleDict[@"style"];
+                            if(url){
+                                
+                                if([url containsString:@"file://"]){
+                                    UIImage *localImage = [UIImage imageNamed:[url substringFromIndex:7]];
+                                    [self setLogoImage:localImage withStyle:style forVC:v];
+                                } else{
+                                    
+                                    SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                                    [manager downloadImageWithURL:[NSURL URLWithString:url]
+                                                          options:0
+                                                         progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                                         }
+                                                        completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                            if (image) {
+                                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                                    [self setLogoImage:image withStyle:style forVC:v];
+                                                                });
+                                                            }
+                                                        }];
+                                }
+                            }
+                            
+                        } else if([titleDict[@"type"] isEqualToString:@"label"]) {
+                            
+                            UILabel *tLabel = [[UILabel alloc] init];
+                            tLabel.text = titleDict[@"text"];
+                            NSString *font = @"HelveticaNeue";
+                            CGFloat size = 20;
+                            CGFloat x=0;
+                            CGFloat y=0;
+                            [tLabel sizeToFit];
+                            
+                            
+                            
+                            if(titleDict[@"style"]){
+                                if(titleDict[@"style"][@"size"]){
+                                    size = [titleDict[@"style"][@"size"] floatValue];
+                                }
+                                if(titleDict[@"style"][@"font"]){
+                                    font = titleDict[@"style"][@"font"];
+                                }
+                                if(titleDict[@"style"][@"left"]){
+                                    x = [((NSString *)titleDict[@"style"][@"left"]) floatValue];
+                                }
+                                if(titleDict[@"style"][@"top"]){
+                                    y = [((NSString *)titleDict[@"style"][@"top"]) floatValue];
+                                }
+                                if(titleDict[@"style"][@"color"]) {
+                                    tLabel.textColor = [JasonHelper colorwithHexString:titleDict[@"style"][@"color"] alpha:1.0];
+                                }
+                                tLabel.font = [UIFont fontWithName: font size:size];
+                                
+                                if(titleDict[@"style"][@"align"]) {
+                                    if([titleDict[@"style"][@"align"] isEqualToString:@"left"]) {
+                                        UIView *titleView = [[UIView alloc] initWithFrame:tLabel.frame];
+                                        [titleView addSubview:tLabel];
+                                        v.navigationItem.titleView = titleView;
+                                        
+                                        tLabel.frame = CGRectMake(x,y,v.navigationController.navigationBar.frame.size.width, tLabel.frame.size.height);
+                                        [v.navigationItem.titleView setFrame: CGRectMake(0, 0, v.navigationController.navigationBar.frame.size.width, v.navigationItem.titleView.frame.size.height)];
+                                        tLabel.textAlignment = NSTextAlignmentLeft;
+                                        
+                                    } else {
+                                        [self setCenterLogoLabel:tLabel atY:y forVC: v];
+                                    }
+                                } else {
+                                    [self setCenterLogoLabel:tLabel atY:y forVC: v];
+                                }
+                            } else {
+                                [self setCenterLogoLabel:tLabel atY:y forVC: v];
+                            }
+                        }
+                    }
+                } else if([nav[@"title"] isKindOfClass:[NSString class]]){
+                    // Basic title (simple text)
+                    v.navigationItem.titleView = nil;
+                    v.navigationItem.title = nav[@"title"];
+                } else {
+                    v.navigationItem.titleView = nil;
+                }
+                
+            } else {
+                v.navigationItem.titleView = nil;
             }
             
         } else {
-            VC.navigationItem.titleView = nil;
+            v.navigationItem.titleView = nil;
         }
-        
-    } else {
-        VC.navigationItem.titleView = nil;
-    }
     
-    navigationController.navigationBar.shadowImage = [UIImage new];
-    [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    CGFloat red, green, blue, alpha;
-    [background getRed: &red green: &green blue: &blue alpha: &alpha];
+        navigationController.navigationBar.shadowImage = [UIImage new];
+        [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+        CGFloat red, green, blue, alpha;
+        [background getRed: &red green: &green blue: &blue alpha: &alpha];
     
-    if(alpha < 1.0){
-        navigationController.navigationBar.translucent = YES;
-        [JasonHelper setStatusBarBackgroundColor: background];
-    } else {
-        navigationController.navigationBar.translucent = NO;
-        [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
-    }
+        if(alpha < 1.0){
+            navigationController.navigationBar.translucent = YES;
+            [JasonHelper setStatusBarBackgroundColor: background];
+        } else {
+            navigationController.navigationBar.translucent = NO;
+            [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
+        }
     
-    navigationController.navigationBar.backgroundColor = background;
-    navigationController.navigationBar.barTintColor = background;
-    navigationController.navigationBar.tintColor = color;
-    
-    navigationController.navigationBarHidden = YES;
-    navigationController.navigationBarHidden = NO;
-    
+        navigationController.navigationBar.backgroundColor = background;
+        navigationController.navigationBar.barTintColor = background;
+        navigationController.navigationBar.tintColor = color;
+        navigationController.navigationBarHidden = YES;
+        navigationController.navigationBarHidden = NO;
 }
-- (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y{
-    UIView *v = [[UIView alloc] initWithFrame:tLabel.frame];
-    [v addSubview:tLabel];
-    VC.navigationItem.titleView = v;
+- (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y forVC: (JasonViewController *)v{
+    UIView *view = [[UIView alloc] initWithFrame:tLabel.frame];
+    [view addSubview:tLabel];
+    v.navigationItem.titleView = view;
     tLabel.frame = CGRectMake(0,y,tLabel.frame.size.width, tLabel.frame.size.height);
     [tLabel sizeToFit];
-    v.frame = CGRectMake(0,0,tLabel.frame.size.width, tLabel.frame.size.height+y);
+    view.frame = CGRectMake(0,0,tLabel.frame.size.width, tLabel.frame.size.height+y);
 }
-- (void)setLogoImage: (UIImage *)image withStyle:(NSDictionary *)style {
+- (void)setLogoImage: (UIImage *)image withStyle:(NSDictionary *)style forVC: (JasonViewController *)v{
     CGFloat width = 0;
     CGFloat height = 0;
     CGFloat x = 0;
@@ -2456,11 +2591,11 @@
     logoImageView.frame = frame;
     
     [logoView addSubview:logoImageView];
-    VC.navigationItem.titleView = logoView;
+    v.navigationItem.titleView = logoView;
     
     if(style[@"align"]) {
         if([style[@"align"] isEqualToString:@"left"]) {
-            [VC.navigationItem.titleView setFrame: CGRectMake(0, 0, VC.navigationController.navigationBar.frame.size.width, VC.navigationItem.titleView.frame.size.height)];
+            [v.navigationItem.titleView setFrame: CGRectMake(0, 0, v.navigationController.navigationBar.frame.size.width, v.navigationItem.titleView.frame.size.height)];
         }
     }
 }
@@ -2522,20 +2657,11 @@
     // Set state as the return value
     // Will be processed in the caller viewcontroller's reload
     JasonMemory *memory = [JasonMemory client];
-    if(![VC url]){
-        // If it's a default VC without URL, call callback
-        if([VC respondsToSelector:@selector(right:)]) [VC right:action];
-    } else {
-        if(action){
-            if([VC respondsToSelector:@selector(right:)]){
-                [VC right: action];
-            } else {
-                [memory set_stack:action];
-                [self exec];
-            }
-        } else if(href){
-            [self go:href];
-        }
+    if(action){
+        [memory set_stack:action];
+        [self exec];
+    } else if(href){
+        [self go:href];
     }
 }
 
@@ -2543,140 +2669,161 @@
 
 # pragma mark - View rendering (tab)
 - (void)setupTabBar: (NSDictionary *)t{
-    
-    if(!t && !VC.isFinal) {
-        tabController.tabBar.hidden = YES;
-        return;
-    }
-    if(previous_footer && previous_footer[@"tabs"]){
-        // if previous footer tab was not null, we diff the tabs to determine whether to re-render
-        if(VC.old_footer && VC.old_footer[@"tabs"] && [[VC.old_footer[@"tabs"] description] isEqualToString:[t description]]){
-            return;
-        }
-    } else {
-        // if previous footer tab was null, we need to construct the tab again
-    }
-    
-    if(!VC.old_footer) VC.old_footer = [[NSMutableDictionary alloc] init];
-    VC.old_footer[@"tabs"] = t;
-    if(!previous_footer) previous_footer = [[NSMutableDictionary alloc] init];
-    previous_footer[@"tabs"] = t;
-    
-    
-    if(!t){
-        tabController.tabBar.hidden = YES;
-        return;
-    } else {
-        tabController.tabBar.hidden = NO;
-    }
-    
-    NSArray *tabs = t[@"items"];
-    NSDictionary *style = t[@"style"];
-    if(style){
-        if(style[@"color"]){
-            UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-            [tabController.tabBar setTintColor:c];
-            [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : c }
-                                                     forState:UIControlStateSelected];
-            
-        }
-        if(style[@"color:disabled"]){
-            UIColor *c = [JasonHelper colorwithHexString:style[@"color:disabled"] alpha:1.0];
-            [[UIView appearanceWhenContainedInInstancesOfClasses:@[[UITabBar class]]] setTintColor:c];
-            [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : c }
-                                                     forState:UIControlStateNormal];
-            
-        }
-        
-        if(style[@"background"]){
-            [tabController.tabBar setClipsToBounds:YES];
-            tabController.tabBar.shadowImage = [[UIImage alloc] init];
-            tabController.tabBar.translucent = NO;
-            tabController.tabBar.backgroundColor =[JasonHelper colorwithHexString:style[@"background"] alpha:1.0];
-            [tabController.tabBar setBarTintColor:[JasonHelper colorwithHexString:style[@"background"] alpha:1.0]];
-        }
-        [[UITabBar appearance] setTranslucent:NO];
-        [[UITabBar appearance] setBarStyle:UIBarStyleBlack];
-    }
-    if(tabs && tabs.count > 1){
-        NSUInteger maxTabCount = tabs.count;
-        if(maxTabCount > 5) maxTabCount = 5;
-        BOOL firstTime;
-        BOOL tabFound = NO; // at least one tab item with the same url as the current VC should exist.
-        NSMutableArray *tabs_array;
-        // if not yet initialized, tabController.tabs.count will be 1, since this is the only view
-        // that was initialized with
-        // In this case, initialize all tabs
-        // Start from index 1 because the first one should already be instantiated via modal href
-        if(tabController.viewControllers.count != maxTabCount){
-            firstTime = YES;
-            tabs_array = [[NSMutableArray alloc] init];
+    [self setupTabBar:t forVC: VC];
+}
+
+- (void)setupTabBar: (NSDictionary *)t forVC: (JasonViewController *)v{
+    dispatch_async(dispatch_get_main_queue(), ^{
+
+        if(v.isModal) {
+            // If the current view is modal, it's an entirely new view
+            // so don't need to worry about how tabs should show up.
+            // just skip the exception handling routine below.
         } else {
-            firstTime = NO;
-        }
-        NSUInteger indexOfTab = [tabController.viewControllers indexOfObject:navigationController];
-        
-        for(int i = 0 ; i < maxTabCount ; i++){
-            NSDictionary *tab = tabs[i];
-            NSString *url;
-            NSDictionary *options = @{};
-            BOOL loading = NO;
-            if(tab[@"href"]){
-                url = tab[@"href"][@"url"];
-                options = tab[@"href"][@"options"];
-                if(tab[@"href"][@"loading"]){
-                    loading = YES;
+            // handling normal transition (including replace)
+            // If the tabs are empty AND the view hasn't been rendered yet, then wait until it finishes rendering
+
+            if(!t && !v.rendered) {
+                if(previous_footer && previous_footer[@"tabs"]) {
+                    // don't touch yet until the view finalizes
+                } else {
+                    tabController.tabBar.hidden = YES;
                 }
+                return;
+            }
+        }
+        if(previous_footer && previous_footer[@"tabs"]){
+            // if previous footer tab was not null, we diff the tabs to determine whether to re-render
+            if(v.old_footer && v.old_footer[@"tabs"] && [[v.old_footer[@"tabs"] description] isEqualToString:[t description]]){
+                return;
+            }
+        } else {
+            // if previous footer tab was null, we need to construct the tab again
+        }
+        
+        if(!v.old_footer) v.old_footer = [[NSMutableDictionary alloc] init];
+        v.old_footer[@"tabs"] = t;
+        if(!previous_footer) previous_footer = [[NSMutableDictionary alloc] init];
+        previous_footer[@"tabs"] = t;
+        
+        
+        if(!t){
+            tabController.tabBar.hidden = YES;
+            return;
+        } else {
+            tabController.tabBar.hidden = NO;
+        }
+        
+        NSArray *tabs = t[@"items"];
+        NSDictionary *style = t[@"style"];
+        if(style){
+            if(style[@"color"]){
+                UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
+                [tabController.tabBar setTintColor:c];
+                [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : c }
+                                                         forState:UIControlStateSelected];
+                
+            }
+            if(style[@"color:disabled"]){
+                UIColor *c = [JasonHelper colorwithHexString:style[@"color:disabled"] alpha:1.0];
+                [[UIView appearanceWhenContainedInInstancesOfClasses:@[[UITabBar class]]] setTintColor:c];
+                [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : c }
+                                                         forState:UIControlStateNormal];
+                
+            }
+            
+            if(style[@"background"]){
+                [tabController.tabBar setClipsToBounds:YES];
+                tabController.tabBar.shadowImage = [[UIImage alloc] init];
+                tabController.tabBar.translucent = NO;
+                tabController.tabBar.backgroundColor =[JasonHelper colorwithHexString:style[@"background"] alpha:1.0];
+                [tabController.tabBar setBarTintColor:[JasonHelper colorwithHexString:style[@"background"] alpha:1.0]];
+            }
+            [[UITabBar appearance] setTranslucent:NO];
+            [[UITabBar appearance] setBarStyle:UIBarStyleBlack];
+        }
+        if(tabs && tabs.count > 1){
+            NSUInteger maxTabCount = tabs.count;
+            if(maxTabCount > 5) maxTabCount = 5;
+            BOOL firstTime;
+            BOOL tabFound = NO; // at least one tab item with the same url as the current VC should exist.
+            NSMutableArray *tabs_array;
+            // if not yet initialized, tabController.tabs.count will be 1, since this is the only view
+            // that was initialized with
+            // In this case, initialize all tabs
+            // Start from index 1 because the first one should already be instantiated via modal href
+            if(tabController.viewControllers.count != maxTabCount){
+                firstTime = YES;
+                tabs_array = [[NSMutableArray alloc] init];
             } else {
-                url = tab[@"url"];
+                firstTime = NO;
+            }
+            NSUInteger indexOfTab = [tabController.viewControllers indexOfObject:navigationController];
+            
+            for(int i = 0 ; i < maxTabCount ; i++){
+                NSDictionary *tab = tabs[i];
+                NSString *url;
+                NSDictionary *options = @{};
+                BOOL loading = NO;
+                NSDictionary *preload;
+                if(tab[@"href"]){
+                    url = tab[@"href"][@"url"];
+                    options = tab[@"href"][@"options"];
+                    if(tab[@"href"][@"preload"]) {
+                        preload = tab[@"href"][@"preload"];
+                    } else if(tab[@"href"][@"loading"]){
+                        loading = YES;
+                    }
+                } else {
+                    url = tab[@"url"];
+                    if(tab[@"preload"]) {
+                        preload = tab[@"preload"];
+                    }
+                }
+                
+                if(firstTime){
+                    if([v.url isEqualToString:url] && i==indexOfTab){
+                        tabFound = YES;
+                        // if the tab URL is same as the currently visible VC's url
+                        [tabs_array addObject:navigationController];
+                    } else {
+                        JasonViewController *vc = [[JasonViewController alloc] init];
+                        vc.url = url;
+                        vc.options = [self filloutTemplate:options withData:[self variables]];
+                        vc.loading = loading;
+                        vc.preload = preload;
+                        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+                        [tabs_array addObject:nav];
+                    }
+                } else {
+                    if([v.url isEqualToString:url]){
+                        // Do nothing
+                        tabFound = YES;
+                    } else {
+                        UINavigationController *nav = tabController.viewControllers[i];
+                        JasonViewController *vc = [[nav viewControllers] firstObject];
+                        vc.url = url;
+                        vc.options = [self filloutTemplate:options withData:[self variables]];
+                        vc.loading = loading;
+                        vc.preload = preload;
+                    }
+                }
             }
             
             if(firstTime){
-                if([VC.url isEqualToString:url] && i==indexOfTab){
-                    tabFound = YES;
-                    // if the tab URL is same as the currently visible VC's url
-                    [tabs_array addObject:navigationController];
-                } else {
-                    JasonViewController *vc = [[JasonViewController alloc] init];
-                    vc.url = url;
-                    vc.options = [self filloutTemplate:options withData:[self variables]];
-                    vc.loading = loading;
-                    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
-                    [tabs_array addObject:nav];
-                }
-            } else {
-                if([VC.url isEqualToString:url]){
-                    // Do nothing
-                    tabFound = YES;
-                } else {
-                    UINavigationController *nav = tabController.viewControllers[i];
-                    UIViewController<RussianDollView> *vc = [[nav viewControllers] firstObject];
-                    vc.url = url;
-                    vc.options = [self filloutTemplate:options withData:[self variables]];
-                    vc.loading = loading;
-                }
+                tabController.viewControllers = tabs_array;
             }
+            
+            for(int i = 0 ; i < maxTabCount ; i++){
+                NSDictionary *tab = tabs[i];
+                [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
+            }
+            
+            tabController.tabBar.hidden = NO;
+        } else {
+            tabController.tabBar.hidden = YES;
         }
-        
-        if(firstTime){
-            tabController.viewControllers = tabs_array;
-        }
-        
-        for(int i = 0 ; i < maxTabCount ; i++){
-            NSDictionary *tab = tabs[i];
-            [self setTabBarItem: [tabController.tabBar.items objectAtIndex:i] withTab:tab];
-        }
-        
-        // Warn that at least one of the tab bar items should contain the same URL as the currently visible URL
-        if(!tabFound){
-            [[Jason client] call:@{@"type": @"$util.alert",
-                                   @"options": @{ @"title": @"Warning", @"description": @"The tab bar should contain at least one item with the same URL as the currently visible view" }}];
-        }
-        
-        tabController.tabBar.hidden = NO;
-    } else {
-        tabController.tabBar.hidden = YES;
-    }
+    });
 }
 
 - (BOOL)tabBarController:(UITabBarController *)theTabBarController shouldSelectViewController:(UIViewController *)viewController{
@@ -2822,7 +2969,17 @@
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events){
         if(events[@"$show"]){
-            [self call:events[@"$show"]];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                // Temporary solution to make sure onShow doesn't interrupt rendering.
+                // Will need to put some time into it to figure out a more
+                // fundamental solution.
+                // Similar pattern to using setTimeout(function(){ ... }, 0)
+                // in javascript to schedule a task one clock tick later
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSDictionary *variables = [self variables];
+                    [self call:events[@"$show"] with:variables];
+                });
+            });
         }
     }
 }
@@ -2831,7 +2988,8 @@
     NSDictionary *events = [VC valueForKey:@"events"];
     if(events && events[@"$load"]){
         if(!VC.contentLoaded){
-            [self call:events[@"$load"]];
+            NSDictionary *variables = [self variables];
+            [self call:events[@"$load"] with:variables];
         }
     } else {
         [self onShow];
@@ -2953,7 +3111,7 @@
                      ****************************************************************************/
                     
                     Class v = NSClassFromString(viewClass);
-                    UIViewController<RussianDollView> *vc = [[v alloc] init];
+                    JasonViewController *vc = [[v alloc] init];
                     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
                     UITabBarController *tab = [[UITabBarController alloc] init];
                     tab.viewControllers = @[nav];
@@ -2970,7 +3128,9 @@
                             NSString *url = [JasonHelper linkify:href[@"url"]];
                             if([vc respondsToSelector:@selector(url)]) vc.url = url;
                         }
-                        if(href[@"loading"]){
+                        if (href[@"preload"]) {
+                            vc.preload = href[@"preload"];
+                        } else if(href[@"loading"]){
                             vc.loading = [href[@"loading"] boolValue];
                         }
                         if([vc respondsToSelector: @selector(options)]) vc.options = href[@"options"];
@@ -2996,7 +3156,7 @@
                      *
                      ****************************************************************************/
                     Class v = NSClassFromString(viewClass);
-                    UIViewController<RussianDollView> *vc = [[v alloc] init];
+                    JasonViewController *vc = [[v alloc] init];
                     if(href){
                         if(href[@"url"]){
                             NSString *url = [JasonHelper linkify:href[@"url"]];
@@ -3005,7 +3165,9 @@
                         if(href[@"options"]){
                             vc.options = [JasonHelper parse:memory._register with:href[@"options"]];
                         }
-                        if(href[@"loading"]){
+                        if (href[@"preload"]) {
+                            vc.preload = href[@"preload"];
+                        } else if(href[@"loading"]){
                             vc.loading = [href[@"loading"] boolValue];
                         }
                         
@@ -3134,7 +3296,7 @@
                  ****************************************************************************/
                 
                 // Instantiate ViewController
-                UIViewController<RussianDollView> *vc;
+                JasonViewController *vc;
                 UINavigationController *nav;
                 NSArray *tokens = [href[@"view"] componentsSeparatedByString:@"."];
                 // 1. via "view": "[STORYBOARD_NAME].[VIEWCONTROLLER_STORYBOARD_ID]" format
@@ -3534,8 +3696,13 @@
 }
 - (void)unlock{
     [self loading:NO];
+    JasonMemory *mem = [JasonMemory client];
+    if (mem && mem._stack && mem._stack[@"type"] && [mem._stack[@"type"] isEqualToString:@"$ok"]) {
+        // don't touch the return value;
+    } else {
+        [JasonMemory client]._register = @{};
+    }
     [JasonMemory client]._stack = @{};
-    [JasonMemory client]._register = @{};
     [JasonMemory client].locked = NO;
     [JasonMemory client].executing = NO;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"finishRefreshing" object:nil];
@@ -3582,35 +3749,6 @@
         NSError *error;
         [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
     }
-}
-// Delegate for handling snapshot
-- (void)vision:(PBJVision *)vision capturedPhoto:(NSDictionary *)photoDict error:(NSError *)error
-{
-    if (error) {
-        [[Jason client] error];
-        return;
-    }
-    
-    // save to library
-    NSData *photoData = photoDict[PBJVisionPhotoJPEGKey];
-    NSDictionary *metadata = photoDict[PBJVisionPhotoMetadataKey];
-    NSString *contentType = @"image/jpeg";
-    NSString *dataFormatString = @"data:image/jpeg;base64,%@";
-    
-    UIImage *snapshot = [UIImage imageWithData:photoData];
-    VC.background = [[UIImageView alloc] initWithFrame:[VC.view bounds]];
-    VC.background.contentMode = UIViewContentModeScaleAspectFill;
-    [VC.view addSubview:VC.background];
-    [VC.view sendSubviewToBack:VC.background];
-    ((UIImageView*)VC.background).image = snapshot;
-    
-    UIImage *image = [JasonHelper takescreenshot];
-    NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
-    NSString *base64 = [imageData base64EncodedStringWithOptions:0];
-    
-    NSString* dataString = [NSString stringWithFormat:dataFormatString, base64];
-    NSURL* dataURI = [NSURL URLWithString:dataString];
-    [[Jason client] success:@{@"data": base64, @"data_uri": dataURI.absoluteString, @"metadata": metadata, @"content_type" :contentType}];
 }
 
 @end
