@@ -8,6 +8,10 @@
 #import "JasonAgentService.h"
 #import "JasonViewController.h"
 
+@interface JasonAgentService(){
+    NSDictionary *pending_injections;
+}
+@end
 
 @implementation JasonAgentService
 - (void) initialize: (NSDictionary *)launchOptions {
@@ -110,7 +114,10 @@
         [self request:agent.payload[@"pending"]];
         agent.payload[@"pending"] = nil;
     }
-    
+    if (pending_injections && pending_injections.count > 0) {
+        [self inject: pending_injections];
+        pending_injections = nil;
+    }
 }
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     NSDictionary *action = webView.payload[@"action"];
@@ -411,6 +418,8 @@
                 }
             });
         }
+    } else {
+        pending_injections = options;
     }
 }
 
