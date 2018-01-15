@@ -30,6 +30,11 @@
         return;
     }
     
+    // don't listent to dead agents
+    if (message.webView.payload[@"lifecycle"] && [message.webView.payload[@"lifecycle"] isEqualToString:@"dead"]) {
+        return;
+    }
+    
     // Message classification: Only support safe actions
     // 1. trigger: Trigger Jasonette event
     // 2. request: Make a request to an agent
@@ -96,6 +101,11 @@
 }
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     
+    // Don't evaluate if about:blank
+    if ([webView.URL.absoluteString isEqualToString:@"about:blank"]) {
+        return;
+    }
+
     // Inject agent.js into agent context
     NSString *identifier = webView.payload[@"identifier"];
     NSString *raw = [JasonHelper read_local_file:@"file://agent.js"];
@@ -280,6 +290,7 @@
         } @catch (id exception) {
             
         }
+        agent.payload[@"lifecycle"] = @"dead";
         [agent loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
     }
 }
@@ -340,6 +351,8 @@
     if (vc.url) {
         agent.payload[@"parent"] = vc.url;
     }
+    
+    agent.payload[@"lifecycle"] = @"alive";
     
     // Set action payload
     // This needs to be handled separately than other payloads since "action" is empty in the beginning.
