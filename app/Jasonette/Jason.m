@@ -26,6 +26,7 @@
     NSMutableDictionary *previous_footer;
     NSMutableDictionary *previus_header;
     AVCaptureVideoPreviewLayer *avPreviewLayer;
+    NSMutableArray *queue;
 }
 @end
 
@@ -166,6 +167,16 @@
 }
 - (void)call: (id)action with: (NSDictionary*)data{
     JasonMemory *memory = [JasonMemory client];
+    
+    // If executing, queue the action with "call" type
+    if (memory.executing) {
+        if (data) {
+            [queue addObject:@{ @"call": action, @"data": data }];
+        } else {
+            [queue addObject:@{@"call": action}];
+        }
+        return;
+    }
         
     if(data && data.count > 0){
         memory._register = data;
@@ -1296,6 +1307,8 @@
         [self.services[@"JasonWebsocketService"] close];
     }
     
+    queue = [[NSMutableArray alloc] init];
+
     JasonMemory *memory = [JasonMemory client];
     
     if(memory.executing){
@@ -3745,6 +3758,14 @@
     
     // In case oauth was in process, set it back to No
     self.oauth_in_process = NO;
+
+    // resume the next task in the queue, now that one call chain has finished.
+    if (queue.count > 0) {
+        NSDictionary *a = [queue firstObject];
+        [queue removeObjectAtIndex:0];
+        [self call:a[@"action"] with:a[@"data"]];
+    }
+
 }
 
 
