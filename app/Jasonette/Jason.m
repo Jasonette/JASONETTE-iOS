@@ -1291,11 +1291,7 @@
     
     [self.avCaptureSession stopRunning];
     self.avCaptureSession = nil;
-    
-    if(self.services[@"JasonWebsocketService"]) {
-        [self.services[@"JasonWebsocketService"] close];
-    }
-    
+        
     JasonMemory *memory = [JasonMemory client];
     
     if(memory.executing){

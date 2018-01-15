@@ -62,7 +62,6 @@ PODS:
   - SDWebImage (3.8.1):
     - SDWebImage/Core (= 3.8.1)
   - SDWebImage/Core (3.8.1)
-  - SocketRocket (0.5.1)
   - SWFrameButton (1.2.2)
   - SWTableViewCell (0.3.7)
   - SZTextView (1.2.2)
@@ -98,7 +97,6 @@ DEPENDENCIES:
   - RMDateSelectionViewController
   - SBJson
   - SDWebImage (from `https://github.com/rs/SDWebImage.git`)
-  - SocketRocket
   - SWFrameButton
   - SWTableViewCell (from `https://github.com/gliechtenstein/SWTableViewCell.git`)
   - SZTextView
@@ -158,7 +156,6 @@ SPEC CHECKSUMS:
   SBJson: 16404e557ff6346b506e9e12f2d83e6782f37f6f
   SCSiriWaveformView: b8b2756af42addcd31900c3945f24edafefb5395
   SDWebImage: 35f9627a3e44b4f292a8a8ce6a531fa488239b91
-  SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
   SWFrameButton: cd3cc4a8961e8975f4800c0f6d1d3c54c213eb87
   SWTableViewCell: 2a94aadc9d47b2b611fa064566bf57948b95b579
   SZTextView: 3a81174dce0710a9ab069bc73a813e6df53b9c82
@@ -167,6 +164,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
 
-PODFILE CHECKSUM: ff638f73ded7730662d7ed545fb35075e747caa1
+PODFILE CHECKSUM: bd7cf9a38e83ccb31dccc3b4dd1327a8d4b7eefc
 
 COCOAPODS: 1.2.1
