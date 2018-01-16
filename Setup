@@ -32,6 +32,12 @@ cat > app/Jasonette/settings.plist <<EOF
   <string></string>
   <key>url</key>
   <string>$1</string>
+  <key>loading</key>
+  <false/>
+  <key>launch</key>
+  <string>file://preload.json</string>
+  <key>debug</key>
+  <false/>
 </dict>
 </plist>
 EOF
