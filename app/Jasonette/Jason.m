@@ -1684,7 +1684,6 @@
         if(VC.url){
             [self networkLoading:VC.loading with:nil];
             AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-            [manager.operationQueue cancelAllOperations];
             NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
             
             // Set Header if specified  "header"
