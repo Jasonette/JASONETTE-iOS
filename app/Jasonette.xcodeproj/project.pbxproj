@@ -852,7 +852,7 @@
 						CreatedOnToolsVersion = 7.3;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.Keychain = {
 								enabled = 0;
