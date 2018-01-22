@@ -1817,6 +1817,13 @@
                  } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                      if(!VC.offline){
                          [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
+                         [[Jason client] call: @{
+                             @"type": @"$util.alert",
+                             @"options": @{
+                                 @"title": "Debug",
+                                 @"description": [error localizedDescription]
+                             }
+                         }];
                      }
                  }];
         }
