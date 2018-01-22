@@ -11,7 +11,7 @@
 	<key>loading</key>
 	<false/>
 	<key>launch</key>
-	<string>file://preload.json</string>
+	<string></string>
 	<key>debug</key>
 	<false/>
 </dict>
