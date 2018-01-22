@@ -15,17 +15,18 @@
     
 #ifdef PUSH
     
-    UILocalNotification *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    if(notification){
-        if(notification.userInfo) {
-            if(notification.userInfo[@"href"]){
-                [[Jason client] go:notification.userInfo[@"href"]];
-            } else if(notification.userInfo[@"action"]) {
-                [[Jason client] call:notification.userInfo[@"action"]];
-            }
+    NSDictionary *userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if(userInfo) {
+        if(userInfo[@"href"]){
+            [[Jason client] call: @{
+                @"type": @"$href",
+                @"options": userInfo[@"href"]
+            }];
+        } else if(userInfo[@"action"]) {
+            [[Jason client] call:userInfo[@"action"]];
         }
     }
-    
+
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"onRemoteNotification:" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onRemoteNotification:) name:@"onRemoteNotification" object:nil];
     
