@@ -1820,7 +1820,7 @@
                          [[Jason client] call: @{
                              @"type": @"$util.alert",
                              @"options": @{
-                                 @"title": "Debug",
+                                 @"title": @"Debug",
                                  @"description": [error localizedDescription]
                              }
                          }];
