@@ -2196,6 +2196,9 @@
     if(head){
         // 1. Event handler
         NSDictionary *event_handlers = head[@"actions"];
+        if (!event_handlers) {
+            event_handlers = @{};
+        }
         [VC setValue:event_handlers forKey:@"events"];
         
         // 2. data
