@@ -1269,7 +1269,7 @@
             [agent clear:key forVC:VC];
         }
     }
-    
+    [JasonMemory client].executing = NO;
     
     return self;
 }
