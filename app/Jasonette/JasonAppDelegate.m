@@ -72,8 +72,8 @@
         self.launchURL = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
         
     } else if(launchOptions && launchOptions.count > 0 && [launchOptions objectForKey: UIApplicationLaunchOptionsRemoteNotificationKey]){
-        // launched with push notification. so ignore. It's already been taken care of by
-        // JasonPushAction.initialize from [self init_extensions]
+        // launched with push notification.
+        [[Jason client] start: nil];
     } else {
         [[Jason client] start:nil];
     }

@@ -150,7 +150,7 @@
                 }
             } else {
             
-                FSAudioStream *audioStream = [[FSAudioStream alloc] init];
+                audioStream = [[FSAudioStream alloc] init];
                 audioStream.strictContentTypeChecking = NO;
                 audioStream.defaultContentType = @"audio/mpeg";
 
