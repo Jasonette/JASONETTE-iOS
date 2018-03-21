@@ -25,11 +25,11 @@
  
  ## Phase 1. Registration
  1. $push.register action => Registers this device to Apple for push notification
- 2. Then Apple server returns a device token => this triggers "$push.onregister" event with $jason.device_token set as the newly assigned device token
- 3. You need to store this token somewhere so you can use it later. In the following example we send it to our server. It will probably store the device_token under current user's database entry, so other users can send push notifications to this device through this user's device token.
+ 2. Then Apple server returns a device token => this triggers "$push.onregister" event with $jason.token set as the newly assigned device token
+ 3. You need to store this token somewhere so you can use it later. In the following example we send it to our server. It will probably store the token under current user's database entry, so other users can send push notifications to this device through this user's device token.
  
  ## Phase 2. Sending push
- 1. When sending a push notification, you make a POST request to APN/GCM server with metadata such as the destination device_token, message to display, and a JSON payload. The APN/GCM servers then sends push notifications to each device based on the device token.
+ 1. When sending a push notification, you make a POST request to APN/GCM server with metadata such as the destination token, message to display, and a JSON payload. The APN/GCM servers then sends push notifications to each device based on the device token.
  2. For the payload you should either pass a JASON action or href object. This will be used later when the receiver device handles the push notification.
  3. The sending can be done both from the client side and the server side (normally we use the server because that way we can keep a centralized database of all users' device tokens. Otherwise each device should have complete knowledge of all other users it wants to send push to).
  
@@ -66,7 +66,7 @@
                     "options": {
                         "url": "https://myserver.com/register_device.json",
                         "data": {
-                            "device_token": "{{$jason.device_token}}"
+                            "token": "{{$jason.token}}"
                         }
                     }
                 }
