@@ -1124,18 +1124,14 @@
 
 // CHAT INPUT RELATED
 - (void)composeBarViewDidPressButton:(PHFComposeBarView *)c{
-    if(chat_input){
-        if(chat_input[@"name"] || chat_input[@"textfield"][@"name"]){
-            [c setText:@""];
-            [[Jason client] call:chat_input[@"right"][@"action"]];
-        }
+    if(chat_input && chat_input[@"right"] && chat_input[@"right"][@"action"]) {
+        [c setText:@""];
+        [[Jason client] call:chat_input[@"right"][@"action"]];
     }
 }
 - (void)composeBarViewDidPressUtilityButton:(PHFComposeBarView *)c{
-    if(chat_input){
-        if(chat_input[@"name"] || chat_input[@"textfield"][@"name"]){
-            [[Jason client] call:chat_input[@"left"][@"action"]];
-        }
+    if(chat_input && chat_input[@"left"] && chat_input[@"left"][@"action"]){
+        [[Jason client] call:chat_input[@"left"][@"action"]];
     }
 }
 - (void)setupHeader: (NSDictionary *)body{
@@ -1495,6 +1491,8 @@
                 [self.composeBarView setDelegate:self];
                 [self.view addSubview:self.composeBarView];
                 [self.view bringSubviewToFront:self.composeBarView];
+            } else {
+                self.composeBarView.text = @"";
             }
             
             
