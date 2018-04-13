@@ -2855,11 +2855,15 @@
                 }
                 
                 if(firstTime){
-                    if([v.url isEqualToString:url] && i==indexOfTab){
+                    // First time loading
+                    if(i == indexOfTab){
+                        // for the current tab, simply add the navigationcontrolle to the tabs array
+                        // no need to create a new VC, etc. because it's already been instantiated
                         tabFound = YES;
                         // if the tab URL is same as the currently visible VC's url
                         [tabs_array addObject:navigationController];
                     } else {
+                        // for all other tabs, create a new VC and instantiate them, and add them to the tabs array
                         JasonViewController *vc = [[JasonViewController alloc] init];
                         vc.url = url;
                         vc.options = [self filloutTemplate:options withData:[self variables]];
@@ -2869,6 +2873,8 @@
                         [tabs_array addObject:nav];
                     }
                 } else {
+                    // If it's not the first time (the tab bars are already visible)
+                    // check the URLs and update if changed.
                     if([v.url isEqualToString:url]){
                         // Do nothing
                         tabFound = YES;
