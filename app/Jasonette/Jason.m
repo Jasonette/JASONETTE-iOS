@@ -2948,17 +2948,15 @@
 }
 - (void)setTabBarItem:(UITabBarItem *)item withTab: (NSDictionary *)tab{
     NSString *image = tab[@"image"];
-    NSString *text = tab[@"text"];
-    NSString *badge = tab[@"badge"];
     
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
-    if(text){
-        [item setTitle:text];
+    if(tab[@"text"]){
+        [item setTitle:[tab[@"text"] description]];
     } else {
         [item setTitle:@""];
     }
     if(image){
-        if(text){
+        if(tab[@"text"]){
             [item setImageInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
             [item setTitlePositionAdjustment:UIOffsetMake(0.0, -2.0)];
         } else {
@@ -2984,8 +2982,8 @@
     } else {
         [item setTitlePositionAdjustment:UIOffsetMake(0.0, -18.0)];
     }
-    if(badge){
-        [item setBadgeValue:badge];
+    if(tab[@"badge"]){
+        [item setBadgeValue:[tab[@"badge"] description]];
     }
 }
 
