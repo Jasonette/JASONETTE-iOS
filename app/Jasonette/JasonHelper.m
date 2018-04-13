@@ -468,10 +468,12 @@
         return [ratio floatValue];
     }
 }
-+ (CGFloat)pixelsInDirection: (NSString *)direction fromExpression: (NSString *)expression {
++ (CGFloat)pixelsInDirection: (NSString *)direction fromExpression: (id)exp {
     NSError *error = nil;
     CGFloat full_dimension;
-    if(!expression) return 0;
+    if(!exp) return 0;
+    
+    NSString *expression = [exp description];
     
     if([direction isEqualToString:@"vertical"]){
         full_dimension = [[UIScreen mainScreen] bounds].size.height;

@@ -14,9 +14,7 @@
     if(json){
         component.numberOfLines = 0;
         if(json[@"text"] && ![json[@"text"] isEqual:[NSNull null]]){
-            if([json[@"text"] length] > 0){
-                component.text = json[@"text"];
-            }
+            component.text = [json[@"text"] description];
         }
     }
     

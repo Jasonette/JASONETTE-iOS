@@ -22,7 +22,7 @@
   }
   
   component.payload = [[NSMutableDictionary alloc] init];
-  if(json && json[@"name"]) component.payload[@"name"] = json[@"name"];
+  if(json && json[@"name"]) component.payload[@"name"] = [json[@"name"] description];
   if(json && json[@"action"]) component.payload[@"action"] = json[@"action"];
 
   JasonOptionHelper * data = [[JasonOptionHelper alloc] initWithOptions:options];

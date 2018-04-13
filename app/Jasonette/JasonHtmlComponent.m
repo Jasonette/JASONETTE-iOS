@@ -29,7 +29,7 @@
 
     
     if(json[@"text"] && ![[NSNull null] isEqual:json[@"text"]]){
-        NSString *html = json[@"text"];
+        NSString *html = [json[@"text"] description];
         [((UIWebView*)component) loadHTMLString:html baseURL:nil];
         component.scrollView.scrollEnabled = NO;
 

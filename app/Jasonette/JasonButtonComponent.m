@@ -154,7 +154,7 @@
     else{
         [component setImage:nil forState:UIControlStateNormal];
         if(json[@"text"]){
-            [component setTitle:json[@"text"] forState:UIControlStateNormal];
+            [component setTitle:[json[@"text"] description] forState:UIControlStateNormal];
         }
 
     }

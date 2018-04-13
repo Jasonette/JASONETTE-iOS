@@ -111,7 +111,7 @@ static NSMutableDictionary *_stylesheet = nil;
                 
                 // Must set text after setting style
                 
-                layerChild.text = layer[@"text"];
+                layerChild.text = [layer[@"text"] description];
                 [layerChild sizeToFit];
                 
                 UIView *layerView = [[UIView alloc] init];

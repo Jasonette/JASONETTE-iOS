@@ -8,8 +8,8 @@
 
 @implementation JasonUtilAction
 - (void)banner{
-    NSString *title = self.options[@"title"];
-    NSString *description = self.options[@"description"];
+    NSString *title = [self.options[@"title"] description];
+    NSString *description = [self.options[@"description"] description];
     NSString *type = self.options[@"type"];
     if(!title) title = @"Notice";
     if(!description) description = @"";
@@ -37,7 +37,7 @@
 
 - (void)toast{
     NSString *type = self.options[@"type"];
-    NSString *text = self.options[@"text"];
+    NSString *text = [self.options[@"text"] description];
     
     if(!type) type = @"success";
     if(!text) text = @"Updated";
@@ -64,8 +64,8 @@
 
 - (void)alert{
     [[Jason client] loading:NO];
-    NSString *title = self.options[@"title"];
-    NSString *description = self.options[@"description"];
+    NSString *title = [self.options[@"title"] description];
+    NSString *description = [self.options[@"description"] description];
     // 1. Instantiate alert
     UIAlertController *alert= [UIAlertController alertControllerWithTitle:title message:description preferredStyle:UIAlertControllerStyleAlert];
     
@@ -186,7 +186,7 @@
                     }
                 } else if([item[@"type"] isEqualToString:@"text"]){
                     if(item[@"text"]){
-                        [share_items addObject:item[@"text"]];
+                        [share_items addObject:[item[@"text"] description]];
                     }
                     counter--;
                 }
@@ -218,7 +218,7 @@
                 }
             } else if([item[@"type"] isEqualToString:@"text"]){
                 if(item[@"text"]){
-                    NSDictionary *res = [NSDictionary dictionaryWithObject:item[@"text"] forKey:(NSString *)kUTTypeUTF8PlainText];
+                    NSDictionary *res = [NSDictionary dictionaryWithObject:[item[@"text"] description] forKey:(NSString *)kUTTypeUTF8PlainText];
                     [to_copy addObject:res];
                 }
             } else if([item[@"type"] isEqualToString:@"image"]){
@@ -256,13 +256,13 @@
 
 }
 - (void)picker{
-    NSString *title = self.options[@"title"];
+    NSString *title = [self.options[@"title"] description];
     NSArray *items = self.options[@"items"];
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     for(int i = 0 ; i < items.count ; i++){
         NSDictionary *item = items[i];
-        UIAlertAction *action = [UIAlertAction actionWithTitle:item[@"text"]
+        UIAlertAction *action = [UIAlertAction actionWithTitle:[item[@"text"] description]
                                                               style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
                                                                   if(item[@"href"]){
                                                                       [[Jason client] go:item[@"href"]];
@@ -284,10 +284,10 @@
     NSString *description = @"";
     if(self.options){
         if(self.options[@"title"]){
-            title = self.options[@"title"];
+            title = [self.options[@"title"] description];
         }
         if(self.options[@"description"]){
-            description = self.options[@"description"];
+            description = [self.options[@"description"] description];
         }
     }
 

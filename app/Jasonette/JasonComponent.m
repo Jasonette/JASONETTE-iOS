@@ -281,7 +281,7 @@
         // Therefore we need to set the text one more time here.
         if([el isKindOfClass:[UILabel class]]){
             if(json[@"text"]){
-                [el setValue:json[@"text"] forKey:@"text"];
+                [el setValue:[json[@"text"] description] forKey:@"text"];
             }
         }
     }
