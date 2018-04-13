@@ -111,20 +111,19 @@ static NSMutableDictionary *_stylesheet = nil;
                     // image button
                     options[@"indexPath"] = indexPath;
                 }
+                
+                NSString *value;
                 if (form && child[@"name"]) {
                     // get the form value first
-                    NSString *value = form[child[@"name"]];
-                    
-                    // if the value doesn't exist but the 'value' attribute exists, use that one
-                    if(!value && child[@"value"]) {
-                        value = child[@"value"];
-                    }
-                    
-                    // If after all this, the value is still nil, just use an empty string
-                    if (!value) value = @"";
-                    
-                    options[@"value"] = value;
+                    value = form[child[@"name"]];
                 }
+                // if the value doesn't exist but the 'value' attribute exists, use that one
+                if(!value && child[@"value"]) {
+                    value = child[@"value"];
+                }
+                // If after all this, the value is still nil, just use an empty string
+                if (!value) value = @"";
+                options[@"value"] = value;
                 options[@"parent"] = item[@"type"];
                 
                 UIView *el;

@@ -15,7 +15,7 @@
     
     NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
     if(json[@"name"]){
-        payload[@"name"] = json[@"name"];
+        payload[@"name"] = [json[@"name"] description];
     }
     if(json[@"action"]){
         payload[@"action"] = json[@"action"];
@@ -39,9 +39,9 @@
     }
 
     if(options && options[@"value"]){
-        component.text = options[@"value"];
+        component.text = [options[@"value"] description];
     } else if(json && json[@"value"]){
-        component.text = json[@"value"];
+        component.text = [json[@"value"] description];
     } else {
         component.text = @"";
     }
@@ -79,7 +79,7 @@
     }
     if(json[@"placeholder"]){
         UIColor *placeholder_color;
-        NSString *placeholder_raw_str = json[@"placeholder"];
+        NSString *placeholder_raw_str = [json[@"placeholder"] description];
         
         // Color
         if(style[@"placeholder_color"]){

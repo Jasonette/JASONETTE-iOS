@@ -2378,9 +2378,10 @@
         }
     } else {
         if(left_menu[@"text"]){
+            NSString *left_menu_text = [left_menu[@"text"] description];
             UIButton *button = [[UIButton alloc] init];
-            [button setTitle:left_menu[@"text"] forState:UIControlStateNormal];
-            [button setTitle:left_menu[@"text"] forState:UIControlStateFocused];
+            [button setTitle:left_menu_text forState:UIControlStateNormal];
+            [button setTitle:left_menu_text forState:UIControlStateFocused];
             NSDictionary *style = left_menu[@"style"];
             if(style && style[@"color"]){
                 UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
@@ -2440,9 +2441,10 @@
         rightBarButton = nil;
     } else {
         if(right_menu[@"text"]){
+            NSString *right_menu_text = [right_menu[@"text"] description];
             UIButton *button = [[UIButton alloc] init];
-            [button setTitle:right_menu[@"text"] forState:UIControlStateNormal];
-            [button setTitle:right_menu[@"text"] forState:UIControlStateFocused];
+            [button setTitle:right_menu_text forState:UIControlStateNormal];
+            [button setTitle:right_menu_text forState:UIControlStateFocused];
             NSDictionary *style = right_menu[@"style"];
             if(style && style[@"color"]){
                 UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
@@ -2540,7 +2542,7 @@
                     } else if([titleDict[@"type"] isEqualToString:@"label"]) {
                         
                         UILabel *tLabel = [[UILabel alloc] init];
-                        tLabel.text = titleDict[@"text"];
+                        tLabel.text = [titleDict[@"text"] description];
                         NSString *font = @"HelveticaNeue";
                         CGFloat size = 20;
                         CGFloat x=0;
@@ -2588,12 +2590,9 @@
                         }
                     }
                 }
-            } else if([nav[@"title"] isKindOfClass:[NSString class]]){
-                // Basic title (simple text)
-                v.navigationItem.titleView = nil;
-                v.navigationItem.title = nav[@"title"];
             } else {
                 v.navigationItem.titleView = nil;
+                v.navigationItem.title = [nav[@"title"] description];
             }
             
         } else {
@@ -2703,7 +2702,7 @@
             }
         }
         if(badge[@"text"]){
-            barButton.badgeValue = badge[@"text"];
+            barButton.badgeValue = [badge[@"text"] description];
         } else {
             barButton.badgeValue = @" ";
         }
@@ -2949,17 +2948,15 @@
 }
 - (void)setTabBarItem:(UITabBarItem *)item withTab: (NSDictionary *)tab{
     NSString *image = tab[@"image"];
-    NSString *text = tab[@"text"];
-    NSString *badge = tab[@"badge"];
     
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
-    if(text){
-        [item setTitle:text];
+    if(tab[@"text"]){
+        [item setTitle:[tab[@"text"] description]];
     } else {
         [item setTitle:@""];
     }
     if(image){
-        if(text){
+        if(tab[@"text"]){
             [item setImageInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
             [item setTitlePositionAdjustment:UIOffsetMake(0.0, -2.0)];
         } else {
@@ -2985,8 +2982,8 @@
     } else {
         [item setTitlePositionAdjustment:UIOffsetMake(0.0, -18.0)];
     }
-    if(badge){
-        [item setBadgeValue:badge];
+    if(tab[@"badge"]){
+        [item setBadgeValue:[tab[@"badge"] description]];
     }
 }
 
