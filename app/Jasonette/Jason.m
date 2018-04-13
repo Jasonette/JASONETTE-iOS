@@ -2378,9 +2378,10 @@
         }
     } else {
         if(left_menu[@"text"]){
+            NSString *left_menu_text = [left_menu[@"text"] description];
             UIButton *button = [[UIButton alloc] init];
-            [button setTitle:left_menu[@"text"] forState:UIControlStateNormal];
-            [button setTitle:left_menu[@"text"] forState:UIControlStateFocused];
+            [button setTitle:left_menu_text forState:UIControlStateNormal];
+            [button setTitle:left_menu_text forState:UIControlStateFocused];
             NSDictionary *style = left_menu[@"style"];
             if(style && style[@"color"]){
                 UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
@@ -2440,9 +2441,10 @@
         rightBarButton = nil;
     } else {
         if(right_menu[@"text"]){
+            NSString *right_menu_text = [right_menu[@"text"] description];
             UIButton *button = [[UIButton alloc] init];
-            [button setTitle:right_menu[@"text"] forState:UIControlStateNormal];
-            [button setTitle:right_menu[@"text"] forState:UIControlStateFocused];
+            [button setTitle:right_menu_text forState:UIControlStateNormal];
+            [button setTitle:right_menu_text forState:UIControlStateFocused];
             NSDictionary *style = right_menu[@"style"];
             if(style && style[@"color"]){
                 UIColor *c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
@@ -2700,7 +2702,7 @@
             }
         }
         if(badge[@"text"]){
-            barButton.badgeValue = badge[@"text"];
+            barButton.badgeValue = [badge[@"text"] description];
         } else {
             barButton.badgeValue = @" ";
         }
