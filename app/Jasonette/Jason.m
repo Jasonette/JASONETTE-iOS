@@ -2540,7 +2540,7 @@
                     } else if([titleDict[@"type"] isEqualToString:@"label"]) {
                         
                         UILabel *tLabel = [[UILabel alloc] init];
-                        tLabel.text = titleDict[@"text"];
+                        tLabel.text = [titleDict[@"text"] description];
                         NSString *font = @"HelveticaNeue";
                         CGFloat size = 20;
                         CGFloat x=0;
@@ -2588,12 +2588,9 @@
                         }
                     }
                 }
-            } else if([nav[@"title"] isKindOfClass:[NSString class]]){
-                // Basic title (simple text)
-                v.navigationItem.titleView = nil;
-                v.navigationItem.title = nav[@"title"];
             } else {
                 v.navigationItem.titleView = nil;
+                v.navigationItem.title = [nav[@"title"] description];
             }
             
         } else {
