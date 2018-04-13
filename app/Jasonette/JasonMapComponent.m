@@ -82,8 +82,8 @@
                 if(!description){
                     description = @"";
                 }
-                [annotation setTitle:title];
-                [annotation setSubtitle:description];
+                [annotation setTitle:[title description]];
+                [annotation setSubtitle:[description description]];
             }
             [annotation setCoordinate:coord.coordinate];
             [mapView addAnnotation:annotation];

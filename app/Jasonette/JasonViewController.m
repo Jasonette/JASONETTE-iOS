@@ -1486,7 +1486,7 @@
                                           PHFComposeBarViewInitialHeight);
                 self.composeBarView = [[PHFComposeBarView alloc] initWithFrame:frame];
                 if(field[@"name"]){
-                    self.composeBarView.textView.payload = [@{@"name": field[@"name"]} mutableCopy];
+                    self.composeBarView.textView.payload = [@{@"name": [field[@"name"] description]} mutableCopy];
                 }
                 [self.composeBarView setDelegate:self];
                 [self.view addSubview:self.composeBarView];
@@ -1538,7 +1538,7 @@
             }
             
             if(field[@"placeholder"]){
-                [self.composeBarView setPlaceholder:field[@"placeholder"]];
+                [self.composeBarView setPlaceholder:[field[@"placeholder"] description]];
             }
             
             if(chat_input[@"left"]){
@@ -1609,7 +1609,7 @@
                         }
                     }
                     
-                    [self.composeBarView setButtonTitle:chat_input[@"right"][@"text"]];
+                    [self.composeBarView setButtonTitle:[chat_input[@"right"][@"text"] description]];
                 }
             }
             

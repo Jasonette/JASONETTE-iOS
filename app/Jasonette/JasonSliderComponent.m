@@ -15,10 +15,10 @@
     component.continuous = YES;
     component.value = 0.5;
     component.payload = [[NSMutableDictionary alloc] init];
-    if(json && json[@"name"]) component.payload[@"name"] = json[@"name"];
+    if(json && json[@"name"]) component.payload[@"name"] = [json[@"name"] description];
     if(json && json[@"action"]) component.payload[@"action"] = json[@"action"];
 
-    if(options && options[@"value"] && [options[@"value"] length] > 0){
+    if(options && options[@"value"]){
         component.value = [options[@"value"] floatValue];
     }
     
