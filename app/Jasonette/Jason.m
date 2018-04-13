@@ -1837,7 +1837,6 @@
     
     
     NSDictionary *head = jason[@"$jason"][@"head"];
-    if(!head)return;
     
     NSDictionary *dom = jason[@"$jason"];
     
