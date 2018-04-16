@@ -33,7 +33,7 @@
     // (example inside the mapViewDidFinishLoadingMap delegate)
     
     component.payload = [json mutableCopy];
-    component.delegate = self;
+    component.delegate = (id<MKMapViewDelegate>) self;
     
     // Apply Common Style
     [self stylize:json component:component];
