@@ -2002,7 +2002,7 @@
             }
             
             vc.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-            vc.background.payload = @{@"background": bg};
+            vc.background.payload = [@{@"background": bg} mutableCopy];
             avPreviewLayer = nil;
             [self buildCamera: options forVC: vc];
             
