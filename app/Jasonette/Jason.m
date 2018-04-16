@@ -2431,7 +2431,7 @@
             [btn addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
             UIView *view = [[UIView alloc] initWithFrame:btn.frame];
             [view addSubview:btn];
-            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
+            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:(UIButton *)view];
         }
         [self setupMenuBadge:leftBarButton forData:left_menu];
     }
