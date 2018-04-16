@@ -3718,12 +3718,17 @@
                             
                             module = [[ActionClass alloc] init];
                             
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+                            
                             if([module respondsToSelector:@selector(VC)]) [module setValue:VC forKey:@"VC"];
                             if([module respondsToSelector:@selector(options)]) [module setValue:options forKey:@"options"];
                             
                             // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
                             memory.executing = YES;
-                        
+                            
+#pragma clang diagnostic pop
+           
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                             [module performSelector:method];
