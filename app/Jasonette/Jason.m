@@ -1851,7 +1851,7 @@
          * 1. Setup Head
          *
          ****************************************************************************/
-        NSDictionary *head = dom[@"head"];
+        head = dom[@"head"];
         if(head){
             [self setupHead: head];
         }
