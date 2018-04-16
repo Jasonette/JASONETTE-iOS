@@ -2493,7 +2493,7 @@
             [btn addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
             UIView *view = [[UIView alloc] initWithFrame:btn.frame];
             [view addSubview:btn];
-            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
+            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:(UIButton *)view];
         }
         [self setupMenuBadge:rightBarButton forData:right_menu];
     }
