@@ -3591,7 +3591,10 @@
                         // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
                         memory.executing = YES;
                         
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                         [self performSelector:method];
+#pragma clang diagnostic pop
                     }
                 } else if ([type hasPrefix:@"@"]) {
                     /*
