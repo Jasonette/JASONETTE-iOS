@@ -88,7 +88,7 @@
             [annotation setCoordinate:coord.coordinate];
             [mapView addAnnotation:annotation];
 
-            annotation.payload = pin;
+            annotation.payload = [pin mutableCopy];
             
             if(pin[@"style"]){
                 if(pin[@"style"][@"selected"]){
