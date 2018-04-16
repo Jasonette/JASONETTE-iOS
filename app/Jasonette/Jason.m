@@ -2267,7 +2267,7 @@
     }
     header_needs_refresh = NO;
     
-    if(nav) v.old_header = nav;
+    if(nav) v.old_header = [nav mutableCopy];
     
     
     
