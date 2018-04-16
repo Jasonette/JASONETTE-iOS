@@ -3723,8 +3723,12 @@
                             
                             // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
                             memory.executing = YES;
-                            
+                        
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                             [module performSelector:method];
+#pragma clang diagnostic pop
+                            
                         } else {
                             [[Jason client] call:@{@"type": @"$util.banner",
                                                    @"options": @{
