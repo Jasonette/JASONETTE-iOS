@@ -3390,7 +3390,8 @@
                     nav = [[UINavigationController alloc] initWithRootViewController:vc];
                 }
                 
-                
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
                 // Option 1. Present as modal
                 if([transition isEqualToString:@"modal"]){
                     if(href[@"options"]){
@@ -3414,6 +3415,7 @@
                     [navigationController pushViewController:vc animated:YES];
                 }
             }
+#pragma clang diagnostic pop
             
         }
     });
