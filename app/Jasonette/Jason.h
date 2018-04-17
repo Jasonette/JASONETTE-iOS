@@ -20,7 +20,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <AVFoundation/AVFoundation.h>
 #import "JasonAgentService.h"
-#import "MBProgressHud.h"
+#import "MBProgressHUD.h"
 #if DEBUG
 #include <FLEX/FLEX.h>
 #endif

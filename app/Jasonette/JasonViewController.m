@@ -1458,7 +1458,6 @@
         chat_input = body[@"footer"][@"input"];
         if(chat_input){
 
-            //JasonViewController *weakSelf = self;
             __weak JasonViewController *weakSelf = self;
 
             [self.view addKeyboardPanningWithActionHandler:^(CGRect keyboardFrameInView, BOOL opening, BOOL closing) {
