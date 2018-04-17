@@ -392,7 +392,12 @@
         } else {
             url = [NSString stringWithFormat:@"http://%@", url];
         }
-        url = [url stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet illegalCharacterSet] invertedSet]];
+        
+        if ([url containsString:@"#"]) {
+            url = [url stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet illegalCharacterSet] invertedSet]];
+        } else {
+            url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        }
 
     }
     return url;

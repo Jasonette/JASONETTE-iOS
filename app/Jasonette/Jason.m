@@ -1297,8 +1297,6 @@
     navigationController.navigationBar.shadowImage = [UIImage new];
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     
-    VC.url = [VC.url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    
     // Set the stylesheet
     if(VC.style){
         JasonComponentFactory.stylesheet = [VC.style mutableCopy];
