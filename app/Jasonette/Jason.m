@@ -1851,7 +1851,7 @@
          * 1. Setup Head
          *
          ****************************************************************************/
-        NSDictionary *head = dom[@"head"];
+        head = dom[@"head"];
         if(head){
             [self setupHead: head];
         }
@@ -2002,7 +2002,7 @@
             }
             
             vc.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
-            vc.background.payload = @{@"background": bg};
+            vc.background.payload = [@{@"background": bg} mutableCopy];
             avPreviewLayer = nil;
             [self buildCamera: options forVC: vc];
             
@@ -2267,7 +2267,7 @@
     }
     header_needs_refresh = NO;
     
-    if(nav) v.old_header = nav;
+    if(nav) v.old_header = [nav mutableCopy];
     
     
     
@@ -2431,7 +2431,7 @@
             [btn addTarget:self action:@selector(leftMenu) forControlEvents:UIControlEventTouchUpInside];
             UIView *view = [[UIView alloc] initWithFrame:btn.frame];
             [view addSubview:btn];
-            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
+            leftBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:(UIButton *)view];
         }
         [self setupMenuBadge:leftBarButton forData:left_menu];
     }
@@ -2493,7 +2493,7 @@
             [btn addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
             UIView *view = [[UIView alloc] initWithFrame:btn.frame];
             [view addSubview:btn];
-            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:view];
+            rightBarButton = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:(UIButton *)view];
         }
         [self setupMenuBadge:rightBarButton forData:right_menu];
     }
@@ -3390,7 +3390,8 @@
                     nav = [[UINavigationController alloc] initWithRootViewController:vc];
                 }
                 
-                
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
                 // Option 1. Present as modal
                 if([transition isEqualToString:@"modal"]){
                     if(href[@"options"]){
@@ -3414,6 +3415,7 @@
                     [navigationController pushViewController:vc animated:YES];
                 }
             }
+#pragma clang diagnostic pop
             
         }
     });
@@ -3589,7 +3591,10 @@
                         // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
                         memory.executing = YES;
                         
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                         [self performSelector:method];
+#pragma clang diagnostic pop
                     }
                 } else if ([type hasPrefix:@"@"]) {
                     /*
@@ -3713,13 +3718,22 @@
                             
                             module = [[ActionClass alloc] init];
                             
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+                            
                             if([module respondsToSelector:@selector(VC)]) [module setValue:VC forKey:@"VC"];
                             if([module respondsToSelector:@selector(options)]) [module setValue:options forKey:@"options"];
                             
                             // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
                             memory.executing = YES;
                             
+#pragma clang diagnostic pop
+           
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                             [module performSelector:method];
+#pragma clang diagnostic pop
+                            
                         } else {
                             [[Jason client] call:@{@"type": @"$util.banner",
                                                    @"options": @{

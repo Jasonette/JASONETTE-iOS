@@ -6,6 +6,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonNetworkAction.h"
+#import "UICKeyChainStore.h"
 
 @implementation JasonNetworkAction
 
@@ -285,10 +286,11 @@
 // Request Builder
 - (void) build_timeout: (AFHTTPSessionManager *) manager {
     if(self.options[@"timeout"]) {
-        NSTimeInterval timeout = [self.options[@"timeout"] doubleValue];
-        [manager.requestSerializer setTimeoutInterval:[self.options[@"timeout"] integerValue]];
+        NSTimeInterval timeout = [self.options[@"timeout"] integerValue];
+        [manager.requestSerializer setTimeoutInterval:timeout];
     }
 }
+
 - (BOOL) isInvalid: (NSString *) url {
     if(![url isEqualToString:@""]) {
         NSURL *urlToCheck = [NSURL URLWithString:url];

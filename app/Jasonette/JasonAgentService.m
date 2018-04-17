@@ -139,7 +139,7 @@
                 JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
                 id event = vc.events[action[@"trigger"]];
                 NSDictionary *resolved;
-                NSMutableDictionary *data_stub = [[Jason client] variables];
+                NSMutableDictionary *data_stub = [[[Jason client] variables] mutableCopy];
                 
                 // Prepare the url to return
                 NSString *url;

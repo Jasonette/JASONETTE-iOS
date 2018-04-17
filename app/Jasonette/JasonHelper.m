@@ -483,7 +483,7 @@
     NSRange searchedRange = NSMakeRange(0, [expression length]);
     NSRegularExpression* regexPercentageWithPixels = [NSRegularExpression regularExpressionWithPattern:@"^([0-9.]+)%[ ]*([+-]?)[ ]*([0-9]+)$" options:0 error:&error];
     NSTextCheckingResult *matchPercentageWithPixels = [regexPercentageWithPixels firstMatchInString:expression options:0 range: searchedRange];
-    CGFloat dimension;
+    CGFloat dimension = full_dimension;
     if(matchPercentageWithPixels){
         // Percentage +/- Pixels
         // Calculate percentage
