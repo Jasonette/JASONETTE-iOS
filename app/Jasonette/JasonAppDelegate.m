@@ -46,8 +46,10 @@
         service = [[ActionClass alloc] init];
         [Jason client].services[className] = service;
     }
-    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
     [service performSelector: @selector(initialize:) withObject: launchOptions];
+#pragma clang diagnostic pop
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
