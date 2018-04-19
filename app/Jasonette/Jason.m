@@ -1903,16 +1903,12 @@
                 NSMutableDictionary *data_stub;
                 if(VC.data){
                     data_stub = [VC.data mutableCopy];
-                } else {
-                    data_stub = [[NSMutableDictionary alloc] init];
+                    NSDictionary *kv = [self variables];
+                    for(NSString *key in kv){
+                        data_stub[key] = kv[key];
+                    }
+                    rendered_page = [JasonHelper parse: data_stub with:body_parser];
                 }
-
-                NSDictionary *kv = [self variables];
-                for(NSString *key in kv){
-                    data_stub[key] = kv[key];
-                }
-
-                rendered_page = [JasonHelper parse: data_stub with:body_parser];
             }
         }
         
