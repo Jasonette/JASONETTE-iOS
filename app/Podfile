@@ -23,9 +23,9 @@ target 'Jasonette' do
   pod "AFOAuth2Manager"
   pod "CYRTextView"
   pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
-  pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git"
+  pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git", :tag => '3.8.1'
   pod 'SZTextView'
-  pod 'SBJson'
+  pod 'SBJson', '~> 4.0.2'
   pod 'DHSmartScreenshot'
   pod 'NSHash'
   pod 'JSCoreBom', '~> 1.1.1'

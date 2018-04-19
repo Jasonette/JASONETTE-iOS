@@ -33,7 +33,7 @@
     // (example inside the mapViewDidFinishLoadingMap delegate)
     
     component.payload = [json mutableCopy];
-    component.delegate = self;
+    component.delegate = (id<MKMapViewDelegate>) self;
     
     // Apply Common Style
     [self stylize:json component:component];
@@ -88,7 +88,7 @@
             [annotation setCoordinate:coord.coordinate];
             [mapView addAnnotation:annotation];
 
-            annotation.payload = pin;
+            annotation.payload = [pin mutableCopy];
             
             if(pin[@"style"]){
                 if(pin[@"style"][@"selected"]){
