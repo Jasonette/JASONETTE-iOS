@@ -33,6 +33,7 @@
     UIView *empty_view;
     CGFloat original_height;
     CGFloat original_bottom_inset;
+    CGFloat default_bottom_padding;
     BOOL need_to_adjust_frame;
     UIView *currently_focused;
     UIRefreshControl *refreshControl;
@@ -49,6 +50,7 @@
     [super viewDidLoad];
     
     original_height = self.view.frame.size.height;
+    default_bottom_padding = 0;
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -1080,14 +1082,18 @@
             [self setupAds:body];
             #endif
             
-            CGFloat bottom_padding = 0.0;
-            if (body[@"footer"] && body[@"footer"][@"tabs"]) {
-                bottom_padding += self.tabBarController.tabBar.frame.size.height;
+            
+            if (default_bottom_padding == 0) {
+                CGFloat bottom_padding = 0.0;
+                if (body[@"footer"] && body[@"footer"][@"tabs"]) {
+                    bottom_padding += self.tabBarController.tabBar.frame.size.height;
+                }
+                if (body[@"footer"] && body[@"footer"][@"input"]) {
+                    bottom_padding += self.composeBarView.frame.size.height;
+                }
+                default_bottom_padding = bottom_padding;
+                self.tableView.contentInset = UIEdgeInsetsMake(self.tableView.contentInset.top, self.tableView.contentInset.left, self.tableView.contentInset.bottom+bottom_padding, self.tableView.contentInset.right);
             }
-            if (body[@"footer"] && body[@"footer"][@"input"]) {
-                bottom_padding += self.composeBarView.frame.size.height;
-            }
-            self.tableView.contentInset = UIEdgeInsetsMake(self.tableView.contentInset.top, self.tableView.contentInset.left, self.tableView.contentInset.bottom+bottom_padding, self.tableView.contentInset.right);
             
             original_bottom_inset = self.tableView.contentInset.bottom;
         });
