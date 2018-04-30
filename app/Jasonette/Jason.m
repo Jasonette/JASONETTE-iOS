@@ -2775,6 +2775,7 @@
         
         if(!t){
             tabController.tabBar.hidden = YES;
+            tabController.viewControllers = @[navigationController]; // remove all tab bar items if there's no "items"
             return;
         } else {
             tabController.tabBar.hidden = NO;
