@@ -274,6 +274,11 @@
     }
     [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     dispatch_async(dispatch_get_main_queue(), ^{
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            alert.popoverPresentationController.sourceView = self.VC.view;
+            alert.popoverPresentationController.sourceRect = CGRectMake(self.VC.view.bounds.size.width / 2.0, self.VC.view.bounds.size.height / 2.0, 1.0, 1.0);
+            [alert.popoverPresentationController setPermittedArrowDirections:0];
+        }
         [self.VC.navigationController presentViewController:alert animated:YES completion:nil]; // 6
     });
     
