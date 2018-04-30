@@ -1250,6 +1250,7 @@
     [VC.playing removeAllObjects];
     
     [VC.view endEditing:YES];
+
     
     // Reset Agent
     for(NSString *key in ((JasonViewController*)VC).agents) {
@@ -3102,6 +3103,14 @@
      *
      *******************************/
     dispatch_async(dispatch_get_main_queue(), ^{
+
+        // Dismiss searchbar before transitioning.
+        if(VC.searchController){
+            if(VC.searchController.isActive){
+                [VC.searchController setActive:NO];
+            }
+        }
+        
         NSString *view = href[@"view"];
         NSString *transition = href[@"transition"];
         NSString *fresh = href[@"fresh"];
