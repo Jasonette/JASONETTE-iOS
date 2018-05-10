@@ -2825,7 +2825,21 @@
             } else {
                 firstTime = NO;
             }
+            
+            // Determine the current navigation's index within the tab bar by looking at the main URL.
+            // Initially set to the navigationController's position within the tab index, but this is not enough
+            // because when we transition from view A with 5 tabs to view B with no tab, Jasonette gets rid of all the navigation controllers
+            // so when we come back from view B, the tab bar that contains view A will only have one item, and it will say the index is 0, which is incorrect.
+            // To avoid this situation, we need to be more precise and decide on the index based on the view's URL instead.
             NSUInteger indexOfTab = [tabController.viewControllers indexOfObject:navigationController];
+            for(int i=0; i<maxTabCount; i++) {
+                NSDictionary *tab = tabs[i];
+                if (tab[@"url"] && [VC.url isEqualToString:tab[@"url"]]) {
+                    indexOfTab = i;
+                } else if (tab[@"href"] && tab[@"href"][@"url"] && [VC.url isEqualToString:tab[@"href"][@"url"]]) {
+                    indexOfTab = i;
+                }
+            }
             
             for(int i = 0 ; i < maxTabCount ; i++){
                 NSDictionary *tab = tabs[i];
