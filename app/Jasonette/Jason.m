@@ -27,6 +27,7 @@
     NSMutableDictionary *previus_header;
     AVCaptureVideoPreviewLayer *avPreviewLayer;
     NSMutableArray *queue;
+    BOOL tabNeedsRefresh;
 }
 @end
 
@@ -1250,7 +1251,7 @@
     [VC.playing removeAllObjects];
     
     [VC.view endEditing:YES];
-
+    
     
     // Reset Agent
     for(NSString *key in ((JasonViewController*)VC).agents) {
@@ -1821,12 +1822,12 @@
                      if(!VC.offline){
                          [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
                          [[Jason client] call: @{
-                             @"type": @"$util.alert",
-                             @"options": @{
-                                 @"title": @"Debug",
-                                 @"description": [error localizedDescription]
-                             }
-                         }];
+                                                 @"type": @"$util.alert",
+                                                 @"options": @{
+                                                         @"title": @"Debug",
+                                                         @"description": [error localizedDescription]
+                                                         }
+                                                 }];
                      }
                  }];
         }
@@ -2832,12 +2833,15 @@
             // so when we come back from view B, the tab bar that contains view A will only have one item, and it will say the index is 0, which is incorrect.
             // To avoid this situation, we need to be more precise and decide on the index based on the view's URL instead.
             NSUInteger indexOfTab = [tabController.viewControllers indexOfObject:navigationController];
+            tabNeedsRefresh = YES;
             for(int i=0; i<maxTabCount; i++) {
                 NSDictionary *tab = tabs[i];
                 if (tab[@"url"] && [VC.url isEqualToString:tab[@"url"]]) {
                     indexOfTab = i;
+                    tabNeedsRefresh = NO;
                 } else if (tab[@"href"] && tab[@"href"][@"url"] && [VC.url isEqualToString:tab[@"href"][@"url"]]) {
                     indexOfTab = i;
+                    tabNeedsRefresh = NO;
                 }
             }
             
@@ -2927,6 +2931,17 @@
     if(VC.rendered && VC.rendered[@"footer"] && VC.rendered[@"footer"][@"tabs"] && VC.rendered[@"footer"][@"tabs"][@"items"]){
         NSArray *tabs = VC.rendered[@"footer"][@"tabs"][@"items"];
         NSDictionary *selected_tab = tabs[indexOfTab];
+        if (tabNeedsRefresh) {
+            if(selected_tab[@"href"] && selected_tab[@"href"][@"url"]){
+                VC.url = selected_tab[@"href"][@"url"];
+                [self reload];
+                return YES;
+            } else if (selected_tab[@"url"]) {
+                VC.url = selected_tab[@"url"];
+                [self reload];
+                return YES;
+            }
+        }
         
         if(selected_tab[@"href"]){
             NSString *transition = selected_tab[@"href"][@"transition"];
@@ -3118,7 +3133,7 @@
      *
      *******************************/
     dispatch_async(dispatch_get_main_queue(), ^{
-
+        
         // Dismiss searchbar before transitioning.
         if(VC.searchController){
             if(VC.searchController.isActive){
@@ -3746,7 +3761,7 @@
                             memory.executing = YES;
                             
 #pragma clang diagnostic pop
-           
+                            
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                             [module performSelector:method];
