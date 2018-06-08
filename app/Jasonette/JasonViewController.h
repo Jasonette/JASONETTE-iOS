@@ -68,6 +68,7 @@
 @property (nonatomic, strong) NSDictionary *preload;
 @property (nonatomic, assign) BOOL offline;
 @property (nonatomic, assign) BOOL agentReady;
+@property (nonatomic, assign) BOOL tabNeedsRefresh;
 
 @property (strong, nonatomic) NSMutableDictionary *menu;
 @property (strong, nonatomic) NSMutableDictionary *form;
