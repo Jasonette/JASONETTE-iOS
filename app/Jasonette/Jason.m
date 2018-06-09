@@ -1834,7 +1834,9 @@
     }
 }
 - (void)drawViewFromJason: (NSDictionary *)jason asFinal: (BOOL) final{
-    
+
+    tabNeedsRefresh = YES;
+    VC.tabNeedsRefresh = YES;
     
     NSDictionary *head = jason[@"$jason"][@"head"];
     
@@ -2873,7 +2875,7 @@
                         // no need to create a new VC, etc. because it's already been instantiated
                         tabFound = YES;
                         // if the tab URL is same as the currently visible VC's url
-                        if (tabNeedsRefresh) VC.tabNeedsRefresh = tabNeedsRefresh;
+                        VC.tabNeedsRefresh = YES;
                         [tabs_array addObject:navigationController];
                     } else {
                         // for all other tabs, create a new VC and instantiate them, and add them to the tabs array
@@ -2891,7 +2893,7 @@
                     // check the URLs and update if changed.
                     if([v.url isEqualToString:url]){
                         // Do nothing
-                        if (tabNeedsRefresh) v.tabNeedsRefresh = tabNeedsRefresh;
+                        v.tabNeedsRefresh = YES;
                         tabFound = YES;
                     } else {
                         UINavigationController *nav = tabController.viewControllers[i];
@@ -2937,22 +2939,22 @@
         NSDictionary *selected_tab = tabs[indexOfTab];
         if (VC.tabNeedsRefresh) {
             if(selected_tab[@"href"] && selected_tab[@"href"][@"url"]){
-                [navigationController popToRootViewControllerAnimated:NO];
-                VC = navigationController.viewControllers.lastObject;
+                [((UINavigationController *)viewController) popToRootViewControllerAnimated:NO];
+                VC = ((UINavigationController *)viewController).viewControllers.lastObject;
                 VC.url = selected_tab[@"href"][@"url"];
                 VC.rendered = nil;
                 [self setupHeader:nil];
                 [VC reload: @{} final:NO];
-                [self reload];
+                VC.contentLoaded = NO;
                 return YES;
             } else if (selected_tab[@"url"]) {
-                [navigationController popToRootViewControllerAnimated:NO];
-                VC = navigationController.viewControllers.lastObject;
+                [((UINavigationController *)viewController) popToRootViewControllerAnimated:NO];
+                VC = ((UINavigationController *)viewController).viewControllers.lastObject;
                 VC.url = selected_tab[@"url"];
                 VC.rendered = nil;
                 [self setupHeader:nil];
                 [VC reload: @{} final:NO];
-                [self reload];
+                VC.contentLoaded = NO;
                 return YES;
             }
         }
