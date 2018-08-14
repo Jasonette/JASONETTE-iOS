@@ -1,0 +1,6 @@
+framework module INTULocationManager {
+  umbrella header "INTULocationManager-umbrella.h"
+
+  export *
+  module * { export * }
+}

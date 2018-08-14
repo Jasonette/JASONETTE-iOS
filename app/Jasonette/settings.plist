@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>client_id</key>
+	<string></string>
+	<key>client_secret</key>
+	<string></string>
+	<key>url</key>
+	<string>https://jasonette.github.io/Jasonpedia/hello.json</string>
+	<key>loading</key>
+	<false/>
+	<key>launch</key>
+	<string></string>
+	<key>debug</key>
+	<false/>
+</dict>
+</plist>

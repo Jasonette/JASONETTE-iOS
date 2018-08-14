@@ -1,0 +1,6 @@
+framework module RMActionController {
+  umbrella header "RMActionController-umbrella.h"
+
+  export *
+  module * { export * }
+}

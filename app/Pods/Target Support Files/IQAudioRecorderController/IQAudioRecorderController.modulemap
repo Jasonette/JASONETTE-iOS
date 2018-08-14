@@ -1,0 +1,6 @@
+framework module IQAudioRecorderController {
+  umbrella header "IQAudioRecorderController-umbrella.h"
+
+  export *
+  module * { export * }
+}

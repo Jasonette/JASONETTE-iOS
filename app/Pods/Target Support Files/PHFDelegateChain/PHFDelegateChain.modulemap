@@ -1,0 +1,6 @@
+framework module PHFDelegateChain {
+  umbrella header "PHFDelegateChain-umbrella.h"
+
+  export *
+  module * { export * }
+}
