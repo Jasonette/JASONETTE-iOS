@@ -26,6 +26,8 @@
 		04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */; };
 		04DC19801F54746E0021A7A6 /* JasonScriptAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */; };
 		04F3BCBE1F2BF9ED00C95170 /* NSObject+JSONPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */; };
+		48C3303421259FD400E409D2 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 48C3303321259FD300E409D2 /* icon.png */; };
+		48C330362125A7A300E409D2 /* home.json in Resources */ = {isa = PBXBuildFile; fileRef = 48C330352125A7A300E409D2 /* home.json */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
 		5E0956301DA34D70007ADC78 /* JasonImageComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562F1DA34D6F007ADC78 /* JasonImageComponent.m */; };
 		5E0956331DA34EEA007ADC78 /* JasonButtonComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0956321DA34EEA007ADC78 /* JasonButtonComponent.m */; };
@@ -61,7 +63,6 @@
 		5E3177531D1E411F00D87778 /* Next@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176D31D1E411E00D87778 /* Next@2x.png */; };
 		5E3177591D1E411F00D87778 /* JasonOauthAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176DF1D1E411E00D87778 /* JasonOauthAction.m */; };
 		5E31775C1D1E411F00D87778 /* JasonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176E41D1E411E00D87778 /* JasonParser.m */; };
-		5E31775F1D1E411F00D87778 /* placeholder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176E81D1E411E00D87778 /* placeholder@2x.png */; };
 		5E3177611D1E411F00D87778 /* Jason.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176EB1D1E411E00D87778 /* Jason.m */; };
 		5E3177641D1E411F00D87778 /* JasonPortraitPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176EF1D1E411E00D87778 /* JasonPortraitPicker.m */; };
 		5E3177671D1E411F00D87778 /* rss.js in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176F41D1E411E00D87778 /* rss.js */; };
@@ -126,6 +127,8 @@
 		04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+JSONPayload.m"; sourceTree = "<group>"; };
 		1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.release.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.release.xcconfig"; sourceTree = "<group>"; };
 		2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Jasonette.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		48C3303321259FD300E409D2 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		48C330352125A7A300E409D2 /* home.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = home.json; sourceTree = "<group>"; };
 		5E025B471DE017EB0016786A /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		5E09562A1DA33264007ADC78 /* JasonComponentProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonComponentProtocol.h; sourceTree = "<group>"; };
 		5E09562B1DA33514007ADC78 /* JasonLabelComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonLabelComponent.h; sourceTree = "<group>"; };
@@ -186,7 +189,6 @@
 		5E3176DF1D1E411E00D87778 /* JasonOauthAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonOauthAction.m; sourceTree = "<group>"; };
 		5E3176E21D1E411E00D87778 /* JasonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonParser.h; sourceTree = "<group>"; };
 		5E3176E41D1E411E00D87778 /* JasonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonParser.m; sourceTree = "<group>"; };
-		5E3176E81D1E411E00D87778 /* placeholder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "placeholder@2x.png"; sourceTree = "<group>"; };
 		5E3176EA1D1E411E00D87778 /* Jason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Jason.h; sourceTree = "<group>"; };
 		5E3176EB1D1E411E00D87778 /* Jason.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Jason.m; sourceTree = "<group>"; };
 		5E3176EE1D1E411E00D87778 /* JasonPortraitPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonPortraitPicker.h; sourceTree = "<group>"; };
@@ -459,6 +461,7 @@
 		5E31777B1D1F199D00D87778 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				48C3303321259FD300E409D2 /* icon.png */,
 				5E3176A91D1E411E00D87778 /* icon-error.png */,
 				5E3176AA1D1E411E00D87778 /* icon-error@2x.png */,
 				5E3176AB1D1E411E00D87778 /* icon-info.png */,
@@ -468,7 +471,6 @@
 				5E3176D01D1E411E00D87778 /* more@2x.png */,
 				5E3176D31D1E411E00D87778 /* Next@2x.png */,
 				5E3840741D3A3D2200D1C421 /* placeholderr@2x.png */,
-				5E3176E81D1E411E00D87778 /* placeholder@2x.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -665,6 +667,7 @@
 				5E31777B1D1F199D00D87778 /* Images */,
 				045C77E81F0278EA00F06598 /* preload.json */,
 				045C77EA1F02791D00F06598 /* error.json */,
+				48C330352125A7A300E409D2 /* home.json */,
 			);
 			name = "file://";
 			sourceTree = "<group>";
@@ -897,6 +900,7 @@
 				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
 				5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */,
 				5E3177371D1E411F00D87778 /* icon-info.png in Resources */,
+				48C330362125A7A300E409D2 /* home.json in Resources */,
 				5E3177531D1E411F00D87778 /* Next@2x.png in Resources */,
 				045E093A1FC5F98A003A6341 /* xhtml.js in Resources */,
 				5E31773A1D1E411F00D87778 /* icon-success@2x.png in Resources */,
@@ -905,8 +909,8 @@
 				045C77E91F0278EA00F06598 /* preload.json in Resources */,
 				045C77EB1F02791D00F06598 /* error.json in Resources */,
 				5E3177361D1E411F00D87778 /* icon-error@2x.png in Resources */,
-				5E31775F1D1E411F00D87778 /* placeholder@2x.png in Resources */,
 				5E3177391D1E411F00D87778 /* icon-success.png in Resources */,
+				48C3303421259FD400E409D2 /* icon.png in Resources */,
 				5E3177351D1E411F00D87778 /* icon-error.png in Resources */,
 				04C851961FE62812000B0B94 /* st.js in Resources */,
 				5E3177231D1E411F00D87778 /* JasonHorizontalSection.xib in Resources */,
@@ -1132,10 +1136,12 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = Jasonette/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasonette.seed;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1153,9 +1159,11 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = Jasonette/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasonette.seed;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
