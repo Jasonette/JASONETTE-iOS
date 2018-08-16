@@ -1,21 +1,33 @@
 {
     "$jason": {
         "head": {
-            "title": "Home Screen"
+            "title": "Finalsite Academy"
         },
         "body": {
+            "background": "https://finalsite-dev-res.cloudinary.com/images/v1534439494/gregory_ecklund/mm0ghheb36ntxcmbgisr/app_background2.jpg",
             "layers": [
-                       {
-                       "type": "label",
-                       "text": "Finalsite Academy Home",
-                       "style": {
-                       "width": "200",
-                       "height": "200",
-                       "top": "50%-100",
-                       "left": "50%-100"
-                       }
-                       }
-                       ]
+               {
+                   "type": "image",
+                   "url": "file://icon.png",
+                   "style": {
+                       "width": "150",
+                       "height": "150",
+                       "top": "0",
+                       "left": "50% - 75"
+                    }
+               },
+               {
+                   "type": "label",
+                   "text": "Finalsite Academy",
+                   "style": {
+                       "color": "#000000",
+                       "top": "115",
+                       "left": "50% - 75",
+                       "font": "HelveticaNeue-Bold",
+                       "size": "17"
+                   }
+               }
+            ]
         }
     }
 }
