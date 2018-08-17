@@ -1,0 +1,59 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Finalsite Academy Menu",
+      "styles": {
+        "bold": {
+          "font": "HelveticaNeue-CondensedBold",
+          "padding": "10",
+          "color": "#000000",
+          "background": "#ffffff",
+          "size": "18"
+        }
+      }
+    },
+    "body": {
+      "header": {},
+      "sections": [{
+        "items": [
+          {
+            "type": "label",
+            "text": "Home",
+            "class": "bold",
+            "action": {
+              "type": "$ok",
+              "options": {
+                "menu_selection": "file://home.json"
+              }
+            }
+          },
+          {
+            "type": "label",
+            "text": "Calendar",
+            "class": "bold"
+          },
+          {
+            "type": "label",
+            "text": "Posts",
+            "class": "bold"
+          },
+          {
+            "type": "label",
+            "text": "Resources",
+            "class": "bold"
+          },
+          {
+            "type": "label",
+            "text": "Account",
+            "class": "bold"
+          },
+          {
+            "type": "label",
+            "text": "Notification",
+            "class": "bold"
+          }
+        ]
+      }]
+    }
+  }
+}
