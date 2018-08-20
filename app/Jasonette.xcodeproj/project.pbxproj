@@ -26,6 +26,7 @@
 		04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */; };
 		04DC19801F54746E0021A7A6 /* JasonScriptAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */; };
 		04F3BCBE1F2BF9ED00C95170 /* NSObject+JSONPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */; };
+		489E080F212AF08600004B7A /* close.png in Resources */ = {isa = PBXBuildFile; fileRef = 489E080E212AF08600004B7A /* close.png */; };
 		48C3303421259FD400E409D2 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 48C3303321259FD300E409D2 /* icon.png */; };
 		48C330362125A7A300E409D2 /* home.json in Resources */ = {isa = PBXBuildFile; fileRef = 48C330352125A7A300E409D2 /* home.json */; };
 		48C3303821260B9000E409D2 /* menu.png in Resources */ = {isa = PBXBuildFile; fileRef = 48C3303721260B9000E409D2 /* menu.png */; };
@@ -129,6 +130,7 @@
 		04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+JSONPayload.m"; sourceTree = "<group>"; };
 		1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.release.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.release.xcconfig"; sourceTree = "<group>"; };
 		2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Jasonette.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		489E080E212AF08600004B7A /* close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = close.png; sourceTree = "<group>"; };
 		48C3303321259FD300E409D2 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		48C330352125A7A300E409D2 /* home.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = home.json; sourceTree = "<group>"; };
 		48C3303721260B9000E409D2 /* menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu.png; sourceTree = "<group>"; };
@@ -465,6 +467,7 @@
 		5E31777B1D1F199D00D87778 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				489E080E212AF08600004B7A /* close.png */,
 				48C3303721260B9000E409D2 /* menu.png */,
 				48C3303321259FD300E409D2 /* icon.png */,
 				5E3176A91D1E411E00D87778 /* icon-error.png */,
@@ -896,6 +899,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				489E080F212AF08600004B7A /* close.png in Resources */,
 				5E3177381D1E411F00D87778 /* icon-info@2x.png in Resources */,
 				5E3177511D1E411F00D87778 /* more@2x.png in Resources */,
 				5E3177781D1E414C00D87778 /* Media.xcassets in Resources */,

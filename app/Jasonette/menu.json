@@ -13,7 +13,18 @@
       }
     },
     "body": {
-      "header": {},
+        "layers": [{
+            "type": "image",
+            "url": "file://close.png",
+            "style": {
+                "right": "23",
+                "top": "43",
+                "width": "24"
+            },
+            "action": {
+                "type": "$back"
+            }
+        }],
       "sections": [{
         "items": [
           {
