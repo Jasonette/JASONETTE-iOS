@@ -28,22 +28,9 @@
           }
         },
         {
-            "type": "label",
-            "text": "",
-            "style": {
-                "background": "#191C23",
-                "top": "28",
-                "right": "10",
-                "corner_radius": "25",
-                "width": "50",
-                "height": "50"
-            }
-        },
-        {
           "type": "image",
           "url": "file://menu.png",
           "style": {
-            "color": "#FFFFFF",
             "right": "23",
             "top": "43",
             "width": "24"
