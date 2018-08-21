@@ -90,9 +90,20 @@
 		5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B801DA5C0080049EACE /* JasonLayer.m */; };
 		5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF904351DD10F6E00C8A94E /* JasonLogAction.m */; };
 		9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */; };
+		CE4AFF1B212CA8FC006B31F5 /* JasonetteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4AFF1A212CA8FC006B31F5 /* JasonetteUITests.swift */; };
 		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
 		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CE4AFF1D212CA8FC006B31F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5E3176511D1E400C00D87778 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5E3176581D1E400C00D87778;
+			remoteInfo = Jasonette;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		042852511E984B890081F742 /* NoPaddingButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoPaddingButton.h; sourceTree = "<group>"; };
@@ -241,6 +252,9 @@
 		9A16EE0D1E592DC4006D3F73 /* JasonOptionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonOptionHelper.h; sourceTree = "<group>"; };
 		9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonOptionHelper.m; sourceTree = "<group>"; };
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
+		CE4AFF18212CA8FC006B31F5 /* JasonetteUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JasonetteUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE4AFF1A212CA8FC006B31F5 /* JasonetteUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JasonetteUITests.swift; sourceTree = "<group>"; };
+		CE4AFF1C212CA8FC006B31F5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSwitchComponent.h; sourceTree = "<group>"; };
 		EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSwitchComponent.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -252,6 +266,13 @@
 			files = (
 				5EE85B6C1DA45F8F0049EACE /* MapKit.framework in Frameworks */,
 				F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE4AFF15212CA8FC006B31F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,6 +470,7 @@
 			isa = PBXGroup;
 			children = (
 				5E31765B1D1E400C00D87778 /* Jasonette */,
+				CE4AFF19212CA8FC006B31F5 /* JasonetteUITests */,
 				5E31765A1D1E400C00D87778 /* Products */,
 				024EC1D04366A4267780A921 /* Pods */,
 				7CC63D0148253F040E828E0E /* Frameworks */,
@@ -459,6 +481,7 @@
 			isa = PBXGroup;
 			children = (
 				5E3176591D1E400C00D87778 /* Jasonette.app */,
+				CE4AFF18212CA8FC006B31F5 /* JasonetteUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -828,6 +851,15 @@
 			name = Option;
 			sourceTree = "<group>";
 		};
+		CE4AFF19212CA8FC006B31F5 /* JasonetteUITests */ = {
+			isa = PBXGroup;
+			children = (
+				CE4AFF1A212CA8FC006B31F5 /* JasonetteUITests.swift */,
+				CE4AFF1C212CA8FC006B31F5 /* Info.plist */,
+			);
+			path = JasonetteUITests;
+			sourceTree = "<group>";
+		};
 		EF8C8CFD1F9195010062CA1C /* switch */ = {
 			isa = PBXGroup;
 			children = (
@@ -860,12 +892,31 @@
 			productReference = 5E3176591D1E400C00D87778 /* Jasonette.app */;
 			productType = "com.apple.product-type.application";
 		};
+		CE4AFF17212CA8FC006B31F5 /* JasonetteUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE4AFF21212CA8FC006B31F5 /* Build configuration list for PBXNativeTarget "JasonetteUITests" */;
+			buildPhases = (
+				CE4AFF14212CA8FC006B31F5 /* Sources */,
+				CE4AFF15212CA8FC006B31F5 /* Frameworks */,
+				CE4AFF16212CA8FC006B31F5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CE4AFF1E212CA8FC006B31F5 /* PBXTargetDependency */,
+			);
+			name = JasonetteUITests;
+			productName = JasonetteUITests;
+			productReference = CE4AFF18212CA8FC006B31F5 /* JasonetteUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		5E3176511D1E400C00D87778 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0940;
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = Jasonette;
 				TargetAttributes = {
@@ -883,6 +934,11 @@
 							};
 						};
 					};
+					CE4AFF17212CA8FC006B31F5 = {
+						CreatedOnToolsVersion = 9.4.1;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 5E3176581D1E400C00D87778;
+					};
 				};
 			};
 			buildConfigurationList = 5E3176541D1E400C00D87778 /* Build configuration list for PBXProject "Jasonette" */;
@@ -899,6 +955,7 @@
 			projectRoot = "";
 			targets = (
 				5E3176581D1E400C00D87778 /* Jasonette */,
+				CE4AFF17212CA8FC006B31F5 /* JasonetteUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -935,6 +992,13 @@
 				04C851961FE62812000B0B94 /* st.js in Resources */,
 				485D4A41212C606F00C44D6F /* home.json in Resources */,
 				5E3177231D1E411F00D87778 /* JasonHorizontalSection.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE4AFF16212CA8FC006B31F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1052,7 +1116,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CE4AFF14212CA8FC006B31F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE4AFF1B212CA8FC006B31F5 /* JasonetteUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CE4AFF1E212CA8FC006B31F5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5E3176581D1E400C00D87778 /* Jasonette */;
+			targetProxy = CE4AFF1D212CA8FC006B31F5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		5E31766E1D1E400C00D87778 /* Debug */ = {
@@ -1188,6 +1268,69 @@
 			};
 			name = Release;
 		};
+		CE4AFF1F212CA8FC006B31F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = JasonetteUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.JasonetteUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Jasonette;
+			};
+			name = Debug;
+		};
+		CE4AFF20212CA8FC006B31F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = JasonetteUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.JasonetteUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Jasonette;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1205,6 +1348,15 @@
 			buildConfigurations = (
 				5E3176711D1E400C00D87778 /* Debug */,
 				5E3176721D1E400C00D87778 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CE4AFF21212CA8FC006B31F5 /* Build configuration list for PBXNativeTarget "JasonetteUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE4AFF1F212CA8FC006B31F5 /* Debug */,
+				CE4AFF20212CA8FC006B31F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
