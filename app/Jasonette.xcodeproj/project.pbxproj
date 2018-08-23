@@ -92,6 +92,8 @@
 		9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */; };
 		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
 		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
+		FD4803F8212F175200B4F173 /* posts.json in Resources */ = {isa = PBXBuildFile; fileRef = FD4803F7212F175100B4F173 /* posts.json */; };
+		FD4803FA212F252500B4F173 /* menu_button.json in Resources */ = {isa = PBXBuildFile; fileRef = FD4803F9212F252400B4F173 /* menu_button.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -243,6 +245,8 @@
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
 		EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSwitchComponent.h; sourceTree = "<group>"; };
 		EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSwitchComponent.m; sourceTree = "<group>"; };
+		FD4803F7212F175100B4F173 /* posts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = posts.json; sourceTree = "<group>"; };
+		FD4803F9212F252400B4F173 /* menu_button.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = menu_button.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -380,11 +384,13 @@
 		485D4A38212C606F00C44D6F /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				485D4A3D212C606F00C44D6F /* close.png */,
 				485D4A39212C606F00C44D6F /* icon.png */,
+				485D4A3C212C606F00C44D6F /* home.json */,
 				485D4A3A212C606F00C44D6F /* menu.png */,
 				485D4A3B212C606F00C44D6F /* menu.json */,
-				485D4A3C212C606F00C44D6F /* home.json */,
-				485D4A3D212C606F00C44D6F /* close.png */,
+				FD4803F9212F252400B4F173 /* menu_button.json */,
+				FD4803F7212F175100B4F173 /* posts.json */,
 			);
 			name = assets;
 			path = ../../../config/assets;
@@ -911,6 +917,7 @@
 				485D4A42212C606F00C44D6F /* close.png in Resources */,
 				5E3177381D1E411F00D87778 /* icon-info@2x.png in Resources */,
 				5E3177511D1E411F00D87778 /* more@2x.png in Resources */,
+				FD4803F8212F175200B4F173 /* posts.json in Resources */,
 				5E3177781D1E414C00D87778 /* Media.xcassets in Resources */,
 				5E3840751D3A3D2200D1C421 /* placeholderr@2x.png in Resources */,
 				045E092C1FC4930B003A6341 /* agent.js in Resources */,
@@ -926,6 +933,7 @@
 				485D4A3E212C606F00C44D6F /* icon.png in Resources */,
 				5E3177671D1E411F00D87778 /* rss.js in Resources */,
 				5E3177481D1E411F00D87778 /* LaunchScreen.storyboard in Resources */,
+				FD4803FA212F252500B4F173 /* menu_button.json in Resources */,
 				045C77E91F0278EA00F06598 /* preload.json in Resources */,
 				045C77EB1F02791D00F06598 /* error.json in Resources */,
 				5E3177361D1E411F00D87778 /* icon-error@2x.png in Resources */,
