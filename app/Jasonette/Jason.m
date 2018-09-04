@@ -2042,7 +2042,7 @@
             vc.background.opaque = NO;
             vc.background.backgroundColor = [UIColor clearColor];
             vc.background.hidden = NO;
-            
+
             int height = [UIScreen mainScreen].bounds.size.height;
             if (!tabController.tabBar.hidden) {
                 height = height - tabController.tabBar.frame.size.height;
@@ -2053,7 +2053,9 @@
             }
             CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, height);
             vc.background.frame = rect;
-            
+            // set up background webView to automatically resize when orientation is switched between portrait and landscape
+            [vc.background setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+
             UIProgressView *progressView = [vc.background viewWithTag:42];
             if (!progressView) {
                 progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
