@@ -96,6 +96,8 @@
 		FD4803FA212F252500B4F173 /* menu_button.json in Resources */ = {isa = PBXBuildFile; fileRef = FD4803F9212F252400B4F173 /* menu_button.json */; };
 		FDA859A2213875370079031C /* post1.json in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A0213875360079031C /* post1.json */; };
 		FDA859A3213875370079031C /* post2.json in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A1213875360079031C /* post2.json */; };
+		FDA859A6214066180079031C /* galleries.json in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A4214066170079031C /* galleries.json */; };
+		FDA859A7214066180079031C /* gallery.png in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A5214066180079031C /* gallery.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -251,6 +253,8 @@
 		FD4803F9212F252400B4F173 /* menu_button.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = menu_button.json; sourceTree = "<group>"; };
 		FDA859A0213875360079031C /* post1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = post1.json; sourceTree = "<group>"; };
 		FDA859A1213875360079031C /* post2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = post2.json; sourceTree = "<group>"; };
+		FDA859A4214066170079031C /* galleries.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = galleries.json; sourceTree = "<group>"; };
+		FDA859A5214066180079031C /* gallery.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gallery.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -389,8 +393,10 @@
 			isa = PBXGroup;
 			children = (
 				485D4A3D212C606F00C44D6F /* close.png */,
-				485D4A39212C606F00C44D6F /* icon.png */,
+				FDA859A4214066170079031C /* galleries.json */,
+				FDA859A5214066180079031C /* gallery.png */,
 				485D4A3C212C606F00C44D6F /* home.json */,
+				485D4A39212C606F00C44D6F /* icon.png */,
 				485D4A3A212C606F00C44D6F /* menu.png */,
 				485D4A3B212C606F00C44D6F /* menu.json */,
 				FD4803F9212F252400B4F173 /* menu_button.json */,
@@ -934,6 +940,7 @@
 				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
 				485D4A3F212C606F00C44D6F /* menu.png in Resources */,
 				5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */,
+				FDA859A6214066180079031C /* galleries.json in Resources */,
 				5E3177371D1E411F00D87778 /* icon-info.png in Resources */,
 				5E3177531D1E411F00D87778 /* Next@2x.png in Resources */,
 				045E093A1FC5F98A003A6341 /* xhtml.js in Resources */,
@@ -949,6 +956,7 @@
 				5E3177391D1E411F00D87778 /* icon-success.png in Resources */,
 				5E3177351D1E411F00D87778 /* icon-error.png in Resources */,
 				04C851961FE62812000B0B94 /* st.js in Resources */,
+				FDA859A7214066180079031C /* gallery.png in Resources */,
 				485D4A41212C606F00C44D6F /* home.json in Resources */,
 				5E3177231D1E411F00D87778 /* JasonHorizontalSection.xib in Resources */,
 			);
