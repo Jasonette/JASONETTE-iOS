@@ -81,6 +81,7 @@ static NSMutableDictionary *_stylesheet = nil;
 
 + (UIStackView *)fillChildLayout: (UIStackView*)layout with:(NSDictionary *)item atIndexPath: (NSIndexPath *)indexPath withForm: (NSDictionary *)form{
     NSArray *children = item[@"components"];
+    item = [self applyStylesheet:item];
     
     // isBuilding = YES means we're building this layout for the first time.
     // Otherwise, we reuse the existing layout.
