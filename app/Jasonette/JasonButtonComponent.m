@@ -102,7 +102,6 @@
         if(style){
             NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
    
-                    
             if(style[@"width"] && !style[@"height"]){
                 // Width is set but height is not
                 CGFloat aspectRatioMult;
@@ -124,8 +123,7 @@
                 NSString *widthStr = style[@"width"];
                 CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
                 style[@"height"] = [NSString stringWithFormat:@"%d", (int)(width * aspectRatioMult)];
-            }
-            if(style[@"height"] && !style[@"width"]){
+            } else if(style[@"height"] && !style[@"width"]){
                 // Height is set but width is not
                 CGFloat aspectRatioMult;
                 if(JasonComponentFactory.imageLoaded[url]){
@@ -150,20 +148,13 @@
             mutable_json[@"style"] = style;
         }
         
-    }
-    else{
+    } else {
         [component setImage:nil forState:UIControlStateNormal];
         if(json[@"text"]){
             [component setTitle:[json[@"text"] description] forState:UIControlStateNormal];
         }
-
     }
 
-    
-    
-
-    
-    
     if(json[@"action"]){
         component.payload = [@{@"action": json[@"action"]} mutableCopy];
     }

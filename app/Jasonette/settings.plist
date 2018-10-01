@@ -9,7 +9,7 @@
 	<key>url</key>
 	<string>file://home.json</string>
 	<key>loading</key>
-	<false/>
+	<true/>
 	<key>launch</key>
 	<string></string>
 	<key>debug</key>

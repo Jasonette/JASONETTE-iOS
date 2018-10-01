@@ -34,6 +34,7 @@
 		48709E4D21557985006FABFE /* gallery1.json in Resources */ = {isa = PBXBuildFile; fileRef = 48709E4C21557985006FABFE /* gallery1.json */; };
 		48709E4F21592E14006FABFE /* info.png in Resources */ = {isa = PBXBuildFile; fileRef = 48709E4E21592E14006FABFE /* info.png */; };
 		48709E512159342D006FABFE /* gallery_detail.json in Resources */ = {isa = PBXBuildFile; fileRef = 48709E502159342D006FABFE /* gallery_detail.json */; };
+		488F39DD215BBE3C0025B2AE /* sub_gallery.json in Resources */ = {isa = PBXBuildFile; fileRef = 488F39DC215BBE3B0025B2AE /* sub_gallery.json */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
 		5E0956301DA34D70007ADC78 /* JasonImageComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562F1DA34D6F007ADC78 /* JasonImageComponent.m */; };
 		5E0956331DA34EEA007ADC78 /* JasonButtonComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0956321DA34EEA007ADC78 /* JasonButtonComponent.m */; };
@@ -158,6 +159,7 @@
 		48709E4C21557985006FABFE /* gallery1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = gallery1.json; sourceTree = "<group>"; };
 		48709E4E21592E14006FABFE /* info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = info.png; sourceTree = "<group>"; };
 		48709E502159342D006FABFE /* gallery_detail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = gallery_detail.json; sourceTree = "<group>"; };
+		488F39DC215BBE3B0025B2AE /* sub_gallery.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = sub_gallery.json; sourceTree = "<group>"; };
 		5E025B471DE017EB0016786A /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		5E09562A1DA33264007ADC78 /* JasonComponentProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonComponentProtocol.h; sourceTree = "<group>"; };
 		5E09562B1DA33514007ADC78 /* JasonLabelComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonLabelComponent.h; sourceTree = "<group>"; };
@@ -422,6 +424,7 @@
 				48709E502159342D006FABFE /* gallery_detail.json */,
 				48709E4E21592E14006FABFE /* info.png */,
 				485D4A3D212C606F00C44D6F /* close.png */,
+				488F39DC215BBE3B0025B2AE /* sub_gallery.json */,
 				FDA859A4214066170079031C /* galleries.json */,
 				FDA859A5214066180079031C /* gallery.png */,
 				485D4A3C212C606F00C44D6F /* home.json */,
@@ -963,6 +966,7 @@
 					};
 					CE4AFF17212CA8FC006B31F5 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5E3176581D1E400C00D87778;
 					};
@@ -1009,6 +1013,7 @@
 				5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */,
 				FDA859A6214066180079031C /* galleries.json in Resources */,
 				5E3177371D1E411F00D87778 /* icon-info.png in Resources */,
+				488F39DD215BBE3C0025B2AE /* sub_gallery.json in Resources */,
 				5E3177531D1E411F00D87778 /* Next@2x.png in Resources */,
 				045E093A1FC5F98A003A6341 /* xhtml.js in Resources */,
 				5E31773A1D1E411F00D87778 /* icon-success@2x.png in Resources */,
@@ -1330,7 +1335,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Jasonette;
 			};
@@ -1361,7 +1366,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.JasonetteUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Jasonette;
 			};
