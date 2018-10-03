@@ -7,7 +7,7 @@
 	<key>client_secret</key>
 	<string></string>
 	<key>url</key>
-	<string>file://home.json</string>
+	<string>https://bb19ac26.ngrok.io/fs/apps/1/home.json</string>
 	<key>loading</key>
 	<false/>
 	<key>launch</key>

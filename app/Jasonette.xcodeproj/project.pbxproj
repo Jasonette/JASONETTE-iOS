@@ -29,7 +29,6 @@
 		485D4A3E212C606F00C44D6F /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 485D4A39212C606F00C44D6F /* icon.png */; };
 		485D4A3F212C606F00C44D6F /* menu.png in Resources */ = {isa = PBXBuildFile; fileRef = 485D4A3A212C606F00C44D6F /* menu.png */; };
 		485D4A40212C606F00C44D6F /* menu.json in Resources */ = {isa = PBXBuildFile; fileRef = 485D4A3B212C606F00C44D6F /* menu.json */; };
-		485D4A41212C606F00C44D6F /* home.json in Resources */ = {isa = PBXBuildFile; fileRef = 485D4A3C212C606F00C44D6F /* home.json */; };
 		485D4A42212C606F00C44D6F /* close.png in Resources */ = {isa = PBXBuildFile; fileRef = 485D4A3D212C606F00C44D6F /* close.png */; };
 		48709E4D21557985006FABFE /* gallery1.json in Resources */ = {isa = PBXBuildFile; fileRef = 48709E4C21557985006FABFE /* gallery1.json */; };
 		48709E4F21592E14006FABFE /* info.png in Resources */ = {isa = PBXBuildFile; fileRef = 48709E4E21592E14006FABFE /* info.png */; };
@@ -153,7 +152,6 @@
 		485D4A39212C606F00C44D6F /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		485D4A3A212C606F00C44D6F /* menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu.png; sourceTree = "<group>"; };
 		485D4A3B212C606F00C44D6F /* menu.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = menu.json; sourceTree = "<group>"; };
-		485D4A3C212C606F00C44D6F /* home.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = home.json; sourceTree = "<group>"; };
 		485D4A3D212C606F00C44D6F /* close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = close.png; sourceTree = "<group>"; };
 		48709E4C21557985006FABFE /* gallery1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = gallery1.json; sourceTree = "<group>"; };
 		48709E4E21592E14006FABFE /* info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = info.png; sourceTree = "<group>"; };
@@ -424,7 +422,6 @@
 				485D4A3D212C606F00C44D6F /* close.png */,
 				FDA859A4214066170079031C /* galleries.json */,
 				FDA859A5214066180079031C /* gallery.png */,
-				485D4A3C212C606F00C44D6F /* home.json */,
 				485D4A39212C606F00C44D6F /* icon.png */,
 				48709E4C21557985006FABFE /* gallery1.json */,
 				485D4A3A212C606F00C44D6F /* menu.png */,
@@ -1026,7 +1023,6 @@
 				5E3177351D1E411F00D87778 /* icon-error.png in Resources */,
 				04C851961FE62812000B0B94 /* st.js in Resources */,
 				FDA859A7214066180079031C /* gallery.png in Resources */,
-				485D4A41212C606F00C44D6F /* home.json in Resources */,
 				5E3177231D1E411F00D87778 /* JasonHorizontalSection.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

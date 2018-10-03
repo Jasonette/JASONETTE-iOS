@@ -235,8 +235,8 @@ static NSMutableDictionary *_stylesheet = nil;
         left = screenWidth - [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"right"]] - width;
     } else {
         left = 100.0f;
-        
     }
+
     if(style[@"top"]){
         top = [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"top"]];
     } else if(style[@"bottom"]){

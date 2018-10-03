@@ -906,7 +906,7 @@
             }
         }
         VC.rendered = rendered_page;
-        
+
         if([VC respondsToSelector:@selector(reload:final:)]) [VC reload:rendered_page final:VC.contentLoaded];
         
         // Cache the view after drawing
@@ -2053,8 +2053,6 @@
             }
             CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, height);
             vc.background.frame = rect;
-            // set up background webView to automatically resize when orientation is switched between portrait and landscape
-            [vc.background setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
 
             UIProgressView *progressView = [vc.background viewWithTag:42];
             if (!progressView) {
@@ -2082,6 +2080,10 @@
             }
             
         }
+
+        // set up background webView to automatically resize when orientation is switched between portrait and landscape
+        [vc.background setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+
         [vc.view addSubview:vc.background];
         [vc.view sendSubviewToBack:vc.background];
     }
@@ -2197,6 +2199,10 @@
             vc.background = nil;
         }
         vc.view.backgroundColor = [JasonHelper colorwithHexString:bg alpha:1.0];
+    }
+    if (vc.background){
+        // set up background View to automatically resize when orientation is switched between portrait and landscape
+        [vc.background setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
     }
     
 }

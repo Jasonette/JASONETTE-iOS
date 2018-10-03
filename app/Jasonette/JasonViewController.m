@@ -1053,7 +1053,6 @@
     }
 }
 
-
 - (void)reload: (NSDictionary *)body final: (BOOL)final{
     indexPathsForImage = [[NSMutableDictionary alloc] init];
     isSearching = NO;
