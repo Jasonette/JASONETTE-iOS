@@ -90,14 +90,21 @@ static NSMutableDictionary *_stylesheet = nil;
     if(layout.arrangedSubviews && layout.arrangedSubviews.count > 0){
         isBuilding = NO;
     }
+
     NSInteger index = 0;
     for(NSDictionary *child in children){
         if(child && child.count > 0){
             NSString *type = child[@"type"];
+
             if([type isEqualToString:@"vertical"] || [type isEqualToString:@"horizontal"]){
                 if(isBuilding){
                     UIStackView *el = [self fillChildLayout:[[UIStackView alloc] init] with:child atIndexPath:indexPath withForm: form];
                     [layout addArrangedSubview:el];
+                    
+                    if(child[@"action"]) {
+                        el.payload = [@{@"action": child[@"action"]} mutableCopy];
+                        [self addGestureRecognizersTo:el];
+                    }
                 } else {
                     UIStackView *view_to_replace = (UIStackView *)[layout.arrangedSubviews objectAtIndex:index];
                     [self fillChildLayout:view_to_replace with:child atIndexPath:indexPath withForm: form];
@@ -136,6 +143,7 @@ static NSMutableDictionary *_stylesheet = nil;
                 } else {
                     el = [layout.arrangedSubviews objectAtIndex:index];
                 }
+                
                 
                 UIView *component = [JasonComponentFactory build:el withJSON: child withOptions:options];
                 
@@ -305,8 +313,19 @@ static NSMutableDictionary *_stylesheet = nil;
         layout.alpha = 1.0;
     }
     
-    
     return layout;
+}
+
++ (void) addGestureRecognizersTo: (UIView *) view{
+    UITapGestureRecognizer *singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(layoutTap:)];
+    [view addGestureRecognizer:singleFingerTap];
+}
+
++ (void) layoutTap: (UITapGestureRecognizer *)recognizer{
+    NSDictionary *action = recognizer.view.payload[@"action"];
+    if(action){
+        [[Jason client] call:action];
+    }
 }
 
 + (NSMutableDictionary *)stylesheet{

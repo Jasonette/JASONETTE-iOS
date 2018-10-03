@@ -9,7 +9,7 @@
 	<key>url</key>
 	<string>https://bb19ac26.ngrok.io/fs/apps/1/home.json</string>
 	<key>loading</key>
-	<false/>
+	<true/>
 	<key>launch</key>
 	<string></string>
 	<key>debug</key>
