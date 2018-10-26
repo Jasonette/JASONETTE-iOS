@@ -2062,12 +2062,14 @@
             }
             
             [progressView setTrackTintColor:[UIColor colorWithWhite:1.0f alpha:0.0f]];
-            // agent top + navigation height + status bar size (fixed at 20)
+            // agent top + navigation height + status bar size
             CGFloat navHeight = navigationController.navigationBar.frame.size.height;
+            CGFloat navOffset = navigationController.navigationBar.frame.origin.y;
             if (navigationController.navigationBar.hidden) {
                 navHeight = 0;
+                navOffset = 0;
             }
-            [progressView setFrame:CGRectMake(0,vc.background.frame.origin.y + navHeight + 20, vc.background.frame.size.width, progressView.frame.size.height)];
+            [progressView setFrame:CGRectMake(0,vc.background.frame.origin.y + navHeight + navOffset, vc.background.frame.size.width, progressView.frame.size.height)];
             [progressView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
             
             if (bg[@"style"]) {
