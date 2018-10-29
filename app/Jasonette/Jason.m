@@ -147,7 +147,7 @@
     navigationController.navigationBar.translucent = NO;
     navigationController.navigationBar.backgroundColor = [UIColor clearColor];
     [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
-    
+
     UITabBarController *tab = [[UITabBarController alloc] init];
     tab.tabBar.backgroundColor = [UIColor whiteColor];
     tab.tabBar.shadowImage = [[UIImage alloc] init];
@@ -401,7 +401,11 @@
     // Act and close
     JasonMemory *memory = [JasonMemory client];
     if(memory._stack && memory._stack.count > 0){
-        memory.need_to_exec = YES;
+        // If we are using the $close action we don't want to execute callbacks, it's effectively a cancel.
+        // This allows us to "cancel" views that would otherwise make an href render it's success block
+        if (![mode isEqualToString:@"close"]) {
+            memory.need_to_exec = YES;
+        }
         if (self.options && self.options.count > 0) {
             memory._register = @{@"$jason": self.options};
         }
@@ -2380,8 +2384,9 @@
         // Add the X button. Otherwise, ignore this.
         if([tabController presentingViewController]){ // if the current tab bar was modally presented
             if([navigationController.viewControllers.firstObject isEqual:v]){
-                leftBarButton = [[BBBadgeBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(cancel)];
-                [leftBarButton setTintColor:color];
+                // We are drawing a close button on the right edge so we want to enforce this button not being drawn
+                // leftBarButton = [[BBBadgeBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(cancel)];
+                // [leftBarButton setTintColor:color];
             }
         }
     } else {
@@ -3227,6 +3232,7 @@
                     if(href){
                         NSString *new_url;
                         NSDictionary *new_options;
+
                         if(href[@"url"]){
                             new_url = [JasonHelper linkify:href[@"url"]];
                         }
