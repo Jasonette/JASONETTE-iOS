@@ -47,6 +47,8 @@
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onForeground) name:UIApplicationDidBecomeActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onOrientationChange) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+
         self.searchMode = NO;
         self.services = [[NSMutableDictionary alloc] init];
         
@@ -3139,6 +3141,15 @@
         }
     }
     isForeground = YES;
+}
+- (void)onOrientationChange {
+    JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
+    WKWebView *agent = vc.agents[@"$webcontainer"];
+
+    if (agent) {
+        CGRect bounds = [[UIScreen mainScreen] bounds];
+        agent.frame = bounds;
+    }
 }
 
 # pragma mark - View Linking
