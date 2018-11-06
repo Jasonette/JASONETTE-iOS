@@ -45,10 +45,6 @@
 
 @implementation JasonViewController
 
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations{
-    return UIInterfaceOrientationMaskLandscape;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
