@@ -278,9 +278,7 @@
             [[Jason client] success: data withOriginalUrl:original_url];
         } else if(dataType && [dataType isEqualToString:@"toFile"]){
             [self saveCookies];
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-            NSString *docPath_ = [paths objectAtIndex:0];
-            NSString *filePath = [docPath_ stringByAppendingPathComponent:[url lastPathComponent]];
+            NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[url lastPathComponent]];
             NSError *error;
             NSData *data = (NSData *)responseObject;
             Boolean success = [data writeToFile:filePath options:0 error:&error];
