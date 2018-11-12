@@ -124,6 +124,9 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"scrollToBottom" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(scrollToBottom) name:@"scrollToBottom" object:nil];
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"scrollToPosition" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(scrollToPosition:) name:@"scrollToPosition" object:nil];
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"scrollToTop" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(scrollToTop) name:@"scrollToTop" object:nil];
     
@@ -1109,6 +1112,17 @@
 - (void)scrollToTop{
     if(self.tableView.numberOfSections >= 1){
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        });
+    }
+}
+
+// scroll to a section by index
+- (void)scrollToPosition:(NSNotification *)notification {
+    NSInteger targetSectionIndex = [notification.userInfo[@"position"] intValue];
+    if(self.tableView.numberOfSections > 0){
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:targetSectionIndex];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
         });

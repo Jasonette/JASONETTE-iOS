@@ -964,6 +964,8 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"scrollToTop" object:nil userInfo:nil];
         } else if ([position isEqualToString:@"bottom"]) {
             [[NSNotificationCenter defaultCenter] postNotificationName:@"scrollToBottom" object:nil userInfo:nil];
+        } else {
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"scrollToPosition" object:nil userInfo:@{@"position": position }];
         }
     }
     [[Jason client] success];
@@ -3115,10 +3117,17 @@
 - (void)onLoad: (Boolean) online{
     [JasonMemory client].executing = NO;
     NSDictionary *events = [VC valueForKey:@"events"];
-    if(events && events[@"$load"]){
-        if(!VC.contentLoaded){
-            NSDictionary *variables = [self variables];
-            [self call:events[@"$load"] with:variables];
+    if(events) {
+        if (events[@"$load"]){
+            if(!VC.contentLoaded){
+                // defer to the next cycle so we're sure the current view is loaded
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSDictionary *variables = [self variables];
+                        [self call:events[@"$load"] with:variables];
+                    });
+                });
+            }
         }
     } else {
         [self onShow];
