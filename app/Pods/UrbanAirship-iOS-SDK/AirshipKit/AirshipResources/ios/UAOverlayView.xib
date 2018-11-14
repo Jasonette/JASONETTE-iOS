@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view alpha="0.0" contentMode="scaleToFill" id="iN0-l3-epB" customClass="UALandingPageOverlayView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view userInteractionEnabled="NO" alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MxQ-yh-M1D" userLabel="Shade View">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="translatesAutoresizingMaskIntoConstraints" value="NO"/>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vOB-aH-fCl" userLabel="Container View">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NIM-3E-mEZ" userLabel="Background View">
+                            <rect key="frame" x="0.0" y="15" width="375" height="637"/>
+                            <subviews>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sib-JW-aVL">
+                                    <rect key="frame" x="15" y="15" width="345" height="607"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="translatesAutoresizingMaskIntoConstraints" value="NO"/>
+                                    </userDefinedRuntimeAttributes>
+                                </view>
+                                <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xZB-lX-Zq7" customClass="UAWebView">
+                                    <rect key="frame" x="15" y="15" width="345" height="607"/>
+                                    <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="translatesAutoresizingMaskIntoConstraints" value="NO"/>
+                                    </userDefinedRuntimeAttributes>
+                                </webView>
+                                <view alpha="0.69999999999999996" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1cx-OK-wDZ" customClass="UABeveledLoadingIndicator">
+                                    <rect key="frame" x="137.5" y="268.5" width="100" height="100"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="100" id="7Fd-WC-cRt"/>
+                                        <constraint firstAttribute="height" constant="100" id="V6O-HE-7jH"/>
+                                    </constraints>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="translatesAutoresizingMaskIntoConstraints" value="NO"/>
+                                    </userDefinedRuntimeAttributes>
+                                </view>
+                                <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Col-NU-Fki" customClass="UABespokeCloseView">
+                                    <rect key="frame" x="340" y="0.0" width="35" height="35"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B21-6U-tyU">
+                                            <rect key="frame" x="2.5" y="2.5" width="30" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="30" id="NBv-XP-xf7"/>
+                                                <constraint firstAttribute="width" constant="30" id="zL8-XH-kDg"/>
+                                            </constraints>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="translatesAutoresizingMaskIntoConstraints" value="NO"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="B21-6U-tyU" firstAttribute="centerY" secondItem="Col-NU-Fki" secondAttribute="centerY" id="4XN-Hv-J1Y"/>
+                                        <constraint firstAttribute="height" constant="35" id="4nN-DU-a1I"/>
+                                        <constraint firstItem="B21-6U-tyU" firstAttribute="centerX" secondItem="Col-NU-Fki" secondAttribute="centerX" id="Chc-2v-nI8"/>
+                                        <constraint firstAttribute="width" constant="35" id="fHg-AV-UwY"/>
+                                    </constraints>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="translatesAutoresizingMaskIntoConstraints" value="NO"/>
+                                    </userDefinedRuntimeAttributes>
+                                </view>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="1cx-OK-wDZ" firstAttribute="centerY" secondItem="xZB-lX-Zq7" secondAttribute="centerY" id="CM1-Xe-Zwe"/>
+                                <constraint firstAttribute="bottom" secondItem="xZB-lX-Zq7" secondAttribute="bottom" constant="15" id="D0y-VU-NAg"/>
+                                <constraint firstItem="sib-JW-aVL" firstAttribute="top" secondItem="NIM-3E-mEZ" secondAttribute="top" constant="15" id="JLq-g0-xWq"/>
+                                <constraint firstItem="sib-JW-aVL" firstAttribute="leading" secondItem="NIM-3E-mEZ" secondAttribute="leading" constant="15" id="UIg-Sf-k4Y"/>
+                                <constraint firstItem="Col-NU-Fki" firstAttribute="top" secondItem="NIM-3E-mEZ" secondAttribute="top" id="aXV-IF-neD"/>
+                                <constraint firstAttribute="trailing" secondItem="sib-JW-aVL" secondAttribute="trailing" constant="15" id="dOb-w6-wiD"/>
+                                <constraint firstItem="xZB-lX-Zq7" firstAttribute="top" secondItem="NIM-3E-mEZ" secondAttribute="top" constant="15" id="fzI-Nm-Vno"/>
+                                <constraint firstItem="1cx-OK-wDZ" firstAttribute="centerX" secondItem="xZB-lX-Zq7" secondAttribute="centerX" id="isd-IH-ZdL"/>
+                                <constraint firstAttribute="bottom" secondItem="sib-JW-aVL" secondAttribute="bottom" constant="15" id="ofX-2N-r7r"/>
+                                <constraint firstAttribute="trailing" secondItem="xZB-lX-Zq7" secondAttribute="trailing" constant="15" id="pou-V8-Kq3"/>
+                                <constraint firstAttribute="trailing" secondItem="Col-NU-Fki" secondAttribute="trailing" id="q3G-a7-42I"/>
+                                <constraint firstItem="xZB-lX-Zq7" firstAttribute="leading" secondItem="NIM-3E-mEZ" secondAttribute="leading" constant="15" id="tpH-fj-FdW"/>
+                            </constraints>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="translatesAutoresizingMaskIntoConstraints" value="NO"/>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="NIM-3E-mEZ" secondAttribute="bottom" constant="15" id="UCX-SD-KcA"/>
+                        <constraint firstItem="NIM-3E-mEZ" firstAttribute="centerX" secondItem="vOB-aH-fCl" secondAttribute="centerX" id="dEF-yC-HkJ"/>
+                        <constraint firstItem="NIM-3E-mEZ" firstAttribute="width" secondItem="vOB-aH-fCl" secondAttribute="width" id="pky-VL-wZA"/>
+                        <constraint firstItem="NIM-3E-mEZ" firstAttribute="top" secondItem="vOB-aH-fCl" secondAttribute="top" constant="15" id="ysX-ut-zGv"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="translatesAutoresizingMaskIntoConstraints" value="NO"/>
+                    </userDefinedRuntimeAttributes>
+                </view>
+            </subviews>
+            <constraints>
+                <constraint firstItem="vOB-aH-fCl" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="4fr-ik-v2F"/>
+                <constraint firstItem="vOB-aH-fCl" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="6HX-pv-Nw8"/>
+                <constraint firstItem="MxQ-yh-M1D" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="7vV-Ov-0d4"/>
+                <constraint firstItem="vOB-aH-fCl" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="Ot2-Z9-x6W"/>
+                <constraint firstItem="MxQ-yh-M1D" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="kLt-Jw-moK"/>
+                <constraint firstItem="vOB-aH-fCl" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="lWX-qL-r2f"/>
+                <constraint firstItem="MxQ-yh-M1D" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="sBj-MK-Ktg"/>
+                <constraint firstItem="MxQ-yh-M1D" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="ur4-XD-gBd"/>
+            </constraints>
+            <userDefinedRuntimeAttributes>
+                <userDefinedRuntimeAttribute type="boolean" keyPath="translatesAutoresizingMaskIntoConstraints" value="NO"/>
+            </userDefinedRuntimeAttributes>
+            <connections>
+                <outlet property="backgroundInsetView" destination="sib-JW-aVL" id="IWc-mh-nrD"/>
+                <outlet property="backgroundView" destination="NIM-3E-mEZ" id="aE2-pi-HBk"/>
+                <outlet property="closeButton" destination="B21-6U-tyU" id="YpG-PQ-5B8"/>
+                <outlet property="closeButtonView" destination="Col-NU-Fki" id="MHl-rS-IMT"/>
+                <outlet property="containerView" destination="vOB-aH-fCl" id="6ze-m9-0HS"/>
+                <outlet property="containerViewHeightConstraint" destination="4fr-ik-v2F" id="i09-7C-TIH"/>
+                <outlet property="containerViewWidthConstraint" destination="Ot2-Z9-x6W" id="Bfi-tG-2kY"/>
+                <outlet property="loadingIndicatorView" destination="1cx-OK-wDZ" id="49y-N1-IP1"/>
+                <outlet property="shadeView" destination="MxQ-yh-M1D" id="9RR-Lr-JNg"/>
+                <outlet property="webView" destination="xZB-lX-Zq7" id="jEc-mP-X2b"/>
+            </connections>
+            <point key="canvasLocation" x="28.5" y="2.5"/>
+        </view>
+    </objects>
+</document>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16D32" minimumToolsVersion="Xcode 7.0" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+    <entity name="UAActionScheduleData" representedClassName="UAActionScheduleData" syncable="YES">
+        <attribute name="actions" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="delayedExecutionDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="end" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="group" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isPendingExecution" attributeType="Boolean" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="limit" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="start" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="triggeredCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="delay" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="UAScheduleDelayData" inverseName="schedule" inverseEntity="UAScheduleDelayData" syncable="YES"/>
+        <relationship name="triggers" toMany="YES" deletionRule="Cascade" destinationEntity="UAScheduleTriggerData" inverseName="schedule" inverseEntity="UAScheduleTriggerData" syncable="YES"/>
+    </entity>
+    <entity name="UAScheduleDelayData" representedClassName="UAScheduleDelayData" syncable="YES">
+        <attribute name="appState" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="regionID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="screen" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="seconds" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="cancellationTriggers" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="UAScheduleTriggerData" inverseName="delay" inverseEntity="UAScheduleTriggerData" syncable="YES"/>
+        <relationship name="schedule" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UAActionScheduleData" inverseName="delay" inverseEntity="UAActionScheduleData" syncable="YES"/>
+    </entity>
+    <entity name="UAScheduleTriggerData" representedClassName="UAScheduleTriggerData" syncable="YES">
+        <attribute name="goal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="goalProgress" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="predicateData" optional="YES" attributeType="Binary" valueTransformerName="UAJSONPredicateTransformer" syncable="YES"/>
+        <attribute name="start" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="delay" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UAScheduleDelayData" inverseName="cancellationTriggers" inverseEntity="UAScheduleDelayData" syncable="YES"/>
+        <relationship name="schedule" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UAActionScheduleData" inverseName="triggers" inverseEntity="UAActionScheduleData" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="UAActionScheduleData" positionX="-540" positionY="-63" width="128" height="210"/>
+        <element name="UAScheduleDelayData" positionX="-234" positionY="-27" width="128" height="135"/>
+        <element name="UAScheduleTriggerData" positionX="-191" positionY="378" width="128" height="150"/>
+    </elements>
+</model>

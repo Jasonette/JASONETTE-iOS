@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10174" systemVersion="15G31" minimumToolsVersion="Xcode 7.0">
+    <entity name="UAActionScheduleData" representedClassName="UAActionScheduleData" syncable="YES">
+        <attribute name="actions" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="end" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="group" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="limit" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="start" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="triggeredCount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="triggers" toMany="YES" deletionRule="Cascade" destinationEntity="UAScheduleTriggerData" inverseName="schedule" inverseEntity="UAScheduleTriggerData" syncable="YES"/>
+    </entity>
+    <entity name="UAScheduleTriggerData" representedClassName="UAScheduleTriggerData" syncable="YES">
+        <attribute name="goal" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="goalProgress" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="predicateData" optional="YES" attributeType="Binary" valueTransformerName="UAJSONPredicateTransformer" syncable="YES"/>
+        <attribute name="start" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="schedule" maxCount="1" deletionRule="Nullify" destinationEntity="UAActionScheduleData" inverseName="triggers" inverseEntity="UAActionScheduleData" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="UAActionScheduleData" positionX="-540" positionY="-63" width="128" height="165"/>
+        <element name="UAScheduleTriggerData" positionX="-36" positionY="9" width="128" height="135"/>
+    </elements>
+</model>
