@@ -384,7 +384,7 @@
                 dispatch_group_enter(requireGroup);
                 NSDictionary *item = items[i];
                 NSString *inject_text = item[@"text"];
-                NSString *inject_type = item[@"type"];
+                // NSString *inject_type = item[@"type"];
                 NSString *inject_url = item[@"url"];
                 [codes addObject:@""];
                 if (inject_url) {

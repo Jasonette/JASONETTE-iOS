@@ -1,8 +1,9 @@
-platform :ios, '8.0'
+platform :ios, '10.0'
+project 'Finalsite'
 inhibit_all_warnings!
 use_frameworks!
 
-target 'Jasonette' do
+target 'Finalsite' do
   pod 'UICKeyChainStore'
   pod 'TWMessageBarManager'
   pod 'AFNetworking'
@@ -37,6 +38,7 @@ target 'Jasonette' do
   pod 'FLEX', '~> 2.0', :configurations => ['Debug']
   pod 'SocketRocket'
   #pod 'GoogleMobileAds', '~> 7.8'
+  pod 'UrbanAirship-iOS-SDK'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|
@@ -47,4 +49,8 @@ target 'Jasonette' do
       end
     end
   end
+end
+
+target "FinalsiteNotificationServiceExtension" do
+    pod 'UrbanAirship-iOS-AppExtensions'
 end

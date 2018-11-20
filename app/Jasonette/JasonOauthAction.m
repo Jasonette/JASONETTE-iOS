@@ -756,7 +756,7 @@
             *
             ********************************************************************************/
             NSString *client_id = self.options[@"authorize"][@"client_id"];
-            NSString *client_secret = self.options[@"authorize"][@"client_secret"];
+            // NSString *client_secret = self.options[@"authorize"][@"client_secret"];
             
             NSDictionary *authorize_options = self.options[@"authorize"];
             if(!authorize_options || authorize_options.count == 0){

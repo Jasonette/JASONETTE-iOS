@@ -5,6 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonAppDelegate.h"
+@import AirshipKit;
 
 @interface JasonAppDelegate ()
 
@@ -79,6 +80,11 @@
     } else {
         [[Jason client] start:nil];
     }
+    [UAirship takeOff];
+    [UAirship push].userPushNotificationsEnabled = YES;
+    [UAirship push].defaultPresentationOptions = (UNNotificationPresentationOptionAlert |
+                                                  UNNotificationPresentationOptionBadge |
+                                                  UNNotificationPresentationOptionSound);
     return YES;
 }
 
@@ -135,11 +141,6 @@
     NSString *device_token = [[NSString alloc]initWithFormat:@"%@",[[[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""]];
     NSLog(@"Device Token = %@",device_token);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil userInfo:@{@"token": device_token}];
-}
-
--(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotification" object:nil userInfo:userInfo];
 }
 
 -(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error

@@ -9,6 +9,7 @@
 #import "NSGIF.h"
 #import <AVFoundation/AVFoundation.h>
 #import "JasonPortraitPicker.h"
+#import "JasonDocumentViewer.h"
 #import <AVKit/AVKit.h>
 @interface JasonMediaAction : JasonAction <UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 @end

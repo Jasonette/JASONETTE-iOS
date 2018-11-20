@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9046" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment version="2048" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9035"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UADefaultMessageCenterListCell"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clearsContextBeforeDrawing="NO" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="UADefaultMessageCenterListCell" id="3" customClass="UADefaultMessageCenterListCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="72"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="TopLeft" tableViewCell="3" id="wDW-QM-5ha">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="71"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="ihY-21-382">
+                        <rect key="frame" x="26" y="12" width="59" height="47"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="ihY-21-382" secondAttribute="height" multiplier="1.25:1" priority="999" id="FuL-D0-nKl"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="TopLeft" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" text="Title" lineBreakMode="tailTruncation" numberOfLines="2" minimumFontSize="20" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9">
+                        <rect key="frame" x="93" y="12" width="219" height="18"/>
+                        <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <size key="shadowOffset" width="0.0" height="1"/>
+                    </label>
+                    <view clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="20">
+                        <rect key="frame" x="8" y="12" width="10" height="10"/>
+                        <color key="backgroundColor" red="0.074509803921568626" green="0.47450980392156861" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="10" id="0Ni-Hn-Pwb"/>
+                            <constraint firstAttribute="height" constant="10" id="zhk-Eq-qDE"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                <integer key="value" value="5"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.shouldRasterize" value="YES"/>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9pG-44-l9V">
+                        <rect key="frame" x="93" y="33" width="26" height="14"/>
+                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="12"/>
+                        <color key="textColor" red="0.55374053030303028" green="0.55374053030303028" blue="0.55374053030303028" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="9pG-44-l9V" firstAttribute="leading" secondItem="9" secondAttribute="leading" id="7Kq-R9-72M"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="ihY-21-382" secondAttribute="bottom" constant="4" id="Jg4-1d-6Ln"/>
+                    <constraint firstItem="20" firstAttribute="baseline" secondItem="ihY-21-382" secondAttribute="baseline" id="Jpc-u4-pQw"/>
+                    <constraint firstItem="9" firstAttribute="top" secondItem="ihY-21-382" secondAttribute="top" id="Kgv-Y6-bwY"/>
+                    <constraint firstItem="ihY-21-382" firstAttribute="leading" secondItem="20" secondAttribute="trailing" constant="8" id="Kx9-34-2kd"/>
+                    <constraint firstItem="9" firstAttribute="leading" secondItem="ihY-21-382" secondAttribute="trailing" constant="8" id="LhI-0J-HEG"/>
+                    <constraint firstItem="20" firstAttribute="centerY" secondItem="ihY-21-382" secondAttribute="centerY" id="LlG-nQ-CaJ"/>
+                    <constraint firstItem="ihY-21-382" firstAttribute="top" secondItem="wDW-QM-5ha" secondAttribute="topMargin" constant="4" id="OWM-Q6-pT7"/>
+                    <constraint firstItem="9pG-44-l9V" firstAttribute="top" secondItem="wDW-QM-5ha" secondAttribute="topMargin" constant="17" id="Xm3-uM-WbX"/>
+                    <constraint firstItem="9pG-44-l9V" firstAttribute="top" secondItem="wDW-QM-5ha" secondAttribute="topMargin" constant="17" id="YFr-x7-HsG"/>
+                    <constraint firstItem="20" firstAttribute="leading" secondItem="wDW-QM-5ha" secondAttribute="leadingMargin" constant="4" id="YhF-Qk-tfX"/>
+                    <constraint firstItem="20" firstAttribute="top" secondItem="ihY-21-382" secondAttribute="top" id="anC-QS-A4Z"/>
+                    <constraint firstItem="20" firstAttribute="centerY" secondItem="9" secondAttribute="centerY" id="maV-m9-mP5"/>
+                    <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="8" id="oae-Lj-weE"/>
+                    <constraint firstItem="9pG-44-l9V" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="3" id="qB7-0D-WZp"/>
+                    <constraint firstItem="20" firstAttribute="centerY" secondItem="wDW-QM-5ha" secondAttribute="centerY" id="rQx-eV-aHO"/>
+                    <constraint firstItem="20" firstAttribute="leading" secondItem="wDW-QM-5ha" secondAttribute="leading" constant="8" id="wAh-v6-MUm"/>
+                </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="Jpc-u4-pQw"/>
+                        <exclude reference="LlG-nQ-CaJ"/>
+                        <exclude reference="YhF-Qk-tfX"/>
+                        <exclude reference="maV-m9-mP5"/>
+                        <exclude reference="rQx-eV-aHO"/>
+                        <exclude reference="Xm3-uM-WbX"/>
+                        <exclude reference="YFr-x7-HsG"/>
+                    </mask>
+                </variation>
+            </tableViewCellContentView>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+            <connections>
+                <outlet property="date" destination="9pG-44-l9V" id="K6z-qD-9Gd"/>
+                <outlet property="listIconView" destination="ihY-21-382" id="vMZ-U1-oTm"/>
+                <outlet property="title" destination="9" id="44"/>
+                <outlet property="unreadIndicator" destination="20" id="45"/>
+            </connections>
+            <point key="canvasLocation" x="221" y="234"/>
+        </tableViewCell>
+    </objects>
+</document>

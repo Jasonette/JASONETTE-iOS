@@ -34,7 +34,7 @@
     __weak typeof(self) weakSelf = self;
 
     NSString *original_url = self.VC.url;
-    
+
     if(self.options){
         [[Jason client] networkLoading:YES with:self.options];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
@@ -176,7 +176,7 @@
     NSString *bucket = storage[@"bucket"];
     NSString *path = storage[@"path"];
     NSString *sign_url = storage[@"sign_url"];
-    
+
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     NSDictionary *session = [JasonHelper sessionForUrl:sign_url];
@@ -276,6 +276,17 @@
             [self saveCookies];
             NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
             [[Jason client] success: data withOriginalUrl:original_url];
+        } else if(dataType && [dataType isEqualToString:@"toFile"]){
+            [self saveCookies];
+            NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[url lastPathComponent]];
+            NSError *error;
+            NSData *data = (NSData *)responseObject;
+            Boolean success = [data writeToFile:filePath options:0 error:&error];
+            if (!success) {
+                NSLog(@"writeToFile failed with error %@", error);
+            }
+            
+            [[Jason client] success: filePath withOriginalUrl:original_url];
         } else {
             [[Jason client] success: responseObject withOriginalUrl:original_url];
         }
@@ -377,7 +388,7 @@
         serializer.acceptableContentTypes = acceptableContentTypes;
         manager.responseSerializer = serializer;
         
-    } else if(dataType && [dataType isEqualToString:@"raw"]){
+    } else if(dataType && ([dataType isEqualToString:@"raw"] || [dataType isEqualToString:@"toFile"])){
         manager.responseSerializer = [AFHTTPResponseSerializer serializer];
         manager.responseSerializer.acceptableContentTypes = nil;
     } else {

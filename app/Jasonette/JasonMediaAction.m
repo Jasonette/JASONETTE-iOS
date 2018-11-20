@@ -57,6 +57,31 @@
 
 }
 
+-(void)showDocument{
+    NSString *url = self.options[@"url"];
+    
+    // use Jason network.request and return to another action so we don't need to duplicate network request code to download the file
+    [[Jason client] call:@{@"type": @"$network.request",
+                           @"options": @{
+                                   @"url": url,
+                                   @"method": @"get",
+                                   @"data_type": @"toFile"
+                           },
+                           @"success": @{ @"type": @"$media.showDocumentReturn" }
+                        }];
+}
+
+// This action is more of a helper to showDocument and shouldn't be used directly
+-(void)showDocumentReturn{
+    JasonDocumentViewer *viewer = [[JasonDocumentViewer alloc] init];
+    JasonMemory *client = [JasonMemory client];
+    // This is a bit of a hack; I'm not sure if there's a more proper way to access the return call of the previous action
+    viewer.fileURL = client._register[@"$jason"];
+    QLPreviewController * preview = [[QLPreviewController alloc] init];
+    preview.dataSource = viewer;
+    [self.VC.navigationController presentViewController:preview animated:YES completion:nil];
+}
+
 - (void)camera{
     JasonPortraitPicker *picker = [[JasonPortraitPicker alloc] init];
     picker.delegate = self;

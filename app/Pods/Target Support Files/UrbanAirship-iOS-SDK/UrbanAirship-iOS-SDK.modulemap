@@ -1,0 +1,6 @@
+framework module AirshipKit {
+  umbrella header "UrbanAirship-iOS-SDK-umbrella.h"
+
+  export *
+  module * { export * }
+}

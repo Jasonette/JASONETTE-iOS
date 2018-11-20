@@ -45,7 +45,6 @@
 
 @implementation JasonViewController
 
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -1480,7 +1479,7 @@
             __weak JasonViewController *weakSelf = self;
 
             [self.view addKeyboardPanningWithActionHandler:^(CGRect keyboardFrameInView, BOOL opening, BOOL closing) {
-                CGFloat m = MIN(original_height, keyboardFrameInView.origin.y);
+                CGFloat m = MIN(self->original_height, keyboardFrameInView.origin.y);
                 if(opening || (closing && m >= weakSelf.view.frame.size.height)){
                     CGRect newViewFrame = CGRectMake(weakSelf.view.frame.origin.x, weakSelf.view.frame.origin.y, weakSelf.view.frame.size.width, m);
                     weakSelf.view.frame = newViewFrame;

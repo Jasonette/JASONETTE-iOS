@@ -8,9 +8,10 @@
 #import "JasonAppDelegate.h"
 #import "NSData+ImageContentType.h"
 #import "UIImage+GIF.h"
+#import "Finalsite-Swift.h"
 @interface Jason(){
     UINavigationController *navigationController;
-    UITabBarController *tabController;
+    JasonTabBarController *tabController;
     REMenu *menu_component;
     JasonViewController *VC;
     NSString *title;
@@ -43,6 +44,7 @@
     });
     return sharedObject;
 }
+
 - (id)init {
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onForeground) name:UIApplicationDidBecomeActiveNotification object:nil];
@@ -89,8 +91,8 @@
 - (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final{
     id jsonResponseObject = [JasonHelper read_local_json:url];
     [self include:jsonResponseObject andCompletionHandler:^(id res){
-        VC.original = @{@"$jason": res[@"$jason"]};
-        [self drawViewFromJason: VC.original asFinal:final];
+        self->VC.original = @{@"$jason": res[@"$jason"]};
+        [self drawViewFromJason: self->VC.original asFinal:final];
     }];
 }
 
@@ -148,7 +150,7 @@
     navigationController.navigationBar.backgroundColor = [UIColor clearColor];
     [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
 
-    UITabBarController *tab = [[UITabBarController alloc] init];
+    JasonTabBarController *tab = [[JasonTabBarController alloc] init];
     tab.tabBar.backgroundColor = [UIColor whiteColor];
     tab.tabBar.shadowImage = [[UIImage alloc] init];
     tab.viewControllers = @[nav];
@@ -1814,18 +1816,18 @@
                 progress:^(NSProgress * _Nonnull downloadProgress) { }
                  success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                      // Ignore if the url is different
-                     if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
-                     VC.original = responseObject;
+                     if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:self->VC.url]) return;
+                     self->VC.original = responseObject;
                      [self include:responseObject andCompletionHandler:^(id res){
                          dispatch_async(dispatch_get_main_queue(), ^{
-                             VC.contentLoaded = NO;
+                             self->VC.contentLoaded = NO;
                              
-                             VC.original = @{@"$jason": res[@"$jason"]};
-                             [self drawViewFromJason: VC.original asFinal:YES];
+                             self->VC.original = @{@"$jason": res[@"$jason"]};
+                             [self drawViewFromJason: self->VC.original asFinal:YES];
                          });
                      }];
                  } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                     if(!VC.offline){
+                     if(!self->VC.offline){
                          [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
                          [[Jason client] call: @{
                                                  @"type": @"$util.alert",
@@ -2068,12 +2070,14 @@
             }
             
             [progressView setTrackTintColor:[UIColor colorWithWhite:1.0f alpha:0.0f]];
-            // agent top + navigation height + status bar size (fixed at 20)
+            // agent top + navigation height + status bar size
             CGFloat navHeight = navigationController.navigationBar.frame.size.height;
+            CGFloat navOffset = navigationController.navigationBar.frame.origin.y;
             if (navigationController.navigationBar.hidden) {
                 navHeight = 0;
+                navOffset = 0;
             }
-            [progressView setFrame:CGRectMake(0,vc.background.frame.origin.y + navHeight + 20, vc.background.frame.size.width, progressView.frame.size.height)];
+            [progressView setFrame:CGRectMake(0,vc.background.frame.origin.y + navHeight + navOffset, vc.background.frame.size.width, progressView.frame.size.height)];
             [progressView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
             
             if (bg[@"style"]) {
@@ -2938,7 +2942,7 @@
     });
 }
 
-- (BOOL)tabBarController:(UITabBarController *)theTabBarController shouldSelectViewController:(UIViewController *)viewController{
+- (BOOL)tabBarController:(JasonTabBarController *)theTabBarController shouldSelectViewController:(UIViewController *)viewController{
     
     NSUInteger indexOfTab = [theTabBarController.viewControllers indexOfObject:viewController];
     
@@ -2998,7 +3002,7 @@
     return YES;
 }
 
-- (void)tabBarController:(UITabBarController *)theTabBarController didSelectViewController:(UIViewController *)viewController {
+- (void)tabBarController:(JasonTabBarController *)theTabBarController didSelectViewController:(UIViewController *)viewController {
     navigationController = (UINavigationController *) viewController;
     VC = navigationController.viewControllers.lastObject;
 }
@@ -3261,7 +3265,7 @@
                     Class v = NSClassFromString(viewClass);
                     JasonViewController *vc = [[v alloc] init];
                     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
-                    UITabBarController *tab = [[UITabBarController alloc] init];
+                    JasonTabBarController *tab = [[JasonTabBarController alloc] init];
                     tab.viewControllers = @[nav];
                     
                     vc.isModal =YES;
@@ -3285,9 +3289,9 @@
                         [self unlock];
                     }
                     
-                    UITabBarController *root = (UITabBarController *)[[[UIApplication sharedApplication] keyWindow] rootViewController];
+                    JasonTabBarController *root = (JasonTabBarController *)[[[UIApplication sharedApplication] keyWindow] rootViewController];
                     while (root.presentedViewController) {
-                        root = (UITabBarController *)root.presentedViewController;
+                        root = (JasonTabBarController *)root.presentedViewController;
                     }
                     
                     // Hide tab bar before opening modal
@@ -3896,9 +3900,9 @@
                 NSString *documentsDirectory = [paths objectAtIndex:0];
                 NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
                 
-                NSMutableDictionary *to_store = [VC.original mutableCopy];
+                NSMutableDictionary *to_store = [self->VC.original mutableCopy];
                 if(to_store[@"$jason"]){
-                    to_store[@"$jason"][@"body"] = VC.rendered;
+                    to_store[@"$jason"][@"body"] = self->VC.rendered;
                 }
                 NSData *data = [NSKeyedArchiver archivedDataWithRootObject:to_store];
                 [data writeToFile:path atomically:YES];
