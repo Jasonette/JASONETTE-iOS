@@ -1120,7 +1120,7 @@
 // scroll to a section by index
 - (void)scrollToPosition:(NSNotification *)notification {
     NSInteger targetSectionIndex = [notification.userInfo[@"position"] intValue];
-    if(self.tableView.numberOfSections > 0){
+    if(self.tableView.numberOfSections > targetSectionIndex){
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:targetSectionIndex];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
