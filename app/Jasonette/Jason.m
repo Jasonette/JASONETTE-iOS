@@ -3121,17 +3121,16 @@
 - (void)onLoad: (Boolean) online{
     [JasonMemory client].executing = NO;
     NSDictionary *events = [VC valueForKey:@"events"];
-    if(events) {
-        if (events[@"$load"]){
-            if(!VC.contentLoaded){
-                // defer to the next cycle so we're sure the current view is loaded
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        NSDictionary *variables = [self variables];
-                        [self call:events[@"$load"] with:variables];
-                    });
+
+    if (events && events[@"$load"]){
+        if(!VC.contentLoaded){
+            // defer to the next cycle so we're sure the current view is loaded
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSDictionary *variables = [self variables];
+                    [self call:events[@"$load"] with:variables];
                 });
-            }
+            });
         }
     } else {
         [self onShow];
@@ -3233,29 +3232,7 @@
             if(!view || (view && [view.lowercaseString isEqualToString:@"jason"])){
                 // Jason View
                 NSString *viewClass = @"JasonViewController";
-                if([transition isEqualToString:@"replace"]){
-                    /****************************************************************************
-                     *
-                     * Replace the current view
-                     *
-                     ****************************************************************************/
-                    [self unlock];
-                    if(href){
-                        NSString *new_url;
-                        NSDictionary *new_options;
-
-                        if(href[@"url"]){
-                            new_url = [JasonHelper linkify:href[@"url"]];
-                        }
-                        if(href[@"options"]){
-                            new_options = [JasonHelper parse:memory._register with:href[@"options"]];
-                        } else {
-                            new_options = @{};
-                        }
-                        [self start:@{@"url": new_url, @"loading": @YES, @"options": new_options}];
-                    }
-                    
-                } else if([transition isEqualToString:@"modal"]){
+                if([transition isEqualToString:@"modal"]){
                     /****************************************************************************
                      *
                      * Modal Transition
@@ -3342,7 +3319,17 @@
                             vc.hidesBottomBarWhenPushed = NO;
                         }
                     }
-                    [navigationController pushViewController:vc animated:YES];
+                    
+                    if([transition isEqualToString:@"replace"]){
+                        NSMutableArray *controllerStack = [NSMutableArray arrayWithArray:self->navigationController.viewControllers];
+                        [controllerStack replaceObjectAtIndex:([controllerStack count] - 1) withObject:vc];
+                        
+                        // Assign the updated stack with animation
+                        [self->navigationController setViewControllers:controllerStack animated:NO];
+                    } else {
+                        [self->navigationController pushViewController:vc animated:YES];
+                    }
+                    
                 }
             }
             else {
