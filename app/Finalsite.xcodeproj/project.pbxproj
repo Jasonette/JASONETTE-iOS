@@ -32,8 +32,8 @@
 		48709E4F21592E14006FABFE /* info.png in Resources */ = {isa = PBXBuildFile; fileRef = 48709E4E21592E14006FABFE /* info.png */; };
 		488D518C218752A1000B9658 /* JasonTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488D518B218752A1000B9658 /* JasonTabBarController.swift */; };
 		48A0B8DB218B5E0500908931 /* JasonDocumentViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A0B8DA218B5E0500908931 /* JasonDocumentViewer.m */; };
-		48E64CAB21B1A0E400CA02DC /* checkbox_unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CA921B1A0E400CA02DC /* checkbox_unchecked.png */; };
-		48E64CAC21B1A0E400CA02DC /* checkbox_checked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAA21B1A0E400CA02DC /* checkbox_checked.png */; };
+		48E64CAF21B97FF300CA02DC /* checkbox_unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */; };
+		48E64CB021B97FF300CA02DC /* checkbox_checked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAE21B97FF300CA02DC /* checkbox_checked.png */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
 		5E0956301DA34D70007ADC78 /* JasonImageComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562F1DA34D6F007ADC78 /* JasonImageComponent.m */; };
 		5E0956331DA34EEA007ADC78 /* JasonButtonComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0956321DA34EEA007ADC78 /* JasonButtonComponent.m */; };
@@ -179,8 +179,8 @@
 		488D518F21875713000B9658 /* Jasonette-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jasonette-Bridging-Header.h"; sourceTree = "<group>"; };
 		48A0B8D9218B5DB100908931 /* JasonDocumentViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonDocumentViewer.h; sourceTree = "<group>"; };
 		48A0B8DA218B5E0500908931 /* JasonDocumentViewer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonDocumentViewer.m; sourceTree = "<group>"; };
-		48E64CA921B1A0E400CA02DC /* checkbox_unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = checkbox_unchecked.png; path = ../../../../Downloads/checkbox_unchecked.png; sourceTree = "<group>"; };
-		48E64CAA21B1A0E400CA02DC /* checkbox_checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = checkbox_checked.png; path = ../../../../Downloads/checkbox_checked.png; sourceTree = "<group>"; };
+		48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_unchecked.png; sourceTree = "<group>"; };
+		48E64CAE21B97FF300CA02DC /* checkbox_checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_checked.png; sourceTree = "<group>"; };
 		4ADF9705B115D5769072629C /* Pods-FinalsiteNotificationServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FinalsiteNotificationServiceExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-FinalsiteNotificationServiceExtension/Pods-FinalsiteNotificationServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
 		5E025B471DE017EB0016786A /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		5E09562A1DA33264007ADC78 /* JasonComponentProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonComponentProtocol.h; sourceTree = "<group>"; };
@@ -458,8 +458,8 @@
 		485D4A38212C606F00C44D6F /* assets */ = {
 			isa = PBXGroup;
 			children = (
-				48E64CAA21B1A0E400CA02DC /* checkbox_checked.png */,
-				48E64CA921B1A0E400CA02DC /* checkbox_unchecked.png */,
+				48E64CAE21B97FF300CA02DC /* checkbox_checked.png */,
+				48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */,
 				48709E4E21592E14006FABFE /* info.png */,
 				485D4A3D212C606F00C44D6F /* close.png */,
 				FDA859A5214066180079031C /* gallery.png */,
@@ -1087,7 +1087,7 @@
 				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
 				485D4A3F212C606F00C44D6F /* menu.png in Resources */,
 				5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */,
-				48E64CAC21B1A0E400CA02DC /* checkbox_checked.png in Resources */,
+				48E64CB021B97FF300CA02DC /* checkbox_checked.png in Resources */,
 				5E3177371D1E411F00D87778 /* icon-info.png in Resources */,
 				5E3177531D1E411F00D87778 /* Next@2x.png in Resources */,
 				045E093A1FC5F98A003A6341 /* xhtml.js in Resources */,
@@ -1098,7 +1098,7 @@
 				5E3177481D1E411F00D87778 /* LaunchScreen.storyboard in Resources */,
 				045C77E91F0278EA00F06598 /* preload.json in Resources */,
 				045C77EB1F02791D00F06598 /* error.json in Resources */,
-				48E64CAB21B1A0E400CA02DC /* checkbox_unchecked.png in Resources */,
+				48E64CAF21B97FF300CA02DC /* checkbox_unchecked.png in Resources */,
 				5E3177361D1E411F00D87778 /* icon-error@2x.png in Resources */,
 				5E3177391D1E411F00D87778 /* icon-success.png in Resources */,
 				5E3177351D1E411F00D87778 /* icon-error.png in Resources */,
