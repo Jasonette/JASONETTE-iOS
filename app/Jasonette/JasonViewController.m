@@ -161,6 +161,7 @@
     }
 
 }
+
 - (void)adjustViewForKeyboard:(NSNotification *)notification{
     currently_focused = notification.userInfo[@"view"];
     need_to_adjust_frame = YES;
@@ -521,6 +522,13 @@
         [cell setSeparatorInset:UIEdgeInsetsZero];
         [cell setPreservesSuperviewLayoutMargins:NO];
         [cell setLayoutMargins:UIEdgeInsetsZero];
+    }
+    
+    if(self.events[@"$scroll.end"]){
+        if (indexPath.section == self.tableView.numberOfSections - 1 && indexPath.row == [self.tableView numberOfRowsInSection: indexPath.section] - MIN([self.tableView numberOfRowsInSection: indexPath.section]/5, 20)) {
+            NSDictionary *scroll_end_event = self.events[@"$scroll.end"];
+            [[Jason client] call:scroll_end_event];
+        }
     }
 }
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
