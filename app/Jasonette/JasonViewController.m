@@ -525,7 +525,7 @@
     }
     
     if(self.events[@"$scroll.end"]){
-        if (indexPath.section == self.tableView.numberOfSections - 1 && indexPath.row == [self.tableView numberOfRowsInSection: indexPath.section] - MIN([self.tableView numberOfRowsInSection: indexPath.section]/5, 20)) {
+        if (indexPath.section == self.tableView.numberOfSections - 1 && indexPath.row == [self.tableView numberOfRowsInSection: indexPath.section] - MIN([self.tableView numberOfRowsInSection: indexPath.section]/5, 20) - 1) {
             NSDictionary *scroll_end_event = self.events[@"$scroll.end"];
             [[Jason client] call:scroll_end_event];
         }
