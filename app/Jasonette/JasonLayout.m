@@ -285,6 +285,14 @@ static NSMutableDictionary *_stylesheet = nil;
         layout.spacing = [JasonHelper pixelsInDirection:item[@"type"] fromExpression:style[@"spacing"]];
     }
     
+    if(style[@"width"]) {
+        [layout.widthAnchor constraintEqualToConstant:[style[@"width"] floatValue]].active = true;
+    }
+    
+    if(style[@"height"]) {
+        [layout.heightAnchor constraintEqualToConstant:[style[@"height"] floatValue]].active = true;
+    }
+    
     NSString *padding_left;
     NSString *padding_right;
     NSString *padding_top;
