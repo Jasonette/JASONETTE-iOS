@@ -52,7 +52,7 @@
     default_bottom_padding = 0;
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    
+
     [self.tableView setDataSource:self];
     [self.tableView setDelegate:self];
     [self.view addSubview:self.tableView];

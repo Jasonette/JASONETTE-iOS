@@ -138,7 +138,7 @@
     if (launch) {
         vc.preload = launch;
     }
-    vc.view.backgroundColor = [UIColor whiteColor];
+    vc.view.backgroundColor = [UIColor clearColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
@@ -147,6 +147,7 @@
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     navigationController.navigationBar.translucent = NO;
     navigationController.navigationBar.backgroundColor = [UIColor clearColor];
+
     [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
 
     JasonTabBarController *tab = [[JasonTabBarController alloc] init];
@@ -154,12 +155,11 @@
     tab.tabBar.shadowImage = [[UIImage alloc] init];
     tab.viewControllers = @[nav];
     tab.tabBar.hidden = YES;
-    
     [tab setDelegate:self];
     
     app.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     app.window.rootViewController = tab;
-    
+
     [app.window makeKeyAndVisible];
 }
 - (void)call: (NSDictionary *)action{
