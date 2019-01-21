@@ -13,6 +13,9 @@
     }
     if(json){
         component.numberOfLines = 0;
+        if(json[@"line_limit"] && ![json[@"line_limit"] isEqual:[NSNull null]]){
+            component.numberOfLines = [json[@"line_limit"] integerValue];
+        }
         if(json[@"text"] && ![json[@"text"] isEqual:[NSNull null]]){
             component.text = [json[@"text"] description];
         }
