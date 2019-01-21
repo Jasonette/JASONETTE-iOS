@@ -1094,10 +1094,10 @@
             
             if (default_bottom_padding == 0) {
                 CGFloat bottom_padding = 0.0;
-                if (body[@"footer"] && body[@"footer"][@"tabs"]) {
+                if (self.tabBarController.tabBar) {
                     bottom_padding += self.tabBarController.tabBar.frame.size.height;
                 }
-                if (body[@"footer"] && body[@"footer"][@"input"]) {
+                if (self.composeBarView) {
                     bottom_padding += self.composeBarView.frame.size.height;
                 }
                 default_bottom_padding = bottom_padding;
