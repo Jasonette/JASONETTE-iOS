@@ -1,6 +1,6 @@
 //
-//  JasonetteUITests.swift
-//  JasonetteUITests
+//  FinalsiteUITests.swift
+//  FinalsiteUITests
 //
 //  Created by Felix Barros on 8/21/18.
 //  Copyright © 2018 Jasonette. All rights reserved.
@@ -8,7 +8,7 @@
 
 import XCTest
 
-class JasonetteUITests: XCTestCase {
+class FinalsiteUITests: XCTestCase {
     
     override func setUp() {
         super.setUp()
@@ -18,7 +18,10 @@ class JasonetteUITests: XCTestCase {
         // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
         // UI tests must launch the application that they test. Doing this in setup will make sure it happens for each test method.
-        XCUIApplication().launch()
+        
+        let app = XCUIApplication()
+        setupSnapshot(app)
+        app.launch()
         
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
     }
@@ -28,19 +31,27 @@ class JasonetteUITests: XCTestCase {
         super.tearDown()
     }
     
-    func testOpenMenu() {
+    
+    func testSnapshots() {
+        
         let app = XCUIApplication()
-        // Open menu
-        let element = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element
-        element.children(matching: .other).element(boundBy: 1).tap()
+        let tabBarsQuery = app.tabBars
         
-        // Find home link
-        let home = app.tables.children(matching: .cell).element(boundBy: 0).children(matching: .other).element(boundBy: 0).children(matching: .staticText)["Home"]
-        let exists = NSPredicate(format: "hittable == true")
+        sleep(6)
+        snapshot("01HomeScreen")
+        tabBarsQuery.buttons.element(boundBy: 1).tap()
+        sleep(6)
+        snapshot("02TabScreen")
+        tabBarsQuery.buttons.element(boundBy: 2).tap()
+        sleep(6)
+        snapshot("03TabScreen")
+        tabBarsQuery.buttons.element(boundBy: 3).tap()
+        sleep(6)
+        snapshot("04TabScreen")
+        tabBarsQuery.buttons.element(boundBy: 4).tap()
+        sleep(6)
+        snapshot("05TabScreen")
         
-        // Ensure home link is hittable
-        expectation(for: exists, evaluatedWith: home, handler: nil)
-        waitForExpectations(timeout: 5, handler: nil)
     }
     
 }

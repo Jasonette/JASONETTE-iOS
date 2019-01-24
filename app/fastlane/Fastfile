@@ -1,0 +1,52 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+
+	lane :beta do
+		appicon(appicon_image_file: '../../config/assets/app_icon.png', appicon_devices: [:iphone])
+		capture_screenshots
+		get_certificates           # invokes cert
+		get_provisioning_profile   # invokes sigh
+		deliver(
+			force: true,
+			skip_binary_upload: true
+		)
+		increment_build_number
+		build_app(
+			workspace: "Finalsite.xcworkspace",
+			scheme: "Finalsite"
+		)
+		upload_to_testflight(
+			skip_waiting_for_build_processing: true
+		)
+	end
+
+
+	# submit most recent build for review
+	lane :submit_review do
+		deliver(
+			submit_for_review: true,
+			automatic_release: true,
+			force: true, # Skip HTMl report verification
+			skip_metadata: true,
+			skip_screenshots: true,
+			skip_binary_upload: true
+		)
+	end
+
+end
