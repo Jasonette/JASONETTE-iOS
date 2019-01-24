@@ -75,7 +75,7 @@
     self.tableView.sectionHeaderHeight = UITableViewAutomaticDimension;
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:self.navigationItem.backBarButtonItem.style target:nil action:nil];
-    [self.tableView setSeparatorColor:[JasonHelper colorwithHexString:@"#f5f5f5" alpha:1.0]];
+    [self.tableView setSeparatorColor:[JasonHelper colorwithHexString:@"#E7E7E7" alpha:1.0]];
     rowcount = [[NSMutableArray alloc] init];
     selectedIndex = 0;
     isEditing = NO;
@@ -478,9 +478,9 @@
                 segmentedControl.backgroundColor = tabs_background_color;
             }
             if(tabs_foreground_color){
-                segmentedControl.titleTextAttributes = @{NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:12.0], NSForegroundColorAttributeName: tabs_foreground_color};
+                segmentedControl.titleTextAttributes = @{NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue-Bold" size:12.0], NSForegroundColorAttributeName: tabs_foreground_color};
             } else {
-                segmentedControl.titleTextAttributes = @{NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:12.0]};
+                segmentedControl.titleTextAttributes = @{NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue-Bold" size:12.0]};
             }
             
             segmentedControl.selectedSegmentIndex = selectedIndex;
@@ -519,7 +519,7 @@
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if ([cell respondsToSelector:@selector(setSeparatorInset:)] && [cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)] && [cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        [cell setSeparatorInset:UIEdgeInsetsZero];
+        [cell setSeparatorInset:UIEdgeInsetsMake(0, 20, 0, 20)];
         [cell setPreservesSuperviewLayoutMargins:NO];
         [cell setLayoutMargins:UIEdgeInsetsZero];
     }
@@ -1094,10 +1094,10 @@
             
             if (default_bottom_padding == 0) {
                 CGFloat bottom_padding = 0.0;
-                if (body[@"footer"] && body[@"footer"][@"tabs"]) {
+                if (self.tabBarController.tabBar) {
                     bottom_padding += self.tabBarController.tabBar.frame.size.height;
                 }
-                if (body[@"footer"] && body[@"footer"][@"input"]) {
+                if (self.composeBarView) {
                     bottom_padding += self.composeBarView.frame.size.height;
                 }
                 default_bottom_padding = bottom_padding;
@@ -1412,7 +1412,7 @@
         }
     } else {
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        self.tableView.separatorColor = [JasonHelper colorwithHexString:@"rgb(224,224,224)" alpha:1.0];
+        self.tableView.separatorColor = [JasonHelper colorwithHexString:@"#E7E7E7" alpha:1.0];
 
         if (!body[@"background"]) {
             self.view.backgroundColor = [UIColor whiteColor];

@@ -493,7 +493,7 @@
             
             menuItem.backgroundColor = backgroundColor;
             menuItem.textColor = foregroundColor;
-            menuItem.font = [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:14.0];
+            menuItem.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14.0];
             menuItem.separatorColor = menuItem.backgroundColor;
             [menu_item_array addObject:menuItem];
         }
@@ -2263,6 +2263,18 @@
 }
 
 # pragma mark - View rendering (nav)
+- (UIImage *)imageFromLayer:(CALayer *)layer
+{
+    UIGraphicsBeginImageContext([layer frame].size);
+    
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return outputImage;
+}
+
 - (void)setupHeader: (NSDictionary *)nav{
     [self setupHeader:nav forVC:VC];
 }
@@ -2291,10 +2303,11 @@
     
     if(nav) v.old_header = [nav mutableCopy];
     
-    
-    
     UIColor *background = [JasonHelper colorwithHexString:@"#ffffff" alpha:1.0];
     UIColor *color = [JasonHelper colorwithHexString:@"#000000" alpha:1.0];
+    Boolean hasGradient = NO;
+    UIColor *gradientFrom = [JasonHelper colorwithHexString:@"#ffffff" alpha:1.0];
+    UIColor *gradientTo = [JasonHelper colorwithHexString:@"#000000" alpha:1.0];
     
     // Deprecated (using 'nav' instead of 'header')
     NSArray *items = nav[@"items"];
@@ -2322,13 +2335,13 @@
             navigationController.navigationBar.backgroundColor = background;
             navigationController.navigationBar.barTintColor = background;
             navigationController.navigationBar.tintColor = color;
-            navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
+            navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-Bold" size: 18.0]};
             return;
         }
     }
     
     navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-    navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0]};
+    navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-Bold" size: 18.0]};
     navigationController.navigationBar.hidden = NO;
     if(nav[@"style"]){
         NSDictionary *headStyle = nav[@"style"];
@@ -2352,7 +2365,13 @@
             navigationController.hidesBarsOnSwipe = NO;
         }
         
-        NSString *font_name = @"HelveticaNeue-CondensedBold";
+        if(headStyle[@"gradient_background"]){
+            hasGradient = YES;
+            gradientFrom = [JasonHelper colorwithHexString:headStyle[@"gradient_background"][0] alpha:1.0];
+            gradientTo = [JasonHelper colorwithHexString:headStyle[@"gradient_background"][1] alpha:1.0];
+        }
+        
+        NSString *font_name = @"HelveticaNeue-Bold";
         NSString *font_size = @"18";
         if(headStyle[@"font"]){
             font_name = headStyle[@"font"];
@@ -2364,12 +2383,11 @@
     } else {
         navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
         navigationController.hidesBarsOnSwipe = NO;
-        NSString *font_name = @"HelveticaNeue-CondensedBold";
+        NSString *font_name = @"HelveticaNeue-Bold";
         NSString *font_size = @"18";
         navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
     }
-    
-    
+
     NSDictionary *left_menu = nav[@"left"];
     NSDictionary *right_menu;
     
@@ -2637,6 +2655,17 @@
     } else {
         navigationController.navigationBar.translucent = NO;
         [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
+    }
+    
+    if (hasGradient) {
+        CAGradientLayer *gradient = [CAGradientLayer layer];
+        CGRect updatedFrame = navigationController.navigationBar.bounds;
+        updatedFrame.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+        gradient.frame = updatedFrame;
+        gradient.colors = [NSArray arrayWithObjects:(id)[gradientFrom CGColor], (id)[gradientTo CGColor], nil];
+        gradient.startPoint = CGPointMake(0.0, 1.0);
+        gradient.endPoint = CGPointMake(1.0, 0.0);
+        [navigationController.navigationBar setBackgroundImage:[self  imageFromLayer:gradient] forBarMetrics:UIBarMetricsDefault];
     }
     
     navigationController.navigationBar.backgroundColor = background;
