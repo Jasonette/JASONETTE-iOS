@@ -128,6 +128,9 @@
         if(href[@"options"]){
             vc.options = href[@"options"];
         }
+        if (href[@"on_error"]) {
+            vc.on_error = href[@"on_error"];
+        }
         if(href[@"loading"]){
             vc.loading = href[@"loading"];
         }
@@ -138,7 +141,7 @@
     if (launch) {
         vc.preload = launch;
     }
-    vc.view.backgroundColor = [UIColor whiteColor];
+    vc.view.backgroundColor = [UIColor clearColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
@@ -147,6 +150,7 @@
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     navigationController.navigationBar.translucent = NO;
     navigationController.navigationBar.backgroundColor = [UIColor clearColor];
+
     [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
 
     JasonTabBarController *tab = [[JasonTabBarController alloc] init];
@@ -154,12 +158,11 @@
     tab.tabBar.shadowImage = [[UIImage alloc] init];
     tab.viewControllers = @[nav];
     tab.tabBar.hidden = YES;
-    
     [tab setDelegate:self];
     
     app.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     app.window.rootViewController = tab;
-    
+
     [app.window makeKeyAndVisible];
 }
 - (void)call: (NSDictionary *)action{
@@ -1829,15 +1832,19 @@
                          });
                      }];
                  } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                     if(!self->VC.offline){
-                         [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
-                         [[Jason client] call: @{
-                                                 @"type": @"$util.alert",
-                                                 @"options": @{
-                                                         @"title": @"Debug",
-                                                         @"description": [error localizedDescription]
-                                                         }
-                                                 }];
+                     if (!self->VC.offline) {
+                         if (self->VC.on_error) {
+                             [[Jason client] call: self->VC.on_error];
+                         } else {
+                             [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
+                             [[Jason client] call: @{
+                                                     @"type": @"$util.alert",
+                                                     @"options": @{
+                                                             @"title": @"Debug",
+                                                             @"description": [error localizedDescription]
+                                                             }
+                                                     }];
+                         }
                      }
                  }];
         }
@@ -3272,6 +3279,8 @@
                             vc.loading = [href[@"loading"] boolValue];
                         }
                         if([vc respondsToSelector: @selector(options)]) vc.options = href[@"options"];
+                        if([vc respondsToSelector: @selector(options)] && href[@"on_error"]) vc.on_error = href[@"on_error"];
+
                         [self unlock];
                     }
                     
@@ -3303,6 +3312,10 @@
                         if(href[@"options"]){
                             vc.options = [JasonHelper parse:memory._register with:href[@"options"]];
                         }
+                        if (href[@"on_error"]) {
+                            vc.on_error = href[@"on_error"];
+                        }
+
                         if (href[@"preload"]) {
                             vc.preload = href[@"preload"];
                         } else if(href[@"loading"]){
@@ -3537,9 +3550,17 @@
      *
      ********************************************************************************************************/
     if(reduced_stack[@"options"]){
+        if (reduced_stack[@"error"]) {
+            reduced_stack[@"options"][@"on_error"] = reduced_stack[@"error"];
+        }
         return [self filloutTemplate: reduced_stack[@"options"] withData: memory._register];
     } else {
-        return nil;
+        if (reduced_stack[@"error"]) {
+            NSDictionary *options = @{@"on_error": reduced_stack[@"error"]};
+            return [self filloutTemplate: options withData: memory._register];
+        } else {
+            return nil;
+        }
     }
     
 }

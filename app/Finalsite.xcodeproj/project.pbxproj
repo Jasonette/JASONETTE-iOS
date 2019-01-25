@@ -104,6 +104,7 @@
 		FDA859A7214066180079031C /* gallery.png in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A5214066180079031C /* gallery.png */; };
 		FDB723B12195FCF500468F0C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB723B02195FCF500468F0C /* NotificationService.swift */; };
 		FDB723B52195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FDB723AE2195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FDDA267D21F26BD0002A7BCF /* splash_screen.json in Resources */ = {isa = PBXBuildFile; fileRef = FDDA267C21F26BD0002A7BCF /* splash_screen.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -307,6 +308,7 @@
 		FDB723AE2195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FinalsiteNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDB723B02195FCF500468F0C /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FDB723B22195FCF500468F0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FDDA267C21F26BD0002A7BCF /* splash_screen.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_screen.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -471,6 +473,7 @@
 				FD4E03CA21D69FAF000E8FA3 /* home.json */,
 				485D4A39212C606F00C44D6F /* icon.png */,
 				485D4A3A212C606F00C44D6F /* menu.png */,
+				FDDA267C21F26BD0002A7BCF /* splash_screen.json */,
 			);
 			name = assets;
 			path = ../../../config/assets;
@@ -1090,6 +1093,7 @@
 				045E092C1FC4930B003A6341 /* agent.js in Resources */,
 				5E3177291D1E411F00D87778 /* csv.js in Resources */,
 				5E31771E1D1E411F00D87778 /* JasonVerticalSectionItem.xib in Resources */,
+				FDDA267D21F26BD0002A7BCF /* splash_screen.json in Resources */,
 				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
 				485D4A3F212C606F00C44D6F /* menu.png in Resources */,
 				5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */,
