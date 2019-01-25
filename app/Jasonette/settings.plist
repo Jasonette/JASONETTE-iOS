@@ -7,7 +7,7 @@
 	<key>client_secret</key>
 	<string></string>
 	<key>url</key>
-	<string>https://gregcms.ngrok.io/fs/mobile-manager/apps/2/home.json</string>
+	<string>file://splash_screen.json</string>
 	<key>loading</key>
 	<true/>
 	<key>launch</key>

@@ -98,9 +98,12 @@
 		CE4AFF1B212CA8FC006B31F5 /* FinalsiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */; };
 		D826391EC477AC4E7E751CCF /* Pods_Finalsite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B3E5C9278B9793A7329AF1C /* Pods_Finalsite.framework */; };
 		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
+		FD4E03CB21D69FAF000E8FA3 /* home.json in Resources */ = {isa = PBXBuildFile; fileRef = FD4E03CA21D69FAF000E8FA3 /* home.json */; };
 		FD5CBD7D21960C3300B12C45 /* AirshipConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = FD5CBD7C21960C3300B12C45 /* AirshipConfig.plist */; };
 		FD5CBD7F21961FC100B12C45 /* AirshipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD5CBD7E21961FC100B12C45 /* AirshipKit.framework */; };
 		FDA859A7214066180079031C /* gallery.png in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A5214066180079031C /* gallery.png */; };
+		FDB723B12195FCF500468F0C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB723B02195FCF500468F0C /* NotificationService.swift */; };
+		FDB723B52195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FDB723AE2195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -289,12 +292,14 @@
 		CE4AFF1C212CA8FC006B31F5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSwitchComponent.h; sourceTree = "<group>"; };
 		EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSwitchComponent.m; sourceTree = "<group>"; };
+		FD4E03CA21D69FAF000E8FA3 /* home.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = home.json; sourceTree = "<group>"; };
 		FD5CBD7B21960AFD00B12C45 /* Finalsite.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Finalsite.entitlements; sourceTree = "<group>"; };
 		FD5CBD7C21960C3300B12C45 /* AirshipConfig.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = AirshipConfig.plist; path = FinalsiteNotificationServiceExtension/AirshipConfig.plist; sourceTree = "<group>"; };
 		FD5CBD7E21961FC100B12C45 /* AirshipKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AirshipKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDA859A5214066180079031C /* gallery.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gallery.png; sourceTree = "<group>"; };
 		FDB723B02195FCF500468F0C /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FDB723B22195FCF500468F0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FDDA267C21F26BD0002A7BCF /* splash_screen.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_screen.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -448,8 +453,10 @@
 				48709E4E21592E14006FABFE /* info.png */,
 				485D4A3D212C606F00C44D6F /* close.png */,
 				FDA859A5214066180079031C /* gallery.png */,
+				FD4E03CA21D69FAF000E8FA3 /* home.json */,
 				485D4A39212C606F00C44D6F /* icon.png */,
 				485D4A3A212C606F00C44D6F /* menu.png */,
+				FDDA267C21F26BD0002A7BCF /* splash_screen.json */,
 			);
 			name = assets;
 			path = ../../../config/assets;
@@ -1043,6 +1050,7 @@
 				045E092C1FC4930B003A6341 /* agent.js in Resources */,
 				5E3177291D1E411F00D87778 /* csv.js in Resources */,
 				5E31771E1D1E411F00D87778 /* JasonVerticalSectionItem.xib in Resources */,
+				FDDA267D21F26BD0002A7BCF /* splash_screen.json in Resources */,
 				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
 				485D4A3F212C606F00C44D6F /* menu.png in Resources */,
 				5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */,
@@ -1060,6 +1068,7 @@
 				045C77EB1F02791D00F06598 /* error.json in Resources */,
 				48E64CAF21B97FF300CA02DC /* checkbox_unchecked.png in Resources */,
 				5E3177361D1E411F00D87778 /* icon-error@2x.png in Resources */,
+				FD4E03CB21D69FAF000E8FA3 /* home.json in Resources */,
 				5E3177391D1E411F00D87778 /* icon-success.png in Resources */,
 				5E3177351D1E411F00D87778 /* icon-error.png in Resources */,
 				04C851961FE62812000B0B94 /* st.js in Resources */,
