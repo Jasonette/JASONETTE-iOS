@@ -829,10 +829,12 @@
     
     // The default template is 'body'
     NSString *template_name = @"body";
-    @try {
-        // If the request returned "head_styles" we want to update the model to be able to use them for rendering.
-        [VC setValue:VC.data[@"$get"][@"head_styles"] forKey:@"style"];
-    } @catch (NSException *exception) { }
+    if (VC.data[@"get"][@"head_styles"]) {
+        @try {
+            // If the request returned "head_styles" we want to update the model to be able to use them for rendering.
+            [VC setValue:VC.data[@"$get"][@"head_styles"] forKey:@"style"];
+        } @catch (NSException *exception) { }
+    }
     if(stack[@"options"] && stack[@"options"][@"template"]){
         /**************************************************
          *
