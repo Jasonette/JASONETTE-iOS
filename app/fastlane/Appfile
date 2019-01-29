@@ -1,0 +1,8 @@
+app_identifier("com.finalsite.notificationproof") # The bundle identifier of your app
+apple_id("greg.ecklund@finalsite.com") # Your Apple email address
+
+itc_team_id("353778") # App Store Connect Team ID
+team_id("9SSC73BHX6") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
