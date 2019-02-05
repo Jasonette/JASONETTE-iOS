@@ -23,10 +23,12 @@
         CGRect frame = CGRectMake(0,0, width, height);
         component = [[UIWebView alloc] initWithFrame:frame];
     }
-    
+
     component.opaque = NO;
     component.backgroundColor = [UIColor clearColor];
-
+    if(json[@"style"] && json[@"style"][@"height"]){
+        component.payload = [@{@"height": json[@"style"][@"height"]} mutableCopy];
+    }
     
     if(json[@"text"] && ![[NSNull null] isEqual:json[@"text"]]){
         NSString *html = [json[@"text"] description];
@@ -78,6 +80,48 @@
 {
     NSString *summon = @"var JASON={call: function(e){var n=document.createElement(\"IFRAME\");n.setAttribute(\"src\",\"jason:\"+JSON.stringify(e)),document.documentElement.appendChild(n),n.parentNode.removeChild(n),n=null}};";
     [webView stringByEvaluatingJavaScriptFromString:summon];
+
+    // If a height wasn't given then try to measure it
+    if(!webView.payload || !webView.payload[@"height"]){
+        // Find the parent table view and trigger an update so it calculates the new height on the cell
+        id view = [webView superview];
+        while (view && [view isKindOfClass:[UITableView class]] == NO) {
+            view = [view superview];
+        }
+        UITableView *tableView = (UITableView *)view;
+        [tableView beginUpdates];
+        
+        // Adjust the height according to the contents of the webview frame
+        CGFloat height = [[webView stringByEvaluatingJavaScriptFromString:@"document.body.offsetHeight;"] floatValue];
+        
+        // Look for any height constraint
+        NSLayoutConstraint *constraint_to_update = nil;
+        for(NSLayoutConstraint *constraint in webView.constraints){
+            if([constraint.identifier isEqualToString:@"height"]){
+                constraint_to_update = constraint;
+                break;
+            }
+        }
+        
+        // if the height constraint exists, we just update. Otherwise create and add.
+        if(constraint_to_update){
+            constraint_to_update.constant = height;
+        } else {
+            NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:webView
+                                                                          attribute:NSLayoutAttributeHeight
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:nil
+                                                                          attribute:NSLayoutAttributeNotAnAttribute
+                                                                         multiplier:1.0
+                                                                           constant:height];
+            constraint.identifier = @"height";
+            [webView addConstraint:constraint];
+        }
+        [webView setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+        [webView setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+
+        [tableView endUpdates]; // trigger parent table view to adjust to new constraint
+    }
 }
 + (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
 
