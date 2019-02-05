@@ -66,6 +66,12 @@
     [[Jason client] loading:NO];
     NSString *title = [self.options[@"title"] description];
     NSString *description = [self.options[@"description"] description];
+    NSString *ok_title = @"OK";
+    
+    if(self.options[@"ok_title"]) {
+        ok_title = [self.options[@"ok_title"] description];
+    }
+    
     // 1. Instantiate alert
     UIAlertController *alert= [UIAlertController alertControllerWithTitle:title message:description preferredStyle:UIAlertControllerStyleAlert];
     
@@ -110,7 +116,7 @@
     
     
     // 3. Add buttons
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:ok_title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
             // Handle callback actions
         if(form && form.count > 0){
             for(NSString *input_name in textFields){
@@ -122,17 +128,27 @@
             [[Jason client] success];
         }
     }];
-    UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-        [[Jason client] error];
-        [alert dismissViewControllerAnimated:YES completion:nil];
-    }];
     [alert addAction:ok];
-    [alert addAction:cancel];
+    
+    if (!self.options[@"hide_cancel"]) {
+        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+            [[Jason client] error];
+            [alert dismissViewControllerAnimated:YES completion:nil];
+        }];
+        
+        [alert addAction:cancel];
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.VC.navigationController presentViewController:alert animated:YES completion:nil];
     });
 }
+
+- (void)redirectToStore{
+    NSURL *appStoreLink = [self appStoreURL];
+    [[UIApplication sharedApplication] openURL:appStoreLink  options:@{} completionHandler:nil];
+}
+
 - (void)share{
     NSArray *items = self.options[@"items"];
     NSMutableArray *share_items = [[NSMutableArray alloc] init];
@@ -447,6 +463,43 @@
             return @[];
         }
     }
+}
+
+- (NSURL *)appStoreURL
+{
+    static NSURL *appStoreURL;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        appStoreURL = [self appStoreURLFromBundleName:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
+    });
+    return appStoreURL;
+}
+
+- (NSURL *)appStoreURLFromBundleName:(NSString *)bundleName
+{
+    NSURL *appStoreURL = [NSURL URLWithString:[NSString stringWithFormat:@"itms-apps://itunes.com/app/%@", [self sanitizeAppStoreResourceSpecifier:bundleName]]];
+    return appStoreURL;
+}
+
+- (NSString *)sanitizeAppStoreResourceSpecifier:(NSString *)resourceSpecifier
+{
+    /*
+     https://developer.apple.com/library/ios/qa/qa1633/_index.html
+     To create an App Store Short Link, apply the following rules to your company or app name:
+     
+     Remove all whitespace
+     Convert all characters to lower-case
+     Remove all copyright (©), trademark (™) and registered mark (®) symbols
+     Replace ampersands ("&") with "and"
+     Remove most punctuation (See Listing 2 for the set)
+     Replace accented and other "decorated" characters (ü, å, etc.) with their elemental character (u, a, etc.)
+     Leave all other characters as-is.
+     */
+    resourceSpecifier = [resourceSpecifier stringByReplacingOccurrencesOfString:@"&" withString:@"and"];
+    resourceSpecifier = [[NSString alloc] initWithData:[resourceSpecifier dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] encoding:NSASCIIStringEncoding];
+    resourceSpecifier = [resourceSpecifier stringByReplacingOccurrencesOfString:@"[!¡\"#$%'()*+,-./:;<=>¿?@\\[\\]\\^_`{|}~\\s\\t\\n]" withString:@"" options:NSRegularExpressionSearch range:NSMakeRange(0, resourceSpecifier.length)];
+    resourceSpecifier = [resourceSpecifier lowercaseString];
+    return resourceSpecifier;
 }
 
 @end

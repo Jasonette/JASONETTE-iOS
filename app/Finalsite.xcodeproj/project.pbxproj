@@ -33,6 +33,8 @@
 		48709E4F21592E14006FABFE /* info.png in Resources */ = {isa = PBXBuildFile; fileRef = 48709E4E21592E14006FABFE /* info.png */; };
 		488D518C218752A1000B9658 /* JasonTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488D518B218752A1000B9658 /* JasonTabBarController.swift */; };
 		48A0B8DB218B5E0500908931 /* JasonDocumentViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A0B8DA218B5E0500908931 /* JasonDocumentViewer.m */; };
+		48DFC70321F7FFB50033F3CF /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DFC70221F7FFB50033F3CF /* SnapshotHelper.swift */; };
+		48DFC70521F903750033F3CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 48DFC70421F903750033F3CF /* Assets.xcassets */; };
 		48E64CAF21B97FF300CA02DC /* checkbox_unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */; };
 		48E64CB021B97FF300CA02DC /* checkbox_checked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAE21B97FF300CA02DC /* checkbox_checked.png */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
@@ -77,7 +79,6 @@
 		5E31776F1D1E411F00D87778 /* JasonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3177011D1E411E00D87778 /* JasonViewController.m */; };
 		5E3177701D1E411F00D87778 /* UIBarButtonItem+Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3177031D1E411E00D87778 /* UIBarButtonItem+Badge.m */; };
 		5E3177711D1E411F00D87778 /* JasonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3177051D1E411E00D87778 /* JasonHelper.m */; };
-		5E3177781D1E414C00D87778 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E3177771D1E414C00D87778 /* Media.xcassets */; };
 		5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5E3177791D1E4A8E00D87778 /* settings.plist */; };
 		5E3177A31D1F28C100D87778 /* JasonCacheAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E31779A1D1F28C100D87778 /* JasonCacheAction.m */; };
 		5E3177A41D1F28C100D87778 /* JasonConvertAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E31779C1D1F28C100D87778 /* JasonConvertAction.m */; };
@@ -94,8 +95,7 @@
 		5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B801DA5C0080049EACE /* JasonLayer.m */; };
 		5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF904351DD10F6E00C8A94E /* JasonLogAction.m */; };
 		9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */; };
-		CE4AFF1B212CA8FC006B31F5 /* JasonetteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4AFF1A212CA8FC006B31F5 /* JasonetteUITests.swift */; };
-		D19A478398EB831441076A22 /* Pods_FinalsiteNotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6387DF329D6E25806BE2EF73 /* Pods_FinalsiteNotificationServiceExtension.framework */; };
+		CE4AFF1B212CA8FC006B31F5 /* FinalsiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */; };
 		D826391EC477AC4E7E751CCF /* Pods_Finalsite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B3E5C9278B9793A7329AF1C /* Pods_Finalsite.framework */; };
 		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
 		FD4E03CB21D69FAF000E8FA3 /* home.json in Resources */ = {isa = PBXBuildFile; fileRef = FD4E03CA21D69FAF000E8FA3 /* home.json */; };
@@ -104,7 +104,6 @@
 		FDA859A7214066180079031C /* gallery.png in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A5214066180079031C /* gallery.png */; };
 		FDB723B12195FCF500468F0C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB723B02195FCF500468F0C /* NotificationService.swift */; };
 		FDB723B52195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FDB723AE2195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		FDDA267D21F26BD0002A7BCF /* splash_screen.json in Resources */ = {isa = PBXBuildFile; fileRef = FDDA267C21F26BD0002A7BCF /* splash_screen.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,13 +114,6 @@
 			remoteGlobalIDString = 5E3176581D1E400C00D87778;
 			remoteInfo = Jasonette;
 		};
-		FDB723B32195FCF500468F0C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5E3176511D1E400C00D87778 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = FDB723AD2195FCF500468F0C;
-			remoteInfo = FinalsiteNotificationServiceExtension;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -131,7 +123,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				FDB723B52195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -183,6 +174,8 @@
 		488D518F21875713000B9658 /* Jasonette-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jasonette-Bridging-Header.h"; sourceTree = "<group>"; };
 		48A0B8D9218B5DB100908931 /* JasonDocumentViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonDocumentViewer.h; sourceTree = "<group>"; };
 		48A0B8DA218B5E0500908931 /* JasonDocumentViewer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonDocumentViewer.m; sourceTree = "<group>"; };
+		48DFC70221F7FFB50033F3CF /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = ../SnapshotHelper.swift; sourceTree = "<group>"; };
+		48DFC70421F903750033F3CF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_unchecked.png; sourceTree = "<group>"; };
 		48E64CAE21B97FF300CA02DC /* checkbox_checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_checked.png; sourceTree = "<group>"; };
 		4ADF9705B115D5769072629C /* Pods-FinalsiteNotificationServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FinalsiteNotificationServiceExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-FinalsiteNotificationServiceExtension/Pods-FinalsiteNotificationServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
@@ -259,7 +252,6 @@
 		5E3177031D1E411E00D87778 /* UIBarButtonItem+Badge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBarButtonItem+Badge.m"; sourceTree = "<group>"; };
 		5E3177041D1E411E00D87778 /* JasonHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonHelper.h; sourceTree = "<group>"; };
 		5E3177051D1E411E00D87778 /* JasonHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonHelper.m; sourceTree = "<group>"; };
-		5E3177771D1E414C00D87778 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		5E3177791D1E4A8E00D87778 /* settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = settings.plist; sourceTree = "<group>"; };
 		5E3177991D1F28C100D87778 /* JasonCacheAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonCacheAction.h; sourceTree = "<group>"; };
 		5E31779A1D1F28C100D87778 /* JasonCacheAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonCacheAction.m; sourceTree = "<group>"; };
@@ -296,7 +288,7 @@
 		A3080FE30DFE01A2EF5B5FCB /* Pods-Finalsite.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finalsite.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Finalsite/Pods-Finalsite.debug.xcconfig"; sourceTree = "<group>"; };
 		B8CB51F9CE1D77F02FC993E1 /* Pods-Finalsite.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finalsite.release.xcconfig"; path = "Pods/Target Support Files/Pods-Finalsite/Pods-Finalsite.release.xcconfig"; sourceTree = "<group>"; };
 		CE4AFF18212CA8FC006B31F5 /* FinalsiteUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinalsiteUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE4AFF1A212CA8FC006B31F5 /* JasonetteUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JasonetteUITests.swift; sourceTree = "<group>"; };
+		CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalsiteUITests.swift; sourceTree = "<group>"; };
 		CE4AFF1C212CA8FC006B31F5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSwitchComponent.h; sourceTree = "<group>"; };
 		EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSwitchComponent.m; sourceTree = "<group>"; };
@@ -305,7 +297,6 @@
 		FD5CBD7C21960C3300B12C45 /* AirshipConfig.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = AirshipConfig.plist; path = FinalsiteNotificationServiceExtension/AirshipConfig.plist; sourceTree = "<group>"; };
 		FD5CBD7E21961FC100B12C45 /* AirshipKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AirshipKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDA859A5214066180079031C /* gallery.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gallery.png; sourceTree = "<group>"; };
-		FDB723AE2195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FinalsiteNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDB723B02195FCF500468F0C /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FDB723B22195FCF500468F0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FDDA267C21F26BD0002A7BCF /* splash_screen.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_screen.json; sourceTree = "<group>"; };
@@ -326,14 +317,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FDB723AB2195FCF500468F0C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D19A478398EB831441076A22 /* Pods_FinalsiteNotificationServiceExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -526,10 +509,10 @@
 		5E0F0B911D20FFE2009291BE /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				48DFC70421F903750033F3CF /* Assets.xcassets */,
 				5E025B471DE017EB0016786A /* Constants.h */,
 				5E31766D1D1E400C00D87778 /* Info.plist */,
 				5E3177791D1E4A8E00D87778 /* settings.plist */,
-				5E3177771D1E414C00D87778 /* Media.xcassets */,
 			);
 			name = Config;
 			sourceTree = "<group>";
@@ -540,7 +523,7 @@
 				FD5CBD7C21960C3300B12C45 /* AirshipConfig.plist */,
 				FD5CBD7B21960AFD00B12C45 /* Finalsite.entitlements */,
 				5E31765B1D1E400C00D87778 /* Jasonette */,
-				CE4AFF19212CA8FC006B31F5 /* JasonetteUITests */,
+				CE4AFF19212CA8FC006B31F5 /* FinalsiteUITests */,
 				FDB723AF2195FCF500468F0C /* FinalsiteNotificationServiceExtension */,
 				5E31765A1D1E400C00D87778 /* Products */,
 				024EC1D04366A4267780A921 /* Pods */,
@@ -553,7 +536,6 @@
 			children = (
 				5E3176591D1E400C00D87778 /* Finalsite.app */,
 				CE4AFF18212CA8FC006B31F5 /* FinalsiteUITests.xctest */,
-				FDB723AE2195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -930,13 +912,14 @@
 			name = Option;
 			sourceTree = "<group>";
 		};
-		CE4AFF19212CA8FC006B31F5 /* JasonetteUITests */ = {
+		CE4AFF19212CA8FC006B31F5 /* FinalsiteUITests */ = {
 			isa = PBXGroup;
 			children = (
-				CE4AFF1A212CA8FC006B31F5 /* JasonetteUITests.swift */,
+				CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */,
+				48DFC70221F7FFB50033F3CF /* SnapshotHelper.swift */,
 				CE4AFF1C212CA8FC006B31F5 /* Info.plist */,
 			);
-			path = JasonetteUITests;
+			path = FinalsiteUITests;
 			sourceTree = "<group>";
 		};
 		EF8C8CFD1F9195010062CA1C /* switch */ = {
@@ -974,7 +957,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				FDB723B42195FCF500468F0C /* PBXTargetDependency */,
 			);
 			name = Finalsite;
 			productName = Jasonette;
@@ -998,24 +980,6 @@
 			productName = JasonetteUITests;
 			productReference = CE4AFF18212CA8FC006B31F5 /* FinalsiteUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
-		};
-		FDB723AD2195FCF500468F0C /* FinalsiteNotificationServiceExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = FDB723B62195FCF500468F0C /* Build configuration list for PBXNativeTarget "FinalsiteNotificationServiceExtension" */;
-			buildPhases = (
-				952D50B239237F0BE6C99624 /* [CP] Check Pods Manifest.lock */,
-				FDB723AA2195FCF500468F0C /* Sources */,
-				FDB723AB2195FCF500468F0C /* Frameworks */,
-				FDB723AC2195FCF500468F0C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = FinalsiteNotificationServiceExtension;
-			productName = FinalsiteNotificationServiceExtension;
-			productReference = FDB723AE2195FCF500468F0C /* FinalsiteNotificationServiceExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -1052,11 +1016,6 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5E3176581D1E400C00D87778;
 					};
-					FDB723AD2195FCF500468F0C = {
-						CreatedOnToolsVersion = 9.4.1;
-						DevelopmentTeam = 9SSC73BHX6;
-						ProvisioningStyle = Automatic;
-					};
 				};
 			};
 			buildConfigurationList = 5E3176541D1E400C00D87778 /* Build configuration list for PBXProject "Finalsite" */;
@@ -1074,7 +1033,6 @@
 			targets = (
 				5E3176581D1E400C00D87778 /* Finalsite */,
 				CE4AFF17212CA8FC006B31F5 /* FinalsiteUITests */,
-				FDB723AD2195FCF500468F0C /* FinalsiteNotificationServiceExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -1088,7 +1046,6 @@
 				48709E4F21592E14006FABFE /* info.png in Resources */,
 				5E3177381D1E411F00D87778 /* icon-info@2x.png in Resources */,
 				5E3177511D1E411F00D87778 /* more@2x.png in Resources */,
-				5E3177781D1E414C00D87778 /* Media.xcassets in Resources */,
 				5E3840751D3A3D2200D1C421 /* placeholderr@2x.png in Resources */,
 				045E092C1FC4930B003A6341 /* agent.js in Resources */,
 				5E3177291D1E411F00D87778 /* csv.js in Resources */,
@@ -1116,18 +1073,12 @@
 				5E3177351D1E411F00D87778 /* icon-error.png in Resources */,
 				04C851961FE62812000B0B94 /* st.js in Resources */,
 				FDA859A7214066180079031C /* gallery.png in Resources */,
+				48DFC70521F903750033F3CF /* Assets.xcassets in Resources */,
 				5E3177231D1E411F00D87778 /* JasonHorizontalSection.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CE4AFF16212CA8FC006B31F5 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FDB723AC2195FCF500468F0C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1253,24 +1204,6 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Finalsite/Pods-Finalsite-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		952D50B239237F0BE6C99624 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FinalsiteNotificationServiceExtension-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1343,15 +1276,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE4AFF1B212CA8FC006B31F5 /* JasonetteUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FDB723AA2195FCF500468F0C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				FDB723B12195FCF500468F0C /* NotificationService.swift in Sources */,
+				CE4AFF1B212CA8FC006B31F5 /* FinalsiteUITests.swift in Sources */,
+				48DFC70321F7FFB50033F3CF /* SnapshotHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1362,11 +1288,6 @@
 			isa = PBXTargetDependency;
 			target = 5E3176581D1E400C00D87778 /* Finalsite */;
 			targetProxy = CE4AFF1D212CA8FC006B31F5 /* PBXContainerItemProxy */;
-		};
-		FDB723B42195FCF500468F0C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = FDB723AD2195FCF500468F0C /* FinalsiteNotificationServiceExtension */;
-			targetProxy = FDB723B32195FCF500468F0C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1401,6 +1322,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1423,6 +1345,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
@@ -1456,6 +1379,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1473,6 +1397,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};
@@ -1550,18 +1475,19 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = JasonetteUITests/Info.plist;
+				INFOPLIST_FILE = FinalsiteUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.JasonetteUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.FinalsiteUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Jasonette;
+				TEST_TARGET_NAME = Finalsite;
 			};
 			name = Debug;
 		};
@@ -1582,69 +1508,18 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Automatic;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = JasonetteUITests/Info.plist;
+				INFOPLIST_FILE = FinalsiteUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.JasonetteUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.FinalsiteUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Jasonette;
-			};
-			name = Release;
-		};
-		FDB723B72195FCF500468F0C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 80C326238EC7BDE37AC989C8 /* Pods-FinalsiteNotificationServiceExtension.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 9SSC73BHX6;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = FinalsiteNotificationServiceExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.notificationproof.FinalsiteNotificationServiceExtension;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		FDB723B82195FCF500468F0C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4ADF9705B115D5769072629C /* Pods-FinalsiteNotificationServiceExtension.release.xcconfig */;
-			buildSettings = {
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 9SSC73BHX6;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = FinalsiteNotificationServiceExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.notificationproof.FinalsiteNotificationServiceExtension;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Finalsite;
 			};
 			name = Release;
 		};
@@ -1674,15 +1549,6 @@
 			buildConfigurations = (
 				CE4AFF1F212CA8FC006B31F5 /* Debug */,
 				CE4AFF20212CA8FC006B31F5 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		FDB723B62195FCF500468F0C /* Build configuration list for PBXNativeTarget "FinalsiteNotificationServiceExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				FDB723B72195FCF500468F0C /* Debug */,
-				FDB723B82195FCF500468F0C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

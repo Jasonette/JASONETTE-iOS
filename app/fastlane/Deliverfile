@@ -1,0 +1,5 @@
+# The Deliverfile allows you to store various App Store Connect metadata
+# For more information, check out the docs
+# https://docs.fastlane.tools/actions/deliver/
+metadata_path '../../config/metadata'
+app_icon '../../config/assets/app_icon.png'
