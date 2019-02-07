@@ -186,6 +186,9 @@
 		FD5CBD7D21960C3300B12C45 /* AirshipConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = FD5CBD7C21960C3300B12C45 /* AirshipConfig.plist */; };
 		FD5CBD7F21961FC100B12C45 /* AirshipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD5CBD7E21961FC100B12C45 /* AirshipKit.framework */; };
 		FDA859A7214066180079031C /* gallery.png in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A5214066180079031C /* gallery.png */; };
+		FDB1D65C220A173F004FFD5E /* document@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FDB1D659220A173F004FFD5E /* document@2x.png */; };
+		FDB1D65D220A173F004FFD5E /* document@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FDB1D65A220A173F004FFD5E /* document@3x.png */; };
+		FDB1D65E220A173F004FFD5E /* document.png in Resources */ = {isa = PBXBuildFile; fileRef = FDB1D65B220A173F004FFD5E /* document.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -463,6 +466,9 @@
 		FD5CBD7C21960C3300B12C45 /* AirshipConfig.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = AirshipConfig.plist; path = FinalsiteNotificationServiceExtension/AirshipConfig.plist; sourceTree = "<group>"; };
 		FD5CBD7E21961FC100B12C45 /* AirshipKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AirshipKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDA859A5214066180079031C /* gallery.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gallery.png; sourceTree = "<group>"; };
+		FDB1D659220A173F004FFD5E /* document@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "document@2x.png"; path = "../../../config/assets/images/document@2x.png"; sourceTree = "<group>"; };
+		FDB1D65A220A173F004FFD5E /* document@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "document@3x.png"; path = "../../../config/assets/images/document@3x.png"; sourceTree = "<group>"; };
+		FDB1D65B220A173F004FFD5E /* document.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = document.png; path = ../../../config/assets/images/document.png; sourceTree = "<group>"; };
 		FDB723B02195FCF500468F0C /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FDB723B22195FCF500468F0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -757,6 +763,9 @@
 				48C3B85F2204DD7700AA850B /* directory.png */,
 				48C3B86C2204DD7800AA850B /* directory@2x.png */,
 				48C3B83E2204DD7500AA850B /* directory@3x.png */,
+				FDB1D65B220A173F004FFD5E /* document.png */,
+				FDB1D659220A173F004FFD5E /* document@2x.png */,
+				FDB1D65A220A173F004FFD5E /* document@3x.png */,
 				48C3B8482204DD7500AA850B /* documents.png */,
 				48C3B8702204DD7800AA850B /* documents@2x.png */,
 				48C3B8542204DD7600AA850B /* documents@3x.png */,
@@ -1343,6 +1352,7 @@
 				48C3B8B32204DD7B00AA850B /* calendar@3x.png in Resources */,
 				484B107B2209D43500E73607 /* envelope@3x.png in Resources */,
 				48C3B8B92204DD7B00AA850B /* location@2x.png in Resources */,
+				FDB1D65E220A173F004FFD5E /* document.png in Resources */,
 				045E093A1FC5F98A003A6341 /* xhtml.js in Resources */,
 				486ED70C21C9482D0019C81F /* loading.gif in Resources */,
 				48C3B8B82204DD7B00AA850B /* documents@2x.png in Resources */,
@@ -1366,6 +1376,7 @@
 				48C3B8932204DD7B00AA850B /* newspaper@2x.png in Resources */,
 				48C3B8AB2204DD7B00AA850B /* chevron-left@3x.png in Resources */,
 				045C77EB1F02791D00F06598 /* error.json in Resources */,
+				FDB1D65D220A173F004FFD5E /* document@3x.png in Resources */,
 				48E64CAF21B97FF300CA02DC /* checkbox_unchecked.png in Resources */,
 				484B10712209D43500E73607 /* pdf@2x.png in Resources */,
 				48C3B8872204DD7B00AA850B /* newspaper@3x.png in Resources */,
@@ -1392,6 +1403,7 @@
 				04C851961FE62812000B0B94 /* st.js in Resources */,
 				484B10782209D43500E73607 /* headphones.png in Resources */,
 				48C3B8C42204DD7B00AA850B /* location.png in Resources */,
+				FDB1D65C220A173F004FFD5E /* document@2x.png in Resources */,
 				48C3B88D2204DD7B00AA850B /* link.png in Resources */,
 				FDA859A7214066180079031C /* gallery.png in Resources */,
 				48DFC70521F903750033F3CF /* Assets.xcassets in Resources */,
