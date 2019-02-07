@@ -79,7 +79,7 @@
                         UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
                         UIImage *image = [i imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
                         [component setTintColor:c];
-                        [component setImage: image];;
+                        [component setImage: image];
                     }
                 }
             }];
@@ -151,9 +151,45 @@
             }
         }
         mutable_json[@"style"] = style;
+        
+        // resize the image with high interpolation for better quality
+        if(style[@"height"] && style[@"width"]) {
+            NSString *heightStr = style[@"height"];
+            NSString *widthStr = style[@"width"];
+            CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:heightStr];
+            CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
+            
+            [component setImage: [self resizeImage:component.image newSize:CGSizeMake(width, height)]];
+        }
     }
     // Apply Common Style
     [self stylize:mutable_json component:component];
     return component;
 }
+
++ (UIImage *)resizeImage:(UIImage*)image newSize:(CGSize)newSize {
+    CGRect newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width, newSize.height));
+    CGImageRef imageRef = image.CGImage;
+    
+    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    // Set the quality level to use when rescaling
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+    CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, newSize.height);
+    
+    CGContextConcatCTM(context, flipVertical);
+    // Draw into the context; this scales the image
+    CGContextDrawImage(context, newRect, imageRef);
+    
+    // Get the resized image from the context and a UIImage
+    CGImageRef newImageRef = CGBitmapContextCreateImage(context);
+    UIImage *newImage = [UIImage imageWithCGImage:newImageRef];
+    
+    CGImageRelease(newImageRef);
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
 @end
