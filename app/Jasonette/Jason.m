@@ -155,7 +155,6 @@
 
     JasonTabBarController *tab = [[JasonTabBarController alloc] init];
     tab.tabBar.backgroundColor = [UIColor whiteColor];
-    tab.tabBar.shadowImage = [[UIImage alloc] init];
     tab.viewControllers = @[nav];
     tab.tabBar.hidden = YES;
     [tab setDelegate:self];
@@ -1301,14 +1300,12 @@
     
     tabController = navigationController.tabBarController;
     tabController.delegate = self;
-    [tabController.tabBar setClipsToBounds:YES];
     
     // Only make the background white if it's being loaded modally
     // Setting tabbar white looks weird when transitioning via push
     if(VC.isModal){
         tabController.tabBar.barTintColor=[UIColor whiteColor];
         tabController.tabBar.backgroundColor = [UIColor whiteColor];
-        tabController.tabBar.shadowImage = [[UIImage alloc] init];
     }
     navigationController.navigationBar.backgroundColor = [UIColor clearColor];
     navigationController.navigationBar.shadowImage = [UIImage new];
@@ -2868,8 +2865,6 @@
             }
             
             if(style[@"background"]){
-                [self->tabController.tabBar setClipsToBounds:YES];
-                self->tabController.tabBar.shadowImage = [[UIImage alloc] init];
                 self->tabController.tabBar.translucent = NO;
                 self->tabController.tabBar.backgroundColor =[JasonHelper colorwithHexString:style[@"background"] alpha:1.0];
                 [self->tabController.tabBar setBarTintColor:[JasonHelper colorwithHexString:style[@"background"] alpha:1.0]];
