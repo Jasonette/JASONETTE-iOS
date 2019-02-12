@@ -2285,6 +2285,7 @@
     tabController = v.tabBarController;
     if(!nav) {
         navigationController.navigationBar.hidden = YES;
+        [JasonHelper setStatusBarBackgroundColor: [UIColor whiteColor]];
         return;
     }
     
