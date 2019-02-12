@@ -22,7 +22,6 @@
     NSString *ROOT_URL;
     BOOL INITIAL_LOADING;
     BOOL isForeground;
-    BOOL header_needs_refresh;
     NSDictionary *rendered_page;
     NSMutableDictionary *previous_footer;
     NSMutableDictionary *previus_header;
@@ -1344,7 +1343,6 @@
         }
         
         // Header update (Bugfix for when coming back from an href)
-        header_needs_refresh = YES;
         if(VC.rendered[@"nav"]) {
             // Deprecated
             [self setupHeader:VC.rendered[@"nav"]];
@@ -2287,21 +2285,6 @@
         navigationController.navigationBar.hidden = YES;
         return;
     }
-    
-    
-    // if coming back from href, need_to_exec is true. In this case, shouldn't skip setupHeader.
-    if(!header_needs_refresh) {
-        if(v.rendered && rendered_page){
-            if(v.old_header && [[v.old_header description] isEqualToString:[nav description]]){
-                // if the header is the same as the value trying to set,
-                if(rendered_page[@"header"] && [[rendered_page[@"header"] description] isEqualToString:[v.old_header description]]) {
-                    // and if the currently visible rendered_page's header is the same as the VC's old_header, ignore.
-                    return;
-                }
-            }
-        }
-    }
-    header_needs_refresh = NO;
     
     if(nav) v.old_header = [nav mutableCopy];
     
