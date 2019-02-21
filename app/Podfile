@@ -39,6 +39,7 @@ target 'Finalsite' do
   pod 'SocketRocket'
   #pod 'GoogleMobileAds', '~> 7.8'
   pod 'UrbanAirship-iOS-SDK'
+  pod 'MaterialComponents/ActivityIndicator'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|
@@ -51,6 +52,6 @@ target 'Finalsite' do
   end
 end
 
-target "FinalsiteNotificationServiceExtension" do
-    pod 'UrbanAirship-iOS-AppExtensions'
-end
+#target "FinalsiteNotificationServiceExtension" do
+#    pod 'UrbanAirship-iOS-AppExtensions'
+#end
