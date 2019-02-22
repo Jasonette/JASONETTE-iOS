@@ -1,0 +1,6 @@
+framework module MotionAnimator {
+  umbrella header "MotionAnimator-umbrella.h"
+
+  export *
+  module * { export * }
+}

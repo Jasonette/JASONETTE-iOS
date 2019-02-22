@@ -1,0 +1,6 @@
+framework module MotionInterchange {
+  umbrella header "MotionInterchange-umbrella.h"
+
+  export *
+  module * { export * }
+}

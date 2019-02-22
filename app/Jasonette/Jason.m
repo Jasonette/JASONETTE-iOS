@@ -6,6 +6,7 @@
 //
 #import "Jason.h"
 #import "JasonAppDelegate.h"
+#import "MaterialActivityIndicator.h"
 #import "NSData+ImageContentType.h"
 #import "UIImage+GIF.h"
 #import "Finalsite-Swift.h"
@@ -27,6 +28,8 @@
     NSMutableDictionary *previus_header;
     AVCaptureVideoPreviewLayer *avPreviewLayer;
     NSMutableArray *queue;
+    MDCActivityIndicator *activityIndicator;
+    UIView *loadingOverlayView;
 }
 @end
 
@@ -62,7 +65,7 @@
          selector:@selector(notifyError:)
          name:@"Jason.error"
          object:nil];
-        
+
     }
     return self;
 }
@@ -142,7 +145,7 @@
     }
     vc.view.backgroundColor = [UIColor clearColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
-    
+
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
     
     navigationController.navigationBar.shadowImage = [UIImage new];
@@ -157,7 +160,19 @@
     tab.viewControllers = @[nav];
     tab.tabBar.hidden = YES;
     [tab setDelegate:self];
-    
+
+    // create loading wheel
+    activityIndicator = [[MDCActivityIndicator alloc] init];
+    [activityIndicator sizeToFit];
+    activityIndicator.cycleColors = @[[UIColor colorWithRed:0.14 green:0.266 blue:0.387 alpha:1.0]];
+    activityIndicator.strokeWidth = 6;
+    activityIndicator.radius = 32;
+    loadingOverlayView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    loadingOverlayView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:0.6];
+    activityIndicator.center = loadingOverlayView.center;
+    [loadingOverlayView addSubview:activityIndicator];
+    [activityIndicator startAnimating];
+
     app.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     app.window.rootViewController = tab;
 
@@ -315,7 +330,6 @@
         } else {
             [JDStatusBarNotification showActivityIndicator:YES indicatorStyle:UIActivityIndicatorViewStyleGray];
         }
-        
     } else {
         if([JDStatusBarNotification isVisible]){
             [JDStatusBarNotification dismissAnimated:YES];
@@ -325,7 +339,7 @@
 
 -(void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;{
     dispatch_async(dispatch_get_main_queue(), ^{
-        if(turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))){
+        if(turnon && (options == nil || (options[@"loading"] && [options[@"loading"] boolValue]))){
             MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:self->VC.view animated:true];
             hud.animationType = MBProgressHUDAnimationFade;
             hud.userInteractionEnabled = NO;
@@ -623,12 +637,6 @@
      */
     
     
-    
-    
-    
-    
-    
-    
     /*
      # Example:
      {
@@ -690,7 +698,6 @@
             // do nothing. keep the register and propgate
         }
         
-        
         id lambda = [[VC valueForKey:@"events"] valueForKey:name];
         /*
          lambda = [{
@@ -734,7 +741,6 @@
     } else {
         [self error];
     }
-    
     
 }
 - (void)render{
@@ -1090,13 +1096,11 @@
         id resolved = [self resolve_local_reference:j];
         callback(resolved);
     }
-    
 }
 
 - (void)require{
     
     NSString *origin_url = VC.url;
-    
     /*
      
      {
@@ -1168,7 +1172,6 @@
                     NSLog(@"Error");
                     dispatch_group_leave(requireGroup);
                 }];
-                
             }
         }
     }
@@ -1265,7 +1268,6 @@
     
     [VC.view endEditing:YES];
     
-    
     // Reset Agent
     for(NSString *key in ((JasonViewController*)VC).agents) {
         JasonAgentService *agent = self.services[@"JasonAgentService"];
@@ -1306,9 +1308,6 @@
         tabController.tabBar.barTintColor=[UIColor whiteColor];
         tabController.tabBar.backgroundColor = [UIColor whiteColor];
     }
-    navigationController.navigationBar.backgroundColor = [UIColor clearColor];
-    navigationController.navigationBar.shadowImage = [UIImage new];
-    [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     
     // Set the stylesheet
     if(VC.style){
@@ -1373,29 +1372,27 @@
         /************************************
          Setup head as quickly as possible
          And set the headSetup flag to true, so that it doesn't try to set it up again later
-         **************************************/
+         ************************************/
         if (VC.original && VC.original[@"$jason"] && VC.original[@"$jason"][@"head"]) {
             VC.agentReady = NO;
             [self setupHead:VC.original[@"$jason"][@"head"]];
         }
         
-        /*********************************************************************************************************
+        /********************************************************************************
          *
          * VC.rendered: contains the rendered Jason DOM if it's been dynamically rendered.
          *
          * If VC.rendered is not nil, it means it's been already fully rendered.
          *
-         ********************************************************************************************************/
+         ********************************************************************************/
         if(VC.rendered && rendered_page){
             
-            /*********************************************************************************************************
-             *
+            /*****************************************************************************
              * We need to redraw the already rendered final result instead of the pre-rendered markup
              *
              * For example, in: {"head": {"title": "{{$params.name}}", ...}}
              * It will draw "{{$params.name}}" as the title of the nav bar if we don't draw from the already rendered markup.
-             *
-             ********************************************************************************************************/
+             *****************************************************************************/
             if(VC.rendered[@"nav"]) {
                 // Deprecated
                 [self setupHeader:VC.rendered[@"nav"]];
@@ -1467,13 +1464,11 @@
          *
          ********************************************************************************************************/
         else {
-            /*********************************************************************************************************
-             *
+            /*******************************************************************************
              * If content has been loaded already,
              *  1. redraw navbar
              *  2. re-setup event listener
-             *
-             ********************************************************************************************************/
+             ******************************************************************************/
             if(VC.contentLoaded){
                 // If content already loaded,
                 // 1. just setup the navbar so the navbar will have the correct style
@@ -1481,11 +1476,9 @@
                 [self setupHeader:VC.nav];
                 [self onShow];
             }
-            /*********************************************************************************************************
-             *
+            /********************************************************************************
              * If content has not been loaded yet, do a fresh reload
-             *
-             ********************************************************************************************************/
+             *******************************************************************************/
             else {
                 if (VC.preload && VC.preload[@"style"] && VC.preload[@"style"][@"background"]) {
                     if ([VC.preload[@"style"][@"background"] isKindOfClass:[NSDictionary class]]) {
@@ -1804,7 +1797,9 @@
          * Normally urls are not in data-uri.
          ***************************************************/
         else {
-            
+            [VC.view addSubview:loadingOverlayView];
+            [loadingOverlayView setHidden:NO];
+
             AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
             NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
             
@@ -1828,7 +1823,9 @@
                              [self drawViewFromJason: self->VC.original asFinal:YES];
                          });
                      }];
+                     [self->loadingOverlayView setHidden:YES];
                  } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                     [self->loadingOverlayView setHidden:YES];
                      if (!self->VC.offline) {
                          if (self->VC.on_error) {
                              [[Jason client] call: self->VC.on_error];
