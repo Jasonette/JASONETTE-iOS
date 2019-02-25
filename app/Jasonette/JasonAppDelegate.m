@@ -80,11 +80,6 @@
     } else {
         [[Jason client] start:nil];
     }
-    [UAirship takeOff];
-    [UAirship push].userPushNotificationsEnabled = YES;
-    [UAirship push].defaultPresentationOptions = (UNNotificationPresentationOptionAlert |
-                                                  UNNotificationPresentationOptionBadge |
-                                                  UNNotificationPresentationOptionSound);
     return YES;
 }
 
