@@ -50,6 +50,7 @@ PODS:
     - MaterialComponents/private/Application
     - MDFInternationalization
     - MotionAnimator (~> 2.0)
+  - MaterialComponents/PageControl (68.2.0)
   - MaterialComponents/Palettes (68.2.0)
   - MaterialComponents/private/Application (68.2.0)
   - MBProgressHUD (1.0.0)
@@ -103,6 +104,7 @@ DEPENDENCIES:
   - JSCoreBom (~> 1.1.1)
   - libPhoneNumber-iOS
   - MaterialComponents/ActivityIndicator
+  - MaterialComponents/PageControl
   - MBProgressHUD (~> 1.0)
   - NSGIF (~> 1.0)
   - NSHash
@@ -231,6 +233,6 @@ SPEC CHECKSUMS:
   UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
   UrbanAirship-iOS-SDK: 61bad27cf3ea49e2da7c9a6c469674bf3ac2ffa0
 
-PODFILE CHECKSUM: 788311bc291c2d5bc9fc97ee77ef1421ba2b0eb6
+PODFILE CHECKSUM: e7c540bbfe0c7706f683754cb96aa732a6ead4f2
 
 COCOAPODS: 1.5.3

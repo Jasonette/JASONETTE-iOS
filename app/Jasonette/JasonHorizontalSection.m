@@ -5,6 +5,8 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonHorizontalSection.h"
+#import "MaterialPageControl.h"
+
 @interface JasonHorizontalSection (){
     UIImage *placeholder_image;
 }
@@ -79,6 +81,30 @@
     [_collectionView reloadData];
 }
 
+- (void)addPageControl{
+    self.pageControl = [[MDCPageControl alloc] init];
+    // bottom center the control on this section
+    self.pageControl.frame = CGRectMake(self.bounds.size.width / 2, self.bounds.size.height, 1, 1);
+    
+    self.pageControl.currentPageIndicatorTintColor = [UIColor darkGrayColor];
+    self.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
+    self.pageControl.userInteractionEnabled = NO;
+    self.pageControl.numberOfPages = [self.items count];
+    self.pageControl.currentPage = 0;
+    [self addSubview:self.pageControl];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self.pageControl scrollViewDidScroll:scrollView];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self.pageControl scrollViewDidEndDecelerating:scrollView];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    [self.pageControl scrollViewDidEndScrollingAnimation:scrollView];
+}
 
 - (UICollectionViewCell*)getItemCell:(NSDictionary *)item forCollectionView:(UICollectionView *)collectionView atIndexPath:(NSIndexPath *)indexPath{
     NSString *cellType = @"JasonHorizontalSectionItem";

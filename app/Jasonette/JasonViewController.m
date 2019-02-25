@@ -63,7 +63,6 @@
 
     estimatedRowHeightCache = [[NSMutableDictionary alloc] init];
     
-    
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
     // Avoid gray background
@@ -372,11 +371,17 @@
     [cell setItems:items];
     [cell setStyle:style];
     [cell setStylesheet:self.style];
-    
+
     UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout *) cell.collectionView.collectionViewLayout;
     if(style[@"spacing"]){
         flowLayout.minimumInteritemSpacing = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"spacing"]];
         flowLayout.minimumLineSpacing =  [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"spacing"]];
+    }
+    
+    if(style[@"snap"]) {
+        [cell.collectionView setPagingEnabled:YES];
+        [cell.collectionView setShowsHorizontalScrollIndicator:NO];
+        [cell addPageControl];
     }
     
     // Padding Handling
@@ -399,8 +404,6 @@
     
     cell.collectionView.contentInset = UIEdgeInsetsMake([JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_top], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_left], [JasonHelper pixelsInDirection:@"vertical" fromExpression:padding_bottom], [JasonHelper pixelsInDirection:@"horizontal" fromExpression:padding_right]);
 
-
-    
     cell.tintColor = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
     cell.accessoryView.tintColor = cell.tintColor;
     
