@@ -1,0 +1,6 @@
+framework module MaterialComponents {
+  umbrella header "MaterialComponents-umbrella.h"
+
+  export *
+  module * { export * }
+}

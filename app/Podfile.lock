@@ -45,7 +45,18 @@ PODS:
   - JDStatusBarNotification (1.5.3)
   - JSCoreBom (1.1.1)
   - libPhoneNumber-iOS (0.8.13)
+  - MaterialComponents/ActivityIndicator (68.2.0):
+    - MaterialComponents/Palettes
+    - MaterialComponents/private/Application
+    - MDFInternationalization
+    - MotionAnimator (~> 2.0)
+  - MaterialComponents/Palettes (68.2.0)
+  - MaterialComponents/private/Application (68.2.0)
   - MBProgressHUD (1.0.0)
+  - MDFInternationalization (1.1.0)
+  - MotionAnimator (2.8.1):
+    - MotionInterchange (~> 1.6)
+  - MotionInterchange (1.6.0)
   - NSGIF (1.2)
   - NSHash (1.1.0)
   - OMGHTTPURLRQ/UserAgent (3.1.2)
@@ -71,7 +82,6 @@ PODS:
   - TTTAttributedLabel (2.0.0)
   - TWMessageBarManager (1.8.1)
   - UICKeyChainStore (2.1.0)
-  - UrbanAirship-iOS-AppExtensions (8.0.5)
   - UrbanAirship-iOS-SDK (8.6.3)
 
 DEPENDENCIES:
@@ -92,6 +102,7 @@ DEPENDENCIES:
   - JDStatusBarNotification
   - JSCoreBom (~> 1.1.1)
   - libPhoneNumber-iOS
+  - MaterialComponents/ActivityIndicator
   - MBProgressHUD (~> 1.0)
   - NSGIF (~> 1.0)
   - NSHash
@@ -108,7 +119,6 @@ DEPENDENCIES:
   - TTTAttributedLabel
   - TWMessageBarManager
   - UICKeyChainStore
-  - UrbanAirship-iOS-AppExtensions
   - UrbanAirship-iOS-SDK
 
 SPEC REPOS:
@@ -130,7 +140,11 @@ SPEC REPOS:
     - JDStatusBarNotification
     - JSCoreBom
     - libPhoneNumber-iOS
+    - MaterialComponents
     - MBProgressHUD
+    - MDFInternationalization
+    - MotionAnimator
+    - MotionInterchange
     - NSGIF
     - NSHash
     - OMGHTTPURLRQ
@@ -149,7 +163,6 @@ SPEC REPOS:
     - TTTAttributedLabel
     - TWMessageBarManager
     - UICKeyChainStore
-    - UrbanAirship-iOS-AppExtensions
     - UrbanAirship-iOS-SDK
 
 EXTERNAL SOURCES:
@@ -191,7 +204,11 @@ SPEC CHECKSUMS:
   JDStatusBarNotification: 29413865af11c862c17180610b0f46a21118b412
   JSCoreBom: 712590b897ecd74d9fa9cb0f16857491411c932b
   libPhoneNumber-iOS: 3a37004baf779b4262ab29a31a87d2ae668159d4
+  MaterialComponents: 0a6202cdfab416518d065eaea869efea2126b605
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
+  MDFInternationalization: b5b8626628abf026e630e5ebaeee563037712cbb
+  MotionAnimator: ee16aa30567c5bae0fb2750c132915829cfaaf8a
+  MotionInterchange: ead0e3ae1f3a5fb539e289debbc7ae036160a10d
   NSGIF: 73b435330174a9d04db9886a232c605a3e8139b5
   NSHash: 61d598c6d48957c5557f1eef0aeafd6ef5ec5fb7
   OMGHTTPURLRQ: 38316b56d88125c600bcdb16df8329147da2b0ee
@@ -212,9 +229,8 @@ SPEC CHECKSUMS:
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
-  UrbanAirship-iOS-AppExtensions: 8ca39d15760a0e2a7ff467cd6608ed63e865e689
   UrbanAirship-iOS-SDK: 61bad27cf3ea49e2da7c9a6c469674bf3ac2ffa0
 
-PODFILE CHECKSUM: 5d47459966ebe4cd45734613ac5c7859323f4177
+PODFILE CHECKSUM: 788311bc291c2d5bc9fc97ee77ef1421ba2b0eb6
 
 COCOAPODS: 1.5.3
