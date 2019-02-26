@@ -63,7 +63,7 @@
         
         // width
         if(style[@"width"]){
-            NSString *widthStr = style[@"width"];
+            NSString *widthStr = [style[@"width"] description];
             CGFloat width;
             
             if ([widthStr isEqualToString:@"auto"]) {
