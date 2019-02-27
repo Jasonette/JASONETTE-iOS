@@ -2687,9 +2687,17 @@
     if(height == 0){
         height = image.size.height;
     }
+    // Similar to the android issue with the logos. on older iphones the width of a logo could be too wide
+    // So we modify the logo's width (and height to maintain aspect ratio) to match the screen's smaller width constraints
+    if (v.view.bounds.size.width - width < 40) {
+        CGFloat new_width = v.view.bounds.size.width - 40;
+        height = height * (new_width / width);
+        width = new_width;
+    }
     CGRect frame = CGRectMake(x, y, width, height);
     
     UIView *logoView =[[UIView alloc] initWithFrame:frame];
+
     UIImageView *logoImageView = [[UIImageView alloc] initWithImage:image];
     logoImageView.frame = frame;
     
