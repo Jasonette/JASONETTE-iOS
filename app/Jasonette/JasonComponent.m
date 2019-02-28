@@ -64,7 +64,13 @@
         // width
         if(style[@"width"]){
             NSString *widthStr = style[@"width"];
-            CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
+            CGFloat width;
+            
+            if ([widthStr isEqualToString:@"auto"]) {
+                width = component.intrinsicContentSize.width;
+            } else {
+                width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
+            }
 
             // Look for any width constraint
             NSLayoutConstraint *constraint_to_update = nil;
