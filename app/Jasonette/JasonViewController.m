@@ -563,7 +563,6 @@
         NSDictionary *s = [self.sections objectAtIndex:indexPath.section];
         NSArray *rows = s[@"items"];
         if([self isHorizontal: s]){
-            
             return [self getHorizontalSectionItem:s forTableView:tableView atIndexPath:indexPath];
         } else {
             NSDictionary *item = [rows objectAtIndex:indexPath.row];
@@ -593,11 +592,9 @@
     }
 }
 
-
 /********************************
  * Helper
  ********************************/
-
 
 - (UITableViewCell*)getVerticalSectionItem:(NSDictionary *)item forTableView:(UITableView *)tableView atIndexPath:(NSIndexPath *)indexPath{
 

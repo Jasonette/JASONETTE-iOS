@@ -83,15 +83,17 @@
 
 - (void)addPageControl{
     self.pageControl = [[MDCPageControl alloc] init];
-    // bottom center the control on this section
-    self.pageControl.frame = CGRectMake(self.bounds.size.width / 2, self.bounds.size.height, 1, 1);
     
     self.pageControl.currentPageIndicatorTintColor = [UIColor darkGrayColor];
     self.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
-    self.pageControl.userInteractionEnabled = NO;
     self.pageControl.numberOfPages = [self.items count];
     self.pageControl.currentPage = 0;
+    self.pageControl.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:self.pageControl];
+    
+    [self.pageControl.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
+    [self.pageControl.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
+    [self.pageControl.topAnchor constraintLessThanOrEqualToAnchor:self.bottomAnchor constant:10].active = true;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
