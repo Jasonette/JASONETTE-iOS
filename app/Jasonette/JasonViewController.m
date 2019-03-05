@@ -1117,35 +1117,35 @@
 }
 
 - (void)scrollToTop{
-    if(self.tableView.numberOfSections >= 1){
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(self.tableView.numberOfSections >= 1){
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
             [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-        });
-    }
+        }
+    });
 }
 
 // scroll to a section by index
 - (void)scrollToPosition:(NSNotification *)notification {
-    NSInteger targetSectionIndex = [notification.userInfo[@"position"] intValue];
-    if(self.tableView.numberOfSections > targetSectionIndex){
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:targetSectionIndex];
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSInteger targetSectionIndex = [notification.userInfo[@"position"] intValue];
+        if(self.tableView.numberOfSections > targetSectionIndex){
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:targetSectionIndex];
             [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-        });
-    }
+        }
+    });
 }
 - (void)scrollToBottom{
-    if(self.tableView.numberOfSections >= 1){
-        NSInteger lastSectionIndex = self.tableView.numberOfSections - 1;
-        NSInteger lastRowIndex = [self.tableView numberOfRowsInSection:lastSectionIndex] - 1;
-        if(lastRowIndex >= 0){
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:lastRowIndex inSection:lastSectionIndex];
-            dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(self.tableView.numberOfSections >= 1){
+            NSInteger lastSectionIndex = self.tableView.numberOfSections - 1;
+            NSInteger lastRowIndex = [self.tableView numberOfRowsInSection:lastSectionIndex] - 1;
+            if(lastRowIndex >= 0){
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:lastRowIndex inSection:lastSectionIndex];
                 [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-            });
+            }
         }
-    }
+    });
 }
 
 // CHAT INPUT RELATED
