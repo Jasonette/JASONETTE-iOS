@@ -253,8 +253,6 @@ static NSMutableDictionary *_stylesheet = nil;
         if(!style[@"align"]) style[@"align"] = @"fill";
     }
     
-    
-    
     NSDictionary *alignment_map = @{
                                     @"fill": @(UIStackViewAlignmentFill),
                                     @"firstbaseline": @(UIStackViewAlignmentFirstBaseline),
@@ -277,6 +275,7 @@ static NSMutableDictionary *_stylesheet = nil;
                                        @"equalspace": @(UIStackViewDistributionEqualSpacing),
                                        @"equalcentertocenter": @(UIStackViewDistributionEqualCentering)
                                        };
+    
     if(style[@"distribution"]){
         layout.distribution = [[distribution_map valueForKey:style[@"distribution"]] intValue];
     }
@@ -286,11 +285,13 @@ static NSMutableDictionary *_stylesheet = nil;
     }
     
     if(style[@"width"]) {
-        [layout.widthAnchor constraintEqualToConstant:[style[@"width"] floatValue]].active = true;
+        CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"width"]];
+        [layout.widthAnchor constraintEqualToConstant:width].active = true;
     }
     
     if(style[@"height"]) {
-        [layout.heightAnchor constraintEqualToConstant:[style[@"height"] floatValue]].active = true;
+        CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+        [layout.heightAnchor constraintEqualToConstant:height].active = true;
     }
     
     NSString *padding_left;
@@ -313,6 +314,31 @@ static NSMutableDictionary *_stylesheet = nil;
 
     layout.layoutMargins = UIEdgeInsetsMake([padding_top floatValue], [padding_left floatValue], [padding_bottom floatValue], [padding_right floatValue]);
     layout.layoutMarginsRelativeArrangement = true;
+    
+    // Background Color / Image handling
+    if(style[@"background"]){
+        UIImageView *backgroundView = [[UIImageView alloc] initWithFrame:layout.frame];
+        if (style[@"corner_radius"]) {
+            backgroundView.layer.cornerRadius = [style[@"corner_radius"] floatValue];
+        }
+        backgroundView.clipsToBounds = YES;
+        backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+        [layout insertSubview:backgroundView atIndex:0];
+        
+        // set constraints of background view to match the parent layout
+        [backgroundView.leadingAnchor constraintEqualToAnchor:layout.leadingAnchor].active = true;
+        [backgroundView.trailingAnchor constraintEqualToAnchor:layout.trailingAnchor].active = true;
+        [backgroundView.topAnchor constraintEqualToAnchor:layout.topAnchor].active = true;
+        [backgroundView.bottomAnchor constraintEqualToAnchor:layout.bottomAnchor].active = true;
+        
+        if([style[@"background"] hasPrefix:@"http"]){
+            [backgroundView sd_setImageWithURL:[NSURL URLWithString:style[@"background"]] completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                backgroundView.contentMode = UIViewContentModeScaleAspectFill;
+            }];
+        } else {
+            backgroundView.backgroundColor = [JasonHelper colorwithHexString:style[@"background"] alpha:1.0];
+        }
+    }
     
     if(style && style[@"opacity"]){
         CGFloat opacity = [style[@"opacity"] floatValue];
@@ -344,7 +370,7 @@ static NSMutableDictionary *_stylesheet = nil;
 }
 + (void)setStylesheet:(NSMutableDictionary *)stylesheet{
     if (stylesheet != _stylesheet){
-        _stylesheet = [stylesheet mutableCopy];
+        [_stylesheet addEntriesFromDictionary:stylesheet];
     }
 }
 // Common

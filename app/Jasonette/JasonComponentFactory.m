@@ -77,6 +77,14 @@ static NSMutableDictionary *_stylesheet = nil;
         }
     }
     
+    if (new_style[@"ratio"] && new_style[@"width"] && !new_style[@"height"]) {
+        CGFloat aspectHeight = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:new_style[@"width"]] / [new_style[@"ratio"] floatValue];
+        new_style[@"height"] = [[NSNumber numberWithFloat:aspectHeight] stringValue];
+    } else if (new_style[@"ratio"] && new_style[@"height"] && !new_style[@"width"]) {
+        CGFloat aspectWidth = [JasonHelper pixelsInDirection:@"vertical" fromExpression:new_style[@"height"]] * [new_style[@"ratio"] floatValue];
+        new_style[@"width"] = [[NSNumber numberWithFloat:aspectWidth] stringValue];
+    }
+    
     NSMutableDictionary *stylized_item = [item mutableCopy];
     stylized_item[@"style"] = new_style;
     return stylized_item;

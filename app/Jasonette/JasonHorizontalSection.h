@@ -12,11 +12,15 @@
 #import "JasonComponentFactory.h"
 #import "JasonLayout.h"
 #import "UIView+JasonComponentPayload.h"
+#import "MaterialPageControl.h"
 #import <TTTAttributedLabel/TTTAttributedLabel.h>
 
 @interface JasonHorizontalSection : UITableViewCell <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+@property (strong, nonatomic) IBOutlet MDCPageControl *pageControl;
 @property (strong, nonatomic) NSArray *items;
 @property (strong, nonatomic) NSDictionary *style;
 @property (strong, nonatomic) NSDictionary *stylesheet;
+
+- (void)addPageControl;
 @end

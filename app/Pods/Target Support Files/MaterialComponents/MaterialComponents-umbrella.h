@@ -12,6 +12,8 @@
 
 #import "MaterialActivityIndicator.h"
 #import "MDCActivityIndicator.h"
+#import "MaterialPageControl.h"
+#import "MDCPageControl.h"
 #import "MaterialPalettes.h"
 #import "MDCPalettes.h"
 #import "MaterialApplication.h"
