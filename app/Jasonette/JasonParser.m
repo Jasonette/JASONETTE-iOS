@@ -162,14 +162,13 @@
                 data = mutable_data;
             }
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
-                NSLog(@"%@", value);
+                NSLog(@"Javascript error: %@", value);
             }];
             
             [context evaluateScript:@"var console = {}"];
             context[@"console"][@"log"] = ^(NSString *message) {
                 NSLog(@"Javascript log: %@",message);
             };
-
 
             [context evaluateScript:js];
             JSValue *parse = context[@"ST"][@"transform"];
