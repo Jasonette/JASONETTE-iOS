@@ -123,6 +123,10 @@
 		48C3B8CA2204DD7B00AA850B /* settings@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48C3B8822204DD7B00AA850B /* settings@2x.png */; };
 		48DFC70321F7FFB50033F3CF /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DFC70221F7FFB50033F3CF /* SnapshotHelper.swift */; };
 		48DFC70521F903750033F3CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 48DFC70421F903750033F3CF /* Assets.xcassets */; };
+		48E2C9FF223DDA5100B3B53F /* powered-by-finalsite-logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E2C9FB223DDA5000B3B53F /* powered-by-finalsite-logo@2x.png */; };
+		48E2CA00223DDA5100B3B53F /* powered-by-finalsite-logo@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E2C9FC223DDA5000B3B53F /* powered-by-finalsite-logo@3x.png */; };
+		48E2CA01223DDA5100B3B53F /* powered-by-finalsite-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E2C9FD223DDA5100B3B53F /* powered-by-finalsite-logo.png */; };
+		48E2CA02223DDA5100B3B53F /* powered-by-finalsite-logo@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E2C9FE223DDA5100B3B53F /* powered-by-finalsite-logo@4x.png */; };
 		48E64CAF21B97FF300CA02DC /* checkbox_unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */; };
 		48E64CB021B97FF300CA02DC /* checkbox_checked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAE21B97FF300CA02DC /* checkbox_checked.png */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
@@ -352,6 +356,10 @@
 		48C3B8822204DD7B00AA850B /* settings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "settings@2x.png"; path = "../../../config/assets/images/settings@2x.png"; sourceTree = "<group>"; };
 		48DFC70221F7FFB50033F3CF /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = ../SnapshotHelper.swift; sourceTree = "<group>"; };
 		48DFC70421F903750033F3CF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		48E2C9FB223DDA5000B3B53F /* powered-by-finalsite-logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "powered-by-finalsite-logo@2x.png"; path = "../../../config/assets/images/powered-by-finalsite-logo@2x.png"; sourceTree = "<group>"; };
+		48E2C9FC223DDA5000B3B53F /* powered-by-finalsite-logo@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "powered-by-finalsite-logo@3x.png"; path = "../../../config/assets/images/powered-by-finalsite-logo@3x.png"; sourceTree = "<group>"; };
+		48E2C9FD223DDA5100B3B53F /* powered-by-finalsite-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "powered-by-finalsite-logo.png"; path = "../../../config/assets/images/powered-by-finalsite-logo.png"; sourceTree = "<group>"; };
+		48E2C9FE223DDA5100B3B53F /* powered-by-finalsite-logo@4x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "powered-by-finalsite-logo@4x.png"; path = "../../../config/assets/images/powered-by-finalsite-logo@4x.png"; sourceTree = "<group>"; };
 		48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_unchecked.png; sourceTree = "<group>"; };
 		48E64CAE21B97FF300CA02DC /* checkbox_checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_checked.png; sourceTree = "<group>"; };
 		4ADF9705B115D5769072629C /* Pods-FinalsiteNotificationServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FinalsiteNotificationServiceExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-FinalsiteNotificationServiceExtension/Pods-FinalsiteNotificationServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
@@ -805,6 +813,10 @@
 				48C3B8692204DD7800AA850B /* picture.png */,
 				48C3B84D2204DD7600AA850B /* picture@2x.png */,
 				48C3B84F2204DD7600AA850B /* picture@3x.png */,
+				48E2C9FD223DDA5100B3B53F /* powered-by-finalsite-logo.png */,
+				48E2C9FB223DDA5000B3B53F /* powered-by-finalsite-logo@2x.png */,
+				48E2C9FC223DDA5000B3B53F /* powered-by-finalsite-logo@3x.png */,
+				48E2C9FE223DDA5100B3B53F /* powered-by-finalsite-logo@4x.png */,
 				48C3B8522204DD7600AA850B /* playlist.png */,
 				48C3B8812204DD7B00AA850B /* playlist@2x.png */,
 				48C3B8792204DD7900AA850B /* playlist@3x.png */,
@@ -1336,6 +1348,7 @@
 				484B10762209D43500E73607 /* phone@2x.png in Resources */,
 				484B10742209D43500E73607 /* phone.png in Resources */,
 				48C3B8A42204DD7B00AA850B /* home@2x.png in Resources */,
+				48E2CA00223DDA5100B3B53F /* powered-by-finalsite-logo@3x.png in Resources */,
 				48C3B8842204DD7B00AA850B /* calendar.png in Resources */,
 				48C3B8942204DD7B00AA850B /* instagram@2x.png in Resources */,
 				48C3B8BA2204DD7B00AA850B /* album@3x.png in Resources */,
@@ -1347,6 +1360,7 @@
 				48C3B89B2204DD7B00AA850B /* twitter.png in Resources */,
 				48C3B8C92204DD7B00AA850B /* playlist@2x.png in Resources */,
 				48C3B8AF2204DD7B00AA850B /* question@3x.png in Resources */,
+				48E2CA02223DDA5100B3B53F /* powered-by-finalsite-logo@4x.png in Resources */,
 				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
 				48C3B8C72204DD7B00AA850B /* bell.png in Resources */,
 				48C3B8A32204DD7B00AA850B /* album.png in Resources */,
@@ -1360,6 +1374,7 @@
 				5E3177531D1E411F00D87778 /* Next@2x.png in Resources */,
 				48C3B8A72204DD7B00AA850B /* directory.png in Resources */,
 				48C3B8B32204DD7B00AA850B /* calendar@3x.png in Resources */,
+				48E2C9FF223DDA5100B3B53F /* powered-by-finalsite-logo@2x.png in Resources */,
 				484B107B2209D43500E73607 /* envelope@3x.png in Resources */,
 				48C3B8B92204DD7B00AA850B /* location@2x.png in Resources */,
 				4893792D222DC570007B600F /* check-circle.png in Resources */,
@@ -1393,6 +1408,7 @@
 				48C3B8872204DD7B00AA850B /* newspaper@3x.png in Resources */,
 				48C3B8B72204DD7B00AA850B /* facebook@2x.png in Resources */,
 				484B10732209D43500E73607 /* headphones@2x.png in Resources */,
+				48E2CA01223DDA5100B3B53F /* powered-by-finalsite-logo.png in Resources */,
 				48C3B8982204DD7B00AA850B /* settings.png in Resources */,
 				48C3B88C2204DD7B00AA850B /* heart@2x.png in Resources */,
 				5E3177361D1E411F00D87778 /* icon-error@2x.png in Resources */,

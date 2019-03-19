@@ -1604,6 +1604,7 @@
     dict[@"device"] = @{
                         @"width": [NSNumber numberWithFloat:bounds.size.width],
                         @"height": [NSNumber numberWithFloat:bounds.size.height],
+                        @"density": [NSNumber numberWithFloat:[[UIScreen mainScreen] scale]],
                         @"os": @{ @"name": @"ios", @"version": [[UIDevice currentDevice] systemVersion] },
                         @"language": [[NSLocale preferredLanguages] objectAtIndex:0]
                         };
