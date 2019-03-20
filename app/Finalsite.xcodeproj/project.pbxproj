@@ -164,6 +164,10 @@
 		48C3B7992200C90F00AA850B /* splash_screen.json in Resources */ = {isa = PBXBuildFile; fileRef = 48C3B7972200C90F00AA850B /* splash_screen.json */; };
 		48DFC70321F7FFB50033F3CF /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DFC70221F7FFB50033F3CF /* SnapshotHelper.swift */; };
 		48DFC70521F903750033F3CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 48DFC70421F903750033F3CF /* Assets.xcassets */; };
+		48E2C9FF223DDA5100B3B53F /* powered-by-finalsite-logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E2C9FB223DDA5000B3B53F /* powered-by-finalsite-logo@2x.png */; };
+		48E2CA00223DDA5100B3B53F /* powered-by-finalsite-logo@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E2C9FC223DDA5000B3B53F /* powered-by-finalsite-logo@3x.png */; };
+		48E2CA01223DDA5100B3B53F /* powered-by-finalsite-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E2C9FD223DDA5100B3B53F /* powered-by-finalsite-logo.png */; };
+		48E2CA02223DDA5100B3B53F /* powered-by-finalsite-logo@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E2C9FE223DDA5100B3B53F /* powered-by-finalsite-logo@4x.png */; };
 		48E64CAF21B97FF300CA02DC /* checkbox_unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */; };
 		48E64CB021B97FF300CA02DC /* checkbox_checked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAE21B97FF300CA02DC /* checkbox_checked.png */; };
 		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
@@ -422,6 +426,10 @@
 		48C3B7972200C90F00AA850B /* splash_screen.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_screen.json; sourceTree = "<group>"; };
 		48DFC70221F7FFB50033F3CF /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = ../SnapshotHelper.swift; sourceTree = "<group>"; };
 		48DFC70421F903750033F3CF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		48E2C9FB223DDA5000B3B53F /* powered-by-finalsite-logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "powered-by-finalsite-logo@2x.png"; path = "../../../config/assets/images/powered-by-finalsite-logo@2x.png"; sourceTree = "<group>"; };
+		48E2C9FC223DDA5000B3B53F /* powered-by-finalsite-logo@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "powered-by-finalsite-logo@3x.png"; path = "../../../config/assets/images/powered-by-finalsite-logo@3x.png"; sourceTree = "<group>"; };
+		48E2C9FD223DDA5100B3B53F /* powered-by-finalsite-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "powered-by-finalsite-logo.png"; path = "../../../config/assets/images/powered-by-finalsite-logo.png"; sourceTree = "<group>"; };
+		48E2C9FE223DDA5100B3B53F /* powered-by-finalsite-logo@4x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "powered-by-finalsite-logo@4x.png"; path = "../../../config/assets/images/powered-by-finalsite-logo@4x.png"; sourceTree = "<group>"; };
 		48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_unchecked.png; sourceTree = "<group>"; };
 		48E64CAE21B97FF300CA02DC /* checkbox_checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_checked.png; sourceTree = "<group>"; };
 		4ADF9705B115D5769072629C /* Pods-FinalsiteNotificationServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FinalsiteNotificationServiceExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-FinalsiteNotificationServiceExtension/Pods-FinalsiteNotificationServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
@@ -918,7 +926,7 @@
 				48252A7B22415D5F002A1A00 /* twitter.png */,
 				48252A6E22415D5E002A1A00 /* twitter@2x.png */,
 				48252A8F22415D60002A1A00 /* twitter@3x.png */,
-				48252A8922415D60002A1A00 /* twitter@4x.png */,
+				48252A8922415D60002A1A00 /* twitter@4x.png */
 			);
 			name = Images;
 			sourceTree = "<group>";
