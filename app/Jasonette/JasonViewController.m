@@ -657,10 +657,10 @@
     }
     if(item[@"href"]){
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        UIImage *disclosureImage = [UIImage imageNamed:@"Next"];
+        UIImage *disclosureImage = [UIImage imageNamed:@"chevron-right"];
         disclosureImage = [JasonHelper colorize:disclosureImage into:cell.tintColor];
-        disclosureImage = [JasonHelper scaleImage:disclosureImage ToSize:CGSizeMake(8,13)];
-        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,8,13)];
+        disclosureImage = [JasonHelper scaleImage:disclosureImage ToSize:CGSizeMake(13,13)];
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,13,13)];
         [imageView setImage:disclosureImage];
         cell.accessoryView = imageView;
         cell.accessoryView.layer.transform = CATransform3DMakeTranslation(0, 0, -1);
