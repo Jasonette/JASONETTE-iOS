@@ -276,7 +276,7 @@ static NSMutableDictionary *_stylesheet = nil;
 }
 + (void)setStylesheet:(NSMutableDictionary *)stylesheet{
     if (stylesheet != _stylesheet){
-        _stylesheet = [stylesheet mutableCopy];
+        [_stylesheet addEntriesFromDictionary:stylesheet];
     }
 }
 

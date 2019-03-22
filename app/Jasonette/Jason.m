@@ -1604,6 +1604,7 @@
     dict[@"device"] = @{
                         @"width": [NSNumber numberWithFloat:bounds.size.width],
                         @"height": [NSNumber numberWithFloat:bounds.size.height],
+                        @"density": [NSNumber numberWithFloat:[[UIScreen mainScreen] scale]],
                         @"os": @{ @"name": @"ios", @"version": [[UIDevice currentDevice] systemVersion] },
                         @"language": [[NSLocale preferredLanguages] objectAtIndex:0]
                         };
@@ -1792,7 +1793,6 @@
         } else if([VC.url hasPrefix:@"file://"]) {
             [self loadViewByFile: VC.url asFinal:YES];
         }
-        
         /**************************************************
          * Normally urls are not in data-uri.
          ***************************************************/
@@ -1808,7 +1808,6 @@
             jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
             
             manager.responseSerializer = jsonResponseSerializer;
-            
             [manager GET:VC.url parameters:parameters
                 progress:^(NSProgress * _Nonnull downloadProgress) { }
                  success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -1985,6 +1984,7 @@
     }
     [self loading:NO];
     [self networkLoading:NO with:nil];
+    [loadingOverlayView setHidden:YES];
 }
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -3896,21 +3896,19 @@
     // Experimental: Store cache content for offline
     if(VC.original && VC.rendered && VC.original[@"$jason"][@"head"][@"offline"]){
         if(![[VC.rendered description] containsString:@"{{"] && ![[self.options description] containsString:@"}}"]){
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                NSString *normalized_url = [JasonHelper normalized_url:self->VC.url forOptions:self->VC.options];
-                normalized_url = [normalized_url stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
-                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-                NSString *documentsDirectory = [paths objectAtIndex:0];
-                NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
-                
-                NSMutableDictionary *to_store = [self->VC.original mutableCopy];
-                if(to_store[@"$jason"]){
-                    to_store[@"$jason"][@"body"] = self->VC.rendered;
-                }
-                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:to_store];
-                [data writeToFile:path atomically:YES];
-                return;
-            });
+            NSString *normalized_url = [JasonHelper normalized_url:self->VC.url forOptions:self->VC.options];
+            normalized_url = [normalized_url stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *documentsDirectory = [paths objectAtIndex:0];
+            NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
+
+            NSMutableDictionary *to_store = [self->VC.original mutableCopy];
+            if(to_store[@"$jason"]){
+                to_store[@"$jason"][@"body"] = self->VC.rendered;
+            }
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:to_store];
+            [data writeToFile:path atomically:YES];
+            return;
         }
     }
     
