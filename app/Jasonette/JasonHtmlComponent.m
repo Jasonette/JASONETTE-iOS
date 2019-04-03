@@ -137,6 +137,13 @@
         return NO;
     }
     
+    // open links in the proper application
+    if (navigationType == UIWebViewNavigationTypeLinkClicked ) {
+        UIApplication *application = [UIApplication sharedApplication];
+        [application openURL:[request URL] options:@{} completionHandler:nil];
+        return NO;
+    }
+    
     return YES;
 }
 

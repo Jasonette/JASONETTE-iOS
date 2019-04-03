@@ -162,22 +162,14 @@
     [tab setDelegate:self];
 
     // create loading wheel
-    activityIndicator = [[MDCActivityIndicator alloc] init];
-    [activityIndicator sizeToFit];
-    activityIndicator.cycleColors = @[[UIColor colorWithRed:0.14 green:0.266 blue:0.387 alpha:1.0]];
-    activityIndicator.strokeWidth = 6;
-    activityIndicator.radius = 32;
-    loadingOverlayView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    loadingOverlayView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:0.6];
-    activityIndicator.center = loadingOverlayView.center;
-    [loadingOverlayView addSubview:activityIndicator];
-    [activityIndicator startAnimating];
+    [self showLoadingOverlay];
 
     app.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     app.window.rootViewController = tab;
 
     [app.window makeKeyAndVisible];
 }
+
 - (void)call: (NSDictionary *)action{
     /**************************************************
      *
@@ -262,6 +254,7 @@
         [JasonMemory client]._register = @{@"$jason": @{}};
     }
     
+    [self hideLoadingOverlay];
     [self networkLoading:NO with:nil];
     [self next];
 }
@@ -305,6 +298,7 @@
     
     // In case oauth was in process, set it back to No
     self.oauth_in_process = NO;
+    [self hideLoadingOverlay];
     [self exception];
 }
 - (void)loading:(BOOL)turnon{
@@ -335,6 +329,28 @@
             [JDStatusBarNotification dismissAnimated:YES];
         }
     }
+}
+- (void)showLoadingOverlay {
+    if (loadingOverlayView) {
+        loadingOverlayView.hidden = NO;
+    } else {
+        activityIndicator = [[MDCActivityIndicator alloc] init];
+        [activityIndicator sizeToFit];
+        activityIndicator.cycleColors = @[[UIColor colorWithRed:0.14 green:0.266 blue:0.387 alpha:1.0]];
+        activityIndicator.strokeWidth = 6;
+        activityIndicator.radius = 32;
+        
+        loadingOverlayView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        loadingOverlayView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:0.6];
+        activityIndicator.center = loadingOverlayView.center;
+        [loadingOverlayView addSubview:activityIndicator];
+        UIWindow *currentWindow = [UIApplication sharedApplication].keyWindow;
+        [currentWindow addSubview:loadingOverlayView];
+        [activityIndicator startAnimating];
+    }
+}
+- (void)hideLoadingOverlay {
+    loadingOverlayView.hidden = YES;
 }
 
 -(void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;{

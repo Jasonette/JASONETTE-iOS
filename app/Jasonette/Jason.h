@@ -67,6 +67,8 @@
 - (void)call: (id)action with: (NSDictionary *)data;
 
 - (void)loading:(BOOL)turnon;
+- (void)showLoadingOverlay;
+- (void)hideLoadingOverlay;
 - (void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;
 - (void)search;
 - (void)snapshot;

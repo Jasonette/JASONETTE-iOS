@@ -67,8 +67,16 @@
         int padding = [style[@"padding"] intValue];
         component.layer.sublayerTransform = CATransform3DMakeTranslation(padding, 0, 0);
     }
- 
     
+    if(style[@"shadow_border"]){
+        component.layer.masksToBounds = false;
+        component.layer.backgroundColor = UIColor.whiteColor.CGColor;
+        component.layer.shadowColor = UIColor.blackColor.CGColor;
+        component.layer.shadowOpacity = 0.25;
+        component.layer.shadowRadius = 4.0;
+        component.layer.shadowOffset = CGSizeMake(0.0, 1.0);
+    }
+ 
     
     if(style){
         if(style[@"secure"] && [style[@"secure"] boolValue]){
