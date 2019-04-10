@@ -18,11 +18,11 @@ default_platform(:ios)
 platform :ios do
 
 	lane :app_icon do
-		appicon(appicon_image_file: '../../config/assets/app_icon.png', appicon_devices: [:iphone])
+		appicon(appicon_image_file: '../../config/assets/app_icon.png', appicon_devices: [:iphone, :ipad])
 	end
 
 	lane :beta do
-		appicon(appicon_image_file: '../../config/assets/app_icon.png', appicon_devices: [:iphone])
+		appicon(appicon_image_file: '../../config/assets/app_icon.png', appicon_devices: [:iphone, :ipad])
 		capture_screenshots
 		get_certificates           # invokes cert
 		get_provisioning_profile   # invokes sigh
