@@ -2,8 +2,13 @@
 
 # A list of devices you want to take the screenshots from
 devices([
-  "iPhone XS", # 6.5"
-  "iPhone 6s" # 5.5"
+  "iPhone XS Max", # 6.5" required
+  "iPhone XS", # 5.8 optional
+  "iPhone 6s Plus", # 5.5" required
+  "iPhone 6", # 4.7" optional
+  "iPhone SE", # 4" optional if 5.5" provided
+  "iPad Pro (12.9-inch) (3rd generation)", # required
+  "iPad Pro (12.9-inch) (2nd generation)" # required
 ])
 
 # languages([

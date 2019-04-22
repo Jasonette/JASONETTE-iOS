@@ -57,6 +57,9 @@
         NSString *dataType = [self build_data_type: manager];
         NSMutableDictionary *parameters = [self build_params: session];
     
+        if (self.options[@"show_loading"]) {
+            [[Jason client] showLoadingOverlay];
+        }
         
         NSString *method = self.options[@"method"];
         if(!method) method = @"get";
