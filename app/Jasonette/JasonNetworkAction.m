@@ -6,6 +6,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonNetworkAction.h"
+#import "JasonOptionHelper.h"
 #import "UICKeyChainStore.h"
 
 @implementation JasonNetworkAction
@@ -57,7 +58,9 @@
         NSString *dataType = [self build_data_type: manager];
         NSMutableDictionary *parameters = [self build_params: session];
     
-        if (self.options[@"show_loading"]) {
+        JasonOptionHelper * optionHelper = [[JasonOptionHelper alloc] initWithOptions:self.options];
+        BOOL showLoading = [optionHelper getBoolean:@"show_loading"];
+        if (showLoading) {
             [[Jason client] showLoadingOverlay];
         }
         
