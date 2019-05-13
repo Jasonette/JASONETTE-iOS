@@ -1007,7 +1007,7 @@
                                 // it's an image. Let's download!
                                 NSString *url = body[key];
                                 if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
-                                    download_image_counter++;
+                                    self->download_image_counter++;
                                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
                                     NSDictionary *session = [JasonHelper sessionForUrl:url];
                                     if(session && session.count > 0 && session[@"header"]){
@@ -1021,7 +1021,7 @@
                                         }
                                     }
                                     [manager.imageDownloader downloadImageWithURL:[NSURL URLWithString:url] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) { } completed:^(UIImage *i, NSData *data, NSError *error, BOOL finished) {
-                                        download_image_counter--;
+                                        self->download_image_counter--;
                                         if(!error){
                                             JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
                                         }
@@ -1030,12 +1030,12 @@
 
                                             NSArray *indexPathArray = weakSelf.tableView.indexPathsForVisibleRows;
                                             NSMutableSet *visibleIndexPaths = [[NSMutableSet alloc] initWithArray: indexPathArray];
-                                            [visibleIndexPaths intersectSet:(NSSet *)indexPathsForImage[url]];
+                                            [visibleIndexPaths intersectSet:(NSSet *)self->indexPathsForImage[url]];
                                             if(visibleIndexPaths.count > 0){
                                                 [weakSelf.tableView reloadData];
                                             }
-                                            if(!top_aligned){
-                                                if(download_image_counter == 0){
+                                            if(!self->top_aligned){
+                                                if(self->download_image_counter == 0){
                                                     [weakSelf scrollToBottom];
                                                 }
                                             }
@@ -1052,7 +1052,7 @@
 }
 - (void)finishRefreshing{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [refreshControl performSelector:@selector(endRefreshing) withObject:nil afterDelay:0.0];
+        [self->refreshControl performSelector:@selector(endRefreshing) withObject:nil afterDelay:0.0];
     });
 }
 - (void)refresh {
@@ -1091,7 +1091,7 @@
             #endif
             
             
-            if (default_bottom_padding == 0) {
+            if (self->default_bottom_padding == 0) {
                 CGFloat bottom_padding = 0.0;
                 if (self.tabBarController.tabBar) {
                     bottom_padding += self.tabBarController.tabBar.frame.size.height;
@@ -1099,11 +1099,11 @@
                 if (self.composeBarView) {
                     bottom_padding += self.composeBarView.frame.size.height;
                 }
-                default_bottom_padding = bottom_padding;
+                self->default_bottom_padding = bottom_padding;
                 self.tableView.contentInset = UIEdgeInsetsMake(self.tableView.contentInset.top, self.tableView.contentInset.left, self.tableView.contentInset.bottom+bottom_padding, self.tableView.contentInset.right);
             }
             
-            original_bottom_inset = self.tableView.contentInset.bottom;
+            self->original_bottom_inset = self.tableView.contentInset.bottom;
         });
     }
     @catch(NSException *e){
@@ -1486,7 +1486,7 @@
             __weak JasonViewController *weakSelf = self;
 
             [self.view addKeyboardPanningWithActionHandler:^(CGRect keyboardFrameInView, BOOL opening, BOOL closing) {
-                CGFloat m = MIN(self->original_height, keyboardFrameInView.origin.y);
+                CGFloat m = MIN(original_height, keyboardFrameInView.origin.y);
                 if(opening || (closing && m >= weakSelf.view.frame.size.height)){
                     CGRect newViewFrame = CGRectMake(weakSelf.view.frame.origin.x, weakSelf.view.frame.origin.y, weakSelf.view.frame.size.width, m);
                     weakSelf.view.frame = newViewFrame;
