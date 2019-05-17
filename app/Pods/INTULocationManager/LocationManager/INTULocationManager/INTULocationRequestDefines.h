@@ -1,7 +1,7 @@
 //
 //  INTULocationRequestDefines.h
 //
-//  Copyright (c) 2014-2015 Intuit Inc.
+//  Copyright (c) 2014-2017 Intuit Inc.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -28,16 +28,6 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
-
-#if __has_feature(nullability)
-#   define __INTU_ASSUME_NONNULL_BEGIN      NS_ASSUME_NONNULL_BEGIN
-#   define __INTU_ASSUME_NONNULL_END        NS_ASSUME_NONNULL_END
-#   define __INTU_NULLABLE                  nullable
-#else
-#   define __INTU_ASSUME_NONNULL_BEGIN
-#   define __INTU_ASSUME_NONNULL_END
-#   define __INTU_NULLABLE
-#endif
 
 #if __has_feature(objc_generics)
 #   define __INTU_GENERICS(type, ...)       type<__VA_ARGS__>
@@ -169,5 +159,11 @@ typedef void(^INTULocationRequestBlock)(CLLocation *currentLocation, INTULocatio
  @param status          The status of the request - whether it succeeded or failed due to some sort of error. This can be used to understand if any further action is needed.
  */
 typedef void(^INTUHeadingRequestBlock)(CLHeading *currentHeading, INTUHeadingStatus status);
+
+typedef NS_ENUM(NSUInteger, INTUAuthorizationType) {
+    INTUAuthorizationTypeAuto,
+    INTUAuthorizationTypeAlways,
+    INTUAuthorizationTypeWhenInUse,
+};
 
 #endif /* INTU_LOCATION_REQUEST_DEFINES_H */

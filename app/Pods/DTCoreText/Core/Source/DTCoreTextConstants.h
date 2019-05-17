@@ -82,6 +82,7 @@ extern NSString * const DTAscentMultiplierAttribute;
 extern NSString * const DTBackgroundStrokeColorAttribute;
 extern NSString * const DTBackgroundStrokeWidthAttribute;
 extern NSString * const DTBackgroundCornerRadiusAttribute;
+extern NSString * const DTArchivingAttribute;
 
 // field constants
 
@@ -159,7 +160,7 @@ typedef NS_ENUM(NSUInteger, DTHTMLElementFloatStyle)
 typedef NS_ENUM(NSUInteger, DTHTMLElementFontVariant)
 {
 	/**
-	 The element inherts the font variant
+	 The element inherits the font variant
 	 */
 	DTHTMLElementFontVariantInherit = 0,
 	

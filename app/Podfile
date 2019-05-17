@@ -38,7 +38,6 @@ target 'Finalsite' do
   pod 'FLEX', '~> 2.0', :configurations => ['Debug']
   pod 'SocketRocket'
   #pod 'GoogleMobileAds', '~> 7.8'
-  pod 'UrbanAirship-iOS-SDK'
   pod 'MaterialComponents/ActivityIndicator'
   pod 'MaterialComponents/PageControl'
 
@@ -52,7 +51,3 @@ target 'Finalsite' do
     end
   end
 end
-
-#target "FinalsiteNotificationServiceExtension" do
-#    pod 'UrbanAirship-iOS-AppExtensions'
-#end

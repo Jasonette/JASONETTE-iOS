@@ -10,7 +10,7 @@
 
 @interface APThread : NSThread
 
-- (void)dispatchAsync:(void (^)())block;
-- (void)dispatchSync:(void (^)())block;
+- (void)dispatchAsync:(void (^)(void))block;
+- (void)dispatchSync:(void (^)(void))block;
 
 @end

@@ -33,17 +33,24 @@
 
 - (void)requestAccessWithCompletion:(void (^)(BOOL granted, NSError *error))completionBlock
 {
-    if (!self.wrapper.error)
+    ABAddressBookRequestAccessWithCompletion(self.wrapper.ref, ^(bool granted, CFErrorRef errorRef)
     {
-        ABAddressBookRequestAccessWithCompletion(self.wrapper.ref, ^(bool granted, CFErrorRef error)
+        NSError *error = (__bridge NSError *)errorRef;
+        if (!error && !granted)
         {
-            completionBlock ? completionBlock(granted, (__bridge NSError *)error) : nil;
-        });
-    }
-    else
-    {
-        completionBlock ? completionBlock(NO, self.wrapper.error) : nil;
-    }
+            error = self.accessDeniedError;
+        }
+        completionBlock ? completionBlock(granted, error) : nil;
+    });
+}
+
+#pragma mark - Private
+
+- (NSError *)accessDeniedError
+{
+    NSDictionary *userInfo = @{NSLocalizedFailureReasonErrorKey:
+                               @"Address book access has been denied by user"};
+    return [[NSError alloc] initWithDomain:@"APAddressBookErrorDomain" code:101 userInfo:userInfo];
 }
 
 @end

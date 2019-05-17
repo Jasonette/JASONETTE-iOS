@@ -1,6 +1,6 @@
 //
 // MBProgressHUD.m
-// Version 1.0.0
+// Version 1.1.0
 // Created by Matej Bukovinski on 2.4.09.
 //
 
@@ -80,7 +80,10 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     NSEnumerator *subviewsEnum = [view.subviews reverseObjectEnumerator];
     for (UIView *subview in subviewsEnum) {
         if ([subview isKindOfClass:self]) {
-            return (MBProgressHUD *)subview;
+            MBProgressHUD *hud = (MBProgressHUD *)subview;
+            if (hud.hasFinished == NO) {
+                return hud;
+            }
         }
     }
     return nil;
@@ -175,6 +178,9 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 }
 
 - (void)hideAnimated:(BOOL)animated afterDelay:(NSTimeInterval)delay {
+    // Cancel any scheduled hideDelayed: calls
+    [self.hideDelayTimer invalidate];
+
     NSTimer *timer = [NSTimer timerWithTimeInterval:delay target:self selector:@selector(handleHideTimer:) userInfo:@(animated) repeats:NO];
     [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
     self.hideDelayTimer = timer;
@@ -784,7 +790,7 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 - (void)updateForCurrentOrientationAnimated:(BOOL)animated {
     // Stay in sync with the superview in any case
     if (self.superview) {
-        self.bounds = self.superview.bounds;
+        self.frame = self.superview.bounds;
     }
 
     // Not needed on iOS 8+, compile out when the deployment target allows,
@@ -934,7 +940,7 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
             CGFloat radius = (CGRectGetWidth(self.bounds) / 2.f) - (processPath.lineWidth / 2.f);
             CGFloat endAngle = (self.progress * 2.f * (float)M_PI) + startAngle;
             [processPath addArcWithCenter:center radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
-            // Ensure that we don't get color overlaping when _progressTintColor alpha < 1.f.
+            // Ensure that we don't get color overlapping when _progressTintColor alpha < 1.f.
             CGContextSetBlendMode(context, kCGBlendModeCopy);
             [_progressTintColor set];
             [processPath stroke];
@@ -1007,26 +1013,14 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     CGContextSetStrokeColorWithColor(context,[_lineColor CGColor]);
     CGContextSetFillColorWithColor(context, [_progressRemainingColor CGColor]);
     
-    // Draw background
+    // Draw background and Border
     CGFloat radius = (rect.size.height / 2) - 2;
     CGContextMoveToPoint(context, 2, rect.size.height/2);
     CGContextAddArcToPoint(context, 2, 2, radius + 2, 2, radius);
-    CGContextAddLineToPoint(context, rect.size.width - radius - 2, 2);
     CGContextAddArcToPoint(context, rect.size.width - 2, 2, rect.size.width - 2, rect.size.height / 2, radius);
     CGContextAddArcToPoint(context, rect.size.width - 2, rect.size.height - 2, rect.size.width - radius - 2, rect.size.height - 2, radius);
-    CGContextAddLineToPoint(context, radius + 2, rect.size.height - 2);
     CGContextAddArcToPoint(context, 2, rect.size.height - 2, 2, rect.size.height/2, radius);
-    CGContextFillPath(context);
-    
-    // Draw border
-    CGContextMoveToPoint(context, 2, rect.size.height/2);
-    CGContextAddArcToPoint(context, 2, 2, radius + 2, 2, radius);
-    CGContextAddLineToPoint(context, rect.size.width - radius - 2, 2);
-    CGContextAddArcToPoint(context, rect.size.width - 2, 2, rect.size.width - 2, rect.size.height / 2, radius);
-    CGContextAddArcToPoint(context, rect.size.width - 2, rect.size.height - 2, rect.size.width - radius - 2, rect.size.height - 2, radius);
-    CGContextAddLineToPoint(context, radius + 2, rect.size.height - 2);
-    CGContextAddArcToPoint(context, 2, rect.size.height - 2, 2, rect.size.height/2, radius);
-    CGContextStrokePath(context);
+    CGContextDrawPath(context, kCGPathFillStroke);
     
     CGContextSetFillColorWithColor(context, [_progressColor CGColor]);
     radius = radius - 2;
@@ -1107,6 +1101,9 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     if ((self = [super initWithFrame:frame])) {
         if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_7_0) {
             _style = MBProgressHUDBackgroundStyleBlur;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 || TARGET_OS_TV
+            _blurEffectStyle = UIBlurEffectStyleLight;
+#endif
             if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_8_0) {
                 _color = [UIColor colorWithWhite:0.8f alpha:0.6f];
             } else {
@@ -1151,6 +1148,20 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     }
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 || TARGET_OS_TV
+
+- (void)setBlurEffectStyle:(UIBlurEffectStyle)blurEffectStyle {
+    if (_blurEffectStyle == blurEffectStyle) {
+        return;
+    }
+
+    _blurEffectStyle = blurEffectStyle;
+
+    [self updateForBackgroundStyle];
+}
+
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - Views
 
@@ -1159,7 +1170,7 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     if (style == MBProgressHUDBackgroundStyleBlur) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 || TARGET_OS_TV
         if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_8_0) {
-            UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+            UIBlurEffect *effect = [UIBlurEffect effectWithStyle:self.blurEffectStyle];
             UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
             [self addSubview:effectView];
             effectView.frame = self.bounds;
@@ -1276,7 +1287,7 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     [self showAnimated:animated whileExecutingBlock:block onQueue:queue completionBlock:NULL];
 }
 
-- (void)showAnimated:(BOOL)animated whileExecutingBlock:(dispatch_block_t)block completionBlock:(void (^)())completion {
+- (void)showAnimated:(BOOL)animated whileExecutingBlock:(dispatch_block_t)block completionBlock:(void (^)(void))completion {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     [self showAnimated:animated whileExecutingBlock:block onQueue:queue completionBlock:completion];
 }

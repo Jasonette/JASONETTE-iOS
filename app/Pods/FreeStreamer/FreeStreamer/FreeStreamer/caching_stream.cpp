@@ -1,6 +1,6 @@
 /*
  * This file is part of the FreeStreamer project,
- * (C)Copyright 2011-2016 Matias Muhonen <mmu@iki.fi> 穆马帝
+ * (C)Copyright 2011-2018 Matias Muhonen <mmu@iki.fi> 穆马帝
  * See the file ''LICENSE'' for using the code.
  *
  * https://github.com/muhku/FreeStreamer
@@ -44,22 +44,28 @@ Caching_Stream::Caching_Stream(Input_Stream *target) :
 Caching_Stream::~Caching_Stream()
 {
     if (m_target) {
-        delete m_target, m_target = 0;
+        delete m_target;
+        m_target = 0;
     }
     if (m_fileOutput) {
-        delete m_fileOutput, m_fileOutput = 0;
+        delete m_fileOutput;
+        m_fileOutput = 0;
     }
     if (m_fileStream) {
-        delete m_fileStream, m_fileStream = 0;
+        delete m_fileStream;
+        m_fileStream = 0;
     }
     if (m_cacheIdentifier) {
-        CFRelease(m_cacheIdentifier), m_cacheIdentifier = 0;
+        CFRelease(m_cacheIdentifier);
+        m_cacheIdentifier = 0;
     }
     if (m_fileUrl) {
-        CFRelease(m_fileUrl), m_fileUrl = 0;
+        CFRelease(m_fileUrl);
+        m_fileUrl = 0;
     }
     if (m_metaDataUrl) {
-        CFRelease(m_metaDataUrl), m_fileUrl = 0;
+        CFRelease(m_metaDataUrl);
+        m_fileUrl = 0;
     }
 }
     
@@ -239,7 +245,8 @@ void Caching_Stream::setCacheIdentifier(CFStringRef cacheIdentifier)
     m_cacheIdentifier = CFStringCreateCopy(kCFAllocatorDefault, cacheIdentifier);
     
     if (m_fileOutput) {
-        delete m_fileOutput, m_fileOutput = 0;
+        delete m_fileOutput;
+        m_fileOutput = 0;
     }
     
     Stream_Configuration *config = Stream_Configuration::configuration();
@@ -248,10 +255,12 @@ void Caching_Stream::setCacheIdentifier(CFStringRef cacheIdentifier)
     CFStringRef metaDataPath = CFStringCreateWithFormat(NULL, NULL, CFSTR("file://%@/%@.metadata"), config->cacheDirectory, m_cacheIdentifier);
     
     if (m_fileUrl) {
-        CFRelease(m_fileUrl), m_fileUrl = 0;
+        CFRelease(m_fileUrl);
+        m_fileUrl = 0;
     }
     if (m_metaDataUrl) {
-        CFRelease(m_metaDataUrl), m_metaDataUrl = 0;
+        CFRelease(m_metaDataUrl);
+        m_metaDataUrl = 0;
     }
 
     m_fileUrl = createFileURLWithPath(filePath);
@@ -348,7 +357,8 @@ void Caching_Stream::streamHasBytesAvailable(UInt8 *data, UInt32 numBytes)
 void Caching_Stream::streamEndEncountered()
 {
     if (m_fileOutput) {
-        delete m_fileOutput, m_fileOutput = 0;
+        delete m_fileOutput;
+        m_fileOutput = 0;
     }
     
     if (m_cacheable) {

@@ -6,7 +6,6 @@
 //  Copyright 2011 Drobnik.com. All rights reserved.
 //
 
-#import <DTCoreText/DTCoreText.h>
 
 /**
  This class describes the attributes of a font. It is used to represent fonts throughout the parsing and when needed is able to generated matching `CTFont` instances.
@@ -197,7 +196,7 @@
 + (void)setOverrideFontName:(NSString *)fontName forFontFamily:(NSString *)fontFamily bold:(BOOL)bold italic:(BOOL)italic;
 
 /**
- Retrieves the gobal font name override for a given font family with bold and italic traits.
+ Retrieves the global font name override for a given font family with bold and italic traits.
  @param fontFamily The font family to retrieve the override for
  @param bold The bold trait
  @param italic The italic trait
@@ -215,7 +214,7 @@
 + (void)setSmallCapsFontName:(NSString *)fontName forFontFamily:(NSString *)fontFamily bold:(BOOL)bold italic:(BOOL)italic;
 
 /**
- Retrieves the gobal font name override to use for small caps text for a given font family with bold and italic traits.
+ Retrieves the global font name override to use for small caps text for a given font family with bold and italic traits.
  @param fontFamily The font family to retrieve the override for
  @param bold The bold trait
  @param italic The italic trait

@@ -26,12 +26,11 @@
 #import "private/MaterialActivityIndicatorStrings_table.h"
 
 static const NSInteger kTotalDetentCount = 5;
-static const NSTimeInterval kAnimateOutDuration = 0.1f;
-static const CGFloat kCycleRotation = 3.0f / 2.0f;
-static const CGFloat kOuterRotationIncrement =
-    (1.0f / kTotalDetentCount) * (CGFloat)M_PI;
-static const CGFloat kSpinnerRadius = 12.f;
-static const CGFloat kStrokeLength = 0.75f;
+static const NSTimeInterval kAnimateOutDuration = 0.1;
+static const CGFloat kCycleRotation = (CGFloat)(3.0 / 2);
+static const CGFloat kOuterRotationIncrement = (CGFloat)(1.0 / kTotalDetentCount) * (CGFloat)M_PI;
+static const CGFloat kSpinnerRadius = 12;
+static const CGFloat kStrokeLength = (CGFloat)0.75;
 
 #ifndef CGFLOAT_EPSILON
 #if CGFLOAT_IS_DOUBLE
@@ -45,10 +44,10 @@ static const CGFloat kStrokeLength = 0.75f;
 static NSString *const kBundle = @"MaterialActivityIndicator.bundle";
 
 /**
- Total rotation (outer rotation + stroke rotation) per _cycleCount. One turn is 2.0f.
+ Total rotation (outer rotation + stroke rotation) per _cycleCount. One turn is 2.
  */
 static const CGFloat kSingleCycleRotation =
-    2 * kStrokeLength + kCycleRotation + 1.0f / kTotalDetentCount;
+    2 * kStrokeLength + kCycleRotation + (CGFloat)(1.0 / kTotalDetentCount);
 
 @interface MDCActivityIndicator ()
 
@@ -173,7 +172,7 @@ static const CGFloat kSingleCycleRotation =
 
   // Property defaults.
   _radius = kSpinnerRadius;
-  _strokeWidth = 2.0f;
+  _strokeWidth = 2;
 
   // Colors.
   _cycleColorsIndex = 0;
@@ -220,6 +219,14 @@ static const CGFloat kSingleCycleRotation =
 - (CGSize)sizeThatFits:(__unused CGSize)size {
   CGFloat edge = 2 * _radius + _strokeWidth;
   return CGSizeMake(edge, edge);
+}
+
+- (void)setHidden:(BOOL)hidden {
+  [super setHidden:hidden];
+
+  if (hidden) {
+    [self stopAnimating];
+  }
 }
 
 #pragma mark - Public methods
@@ -356,7 +363,7 @@ static const CGFloat kSingleCycleRotation =
 
 - (void)setStrokeColor:(UIColor *)strokeColor {
   _strokeLayer.strokeColor = strokeColor.CGColor;
-  _trackLayer.strokeColor = [strokeColor colorWithAlphaComponent:0.3f].CGColor;
+  _trackLayer.strokeColor = [strokeColor colorWithAlphaComponent:(CGFloat)0.3].CGColor;
 }
 
 - (void)setIndicatorMode:(MDCActivityIndicatorMode)indicatorMode {
@@ -389,7 +396,7 @@ static const CGFloat kSingleCycleRotation =
 }
 
 - (void)setProgress:(float)progress animated:(BOOL)animated {
-  _progress = MAX(0.0f, MIN(progress, 1.0f));
+  _progress = MAX(0, MIN(progress, 1));
   if (_indicatorMode == MDCActivityIndicatorModeIndeterminate || _progress == _currentProgress) {
     return;
   }
@@ -414,7 +421,7 @@ static const CGFloat kSingleCycleRotation =
 }
 
 - (void)setRadius:(CGFloat)radius {
-  _radius = MIN(MAX(radius, 5.0f), 72.0f);
+  _radius = MIN(MAX(radius, 5), 72);
 
   [self updateStrokePath];
 }
@@ -470,8 +477,8 @@ static const CGFloat kSingleCycleRotation =
   _cycleCount = _cycleStartIndex;
 
   [self applyPropertiesWithoutAnimation:^{
-    self.strokeLayer.strokeStart = 0.0f;
-    self.strokeLayer.strokeEnd = 0.001f;
+    self.strokeLayer.strokeStart = 0;
+    self.strokeLayer.strokeEnd = (CGFloat)0.001;
     self.strokeLayer.lineWidth = self.strokeWidth;
     self.trackLayer.lineWidth = self.strokeWidth;
 
@@ -496,8 +503,8 @@ static const CGFloat kSingleCycleRotation =
 
   [self removeAnimations];
   [self applyPropertiesWithoutAnimation:^{
-    self.strokeLayer.strokeStart = 0.0f;
-    self.strokeLayer.strokeEnd = 0.0f;
+    self.strokeLayer.strokeStart = 0;
+    self.strokeLayer.strokeEnd = 0;
   }];
 }
 
@@ -530,8 +537,8 @@ static const CGFloat kSingleCycleRotation =
   strokeEnd = strokeEnd > 1 ? strokeEnd - 1 : strokeEnd;
 
   [self applyPropertiesWithoutAnimation:^{
-    self.strokeLayer.strokeStart = 0.0f;
-    self.strokeLayer.strokeEnd = 0.0f;
+    self.strokeLayer.strokeStart = 0;
+    self.strokeLayer.strokeEnd = 0;
   }];
 
   [CATransaction begin];
@@ -555,11 +562,11 @@ static const CGFloat kSingleCycleRotation =
 }
 
 - (void)updateStrokePath {
-  CGFloat offsetRadius = _radius - _strokeLayer.lineWidth / 2.0f;
+  CGFloat offsetRadius = _radius - _strokeLayer.lineWidth / 2;
   UIBezierPath *strokePath = [UIBezierPath bezierPathWithArcCenter:_strokeLayer.position
                                                             radius:offsetRadius
-                                                        startAngle:-1.0f * (CGFloat)M_PI_2
-                                                          endAngle:3.0f * (CGFloat)M_PI_2
+                                                        startAngle:-1 * (CGFloat)M_PI_2
+                                                          endAngle:3 * (CGFloat)M_PI_2
                                                          clockwise:YES];
   _strokeLayer.path = strokePath.CGPath;
   _trackLayer.path = strokePath.CGPath;
@@ -631,7 +638,7 @@ static const CGFloat kSingleCycleRotation =
   // Find the nearest cycle to transition through.
   NSInteger nearestCycle = 0;
   CGFloat nearestDistance = CGFLOAT_MAX;
-  const CGFloat normalizedProgress = MAX(_lastProgress - _minStrokeDifference, 0.0f);
+  const CGFloat normalizedProgress = MAX(_lastProgress - _minStrokeDifference, 0);
   for (NSInteger cycle = 0; cycle < kTotalDetentCount; cycle++) {
     const CGFloat currentRotation = [self normalizedRotationForCycle:cycle];
     if (currentRotation >= normalizedProgress) {
@@ -655,8 +662,8 @@ static const CGFloat kSingleCycleRotation =
   _cycleCount = nearestCycle;
 
   CGFloat targetRotation = [self normalizedRotationForCycle:nearestCycle];
-  if (targetRotation <= 0.001f) {
-    targetRotation = 1.0f;
+  if (targetRotation <= (CGFloat)0.001) {
+    targetRotation = 1;
   }
   CGFloat pointCycleDuration = (CGFloat)MDCActivityIndicatorMotionSpec.pointCycleDuration;
   CGFloat pointCycleMinimumVariableDuration =
@@ -715,7 +722,7 @@ static const CGFloat kSingleCycleRotation =
     [_strokeLayer removeAllAnimations];
     [_outerRotationLayer removeAllAnimations];
     // Necessary for transition from indeterminate to determinate when cycle == 0.
-    _currentProgress = 0.0f;
+    _currentProgress = 0;
     _lastProgress = _currentProgress;
     [self strokeRotationCycleFinishedFromState:MDCActivityIndicatorStateTransitionToDeterminate];
     if ([_delegate respondsToSelector:@selector(activityIndicatorModeTransitionDidFinish:)]) {
@@ -724,14 +731,14 @@ static const CGFloat kSingleCycleRotation =
   } else {
     _currentProgress = MAX(_progress, _minStrokeDifference);
 
-    CGFloat rotationDelta = 1.0f - [self normalizedRotationForCycle:_cycleCount];
+    CGFloat rotationDelta = 1 - [self normalizedRotationForCycle:_cycleCount];
 
     // Change the duration relative to the distance in order to keep same relative speed.
     CGFloat pointCycleDuration = (CGFloat)MDCActivityIndicatorMotionSpec.pointCycleDuration;
     CGFloat pointCycleMinimumVariableDuration =
         (CGFloat)MDCActivityIndicatorMotionSpec.pointCycleMinimumVariableDuration;
-    CGFloat duration = 2.0f * (rotationDelta + _currentProgress) / kSingleCycleRotation *
-                       pointCycleDuration;
+    CGFloat duration =
+        2 * (rotationDelta + _currentProgress) / kSingleCycleRotation * pointCycleDuration;
     duration = MAX(duration, pointCycleMinimumVariableDuration);
 
     [CATransaction begin];
@@ -753,7 +760,7 @@ static const CGFloat kSingleCycleRotation =
           CATransform3DMakeRotation(kOuterRotationIncrement * _cycleCount, 0, 0, 1);
 
       CGFloat startRotation = _cycleCount * (CGFloat)M_PI;
-      CGFloat endRotation = startRotation + rotationDelta * 2.0f * (CGFloat)M_PI;
+      CGFloat endRotation = startRotation + rotationDelta * 2 * (CGFloat)M_PI;
       [_animator animateWithTiming:spec.innerRotation
                            toLayer:_strokeLayer
                         withValues:@[@(startRotation), @(endRotation)]
@@ -870,10 +877,10 @@ static const CGFloat kSingleCycleRotation =
 }
 
 /**
- Rotation that a given cycle has. Represented between 0.0f (cycle has no rotation) and 1.0f.
+ Rotation that a given cycle has. Represented between 0 (cycle has no rotation) and 1.
  */
 - (CGFloat)normalizedRotationForCycle:(NSInteger)cycle {
-  CGFloat cycleRotation = cycle * kSingleCycleRotation / 2.0f;
+  CGFloat cycleRotation = cycle * kSingleCycleRotation / 2;
   return cycleRotation - ((NSInteger)cycleRotation);
 }
 
@@ -917,7 +924,7 @@ static const CGFloat kSingleCycleRotation =
 }
 
 + (CGFloat)defaultHeight {
-  return kSpinnerRadius * 2.f;
+  return kSpinnerRadius * 2;
 }
 
 + (NSArray<UIColor *> *)defaultCycleColors {

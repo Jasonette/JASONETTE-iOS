@@ -1,4 +1,4 @@
-Copyright (c) 2011-2016 Matias Muhonen <mmu@iki.fi> 穆马帝
+Copyright (c) 2011-2018 Matias Muhonen <mmu@iki.fi> 穆马帝
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

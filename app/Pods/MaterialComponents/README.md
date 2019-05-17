@@ -4,7 +4,6 @@
 
 [![Build Status](https://travis-ci.org/material-components/material-components-ios.svg?branch=develop)](https://travis-ci.org/material-components/material-components-ios)
 [![Code coverage](https://img.shields.io/codecov/c/github/material-components/material-components-ios/develop.svg)](https://codecov.io/gh/material-components/material-components-ios/branch/develop)
-[![Chat](https://img.shields.io/discord/259087343246508035.svg)](https://discord.gg/material-components)
 
 Material Components for iOS (MDC-iOS) helps developers execute [Material Design](https://material.io). Developed by a core team of engineers and UX designers at Google, these components enable a reliable development workflow to build beautiful and functional iOS apps. Learn more about how Material Components for iOS supports design and usability best practices across platforms in the  [Material Design Platform Adaptation guidelines](https://material.io/guidelines/platforms/platform-adaptation.html).
 
@@ -21,7 +20,6 @@ Material Components for iOS are written in Objective-C and support Swift and Int
 - [Material.io](https://material.io) (external site)
 - [Material Design Guidelines](https://material.io/guidelines) (external site)
 - [Checklist status spreadsheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vRQLFMuo0Q3xsJp1_TdWvImtfdc8dU0lqX2DTct5pOPAEUIrN9OsuPquvv4aKRAwKK_KItpGs7c4Fok/pubhtml)
-- [Discord Chat Room](https://discord.gg/material-components)
 
 ## Trying out Material Components
 

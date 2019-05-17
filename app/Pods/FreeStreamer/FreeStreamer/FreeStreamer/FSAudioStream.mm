@@ -1,6 +1,6 @@
 /*
  * This file is part of the FreeStreamer project,
- * (C)Copyright 2011-2016 Matias Muhonen <mmu@iki.fi> 穆马帝
+ * (C)Copyright 2011-2018 Matias Muhonen <mmu@iki.fi> 穆马帝
  * See the file ''LICENSE'' for using the code.
  *
  * https://github.com/muhku/FreeStreamer
@@ -77,7 +77,7 @@ static NSInteger sortCacheObjects(id co1, id co2, void *keyForSorting)
 #else
         [systemVersion appendString:@"OS X"];
 #endif
-        
+
         self.bufferCount    = 64;
         self.bufferSize     = 8192;
         self.maxPacketDescs = 512;
@@ -286,6 +286,7 @@ public:
 - (void)setVolume:(float)volume;
 - (void)setPlayRate:(float)playRate;
 - (astreamer::AS_Playback_Position)playbackPosition;
+- (UInt64)audioDataByteCount;
 - (float)durationInSeconds;
 - (void)bitrateAvailable;
 @end
@@ -352,8 +353,10 @@ public:
     
     _delegate = nil;
     
-    delete _audioStream, _audioStream = nil;
-    delete _observer, _observer = nil;
+    delete _audioStream;
+    _audioStream = nil;
+    delete _observer;
+    _observer = nil;
     
     // Clean up the disk cache.
     
@@ -487,14 +490,21 @@ public:
 
 - (void)playFromOffset:(FSSeekByteOffset)offset
 {
-    astreamer::Input_Stream_Position position;
-    position.start = offset.start;
-    position.end   = offset.end;
+    _wasPaused = NO;
     
-    _audioStream->open(&position);
-    
-    _audioStream->setSeekOffset(offset.position);
-    _audioStream->setContentLength(offset.end);
+    if (_audioStream->isPreloading()) {
+        _audioStream->seekToOffset(offset.position);
+        _audioStream->setPreloading(false);
+    } else {
+        astreamer::Input_Stream_Position position;
+        position.start = offset.start;
+        position.end   = offset.end;
+        
+        _audioStream->open(&position);
+        
+        _audioStream->setSeekOffset(offset.position);
+        _audioStream->setContentLength(offset.end);
+    }
     
     if (!_reachability) {
         _reachability = [Reachability reachabilityForInternetConnection];
@@ -740,6 +750,7 @@ public:
     
 #if (__IPHONE_OS_VERSION_MIN_REQUIRED >= 60000)
     NSNumber *interruptionType = [[notification userInfo] valueForKey:AVAudioSessionInterruptionTypeKey];
+    NSNumber *interruptionResume = [[notification userInfo] valueForKey:AVAudioSessionInterruptionOptionKey];
     if ([interruptionType intValue] == AVAudioSessionInterruptionTypeBegan) {
         if ([self isPlaying] && !_wasPaused) {
             self.wasInterrupted = YES;
@@ -763,29 +774,35 @@ public:
         if (self.wasInterrupted) {
             self.wasInterrupted = NO;
             
-            @synchronized (self) {
-                if (self.configuration.automaticAudioSessionHandlingEnabled) {
-                    [[AVAudioSession sharedInstance] setActive:YES error:nil];
+            if ([interruptionResume intValue] == AVAudioSessionInterruptionOptionShouldResume) {
+                @synchronized (self) {
+                    if (self.configuration.automaticAudioSessionHandlingEnabled) {
+                        [[AVAudioSession sharedInstance] setActive:YES error:nil];
+                    }
+                    fsAudioStreamPrivateActiveSessions[[NSNumber numberWithUnsignedLong:(unsigned long)self]] = @"";
                 }
-                fsAudioStreamPrivateActiveSessions[[NSNumber numberWithUnsignedLong:(unsigned long)self]] = @"";
-            }
-            
-            if (self.wasContinuousStream) {
+                
+                if (self.wasContinuousStream) {
 #if defined(DEBUG) || (TARGET_IPHONE_SIMULATOR)
-                NSLog(@"FSAudioStream: Interruption ended. Continuous stream. Starting the playback.");
+                    NSLog(@"FSAudioStream: Interruption ended. Continuous stream. Starting the playback.");
 #endif
-                /*
-                 * Resume playing.
-                 */
-                [self play];
+                    /*
+                     * Resume playing.
+                     */
+                    [self play];
+                } else {
+#if defined(DEBUG) || (TARGET_IPHONE_SIMULATOR)
+                    NSLog(@"FSAudioStream: Interruption ended. Continuous stream. Playing from the offset");
+#endif
+                    /*
+                     * Resume playing.
+                     */
+                   [self playFromOffset:_lastSeekByteOffset];
+                }
             } else {
 #if defined(DEBUG) || (TARGET_IPHONE_SIMULATOR)
-                NSLog(@"FSAudioStream: Interruption ended. Continuous stream. Playing from the offset");
+                NSLog(@"FSAudioStream: Interruption ended. Continuous stream. Not resuming.");
 #endif
-                /*
-                 * Resume playing.
-                 */
-               [self playFromOffset:_lastSeekByteOffset];
             }
         }
     }
@@ -1027,7 +1044,8 @@ public:
     
     [self endBackgroundTask];
     
-    [_reachability stopNotifier], _reachability = nil;
+    [_reachability stopNotifier];
+    _reachability = nil;
 }
 
 - (BOOL)isPlaying
@@ -1105,6 +1123,11 @@ public:
 - (astreamer::AS_Playback_Position)playbackPosition
 {
     return _audioStream->playbackPosition();
+}
+
+- (UInt64)audioDataByteCount
+{
+    return _audioStream->audioDataByteCount();
 }
 
 - (float)durationInSeconds
@@ -1379,6 +1402,13 @@ public:
     return [_private contentLength];
 }
 
+- (UInt64)audioDataByteCount
+{
+    NSAssert([NSThread isMainThread], @"FSAudioStream.audioDataByteCount needs to be called in the main thread");
+    
+    return [_private audioDataByteCount];
+}
+
 - (void)preload
 {
     NSAssert([NSThread isMainThread], @"FSAudioStream.preload needs to be called in the main thread");
@@ -1502,7 +1532,8 @@ public:
         unsigned u = pos.playbackTimeInSeconds;
         unsigned s,m;
     
-        s = u % 60, u /= 60;
+        s = u % 60;
+        u /= 60;
         m = u;
     
         pos.minute = m;
@@ -1529,7 +1560,8 @@ public:
     
         unsigned s,m;
     
-        s = u % 60, u /= 60;
+        s = u % 60;
+        u /= 60;
         m = u;
         
         pos.minute = m;

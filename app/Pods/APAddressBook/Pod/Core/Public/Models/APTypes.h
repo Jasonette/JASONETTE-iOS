@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 alterplay. All rights reserved.
 //
 
-#import "APDeprecated.h"
-
 typedef NS_ENUM(NSUInteger, APAddressBookAccess)
 {
     APAddressBookAccessUnknown = 0,
@@ -26,7 +24,6 @@ typedef NS_OPTIONS(NSUInteger, APContactField)
     APContactFieldEmailsWithLabels      = 1 << 6,
     APContactFieldAddressesWithLabels   = 1 << 7,
     APContactFieldAddressesOnly         = 1 << 8,
-    APContactFieldAddresses AP_DEPRECATED('APContactFieldAddressesOnly') = APContactFieldAddressesOnly,
     APContactFieldSocialProfiles        = 1 << 9,
     APContactFieldBirthday              = 1 << 10,
     APContactFieldWebsites              = 1 << 11,

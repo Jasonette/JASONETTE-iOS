@@ -5,7 +5,6 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonAppDelegate.h"
-@import AirshipKit;
 
 @interface JasonAppDelegate ()
 

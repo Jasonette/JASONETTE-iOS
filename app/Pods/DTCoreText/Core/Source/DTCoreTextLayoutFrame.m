@@ -267,7 +267,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 	return lineOrigin;
 }
 
-// determins the "half leading"
+// determines the "half leading"
 - (CGFloat)_algorithmWebKit_halfLeadingOfLine:(DTCoreTextLayoutLine *)line
 {
 	CGFloat maxFontSize = [line lineHeight];
@@ -570,7 +570,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 			// create the truncated line
 			line = CTLineCreateTruncatedLine(baseLine, availableSpace, truncationType, elipsisLineRef);
             
-            // check if truncation occured
+            // check if truncation occurred
             BOOL truncationOccured = !areLinesEqual(baseLine, line);
             // if yes check was it before the end of the current paragraph or after
             NSUInteger endOfParagraphIndex = NSMaxRange(currentParagraphRange);
@@ -580,7 +580,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
                 if (truncationOccured)
                 {
                     CFIndex truncationIndex = getTruncationIndex(line, elipsisLineRef);
-                    // if truncation occured after the end of the paragraph
+                    // if truncation occurred after the end of the paragraph
                     // move truncation token to the end of the paragraph
                     if (truncationIndex > endOfParagraphIndex)
                     {
@@ -620,7 +620,11 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		
 		if (!CTParagraphStyleGetValueForSpecifier(paragraphStyle, kCTParagraphStyleSpecifierAlignment, sizeof(textAlignment), &textAlignment))
 		{
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+			textAlignment = kCTTextAlignmentNatural;
+#else
 			textAlignment = kCTNaturalTextAlignment;
+#endif
 		}
 		
 		// determine writing direction
@@ -638,14 +642,23 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		
 		switch (textAlignment)
 		{
+				
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+			case kCTTextAlignmentLeft:
+#else
 			case kCTLeftTextAlignment:
+#endif
 			{
 				lineOriginX = _frame.origin.x + offset;
 				// nothing to do
 				break;
 			}
 				
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+			case kCTTextAlignmentNatural:
+#else
 			case kCTNaturalTextAlignment:
+#endif
 			{
 				lineOriginX = _frame.origin.x + offset;
 				
@@ -657,21 +670,33 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 				// right alignment falls through
 			}
 				
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+			case kCTTextAlignmentRight:
+#else
 			case kCTRightTextAlignment:
+#endif
 			{
 				lineOriginX = _frame.origin.x + offset + (CGFloat)CTLineGetPenOffsetForFlush(line, 1.0, availableSpace);
 				
 				break;
 			}
 				
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+			case kCTTextAlignmentCenter:
+#else
 			case kCTCenterTextAlignment:
+#endif
 			{
 				lineOriginX = _frame.origin.x + offset + (CGFloat)CTLineGetPenOffsetForFlush(line, 0.5, availableSpace);
 				
 				break;
 			}
 				
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+			case kCTTextAlignmentJustified:
+#else
 			case kCTJustifiedTextAlignment:
+#endif
 			{
 				BOOL isAtEndOfParagraph  = (currentParagraphRange.location+currentParagraphRange.length <= lineRange.location+lineRange.length ||
 											[[_attributedStringFragment string] characterAtIndex:lineRange.location+lineRange.length-1]==0x2028);
@@ -725,6 +750,12 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		
 		// abort layout if we left the configured frame
 		CGFloat lineBottom = CGRectGetMaxY(newLine.frame);
+		
+		// screen bottom last line min padding
+		if (newLine.textBlocks.count > 0) {
+			DTTextBlock *lineTextBlock = newLine.textBlocks[0];
+			lineBottom = lineBottom + lineTextBlock.padding.bottom;
+		}
 		
 		if (lineBottom>maxY)
 		{
@@ -930,16 +961,35 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 {
 	CGRect blockFrame;
 	
+	DTCoreTextLayoutLine *screenLastLine = [self.lines lastObject];
+	DTCoreTextLayoutLine *screenFirstLine = [self.lines firstObject];
+	// judge the effectiveRange is out of screen
+	if (NSMaxRange(screenLastLine.stringRange) <= effectiveRange.location || screenFirstLine.stringRange.location >= NSMaxRange(effectiveRange))
+	{
+		return CGRectZero;
+	}
+	
     // we know extent of block, get frame
     DTCoreTextLayoutLine *firstBlockLine = [self lineContainingIndex:effectiveRange.location];
     DTCoreTextLayoutLine *lastBlockLine = [self lineContainingIndex:NSMaxRange(effectiveRange)-1];
     
     // start with frame spanned from these lines
-    blockFrame.origin = firstBlockLine.frame.origin;
-    blockFrame.origin.x = _frame.origin.x;
-    blockFrame.size.width = _frame.size.width;
-    blockFrame.size.height = CGRectGetMaxY(lastBlockLine.frame) - blockFrame.origin.y;
-    
+	blockFrame.origin = firstBlockLine.frame.origin;
+	blockFrame.origin.x = _frame.origin.x;
+	blockFrame.size.width = _frame.size.width;
+	
+	if (!firstBlockLine)
+	{
+		blockFrame.origin.y = _frame.origin.y;
+	}
+	
+	blockFrame.size.height = CGRectGetMaxY(lastBlockLine.frame) - blockFrame.origin.y;
+	
+	if (!lastBlockLine)
+	{
+		blockFrame.size.height = CGRectGetMaxY(_frame) - blockFrame.origin.y;
+	}
+	
     // top paddings we get from first line
     for (NSInteger i = [firstBlockLine.textBlocks count]-1; i>=level;i--)
     {
@@ -1277,6 +1327,10 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 	
 	if (![visibleLines count])
 	{
+		if (_textFrame)
+		{
+			CFRelease(_textFrame);
+		}
 		return;
 	}
 	
@@ -1285,6 +1339,10 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 #if TARGET_OS_IPHONE
 	// need to push the CG context so that the UI* based colors can be set
 	UIGraphicsPushContext(context);
+#elif TARGET_OS_MAC
+	NSGraphicsContext *c = [NSGraphicsContext graphicsContextWithCGContext:context flipped:YES];
+	[NSGraphicsContext saveGraphicsState];
+	[NSGraphicsContext setCurrentContext:c];
 #endif
 	
 	// need to draw all text boxes because the the there might be the padding region of a box outside the clip rect visible
@@ -1358,7 +1416,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 				continue;
 			}
 			
-			// don't draw background, strikout or underline for trailing white space
+			// don't draw background, strikeout or underline for trailing white space
 			if ([oneRun isTrailingWhitespace])
 			{
 				continue;
@@ -1456,7 +1514,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 						CGContextAddRect(context, clipRect);
 						CGContextClipToRect(context, clipRect);
 						
-						// Move the text outside of the clip rect so that only the shadow is visisble
+						// Move the text outside of the clip rect so that only the shadow is visible
 						CGContextSetTextPosition(context, textPosition.x + clipRect.size.width, textPosition.y);
 						
 						// draw each shadow
@@ -1499,6 +1557,8 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 	
 #if TARGET_OS_IPHONE
 	UIGraphicsPopContext();
+#elif TARGET_OS_MAC
+	[NSGraphicsContext restoreGraphicsState];
 #endif
 	
 	CGContextRestoreGState(context);
@@ -1855,6 +1915,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		_numberOfLines = numberOfLines;
         // clear lines cache
         _lines = nil;
+		_frame.size.height = CGFLOAT_HEIGHT_UNKNOWN;
     }
 }
 
@@ -1865,6 +1926,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
         _lineBreakMode = lineBreakMode;
         // clear lines cache
         _lines = nil;
+		_frame.size.height = CGFLOAT_HEIGHT_UNKNOWN;
     }
 }
 
@@ -1878,6 +1940,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		{
             // clear lines cache
             _lines = nil;
+			_frame.size.height = CGFLOAT_HEIGHT_UNKNOWN;
         }
     }
 }
@@ -1890,6 +1953,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		
         // clear lines cache
         _lines = nil;
+		_frame.size.height = CGFLOAT_HEIGHT_UNKNOWN;
     }
 }
 

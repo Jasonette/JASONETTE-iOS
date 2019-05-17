@@ -34,7 +34,7 @@
 #import <OMGHTTPURLRQ/OMGUserAgent.h>
 
 #define TDPCEN(s) \
-    ((__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef)[s description], NULL, CFSTR("!*'();:@&=+$,/?%#[]"), kCFStringEncodingUTF8))
+      ([[s description] stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet characterSetWithCharactersInString:@"^!*'();:@&=+$,/?%#[]{}\"`<>\\| "] invertedSet]])
 
 #define TDChomp(s) { \
     const NSUInteger length = [s length]; \
@@ -267,10 +267,10 @@ static NSString* timestamp() {
     oauth->hostAndPathWithoutQuery = [host.lowercaseString stringByAppendingString:encodedPathWithoutQuery];
 
     NSMutableURLRequest *rq;
-    if ([method isEqualToString:@"GET"] || [method isEqualToString:@"DELETE"] || [method isEqualToString:@"HEAD"])
+    if ([method isEqualToString:@"GET"] || [method isEqualToString:@"DELETE"] || [method isEqualToString:@"HEAD"] || ([method isEqualToString:@"POST"] && dataEncoding == TDOAuthContentTypeUrlEncodedQuery))
     {
         id path = [oauth setParameters:unencodedParameters];
-        if (path) {
+        if (path && unencodedParameters) {
             [path insertString:@"?" atIndex:0];
             [path insertString:encodedPathWithoutQuery atIndex:0];
         } else {

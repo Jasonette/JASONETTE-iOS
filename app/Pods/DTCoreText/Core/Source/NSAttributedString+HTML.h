@@ -65,11 +65,30 @@
 /**
  Retrieves the range that an attribute with a given name is active for, beginning with the passed index
  
- Since a custom HTML attribute can occur in multiple individual attribute dictionaries this extends the range from the passed index outwards until the full range of the custom HTML attribute has been found. Those range extentions have to have an identical value, as established by comparing them to the value of the custom attribute at the index with isEqual:
+ Since a custom HTML attribute can occur in multiple individual attribute dictionaries this extends the range from the passed index outwards until the full range of the custom HTML attribute has been found. Those range extensions have to have an identical value, as established by comparing them to the value of the custom attribute at the index with isEqual:
  @param name The name of the custom attribute to remove
  @param index The string index to query
  @returns The custom HTML attributes dictionary or `nil` if there aren't any at this index
  */
 - (NSRange)rangeOfHTMLAttribute:(NSString *)name atIndex:(NSUInteger)index;
+
+/**
+ Retrieves the NSAttributedString with NSData
+ 
+ Currently only supports iOS by `___useiOS6Attributes`, if error occur return nil.
+
+ @param data The data must generate by `convertToData` function
+ @return NSAttributedString from unarchiveObjectWithData, the data must generate by `convertToData` function
+ */
++ (NSAttributedString *)attributedStringWithData:(NSData *)data;
+
+/**
+ Retrieves NSData with self
+ 
+ Currently only supports iOS by `___useiOS6Attributes`, if error occur return nil.
+ 
+ @return NSData from NSAttributedString execute archivedDataWithRootObject:
+ */
+- (NSData *)convertToData;
 
 @end

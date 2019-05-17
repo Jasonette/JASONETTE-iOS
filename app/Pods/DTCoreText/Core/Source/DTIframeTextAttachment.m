@@ -24,7 +24,7 @@
 		NSString *src = [element.attributes objectForKey:@"src"];
 		
 		// prepend http: if URL string starts with // (seems to do with youtube iframes as standard)
-		if ([[src substringToIndex:2] isEqualToString:@"//"]) {
+		if ([src hasPrefix:@"//"]) {
 			src = [@"http:" stringByAppendingString:src];
 		}
 		
@@ -102,7 +102,7 @@
 	
 	for (__strong NSString *oneKey in [tmpAttributes allKeys])
 	{
-		oneKey = [oneKey stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+		oneKey = [oneKey stringByAddingHTMLEntities];
 		NSString *value = [[tmpAttributes objectForKey:oneKey] stringByAddingHTMLEntities];
 		[retString appendFormat:@" %@=\"%@\"", oneKey, value];
 	}

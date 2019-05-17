@@ -1,7 +1,7 @@
 //
 //  INTUHeadingRequest.h
 //
-//  Copyright (c) 2014-2015 Intuit Inc.
+//  Copyright (c) 2014-2017 Intuit Inc.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@
 
 #import "INTULocationRequestDefines.h"
 
-__INTU_ASSUME_NONNULL_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @interface INTUHeadingRequest : NSObject
 
@@ -34,8 +34,8 @@ __INTU_ASSUME_NONNULL_BEGIN
 /** Whether this is a recurring heading request (all heading requests are assumed to be for now). */
 @property (nonatomic, readonly) BOOL isRecurring;
 /** The block to execute when the heading request completes. */
-@property (nonatomic, copy, __INTU_NULLABLE) INTUHeadingRequestBlock block;
+@property (nonatomic, copy, nullable) INTUHeadingRequestBlock block;
 
 @end
 
-__INTU_ASSUME_NONNULL_END
+NS_ASSUME_NONNULL_END

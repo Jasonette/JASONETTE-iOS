@@ -1,6 +1,6 @@
 /*
  * This file is part of the FreeStreamer project,
- * (C)Copyright 2011-2016 Matias Muhonen <mmu@iki.fi> 穆马帝
+ * (C)Copyright 2011-2018 Matias Muhonen <mmu@iki.fi> 穆马帝
  * See the file ''LICENSE'' for using the code.
  *
  * https://github.com/muhku/FreeStreamer
@@ -434,7 +434,7 @@ void Audio_Queue::setState(State state)
     m_state = state;
     
     if (m_delegate) {
-        m_delegate->audioQueueStateChanged(m_state);
+        m_delegate->audioQueueStateChanged(state);
     }
 }
 

@@ -80,24 +80,22 @@ static const CGFloat kDefaultSecondaryLineWidth = 1.0f;
 	
 	// We draw multiple sinus waves, with equal phases but altered amplitudes, multiplied by a parable function.
 	for (int i = 0; i < self.numberOfWaves; i++) {
-		CGContextRef context = UIGraphicsGetCurrentContext();
-		
-		CGContextSetLineWidth(context, (i == 0 ? self.primaryWaveLineWidth : self.secondaryWaveLineWidth));
+		CGFloat strokeLineWidth = (i == 0 ? self.primaryWaveLineWidth : self.secondaryWaveLineWidth);
+		CGContextSetLineWidth(context, strokeLineWidth);
 		
 		CGFloat halfHeight = CGRectGetHeight(self.bounds) / 2.0f;
 		CGFloat width = CGRectGetWidth(self.bounds);
 		CGFloat mid = width / 2.0f;
 		
-		const CGFloat maxAmplitude = halfHeight - 4.0f; // 4 corresponds to twice the stroke width
+		const CGFloat maxAmplitude = halfHeight - (strokeLineWidth * 2);
 		
-		// Progress is a value between 1.0 and -0.5, determined by the current wave idx, which is used to alter the wave's amplitude.
 		CGFloat progress = 1.0f - (CGFloat)i / self.numberOfWaves;
-		CGFloat normedAmplitude = (1.5f * progress - 0.5f) * self.amplitude;
+		CGFloat normedAmplitude = (1.5f * progress - (2.0f / self.numberOfWaves)) * self.amplitude;
 		
 		CGFloat multiplier = MIN(1.0, (progress / 3.0f * 2.0f) + (1.0f / 3.0f));
 		[[self.waveColor colorWithAlphaComponent:multiplier * CGColorGetAlpha(self.waveColor.CGColor)] set];
 		
-		for (CGFloat x = 0; x<width + self.density; x += self.density) {
+		for (CGFloat x = 0; x < (width + self.density); x += self.density) {
 			// We use a parable to scale the sinus wave, that has its peak in the middle of the view.
 			CGFloat scaling = -pow(1 / mid * (x - mid), 2) + 1;
 			

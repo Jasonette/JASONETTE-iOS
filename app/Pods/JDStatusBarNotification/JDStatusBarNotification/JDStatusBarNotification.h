@@ -12,6 +12,8 @@
 #import "JDStatusBarStyle.h"
 #import "JDStatusBarView.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  *  A block that is used to define the appearance of a notification.
  *  A JDStatusBarStyle instance defines the notification appeareance.
@@ -137,7 +139,14 @@ typedef JDStatusBarStyle*(^JDPrepareStyleBlock)(JDStatusBarStyle *style);
 + (NSString*)addStyleNamed:(NSString*)identifier
                    prepare:(JDPrepareStyleBlock)prepareBlock;
 
-#pragma mark progress & activity
+#pragma mark Modifications
+
+/**
+ *  Update the text of the label without presenting a new notification.
+ *
+ *  @param status The new message to display
+ */
++ (void)updateStatus:(NSString *)status;
 
 /**
  *  Show the progress below the label.
@@ -166,4 +175,4 @@ typedef JDStatusBarStyle*(^JDPrepareStyleBlock)(JDStatusBarStyle *style);
 
 @end
 
-
+NS_ASSUME_NONNULL_END

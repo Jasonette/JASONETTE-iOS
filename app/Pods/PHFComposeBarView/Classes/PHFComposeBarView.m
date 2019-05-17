@@ -57,7 +57,7 @@ static CGFloat kTextViewToSuperviewHeightDelta;
 @property (strong, nonatomic, readonly) UIView *topLineView;
 @property (strong, nonatomic, readonly) UILabel *charCountLabel;
 @property (strong, nonatomic) PHFDelegateChain *delegateChain;
-@property (strong, nonatomic, readonly) UIButton *textContainer;
+@property (strong, nonatomic, readonly) UIView *textContainer;
 @property (assign, nonatomic) CGFloat previousTextHeight;
 @end
 
@@ -332,14 +332,13 @@ static CGFloat kTextViewToSuperviewHeightDelta;
 @synthesize textContainer = _textContainer;
 // Returns the text container which contains the actual text view, the
 // placeholder and the image view that contains the text field image.
-- (UIButton *)textContainer {
+- (UIView *)textContainer {
     if (!_textContainer) {
         CGRect textContainerFrame = CGRectMake(kHorizontalSpacing,
                                                kTextContainerTopMargin,
                                                [self bounds].size.width - kHorizontalSpacing * 3 - kButtonRightMargin,
                                                [self bounds].size.height - kTextContainerTopMargin - kTextContainerBottomMargin);
-        _textContainer = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_textContainer setFrame:textContainerFrame];
+        _textContainer = [[UIView alloc] initWithFrame:textContainerFrame];
         [_textContainer setClipsToBounds:YES];
         [_textContainer setBackgroundColor:[UIColor colorWithWhite:0.98f alpha:1.0f]];
         [_textContainer setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
@@ -368,8 +367,6 @@ static CGFloat kTextViewToSuperviewHeightDelta;
                                              kPlaceholderHeight);
         [[self placeholderLabel] setFrame:placeholderFrame];
         [_textContainer addSubview:[self placeholderLabel]];
-
-        [_textContainer addTarget:[self textView] action:@selector(becomeFirstResponder) forControlEvents:UIControlEventTouchUpInside];
     }
 
     return _textContainer;
