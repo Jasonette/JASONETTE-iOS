@@ -33,7 +33,6 @@ static NSMutableDictionary *_stylesheet = nil;
                    } mutableCopy];
     }
     
-    
     // Step 2. JasonLayout Settings
     NSString *t = item[@"type"];
     if([t isEqualToString:@"vertical"]){
@@ -70,13 +69,10 @@ static NSMutableDictionary *_stylesheet = nil;
         layout = [JasonLayout fillChildLayout:layout with:wrappedItem atIndexPath:indexPath withForm:form];
     }
     layout.translatesAutoresizingMaskIntoConstraints = false;
-    [layout setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
     [layout setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
-    [layout setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
     [layout setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
-    
+
     return @{ @"style": style, @"layout": layout };
-    
 }
 
 + (UIStackView *)fillChildLayout: (UIStackView*)layout with:(NSDictionary *)item atIndexPath: (NSIndexPath *)indexPath withForm: (NSDictionary *)form{
@@ -236,7 +232,6 @@ static NSMutableDictionary *_stylesheet = nil;
     
     
     if(!style[@"padding"]) style[@"padding"] = @"0";
-    if(!style[@"background"]) style[@"background"] = @"#ffffff";
     if(!style[@"opacity"]) style[@"opacity"] = @"1";
     
     // Step 2. JasonLayout Settings
@@ -287,11 +282,17 @@ static NSMutableDictionary *_stylesheet = nil;
     if(style[@"width"]) {
         CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"width"]];
         [layout.widthAnchor constraintEqualToConstant:width].active = true;
+        [layout setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
+    } else {
+        [layout setContentHuggingPriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisHorizontal];
     }
-    
+
     if(style[@"height"]) {
         CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
         [layout.heightAnchor constraintEqualToConstant:height].active = true;
+        [layout setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
+    } else {
+        [layout setContentHuggingPriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisVertical];
     }
     
     NSString *padding_left;

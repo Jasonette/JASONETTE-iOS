@@ -68,6 +68,7 @@
             
             if ([widthStr isEqualToString:@"auto"]) {
                 width = component.intrinsicContentSize.width;
+                json[@"style"][@"width"] = [[NSNumber numberWithFloat:width] stringValue];
             } else {
                 width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
             }

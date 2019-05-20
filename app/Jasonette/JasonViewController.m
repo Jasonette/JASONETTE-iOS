@@ -69,7 +69,7 @@
     self.tableView.backgroundView = [UIView new];
 
     self.tableView.estimatedRowHeight = 30.0;
-    self.tableView.estimatedSectionHeaderHeight = 30.0;
+    self.tableView.estimatedSectionHeaderHeight = 0.0;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.sectionHeaderHeight = UITableViewAutomaticDimension;
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
@@ -1081,7 +1081,7 @@
     
     @try{
         dispatch_async(dispatch_get_main_queue(), ^{
-        
+
             [self setupHeader: body];
             [self setupLayers:body];
             [self setupFooter: body];
@@ -1089,8 +1089,7 @@
             #ifdef ADS
             [self setupAds:body];
             #endif
-            
-            
+
             if (self->default_bottom_padding == 0) {
                 CGFloat bottom_padding = 0.0;
                 if (self.tabBarController.tabBar) {
@@ -1102,7 +1101,7 @@
                 self->default_bottom_padding = bottom_padding;
                 self.tableView.contentInset = UIEdgeInsetsMake(self.tableView.contentInset.top, self.tableView.contentInset.left, self.tableView.contentInset.bottom+bottom_padding, self.tableView.contentInset.right);
             }
-            
+
             self->original_bottom_inset = self.tableView.contentInset.bottom;
         });
     }
@@ -1402,9 +1401,7 @@
                 [self.tableView setSeparatorColor:[JasonHelper colorwithHexString:border alpha:1.0]];
             }
         }
-        
-        
-        
+
         NSString *align = style[@"align"];
         if(align && [align isEqualToString:@"bottom"]){
             top_aligned = NO;
@@ -1413,13 +1410,12 @@
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         self.tableView.separatorColor = [JasonHelper colorwithHexString:@"#E7E7E7" alpha:1.0];
 
-        if (!body[@"background"]) {
+        if (!body[@"background"] && !body[@"gradient_background"]) {
             self.view.backgroundColor = [UIColor whiteColor];
         }
     }
     self.tableView.backgroundColor = [UIColor clearColor];
-    
-    
+
     id weakSelf = self;
     [weakSelf loadAssets:body];
     
@@ -1437,7 +1433,6 @@
             }
         }
     }
-    
     [self reloadSections: raw_sections];
 }
 - (void)reloadSections:(NSArray *)sections{

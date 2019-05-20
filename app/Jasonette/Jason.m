@@ -912,8 +912,9 @@
             } else {
                 [self setupTabBar:nil];
             }
-            
-            if(rendered_page[@"style"] && rendered_page[@"style"][@"background"]){
+            if (rendered_page[@"gradient_background"]) {
+                [self drawGradientBackground:rendered_page[@"gradient_background"]];
+            } else if (rendered_page[@"style"] && rendered_page[@"style"][@"background"]){
                 if([rendered_page[@"style"][@"background"] isKindOfClass:[NSDictionary class]]){
                     // Advanced background
                     // example:
@@ -1943,7 +1944,9 @@
             VC.rendered = rendered_page;
             // In case it's a different view, we need to reset
             
-            if(rendered_page[@"style"] && rendered_page[@"style"][@"background"]){
+            if (rendered_page[@"gradient_background"]) {
+                [self drawGradientBackground:rendered_page[@"gradient_background"]];
+            } else if (rendered_page[@"style"] && rendered_page[@"style"][@"background"]) {
                 if([rendered_page[@"style"][@"background"] isKindOfClass:[NSDictionary class]]){
                     // Advanced background
                     // example:
@@ -2002,11 +2005,42 @@
     [self networkLoading:NO with:nil];
     [loadingOverlayView setHidden:YES];
 }
+
+- (void)drawGradientBackground:(NSArray*)bg{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self drawGradientBackground:bg forVC:self->VC];
+    });
+}
+
+- (void)drawGradientBackground:(NSArray *)bg forVC: (JasonViewController *)vc {
+    UIColor *gradientFrom = [JasonHelper colorwithHexString:bg[0] alpha:1.0];
+    UIColor *gradientTo = [JasonHelper colorwithHexString:bg[1] alpha:1.0];
+
+    if(vc.background){
+        [vc.background removeFromSuperview];
+        vc.background = nil;
+    }
+
+    vc.background = [[UIImageView alloc] initWithFrame: [UIScreen mainScreen].bounds];
+
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = [UIScreen mainScreen].bounds;
+    gradient.colors = [NSArray arrayWithObjects:(id)[gradientFrom CGColor], (id)[gradientTo CGColor], nil];
+    gradient.startPoint = CGPointMake(0.0, 1.0);
+    gradient.endPoint = CGPointMake(1.0, 0.0);
+
+    [vc.view addSubview:vc.background];
+    [vc.view sendSubviewToBack:vc.background];
+
+    [(UIImageView *)vc.background setImage:[self  imageFromLayer:gradient]];
+}
+
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
         [self drawAdvancedBackground:bg forVC:self->VC];
     });
 }
+
 - (void)drawAdvancedBackground:(NSDictionary *)bg forVC: (JasonViewController *)vc {
     NSString *type = bg[@"type"];
     if([vc.background.payload[@"background"] isEqual:bg]) {
@@ -2822,6 +2856,10 @@
             // if previous footer tab was not null, we diff the tabs to determine whether to re-render
             if(v.isModal) {
                 self->tabController.tabBar.hidden = YES;
+                UIEdgeInsets edgeInset = v.tableView.contentInset;
+                // We have to make sure the auto content insent settings get reverted when the tabbar is hidden or it
+                // causes an issue where the screen will be able to scroll down an extra bottom nav worth of height
+                v.tableView.contentInset = UIEdgeInsetsMake(edgeInset.top, edgeInset.left, 0.0, edgeInset.right);
                 return;
             }
         } else {
