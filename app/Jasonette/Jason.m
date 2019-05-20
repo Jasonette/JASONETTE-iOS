@@ -1718,6 +1718,28 @@
     return data_stub;
 }
 
+- (void)appReload{
+    
+    /* Clear offline caches */
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    if ([paths count] > 0)
+    {
+        NSError *error = nil;
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSString *directory = [paths objectAtIndex:0];
+        // NSLog(@"Directory: %@", directory);
+        
+        for (NSString *file in [fileManager contentsOfDirectoryAtPath:directory error:&error])
+        {
+            NSString *filePath = [directory stringByAppendingPathComponent:file];
+            // NSLog(@"File : %@", filePath);
+            [fileManager removeItemAtPath:filePath error:&error];
+        }
+    }
+
+    [self start:nil];
+}
+
 # pragma mark - View rendering (high level)
 - (void)reload{
     VC.data = nil;
