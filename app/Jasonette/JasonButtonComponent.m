@@ -180,7 +180,6 @@
             component.tintColor = c;
             [component setTitleColor:c forState:UIControlStateNormal];
         }
-
     }
     
     
@@ -233,8 +232,10 @@
             }
         }
         component.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
-        
-
+        [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+        [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+        [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+        [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     }
     
     [component setSelected:NO];

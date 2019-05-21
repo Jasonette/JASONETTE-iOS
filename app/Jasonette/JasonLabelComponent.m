@@ -19,6 +19,10 @@
         if(json[@"text"] && ![json[@"text"] isEqual:[NSNull null]]){
             component.text = [json[@"text"] description];
         }
+        [component setContentCompressionResistancePriority:UILayoutPriorityRequired - 1 forAxis:UILayoutConstraintAxisVertical];
+        [component setContentHuggingPriority:UILayoutPriorityRequired -1 forAxis:UILayoutConstraintAxisVertical];
+        [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+        [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     }
     
     // Apply Common Style

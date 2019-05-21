@@ -481,7 +481,7 @@
     NSString *expression = [exp description];
     
     if([direction isEqualToString:@"vertical"]){
-        full_dimension = [[UIScreen mainScreen] bounds].size.height;
+        full_dimension = [[UIScreen mainScreen] bounds].size.height - [[UIApplication sharedApplication] statusBarFrame].size.height;
     } else {
         full_dimension = [[UIScreen mainScreen] bounds].size.width;
     }

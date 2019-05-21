@@ -95,6 +95,8 @@
         UIImageView *imageView = (UIImageView *)component;
         
         if(style[@"width"]) {
+            [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+            [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
             if(style[@"ratio"]){
                 // don't do anything about the height, it will be handled in JasonComponent
             } else {
@@ -123,6 +125,8 @@
             }
         }
         if(style[@"height"]){
+            [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+            [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
             if(style[@"ratio"]){
                 // don't do anything about the width, it will be handled in JasonComponent
             } else {
