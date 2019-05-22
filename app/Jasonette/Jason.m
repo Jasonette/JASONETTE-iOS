@@ -350,7 +350,9 @@
     }
 }
 - (void)hideLoadingOverlay {
-    loadingOverlayView.hidden = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        loadingOverlayView.hidden = YES;
+    });
 }
 
 -(void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;{
@@ -2345,6 +2347,7 @@
     [self setupHeader:nav forVC:VC];
 }
 - (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController *)v{
+    
     navigationController = v.navigationController;
     tabController = v.tabBarController;
     if(!nav) {
@@ -2391,10 +2394,11 @@
             return;
         }
     }
-    
+
     navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
     navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-Bold" size: 18.0]};
     navigationController.navigationBar.hidden = NO;
+    
     if(nav[@"style"]){
         NSDictionary *headStyle = nav[@"style"];
         if(headStyle[@"background"]){
