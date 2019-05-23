@@ -23,22 +23,22 @@
 // THE SOFTWARE.
 
 
-#import <UIKit/UIKit.h>
+#import <UIKit/UIView.h>
 
 @class IQPlaybackDurationView;
 
 @protocol IQPlaybackDurationViewDelegate <NSObject>
 
 @optional
-- (void)playbackDurationView:(IQPlaybackDurationView *)playbackView didStartScrubbingAtTime:(NSTimeInterval)time;
-- (void)playbackDurationView:(IQPlaybackDurationView *)playbackView didScrubToTime:(NSTimeInterval)time;
-- (void)playbackDurationView:(IQPlaybackDurationView *)playbackView didEndScrubbingAtTime:(NSTimeInterval)time;
+- (void)playbackDurationView:(nonnull IQPlaybackDurationView *)playbackView didStartScrubbingAtTime:(NSTimeInterval)time;
+- (void)playbackDurationView:(nonnull IQPlaybackDurationView *)playbackView didScrubToTime:(NSTimeInterval)time;
+- (void)playbackDurationView:(nonnull IQPlaybackDurationView *)playbackView didEndScrubbingAtTime:(NSTimeInterval)time;
 
 @end
 
 @interface IQPlaybackDurationView : UIView
 
-@property (nonatomic, weak) IBOutlet id<IQPlaybackDurationViewDelegate> delegate;
+@property (nullable, nonatomic, weak) IBOutlet id<IQPlaybackDurationViewDelegate> delegate;
 
 @property (nonatomic, getter=isShowingRemainingTime) IBInspectable BOOL showRemainingTime;
 

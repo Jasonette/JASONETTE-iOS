@@ -1,115 +1,81 @@
-RMDateSelectionViewController ![Build Status](https://travis-ci.org/CooperRS/RMDateSelectionViewController.svg?branch=master)
+RMDateSelectionViewController [![Build Status](https://travis-ci.org/CooperRS/RMDateSelectionViewController.svg?branch=master)](https://travis-ci.org/CooperRS/RMDateSelectionViewController/) [![Pod Version](https://img.shields.io/cocoapods/v/RMDateSelectionViewController.svg)](https://cocoapods.org/pods/RMDateSelectionViewController) [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 =============================
 
-This is an iOS control for selecting a date using UIDatePicker in a UIActionSheet like fashion
+This framework allows you to select a date by presenting an action sheet. In addition, it allows you to add actions arround the presented date picker which behave like a button and can be tapped by the user. The result looks very much like an UIActionSheet or UIAlertController with a UIDatePicker and some UIActions attached.
+
+Besides being a fully-usable project, RMDateSelectionViewController also is an example for an use case of [RMActionController](https://github.com/CooperRS/RMActionController). You can use it to learn how to present a date picker other than UIDatePicker.
 
 ## Screenshots
+
 ### Portrait
-![Portrait](http://cooperrs.github.io/RMDateSelectionViewController/Images/Blur-Screen-Portrait.png)
+
+| White | Black |
+|:-----:|:-----:|
+|![Portrait](http://cooperrs.github.io/RMDateSelectionViewController/Images/Blur-Screen-Portrait.png)|![Colors](http://cooperrs.github.io/RMDateSelectionViewController/Images/Blur-Screen-Portrait-Black.png)|
 
 ### Landscape
 ![Landscape](http://cooperrs.github.com/RMDateSelectionViewController/Images/Blur-Screen-Landscape.png)
 
-### Black version
-![Colors](http://cooperrs.github.io/RMDateSelectionViewController/Images/Blur-Screen-Portrait-Black.png)
-
 ## Demo Project
-If you want to run the demo project you first need to run `pod install` to install the dependencies of RMDateSelectionViewController.
+If you want to run the demo project do not forget to initialize submodules.
 
 ## Installation (CocoaPods)
 ```ruby
 platform :ios, '8.0'
-pod "RMDateSelectionViewController", "~> 2.0.3"
+pod "RMDateSelectionViewController", "~> 2.3.1"
 ```
 
 ## Usage
-### Basic
-1. Import `RMDateSelectionViewController.h` in your view controller
-	
-	```objc
-	#import "RMDateSelectionViewController.h"
-	```
-2. Create a date selection view controller, set select and cancel block and present the view controller
-	
-	```objc
-	- (IBAction)openDateSelectionController:(id)sender {
-		//Create select action
-	    RMAction *selectAction = [RMAction actionWithTitle:@"Select" style:RMActionStyleDone andHandler:^(RMActionController *controller) {
-	        NSLog(@"Successfully selected date: %@", ((UIDatePicker *)controller.contentView).date);
-	    }];
-	    
-	    //Create cancel action
-	    RMAction *cancelAction = [RMAction actionWithTitle:@"Cancel" style:RMActionStyleCancel andHandler:^(RMActionController *controller) {
-	        NSLog(@"Date selection was canceled");
-	    }];
-	    
-	    //Create date selection view controller
-	    RMDateSelectionViewController *dateSelectionController = [RMDateSelectionViewController actionControllerWithStyle:style selectAction:selectAction andCancelAction:cancelAction];
-	    dateSelectionController.title = @"Test";
-	    dateSelectionController.message = @"This is a test message.\nPlease choose a date and press 'Select' or 'Cancel'.";
-	    
-	    //Now just present the date selection controller using the standard iOS presentation method
-	    [self presentViewController:dateSelectionController animated:YES completion:nil];
-	}
-	```
 
-### Advanced
+For a detailed description on how to use RMDateSelectionViewController take a look at the [Wiki Pages](https://github.com/CooperRS/RMDateSelectionViewController/wiki). The following four steps are a very short intro:
 
-#### Accessing the Date Picker
-Every RMDateSelectionViewController has a property `datePicker`. With this property you have total control over the UIDatePicker that is shown on the screen.
-
-#### Presentation Style
-Additionally, you can use the property `modalPresentationStyle` to control how the date selection controller is shown. By default, it is set to `UIModalPresentationOverCurrentContext`. But on the iPad you could use `UIModalPresentationPopover` to present the date selection controller within a popover. See the following example on how this works:
+* Import RMDateSelectionViewController:
 
 ```objc
-- (IBAction)openDateSelectionController:(id)sender {
-	//Create select and cancel action
-	...
-
-	RMDateSelectionViewController *dateSelectionVC = [RMDateSelectionViewController actionControllerWithStyle:style selectAction:selectAction andCancelAction:cancelAction];
-
-	//On the iPad we want to show the date selection view controller within a popover.
-    if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        //First we set the modal presentation style to the popover style
-        dateSelectionVC.modalPresentationStyle = UIModalPresentationPopover;
-        
-        //Then we tell the popover presentation controller, where the popover should appear
-        dateSelectionVC.popoverPresentationController.sourceView = self.view;
-        dateSelectionVC.popoverPresentationController.sourceRect = CGRectMake(...);
-    }
-
-	//Now just present the date selection controller using the standard iOS presentation method
-	[self presentViewController:dateSelectionVC animated:YES completion:nil];
-}
+#import <RMDateSelectionViewController/RMDateSelectionViewController.h>
 ```
 
-#### Adding Additional Buttons
-You can add an arbitrary number of custom buttons to a RMDateSelectionViewController. Each button has it's own block that is executed when tapping the button. See the following example on how to add buttons.
+* Create select and cancel actions:
+
+```objc
+RMAction<UIDatePicker *> *selectAction = [RMAction<UIDatePicker *> actionWithTitle:@"Select" style:RMActionStyleDone andHandler:^(RMActionController<UIDatePicker *> *controller) {
+    NSLog(@"Successfully selected date: %@", controller.contentView.date);
+}];
+
+RMAction<UIDatePicker *> *cancelAction = [RMAction<UIDatePicker *> actionWithTitle:@"Cancel" style:RMActionStyleCancel andHandler:^(RMActionController<UIDatePicker *> *controller) {
+    NSLog(@"Date selection was canceled");
+}];
+```
+
+* Create and instance of RMDateSelectionViewController and present it:
+
+```objc
+RMDateSelectionViewController *dateSelectionController = [RMDateSelectionViewController actionControllerWithStyle:RMActionControllerStyleWhite title:@"Test" message:@"This is a test message.\nPlease choose a date and press 'Select' or 'Cancel'." selectAction:selectAction andCancelAction:cancelAction];
+
+[self presentViewController:dateSelectionController animated:YES completion:nil];
+```
+
+* The following code block shows you a complete method:
 
 ```objc
 - (IBAction)openDateSelectionController:(id)sender {
-	//Create select action
-    ...
-    
-    //Create date selection view controller
-    RMDateSelectionViewController *dateSelectionController = [RMDateSelectionViewController actionControllerWithStyle:style selectAction:selectAction andCancelAction:cancelAction];
-    
-    //Create now action and add it to date selection view controller
-    RMAction *nowAction = [RMAction actionWithTitle:@"Now" style:RMActionStyleAdditional andHandler:^(RMActionController *controller) {
-        ((UIDatePicker *)controller.contentView).date = [NSDate date];
-        NSLog(@"Now button tapped");
+    RMAction<UIDatePicker *> *selectAction = [RMAction<UIDatePicker *> actionWithTitle:@"Select" style:RMActionStyleDone andHandler:^(RMActionController<UIDatePicker *> *controller) {
+        NSLog(@"Successfully selected date: %@", controller.contentView.date);
     }];
-    nowAction.dismissesActionController = NO;
     
-    [dateSelectionController addAction:nowAction];
+    RMAction<UIDatePicker *> *cancelAction = [RMAction<UIDatePicker *> actionWithTitle:@"Cancel" style:RMActionStyleCancel andHandler:^(RMActionController<UIDatePicker *> *controller) {
+        NSLog(@"Date selection was canceled");
+    }];
     
-    //Now just present the date selection controller using the standard iOS presentation method
+    RMDateSelectionViewController *dateSelectionController = [RMDateSelectionViewController actionControllerWithStyle:RMActionControllerStyleWhite title:@"Test" message:@"This is a test message.\nPlease choose a date and press 'Select' or 'Cancel'." selectAction:selectAction andCancelAction:cancelAction];
+    
     [self presentViewController:dateSelectionController animated:YES completion:nil];
 }
 ```
 
-#### Others
-RMDateSelectionViewController does not use APIs that are only available for applications. Therefore, it can be used in both your main application and an action extension showing UI.
+## Migration
+
+See [Migration](https://github.com/CooperRS/RMDateSelectionViewController/wiki/Migration) on how to migrate to the latest version of RMDateSelectionViewController.
 
 ## Documentation
 There is an additional documentation available provided by the CocoaPods team. Take a look at [cocoadocs.org](http://cocoadocs.org/docsets/RMDateSelectionViewController/).
@@ -136,7 +102,7 @@ If you want to show an UIPickerView instead of an UIDatePicker, you may take a l
 
 If you want to show any other control you may want to take a look at [RMActionController](https://github.com/CooperRS/RMActionController).
 
-##Credits
+## Credits
 Code contributions:
 * AnthonyMDev
     * Cancel delegate method should be optional
@@ -167,7 +133,9 @@ Localizations:
 I want to thank everyone who has contributed code and/or time to this project!
 
 ## License (MIT License)
-Copyright (c) 2013-2015 Roland Moers
+
+```
+Copyright (c) 2013-2016 Roland Moers
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -186,3 +154,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+```

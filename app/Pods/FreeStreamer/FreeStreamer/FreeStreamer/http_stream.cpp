@@ -1,6 +1,6 @@
 /*
  * This file is part of the FreeStreamer project,
- * (C)Copyright 2011-2016 Matias Muhonen <mmu@iki.fi> 穆马帝
+ * (C)Copyright 2011-2018 Matias Muhonen <mmu@iki.fi> 穆马帝
  * See the file ''LICENSE'' for using the code.
  *
  * https://github.com/muhku/FreeStreamer
@@ -76,24 +76,30 @@ HTTP_Stream::~HTTP_Stream()
     m_icyHeaderLines.clear();
     
     if (m_contentType) {
-        CFRelease(m_contentType), m_contentType = 0;
+        CFRelease(m_contentType);
+        m_contentType = 0;
     }
     
     if (m_icyName) {
-        CFRelease(m_icyName), m_icyName = 0;
+        CFRelease(m_icyName);
+        m_icyName = 0;
     }
     
     if (m_httpReadBuffer) {
-        delete [] m_httpReadBuffer, m_httpReadBuffer = 0;
+        delete [] m_httpReadBuffer;
+        m_httpReadBuffer = 0;
     }
     if (m_icyReadBuffer) {
-        delete [] m_icyReadBuffer, m_icyReadBuffer = 0;
+        delete [] m_icyReadBuffer;
+        m_icyReadBuffer = 0;
     }
     if (m_url) {
-        CFRelease(m_url), m_url = 0;
+        CFRelease(m_url);
+        m_url = 0;
     }
     
-    delete m_id3Parser, m_id3Parser = 0;
+    delete m_id3Parser;
+    m_id3Parser = 0;
 }
     
 Input_Stream_Position HTTP_Stream::position()
@@ -142,7 +148,8 @@ bool HTTP_Stream::open(const Input_Stream_Position& position)
     m_httpHeadersParsed = false;
     
     if (m_contentType) {
-        CFRelease(m_contentType), m_contentType = NULL;
+        CFRelease(m_contentType);
+        m_contentType = NULL;
     }
     
     m_icyStream = false;
@@ -151,7 +158,8 @@ bool HTTP_Stream::open(const Input_Stream_Position& position)
     m_icyHeadersParsed = false;
     
     if (m_icyName) {
-        CFRelease(m_icyName), m_icyName = 0;
+        CFRelease(m_icyName);
+        m_icyName = 0;
     }
     
     for (std::vector<CFStringRef>::iterator h = m_icyHeaderLines.begin(); h != m_icyHeaderLines.end(); ++h) {
@@ -176,7 +184,8 @@ bool HTTP_Stream::open(const Input_Stream_Position& position)
     if (!CFReadStreamSetClient(m_readStream, kCFStreamEventHasBytesAvailable |
 	                                         kCFStreamEventEndEncountered |
 	                                         kCFStreamEventErrorOccurred, readCallBack, &CTX)) {
-        CFRelease(m_readStream), m_readStream = 0;
+        CFRelease(m_readStream);
+        m_readStream = 0;
         goto out;
     }
     
@@ -187,7 +196,8 @@ bool HTTP_Stream::open(const Input_Stream_Position& position)
         CFReadStreamSetClient(m_readStream, 0, NULL, NULL);
         setScheduledInRunLoop(false);
         if (m_readStream) {
-            CFRelease(m_readStream), m_readStream = 0;
+            CFRelease(m_readStream);
+            m_readStream = 0;
         }
         goto out;
     }
@@ -208,7 +218,8 @@ void HTTP_Stream::close()
     CFReadStreamSetClient(m_readStream, 0, NULL, NULL);
     setScheduledInRunLoop(false);
     CFReadStreamClose(m_readStream);
-    CFRelease(m_readStream), m_readStream = 0;
+    CFRelease(m_readStream);
+    m_readStream = 0;
 }
     
 void HTTP_Stream::setScheduledInRunLoop(bool scheduledInRunLoop)
@@ -315,7 +326,15 @@ CFReadStreamRef HTTP_Stream::createReadStream(CFURLRef url)
         
         CFHTTPMessageSetHeaderFieldValue(request, httpRangeHeader, rangeHeaderValue);
         CFRelease(rangeHeaderValue);
+    } else if (m_position.start > 0 && m_position.end < m_position.start) {
+        CFStringRef rangeHeaderValue = CFStringCreateWithFormat(NULL,
+                                                                NULL,
+                                                                CFSTR("bytes=%llu-"),
+                                                                m_position.start);
+        CFHTTPMessageSetHeaderFieldValue(request, httpRangeHeader, rangeHeaderValue);
+        CFRelease(rangeHeaderValue);
     }
+    
     
     if (config->predefinedHttpHeaderValues) {
         const CFIndex numKeys = CFDictionaryGetCount(config->predefinedHttpHeaderValues);
@@ -545,7 +564,8 @@ void HTTP_Stream::parseICYStream(const UInt8 *buf, const CFIndex bufSize)
                                            CFRangeMake(0, icyContenTypeHeaderLength),
                                            0) == kCFCompareEqualTo) {
                 if (m_contentType) {
-                    CFRelease(m_contentType), m_contentType = 0;
+                    CFRelease(m_contentType);
+                    m_contentType = 0;
                 }
                 m_contentType = CFStringCreateWithSubstring(kCFAllocatorDefault,
                                                             line,
@@ -794,7 +814,8 @@ void HTTP_Stream::readCallBack(CFReadStreamRef stream, CFStreamEventType eventTy
                         THIS->m_delegate->streamErrorOccurred(reportedNetworkError);
                         
                         if (reportedNetworkError) {
-                            CFRelease(reportedNetworkError), reportedNetworkError = NULL;
+                            CFRelease(reportedNetworkError);
+                            reportedNetworkError = NULL;
                         }
                     }
                     break;
@@ -828,12 +849,30 @@ void HTTP_Stream::readCallBack(CFReadStreamRef stream, CFStreamEventType eventTy
             }
             
             if (reportedNetworkError) {
-                CFRelease(reportedNetworkError), reportedNetworkError = NULL;
+                CFRelease(reportedNetworkError);
+                reportedNetworkError = NULL;
             }
             
             break;
         }
         case kCFStreamEventEndEncountered: {
+            
+            // This should concerns only non-continous streams
+            if (THIS->m_bytesRead < THIS->contentLength()) {
+                HS_TRACE("End of stream, but we have read only %llu bytes on a total of %li. Missing: %llu\n", THIS->m_bytesRead, THIS->contentLength(), (THIS->contentLength() - THIS->m_bytesRead));
+                
+                Input_Stream_Position currentPosition = THIS->position();
+                
+                Input_Stream_Position recoveryPosition;
+                recoveryPosition.start = currentPosition.start + THIS->m_bytesRead;
+                recoveryPosition.end = THIS->contentLength();
+                
+                HS_TRACE("Reopen for the end of the file from byte position: %llu\n", recoveryPosition.start);
+                THIS->close();
+                THIS->open(recoveryPosition);
+                break;
+            }
+            
             if (THIS->m_delegate) {
                 THIS->m_delegate->streamEndEncountered();
             }

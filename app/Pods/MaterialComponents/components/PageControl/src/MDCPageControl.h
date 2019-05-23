@@ -98,6 +98,18 @@
 @property(nonatomic) BOOL defersCurrentPageDisplay;
 
 /**
+ When this value is set to YES, the indicators will ascend from right to left in an RTL environment.
+
+ @note In general, the MDCPageControl's UIScrollViewDelegate forwarding methods make assumptions
+ about the originating scrollview's page number based off its contentOffset. When this property is
+ set to YES in an RTL environment, a leftmost content offset will be considered the last page in the
+ scrollview, as opposed to the first.
+
+ The default value is NO.
+ */
+@property(nonatomic) BOOL respectsUserInterfaceLayoutDirection;
+
+/**
  Updates the page indicator to the current page.
 
  This method is ignored if defersCurrentPageDisplay is NO.

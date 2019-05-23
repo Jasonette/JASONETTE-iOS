@@ -96,9 +96,16 @@ typedef NS_ENUM(NSInteger, UICKeyChainStoreAccessibility) {
 }
 __OSX_AVAILABLE_STARTING(__MAC_10_9, __IPHONE_4_0);
 
-typedef NS_ENUM(NSInteger, UICKeyChainStoreAuthenticationPolicy) {
-    UICKeyChainStoreAuthenticationPolicyUserPresence = kSecAccessControlUserPresence,
-};
+typedef NS_ENUM(unsigned long, UICKeyChainStoreAuthenticationPolicy) {
+    UICKeyChainStoreAuthenticationPolicyUserPresence        = 1 << 0,
+    UICKeyChainStoreAuthenticationPolicyTouchIDAny          NS_ENUM_AVAILABLE(10_12_1, 9_0) = 1u << 1,
+    UICKeyChainStoreAuthenticationPolicyTouchIDCurrentSet   NS_ENUM_AVAILABLE(10_12_1, 9_0) = 1u << 3,
+    UICKeyChainStoreAuthenticationPolicyDevicePasscode      NS_ENUM_AVAILABLE(10_11, 9_0) = 1u << 4,
+    UICKeyChainStoreAuthenticationPolicyControlOr           NS_ENUM_AVAILABLE(10_12_1, 9_0) = 1u << 14,
+    UICKeyChainStoreAuthenticationPolicyControlAnd          NS_ENUM_AVAILABLE(10_12_1, 9_0) = 1u << 15,
+    UICKeyChainStoreAuthenticationPolicyPrivateKeyUsage     NS_ENUM_AVAILABLE(10_12_1, 9_0) = 1u << 30,
+    UICKeyChainStoreAuthenticationPolicyApplicationPassword NS_ENUM_AVAILABLE(10_12_1, 9_0) = 1u << 31,
+}__OSX_AVAILABLE_STARTING(__MAC_10_10, __IPHONE_8_0);
 
 @interface UICKeyChainStore : NSObject
 
@@ -114,6 +121,7 @@ typedef NS_ENUM(NSInteger, UICKeyChainStoreAuthenticationPolicy) {
 @property (nonatomic) UICKeyChainStoreAccessibility accessibility;
 @property (nonatomic, readonly) UICKeyChainStoreAuthenticationPolicy authenticationPolicy
 __OSX_AVAILABLE_STARTING(__MAC_10_10, __IPHONE_8_0);
+@property (nonatomic) BOOL useAuthenticationUI;
 
 @property (nonatomic) BOOL synchronizable;
 

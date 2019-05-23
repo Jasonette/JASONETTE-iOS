@@ -5,117 +5,79 @@
 //
 
 #import "NBPhoneNumberDesc.h"
-
-@interface NSArray (NBAdditions)
-- (id)safeObjectAtIndex:(NSUInteger)index;
-@end
-
-@implementation NSArray (NBAdditions)
-- (id)safeObjectAtIndex:(NSUInteger)index {
-    @synchronized(self) {
-        if (index >= [self count]) return nil;
-        id res = [self objectAtIndex:index];
-        if (res == nil || (NSNull*)res == [NSNull null]) {
-            return nil;
-        }
-        return res;
-    }
-}
-@end
-
+#import "NSArray+NBAdditions.h"
 
 @implementation NBPhoneNumberDesc
 
-- (id)initWithData:(id)data
-{
-    NSString *nnp = nil;
-    NSString *pnp = nil;
-    NSString *exp = nil;
-    
-    if (data != nil && [data isKindOfClass:[NSArray class]]) {
-        /* 2 */ nnp = [data safeObjectAtIndex:2];
-        /* 3 */ pnp = [data safeObjectAtIndex:3];
-        /* 6 */ exp = [data safeObjectAtIndex:6];
-    }
-    
-    return [self initWithNationalNumberPattern:nnp withPossibleNumberPattern:pnp withExample:exp];
+- (instancetype)initWithEntry:(NSArray *)entry {
+  self = [super init];
+  if (self && entry != nil) {
+    _nationalNumberPattern = [entry nb_safeStringAtIndex:2];
+    _possibleNumberPattern = [entry nb_safeStringAtIndex:3];
+    _possibleLength = [entry nb_safeArrayAtIndex:9];
+    _possibleLengthLocalOnly = [entry nb_safeArrayAtIndex:10];
+    _exampleNumber = [entry nb_safeStringAtIndex:6];
+    _nationalNumberMatcherData = [entry nb_safeDataAtIndex:7];
+    _possibleNumberMatcherData = [entry nb_safeDataAtIndex:8];
+  }
+  return self;
 }
 
-
-- (id)initWithNationalNumberPattern:(NSString *)nnp withPossibleNumberPattern:(NSString *)pnp withExample:(NSString *)exp
-{
-    self = [self init];
-    
-    if (self) {
-        self.nationalNumberPattern = nnp;
-        self.possibleNumberPattern = pnp;
-        self.exampleNumber = exp;
-    }
-    
-    return self;
-
+- (NSString *)description {
+  return [NSString stringWithFormat:
+                       @"nationalNumberPattern[%@] possibleNumberPattern[%@] possibleLength[%@] "
+                       @"possibleLengthLocalOnly[%@] exampleNumber[%@]",
+                       self.nationalNumberPattern, self.possibleNumberPattern, self.possibleLength,
+                       self.possibleLengthLocalOnly, self.exampleNumber];
 }
 
+#ifdef NB_USE_EXTENSIONS
+// We believe these methods are unused.
+// If you would like them back (not behind a flag) please file a bug with a reason for needing
+// them.
 
-- (id)init
-{
-    self = [super init];
-    
-    if (self) {
-    }
-    
-    return self;
+- (instancetype)initWithCoder:(NSCoder *)coder {
+  if (self = [super init]) {
+    _nationalNumberPattern = [coder decodeObjectForKey:@"nationalNumberPattern"];
+    _possibleNumberPattern = [coder decodeObjectForKey:@"possibleNumberPattern"];
+    _possibleLength = [coder decodeObjectForKey:@"possibleLength"];
+    _possibleLengthLocalOnly = [coder decodeObjectForKey:@"possibleLengthLocalOnly"];
+    _exampleNumber = [coder decodeObjectForKey:@"exampleNumber"];
+    _nationalNumberMatcherData = [coder decodeObjectForKey:@"nationalNumberMatcherData"];
+    _possibleNumberMatcherData = [coder decodeObjectForKey:@"possibleNumberMatcherData"];
+  }
+  return self;
 }
 
-
-- (id)initWithCoder:(NSCoder*)coder
-{
-    if (self = [super init]) {
-        self.nationalNumberPattern = [coder decodeObjectForKey:@"nationalNumberPattern"];
-        self.possibleNumberPattern = [coder decodeObjectForKey:@"possibleNumberPattern"];
-        self.exampleNumber = [coder decodeObjectForKey:@"exampleNumber"];
-    }
-    return self;
+- (void)encodeWithCoder:(NSCoder *)coder {
+  [coder encodeObject:self.nationalNumberPattern forKey:@"nationalNumberPattern"];
+  [coder encodeObject:self.possibleNumberPattern forKey:@"possibleNumberPattern"];
+  [coder encodeObject:self.possibleLength forKey:@"possibleLength"];
+  [coder encodeObject:self.possibleLengthLocalOnly forKey:@"possibleLengthLocalOnly"];
+  [coder encodeObject:self.exampleNumber forKey:@"exampleNumber"];
+  [coder encodeObject:self.nationalNumberMatcherData forKey:@"nationalNumberMatcherData"];
+  [coder encodeObject:self.possibleNumberMatcherData forKey:@"possibleNumberMatcherData"];
 }
 
-
-- (void)encodeWithCoder:(NSCoder*)coder
-{
-    [coder encodeObject:self.nationalNumberPattern forKey:@"nationalNumberPattern"];
-    [coder encodeObject:self.possibleNumberPattern forKey:@"possibleNumberPattern"];
-    [coder encodeObject:self.exampleNumber forKey:@"exampleNumber"];
+- (id)copyWithZone:(NSZone *)zone {
+  return self;
 }
 
+- (BOOL)isEqual:(id)object {
+  if ([object isKindOfClass:[NBPhoneNumberDesc class]] == NO) {
+    return NO;
+  }
 
-- (NSString *)description
-{
-    return [NSString stringWithFormat:@"nationalNumberPattern[%@] possibleNumberPattern[%@] exampleNumber[%@]",
-            self.nationalNumberPattern, self.possibleNumberPattern, self.exampleNumber];
+  NBPhoneNumberDesc *other = object;
+  return [self.nationalNumberPattern isEqual:other.nationalNumberPattern] &&
+         [self.possibleNumberPattern isEqual:other.possibleNumberPattern] &&
+         [self.possibleLength isEqual:other.possibleLength] &&
+         [self.possibleLengthLocalOnly isEqual:other.possibleLengthLocalOnly] &&
+         [self.exampleNumber isEqual:other.exampleNumber] &&
+         [self.nationalNumberMatcherData isEqualToData:other.nationalNumberMatcherData] &&
+         [self.possibleNumberMatcherData isEqualToData:other.possibleNumberMatcherData];
 }
 
-
-- (id)copyWithZone:(NSZone *)zone
-{
-	NBPhoneNumberDesc *phoneDescCopy = [[NBPhoneNumberDesc allocWithZone:zone] init];
-    
-    phoneDescCopy.nationalNumberPattern = [self.nationalNumberPattern copy];
-    phoneDescCopy.possibleNumberPattern = [self.possibleNumberPattern copy];
-    phoneDescCopy.exampleNumber = [self.exampleNumber copy];
-    
-	return phoneDescCopy;
-}
-
-
-- (BOOL)isEqual:(id)object
-{
-    if ([object isKindOfClass:[NBPhoneNumberDesc class]] == NO) {
-        return NO;
-    }
-    
-    NBPhoneNumberDesc *other = object;
-    return [self.nationalNumberPattern isEqual:other.nationalNumberPattern] &&
-        [self.possibleNumberPattern isEqual:other.possibleNumberPattern] &&
-        [self.exampleNumber isEqual:other.exampleNumber];
-}
+#endif  // NB_USE_EXTENSIONS
 
 @end

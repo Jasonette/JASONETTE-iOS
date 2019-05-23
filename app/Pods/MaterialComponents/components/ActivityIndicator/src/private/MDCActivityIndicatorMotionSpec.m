@@ -28,57 +28,68 @@
   NSTimeInterval pointCycleDuration = self.pointCycleDuration;
   MDMMotionCurve linear = MDMMotionCurveMakeBezier(0, 0, 1, 1);
   return (MDCActivityIndicatorMotionSpecIndeterminate){
-    .outerRotation = {
-      .duration = pointCycleDuration, .curve = linear,
-    },
-    .innerRotation = {
-      .duration = pointCycleDuration, .curve = linear,
-    },
-    .strokeStart = {
-      .delay = pointCycleDuration / 2,
-      .duration = pointCycleDuration / 2,
-      .curve = MDMMotionCurveMakeBezier(0.4f, 0.0f, 0.2f, 1.0f),
-    },
-    .strokeEnd = {
-      .duration = pointCycleDuration,
-      .curve = MDMMotionCurveMakeBezier(0.4f, 0.0f, 0.2f, 1.0f),
-    },
+      .outerRotation =
+          {
+              .duration = pointCycleDuration,
+              .curve = linear,
+          },
+      .innerRotation =
+          {
+              .duration = pointCycleDuration,
+              .curve = linear,
+          },
+      .strokeStart =
+          {
+              .delay = pointCycleDuration / 2,
+              .duration = pointCycleDuration / 2,
+              .curve = MDMMotionCurveMakeBezier((CGFloat)0.4, 0, (CGFloat)0.2, 1),
+          },
+      .strokeEnd =
+          {
+              .duration = pointCycleDuration,
+              .curve = MDMMotionCurveMakeBezier((CGFloat)0.4, 0, (CGFloat)0.2, 1),
+          },
   };
 }
 
 + (MDCActivityIndicatorMotionSpecTransitionToDeterminate)willChangeToDeterminate {
   MDMMotionCurve linear = MDMMotionCurveMakeBezier(0, 0, 1, 1);
-  return (MDCActivityIndicatorMotionSpecTransitionToDeterminate) {
-    // Transition timing is calculated at runtime - any duration/delay values provided here will
-    // by scaled by the calculated duration.
-    .innerRotation = {
-      .duration = 1, .curve = linear,
-    },
-    .strokeEnd = {
-      .duration = 1, .curve = MDMMotionCurveMakeBezier(0.4f, 0.0f, 0.2f, 1.0f),
-    },
+  return (MDCActivityIndicatorMotionSpecTransitionToDeterminate){
+      // Transition timing is calculated at runtime - any duration/delay values provided here will
+      // by scaled by the calculated duration.
+      .innerRotation =
+          {
+              .duration = 1,
+              .curve = linear,
+          },
+      .strokeEnd =
+          {
+              .duration = 1,
+              .curve = MDMMotionCurveMakeBezier((CGFloat)0.4, 0, (CGFloat)0.2, 1),
+          },
   };
 }
 
 + (MDCActivityIndicatorMotionSpecTransitionToIndeterminate)willChangeToIndeterminate {
   return (MDCActivityIndicatorMotionSpecTransitionToIndeterminate){
-    // Transition timing is calculated at runtime.
-    .strokeStart = {
-      .curve = MDMMotionCurveMakeBezier(0.4f, 0.0f, 0.2f, 1.0f),
-    },
-    .strokeEnd = {
-      .curve = MDMMotionCurveMakeBezier(0.4f, 0.0f, 0.2f, 1.0f),
-    },
+      // Transition timing is calculated at runtime.
+      .strokeStart =
+          {
+              .curve = MDMMotionCurveMakeBezier((CGFloat)0.4, 0, (CGFloat)0.2, 1),
+          },
+      .strokeEnd =
+          {
+              .curve = MDMMotionCurveMakeBezier((CGFloat)0.4, 0, (CGFloat)0.2, 1),
+          },
   };
 }
 
 + (MDCActivityIndicatorMotionSpecProgress)willChangeProgress {
   return (MDCActivityIndicatorMotionSpecProgress){
-    .strokeEnd = {
-      .duration = self.pointCycleDuration / 2,
-      .curve = MDMMotionCurveMakeBezier(0.4f, 0.0f, 0.2f, 1.0f),
-    }
-  };
+      .strokeEnd = {
+          .duration = self.pointCycleDuration / 2,
+          .curve = MDMMotionCurveMakeBezier((CGFloat)0.4, 0, (CGFloat)0.2, 1),
+      }};
 }
 
 @end

@@ -102,9 +102,9 @@ IB_DESIGNABLE
 
 /**
  The array of colors that are cycled through when animating the spinner. Populated with a set of
- default colors. 
- 
- @note If an empty array is provided to this property's setter, then the provided array will be 
+ default colors.
+
+ @note If an empty array is provided to this property's setter, then the provided array will be
  discarded and an array consisting of the default color values will be assigned instead.
  */
 @property(nonatomic, copy, nonnull) NSArray<UIColor *> *cycleColors UI_APPEARANCE_SELECTOR;
@@ -195,7 +195,7 @@ typedef void (^MDCActivityIndicatorAnimation)(CGFloat strokeStart, CGFloat strok
 
 - (nonnull instancetype)initWithCoder:(nonnull NSCoder *)aDecoder NS_UNAVAILABLE;
 
-- (nonnull instancetype)initWithAnimation:
-    (_Nonnull MDCActivityIndicatorAnimation)animation NS_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithAnimation:(_Nonnull MDCActivityIndicatorAnimation)animation
+    NS_DESIGNATED_INITIALIZER;
 
 @end

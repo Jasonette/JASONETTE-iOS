@@ -1575,7 +1575,7 @@
                     } else {
                         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
                             SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                            [manager downloadImageWithURL:[NSURL URLWithString:chat_input[@"left"][@"image"]]
+                            [manager downloadImageWithURL:[NSURL URLWithString:self->chat_input[@"left"][@"image"]]
                                                   options:0
                                                  progress:^(NSInteger receivedSize, NSInteger expectedSize) {
                                                      // progression tracking code
@@ -1583,8 +1583,8 @@
                                                 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                                     
                                                     // colorize
-                                                    if(chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
-                                                        UIColor *newColor = [JasonHelper colorwithHexString:chat_input[@"left"][@"style"][@"color"] alpha:1.0];
+                                                    if(self->chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
+                                                        UIColor *newColor = [JasonHelper colorwithHexString:self->chat_input[@"left"][@"style"][@"color"] alpha:1.0];
                                                         image = [JasonHelper colorize:image into:newColor];
                                                     }
                                                     

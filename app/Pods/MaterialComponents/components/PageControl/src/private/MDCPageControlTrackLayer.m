@@ -210,30 +210,33 @@ static NSString *const kPageControlAnimationKeyDraw = @"drawTrack";
     [self addRoundedEndpontToBezierPath:bezierPath atPoint:_endPoint];
 
     // Create an arc from top of startpoint circle to midpoint.
-    [bezierPath
-        moveToPoint:[self pointOnCircleWithRadius:r angleInDegrees:300.0f origin:_startPoint]];
+    [bezierPath moveToPoint:[self pointOnCircleWithRadius:r angleInDegrees:300 origin:_startPoint]];
     [bezierPath addQuadCurveToPoint:_midPoint controlPoint:CGPointMake(_midPoint.x - r / 2, r)];
 
     // Create an arc from midpoint to top of endpoint circle.
-    [bezierPath
-        addQuadCurveToPoint:[self pointOnCircleWithRadius:r angleInDegrees:240.0f origin:_endPoint]
-               controlPoint:CGPointMake(_midPoint.x + r / 2, r)];
+    [bezierPath addQuadCurveToPoint:[self pointOnCircleWithRadius:r
+                                                   angleInDegrees:240
+                                                           origin:_endPoint]
+                       controlPoint:CGPointMake(_midPoint.x + r / 2, r)];
 
     // Create a line from top of endpoint circle to bottom of endpoint circle.
-    [bezierPath
-        addLineToPoint:[self pointOnCircleWithRadius:r angleInDegrees:120.0f origin:_endPoint]];
+    [bezierPath addLineToPoint:[self pointOnCircleWithRadius:r
+                                              angleInDegrees:120
+                                                      origin:_endPoint]];
 
     // Create an arc from bottom of endpoint circle to midpoint.
     [bezierPath addQuadCurveToPoint:_midPoint controlPoint:CGPointMake(_midPoint.x + r / 2, r)];
 
     // Create an arc from midpoint to bottom of startpoint circle.
-    [bezierPath
-        addQuadCurveToPoint:[self pointOnCircleWithRadius:r angleInDegrees:60.0f origin:_startPoint]
-               controlPoint:CGPointMake(_midPoint.x - r / 2, r)];
+    [bezierPath addQuadCurveToPoint:[self pointOnCircleWithRadius:r
+                                                   angleInDegrees:60
+                                                           origin:_startPoint]
+                       controlPoint:CGPointMake(_midPoint.x - r / 2, r)];
 
     // Create line from bottom of startpoint circle to top of startpoint circle.
-    [bezierPath
-        addLineToPoint:[self pointOnCircleWithRadius:r angleInDegrees:300.0f origin:_startPoint]];
+    [bezierPath addLineToPoint:[self pointOnCircleWithRadius:r
+                                              angleInDegrees:300
+                                                      origin:_startPoint]];
 
     // Close path.
     [bezierPath closePath];
@@ -274,7 +277,7 @@ static NSString *const kPageControlAnimationKeyDraw = @"drawTrack";
 }
 
 - (CGFloat)degreesToRadians:(CGFloat)degrees {
-  return degrees * (CGFloat)M_PI / 180.0f;
+  return degrees * (CGFloat)M_PI / 180;
 }
 
 - (BOOL)isPointZero:(CGPoint)point {

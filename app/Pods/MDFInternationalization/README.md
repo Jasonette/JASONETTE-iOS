@@ -47,7 +47,7 @@ if (customView.mdf_effectiveUserInterfaceLayoutDirection == UIUserInterfaceLayou
 }
 ```
 
-## Embedding Bidirection strings
+## Embedding Bi-directional strings
 
 A category on NSString offers a simple API to wrap strings in Unicode markers so that LTR
 and RTL text can co-exist in the same string.
@@ -56,7 +56,7 @@ and RTL text can co-exist in the same string.
 // To embed an RTL string in an existing LTR string we should wrap it in Unicode directionality
 // markers to  maintain preoper rendering.
 
-// The name of a restaurant is in Arabic or Hebrew script, but the rest of string is in Latin.
+// The name of a restaurant is in Arabic (RTL), but the rest of string is in Latin (LTR).
 NSString *wrappedRestaurantName =
     [restaurantName mdf_stringWithStereoReset:NSLocaleLanguageDirectionRightToLeft
                                       context:NSLocaleLanguageDirectionLeftToRight];

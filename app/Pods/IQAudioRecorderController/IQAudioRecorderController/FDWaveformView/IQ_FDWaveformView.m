@@ -10,8 +10,13 @@
 // DO SEE http://stackoverflow.com/questions/1191868/uiimageview-scaling-interpolation
 // see http://stackoverflow.com/questions/3514066/how-to-tint-a-transparent-png-image-in-iphone
 
+#import <AVFoundation/AVAssetTrack.h>
+#import <AVFoundation/AVAssetReader.h>
+#import <AVFoundation/AVAssetReaderOutput.h>
+#import <AVFoundation/AVFAudio.h>
+#import <CoreMedia/CMFormatDescription.h>
+
 #import "IQ_FDWaveformView.h"
-#import <UIKit/UIKit.h>
 
 #define absX(x) ((x)<0?0-(x):(x))
 #define minMaxX(x,mn,mx) ((x)<=(mn)?(mn):((x)>=(mx)?(mx):(x)))
@@ -110,28 +115,53 @@
     self.asset = [AVURLAsset URLAssetWithURL:audioURL options:nil];
     self.assetTrack = [[self.asset tracksWithMediaType:AVMediaTypeAudio] firstObject];
 
-    [self.asset loadValuesAsynchronouslyForKeys:@[@"duration"] completionHandler:^() {
-        self.loadingInProgress = NO;
-        if ([self.delegate respondsToSelector:@selector(waveformViewDidLoad:)])
-            [self.delegate waveformViewDidLoad:self];
+    __weak typeof(self) weakSelf = self;
+
+    [self.asset loadValuesAsynchronouslyForKeys:@[@"duration"] completionHandler:^{
+        weakSelf.loadingInProgress = NO;
+        if ([weakSelf.delegate respondsToSelector:@selector(waveformViewDidLoad:)])
+            [weakSelf.delegate waveformViewDidLoad:weakSelf];
         
         NSError *error = nil;
-        AVKeyValueStatus durationStatus = [self.asset statusOfValueForKey:@"duration" error:&error];
+        AVKeyValueStatus durationStatus = [weakSelf.asset statusOfValueForKey:@"duration" error:&error];
         switch (durationStatus) {
             case AVKeyValueStatusLoaded:{
-                self.image.image = nil;
-                self.highlightedImage.image = nil;
-                self.croppedImage.image = nil;
                 
-                NSArray *formatDesc = self.assetTrack.formatDescriptions;
+                void (^threadSafeNilImage)(void) = ^{
+                    weakSelf.image.image = nil;
+                    weakSelf.highlightedImage.image = nil;
+                    weakSelf.croppedImage.image = nil;
+                };
+                
+                if ([NSThread isMainThread]) {
+                    threadSafeNilImage();
+                } else {
+                    dispatch_sync(dispatch_get_main_queue(), ^{
+                        threadSafeNilImage();
+                    });
+                }
+                
+                NSArray *formatDesc = weakSelf.assetTrack.formatDescriptions;
                 CMAudioFormatDescriptionRef item = (__bridge CMAudioFormatDescriptionRef)formatDesc[0];
                 const AudioStreamBasicDescription *asbd = CMAudioFormatDescriptionGetStreamBasicDescription(item);
-                unsigned long int samples = asbd->mSampleRate * (float)self.asset.duration.value/self.asset.duration.timescale;
-                self.totalSamples = self.zoomEndSamples = self.cropEndSamples = samples;
-                self.progressSamples = self.zoomStartSamples = self.cropStartSamples = 0;
+                unsigned long int samples = asbd->mSampleRate * (float)weakSelf.asset.duration.value/weakSelf.asset.duration.timescale;
+                self.totalSamples = weakSelf.zoomEndSamples = weakSelf.cropEndSamples = samples;
+                self.progressSamples = weakSelf.zoomStartSamples = weakSelf.cropStartSamples = 0;
 
-                [self setNeedsDisplay];
-                [self performSelectorOnMainThread:@selector(setNeedsLayout) withObject:nil waitUntilDone:NO];
+                void (^threadSafeUpdate)(void) = ^{
+                    
+                    [weakSelf setNeedsDisplay];
+                    [weakSelf setNeedsLayout];
+                };
+                
+                if ([NSThread isMainThread]) {
+                    threadSafeUpdate();
+                } else {
+                    dispatch_sync(dispatch_get_main_queue(), ^{
+                        threadSafeUpdate();
+                    });
+                }
+
                 break;
             }
             case AVKeyValueStatusUnknown:
@@ -152,11 +182,24 @@
     if (self.totalSamples) {
         float progress = (float)self.progressSamples / self.totalSamples;
         
-        CALayer *layer = [[CALayer alloc] init];
-        layer.frame = CGRectMake(0,0,self.frame.size.width*progress,self.frame.size.height);
-        layer.backgroundColor = [[UIColor blackColor] CGColor];
-        self.highlightedImage.layer.mask = layer;
-        [self setNeedsLayout];
+        __weak typeof(self) weakSelf = self;
+
+        void (^threadSafeUpdate)(void) = ^{
+            
+            CALayer *layer = [[CALayer alloc] init];
+            layer.frame = CGRectMake(0,0,weakSelf.frame.size.width*progress,weakSelf.frame.size.height);
+            layer.backgroundColor = [[UIColor blackColor] CGColor];
+            weakSelf.highlightedImage.layer.mask = layer;
+            [weakSelf setNeedsLayout];
+        };
+        
+        if ([NSThread isMainThread]) {
+            threadSafeUpdate();
+        } else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                threadSafeUpdate();
+            });
+        }
     }
 }
 
@@ -168,18 +211,31 @@
         float startProgress = (float)self.cropStartSamples / self.totalSamples;
         float endProgress = (float)self.cropEndSamples / self.totalSamples;
 
-        CGRect visibleRect = CGRectMake(self.frame.size.width*startProgress,0,self.frame.size.width*(endProgress-startProgress),self.frame.size.height);;
-        UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRect:self.croppedImage.bounds];
-        [bezierPath appendPath:[UIBezierPath bezierPathWithRect:visibleRect]];
-        
-        CAShapeLayer *layer = [[CAShapeLayer alloc] init];
-        layer.frame = self.croppedImage.bounds;
-        layer.fillRule = kCAFillRuleEvenOdd;
-        layer.fillColor = [UIColor blackColor].CGColor;
-        layer.path = bezierPath.CGPath;
+        __weak typeof(self) weakSelf = self;
 
-        self.croppedImage.layer.mask = layer;
-        [self setNeedsLayout];
+        void (^threadSafeUpdate)(void) = ^{
+            
+            CGRect visibleRect = CGRectMake(weakSelf.frame.size.width*startProgress,0,weakSelf.frame.size.width*(endProgress-startProgress),weakSelf.frame.size.height);;
+            UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRect:weakSelf.croppedImage.bounds];
+            [bezierPath appendPath:[UIBezierPath bezierPathWithRect:visibleRect]];
+            
+            CAShapeLayer *layer = [[CAShapeLayer alloc] init];
+            layer.frame = weakSelf.croppedImage.bounds;
+            layer.fillRule = kCAFillRuleEvenOdd;
+            layer.fillColor = [UIColor blackColor].CGColor;
+            layer.path = bezierPath.CGPath;
+            
+            weakSelf.croppedImage.layer.mask = layer;
+            [weakSelf setNeedsLayout];
+        };
+        
+        if ([NSThread isMainThread]) {
+            threadSafeUpdate();
+        } else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                threadSafeUpdate();
+            });
+        }
     }
 }
 
@@ -209,15 +265,43 @@
 - (void)setZoomStartSamples:(long)startSamples
 {
     _zoomStartSamples = startSamples;
-    [self setNeedsDisplay];
-    [self setNeedsLayout];
+
+    __weak typeof(self) weakSelf = self;
+
+    void (^threadSafeUpdate)(void) = ^{
+        
+        [weakSelf setNeedsDisplay];
+        [weakSelf setNeedsLayout];
+    };
+    
+    if ([NSThread isMainThread]) {
+        threadSafeUpdate();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            threadSafeUpdate();
+        });
+    }
 }
 
 - (void)setZoomEndSamples:(long)endSamples
 {
     _zoomEndSamples = endSamples;
-    [self setNeedsDisplay];
-    [self setNeedsLayout];
+    
+    __weak typeof(self) weakSelf = self;
+
+    void (^threadSafeUpdate)(void) = ^{
+        
+        [weakSelf setNeedsDisplay];
+        [weakSelf setNeedsLayout];
+    };
+    
+    if ([NSThread isMainThread]) {
+        threadSafeUpdate();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            threadSafeUpdate();
+        });
+    }
 }
 
 - (void)layoutSubviews
@@ -248,8 +332,11 @@
     if (self.image.image.size.height > self.frame.size.height * [UIScreen mainScreen].scale * verticalMaximumOverdraw)
         needToRender = YES;
     if (needToRender) {
+        
+        __weak typeof(self) weakSelf = self;
+
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-            [self renderAsset];
+            [weakSelf renderAsset];
         });
         return;
     }
@@ -279,32 +366,66 @@
     unsigned long int renderStartSamples = minMaxX((long)self.zoomStartSamples - displayRange * horizontalTargetBleed, 0, self.totalSamples);
     unsigned long int renderEndSamples = minMaxX((long)self.zoomEndSamples + displayRange * horizontalTargetBleed, 0, self.totalSamples);
     
-    CGFloat widthInPixels = self.frame.size.width * [UIScreen mainScreen].scale * horizontalTargetOverdraw;
-    CGFloat heightInPixels = self.frame.size.height * [UIScreen mainScreen].scale * verticalTargetOverdraw;
+    __block CGFloat widthInPixels = 0;
+    __block CGFloat heightInPixels = 0;
+    __weak typeof(self) weakSelf = self;
+
+    if ([NSThread isMainThread])
+    {
+        widthInPixels = self.frame.size.width * [UIScreen mainScreen].scale * horizontalTargetOverdraw;
+        heightInPixels = self.frame.size.height * [UIScreen mainScreen].scale * verticalTargetOverdraw;
+    }
+    else
+    {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            widthInPixels = weakSelf.frame.size.width * [UIScreen mainScreen].scale * horizontalTargetOverdraw;
+            heightInPixels = weakSelf.frame.size.height * [UIScreen mainScreen].scale * verticalTargetOverdraw;
+        });
+    }
     
     [IQ_FDWaveformView sliceAndDownsampleAsset:self.asset track:self.assetTrack startSamples:renderStartSamples endSamples:renderEndSamples targetSamples:widthInPixels done:^(NSData *samples, NSInteger sampleCount, Float32 sampleMax) {
         
-        [self plotLogGraph:samples
-              maximumValue:sampleMax
-              mimimumValue:noiseFloor
-               sampleCount:sampleCount
-               imageHeight:heightInPixels
-                      done:^(UIImage *image,
-                             UIImage *selectedImage,
-                             UIImage *cropImage) {
-                          dispatch_async(dispatch_get_main_queue(), ^{
-                              self.image.image = image;
-                              self.highlightedImage.image = selectedImage;
-                              self.croppedImage.image = cropImage;
-                              self.cachedStartSamples = renderStartSamples;
-                              self.cachedEndSamples = renderEndSamples;
-                              self.renderingInProgress = NO;
-                              [self layoutSubviews]; // warning
-                              if ([self.delegate respondsToSelector:@selector(waveformViewDidRender:)])
-                                  [self.delegate waveformViewDidRender:self];
-                          });
-                      }
-         ];
+
+        if (samples == nil)
+        {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                
+                weakSelf.image.image = nil;
+                weakSelf.highlightedImage.image = nil;
+                weakSelf.croppedImage.image = nil;
+                weakSelf.cachedStartSamples = 0;
+                weakSelf.cachedEndSamples = 0;
+                weakSelf.renderingInProgress = NO;
+                if ([weakSelf.delegate respondsToSelector:@selector(waveformViewFailedToRender:)])
+                    [weakSelf.delegate waveformViewFailedToRender:weakSelf];
+            }];
+        }
+        else
+        {
+            [weakSelf plotLogGraph:samples
+                  maximumValue:sampleMax
+                  mimimumValue:noiseFloor
+                   sampleCount:sampleCount
+                   imageHeight:heightInPixels
+                          done:^(UIImage *image,
+                                 UIImage *selectedImage,
+                                 UIImage *cropImage) {
+                              
+                              [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                  
+                                  weakSelf.image.image = image;
+                                  weakSelf.highlightedImage.image = selectedImage;
+                                  weakSelf.croppedImage.image = cropImage;
+                                  weakSelf.cachedStartSamples = renderStartSamples;
+                                  weakSelf.cachedEndSamples = renderEndSamples;
+                                  weakSelf.renderingInProgress = NO;
+                                  [weakSelf setNeedsLayout];
+                                  if ([weakSelf.delegate respondsToSelector:@selector(waveformViewDidRender:)])
+                                      [weakSelf.delegate waveformViewDidRender:weakSelf];
+                              }];
+                          }
+             ];
+        }
     }];
 }
 
@@ -382,6 +503,8 @@
     // Something went wrong. Handle it.
     if (reader.status == AVAssetReaderStatusCompleted){
         done(fullSongData, fullSongData.length/4, sampleMax);
+    } else {
+        done(nil, 0, 0);
     }
 }
 

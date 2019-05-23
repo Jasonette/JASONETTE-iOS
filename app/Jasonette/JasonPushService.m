@@ -78,7 +78,7 @@
     completionHandler(UNNotificationPresentationOptionNone);
 }
 
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler{
     if(response.notification.request.content.userInfo) {
         if(response.notification.request.content.userInfo[@"href"]){
             [[Jason client] go:response.notification.request.content.userInfo[@"href"]];

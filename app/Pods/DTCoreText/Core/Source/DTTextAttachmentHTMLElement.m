@@ -36,7 +36,7 @@
 
 		_paragraphStyle.lineHeightMultiple = 1;
 		
-		// specifiying line height interfers with correct positioning
+		// specifying line height interferes with correct positioning
 		_paragraphStyle.minimumLineHeight = 0;
 		_paragraphStyle.maximumLineHeight = 0;
 		
@@ -100,6 +100,22 @@
 		_textAttachment.originalSize = _size;
 	}
 	
+	NSString *widthString = [styles objectForKey:@"width"];
+	NSString *heightString = [styles objectForKey:@"height"];
+
+	if (widthString.length > 1 && [widthString hasSuffix:@"%"])
+	{
+		CGFloat scale = (CGFloat)([[widthString substringToIndex:widthString.length - 1] floatValue] / 100.0);
+		
+		_size.width = _maxDisplaySize.width * scale;
+	}
+	
+	if (heightString.length > 1 && [heightString hasSuffix:@"%"])
+	{
+		CGFloat scale = (CGFloat)([[heightString substringToIndex:heightString.length - 1] floatValue] / 100.0);
+		
+		_size.height = _maxDisplaySize.height * scale;
+	}
 	// update the display size
 	[_textAttachment setDisplaySize:_size withMaxDisplaySize:_maxDisplaySize];
 }

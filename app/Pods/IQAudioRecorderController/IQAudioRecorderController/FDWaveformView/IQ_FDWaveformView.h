@@ -5,9 +5,7 @@
 //  Copyright (c) 2013 William Entriken. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-#import <MediaPlayer/MediaPlayer.h>
-#import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIView.h>
 
 @protocol IQ_FDWaveformViewDelegate;
 
@@ -75,6 +73,9 @@
 
 /// Rendering did complete
 - (void)waveformViewDidRender:(IQ_FDWaveformView *)waveformView;
+
+/// Rendering did failed
+- (void)waveformViewFailedToRender:(IQ_FDWaveformView *)waveformView;
 
 /// An audio file will be loaded
 - (void)waveformViewWillLoad:(IQ_FDWaveformView *)waveformView;

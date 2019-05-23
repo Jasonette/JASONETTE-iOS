@@ -9,24 +9,20 @@
 #import <Foundation/Foundation.h>
 #import "NBPhoneNumberDefines.h"
 
-
 @class NBPhoneMetaData;
 
 @interface NBMetadataHelper : NSObject
 
 + (BOOL)hasValue:(NSString *)string;
 
-- (NSDictionary *)CCode2CNMap;
++ (NSDictionary *)CCode2CNMap;
 
 - (NSArray *)getAllMetadata;
 
 - (NBPhoneMetaData *)getMetadataForNonGeographicalRegion:(NSNumber *)countryCallingCode;
 - (NBPhoneMetaData *)getMetadataForRegion:(NSString *)regionCode;
 
-- (NSArray *)regionCodeFromCountryCode:(NSNumber *)countryCodeNumber;
-- (NSString *)countryCodeFromRegionCode:(NSString *)regionCode;
-
-- (NSString *)stringByTrimming:(NSString *)aString;
-- (NSString *)normalizeNonBreakingSpace:(NSString *)aString;
++ (NSArray *)regionCodeFromCountryCode:(NSNumber *)countryCodeNumber;
++ (NSString *)countryCodeFromRegionCode:(NSString *)regionCode;
 
 @end

@@ -11,7 +11,7 @@ CLLocationManager requires you to manually detect and handle things like permiss
 INTULocationManager makes it easy to request both the device's current location, either once or continuously, as well as the device's continuous heading. The API is extremely simple for both one-time location requests and recurring subscriptions to location updates. For one-time location requests, you can specify how accurate of a location you need, and how long you're willing to wait to get it. Significant location change monitoring is also supported. INTULocationManager is power efficient and conserves the device's battery by automatically determining and using the most efficient Core Location accuracy settings, and by automatically powering down location services (e.g. GPS or compass) as soon as they are no longer needed.
 
 ## Installation
-*INTULocationManager requires iOS 6.0 or later.*
+*INTULocationManager requires iOS 9.0 or later.*
 
 ### Using [CocoaPods](http://cocoapods.org)
 
@@ -56,11 +56,11 @@ INTULocationManager makes it easy to request both the device's current location,
 ### Requesting Permission to Access Location Services
 INTULocationManager automatically handles obtaining permission to access location services when you issue a location request and the user has not already granted your app permission to access location services.
 
-#### iOS 6 & 7
-For iOS 6 & 7, it is recommended that you provide a description for how your app uses location services by setting a string for the key [`NSLocationUsageDescription`](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW27) in your app's `Info.plist` file.
-
-#### iOS 8
+#### iOS 9 and above
 Starting with iOS 8, you **must** provide a description for how your app uses location services by setting a string for the key [`NSLocationWhenInUseUsageDescription`](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW26) or [`NSLocationAlwaysUsageDescription`](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW18) in your app's `Info.plist` file. INTULocationManager determines which level of permissions to request based on which description key is present. You should only request the minimum permission level that your app requires, therefore it is recommended that you use the "When In Use" level unless you require more access. If you provide values for both description keys, the more permissive "Always" level is requested.
+
+#### iOS 11
+Starting with iOS 11, you **must** provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription` in your app's `Info.plist` file.
 
 ### Getting the Current Location (once)
 To get the device's current location, use the method `requestLocationWithDesiredAccuracy:timeout:block:`.
@@ -98,6 +98,27 @@ INTULocationManager *locMgr = [INTULocationManager sharedInstance];
                                              // An error occurred, more info is available by looking at the specific status returned.
                                          }
                                      }];
+```
+```swift
+let locationManager = INTULocationManager.sharedInstance()
+locationManager.requestLocation(withDesiredAccuracy: .city,
+                                            timeout: 10.0,
+                               delayUntilAuthorized: true) { (currentLocation, achievedAccuracy, status) in
+                                   if (status == INTULocationStatus.success) {
+                                       // Request succeeded, meaning achievedAccuracy is at least the requested accuracy, and
+                                       // currentLocation contains the device's current location
+                                   }
+                                   else if (status == INTULocationStatus.timedOut) {
+                                       // Wasn't able to locate the user with the requested accuracy within the timeout interval.
+                                       // However, currentLocation contains the best location available (if any) as of right now,
+                                       // and achievedAccuracy has info on the accuracy/recency of the location in currentLocation.
+                                   }
+                                   else {
+                                       // An error occurred, more info is available by looking at the specific status returned.
+                                   }
+           }
+
+
 ```
 
 ### Subscribing to Continuous Location Updates

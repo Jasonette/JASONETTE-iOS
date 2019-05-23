@@ -6,8 +6,6 @@
 //  Copyright © 2018 Finalsite. All rights reserved.
 //
 
-import AirshipAppExtensions
-
 class NotificationService: UAMediaAttachmentExtension {
     
 }

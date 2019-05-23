@@ -137,7 +137,7 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 	{
 		// get larger dimension and multiply by scale
 		UIScreen *mainScreen = [UIScreen mainScreen];
-		CGFloat largerDimension = MAX(mainScreen.applicationFrame.size.width, mainScreen.applicationFrame.size.height);
+		CGFloat largerDimension = MAX(mainScreen.bounds.size.width, mainScreen.bounds.size.height);
 		CGFloat scale = mainScreen.scale;
 		
 		// this way tiles cover entire screen regardless of orientation or scale
@@ -165,6 +165,12 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 
 - (void)dealloc
 {
+	if (_isTiling)
+	{
+		self.layer.contents = nil;
+		self.layer.delegate = nil;
+	}
+
 	[self removeAllCustomViews];
 }
 
@@ -182,7 +188,7 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 
 - (void)layoutSubviewsInRect:(CGRect)rect
 {
-	// if we are called for partial (non-infinate) we remove unneeded custom subviews first
+	// if we are called for partial (non-infinite) we remove unneeded custom subviews first
 	if (!CGRectIsInfinite(rect))
 	{
 		[self removeSubviewsOutsideRect:rect];
@@ -223,18 +229,13 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 			if (runRange.location>=skipRunsBeforeLocation)
 			{
 				// see if it's a link
-				NSRange effectiveRangeOfLink;
+				NSRange effectiveRangeOfLink = runRange;
 				
 				// make sure that a link is only as long as the area to the next attachment or the current attachment itself
 				DTTextAttachment *attachment = oneRun.attributes[NSAttachmentAttributeName];
 				
 				// if there is no attachment then the effectiveRangeOfAttachment contains the range until the next attachment
 				NSURL *linkURL = oneRun.attributes[DTLinkAttribute];
-				
-				if (linkURL)
-				{
-					effectiveRangeOfLink = runRange;
-				}
 				
 				// avoid chaining together glyph runs for an attachment
 				if (linkURL && !attachment)
@@ -263,7 +264,7 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 						effectiveRangeOfLink = NSUnionRange(effectiveRangeOfLink, followingRun.stringRange);
 					}
 					
-					// frame for link view includes for all joined glyphruns with same link in this line
+					// frame for link view includes for all joined glyph runs with same link in this line
 					frameForSubview = [oneLine frameOfGlyphsWithRange:effectiveRangeOfLink];
 					
 					// this following glyph run link attribute is joined to link range
@@ -346,7 +347,8 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 						}
 						else if (_delegateFlags.delegateSupportsGenericCustomViews)
 						{
-							NSAttributedString *string = [layoutString attributedSubstringFromRange:runRange];
+							NSMutableAttributedString *string = [layoutString attributedSubstringFromRange:runRange].mutableCopy;
+							[string addAttributes:oneRun.attributes range:NSMakeRange(0, string.length)];
 							newCustomAttachmentView = [_delegate attributedTextContentView:self viewForAttributedString:string frame:frameForSubview];
 						}
 						
@@ -403,7 +405,8 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 						}
 						else if (_delegateFlags.delegateSupportsGenericCustomViews)
 						{
-							NSAttributedString *string = [layoutString attributedSubstringFromRange:runRange];
+							NSMutableAttributedString *string = [layoutString attributedSubstringFromRange:runRange].mutableCopy;
+							[string addAttributes:oneRun.attributes range:NSMakeRange(0, string.length)];
 							newCustomLinkView = [_delegate attributedTextContentView:self viewForAttributedString:string frame:frameForSubview];
 						}
 						

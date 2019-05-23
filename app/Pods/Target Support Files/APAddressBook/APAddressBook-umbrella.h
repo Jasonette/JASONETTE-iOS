@@ -12,7 +12,6 @@
 
 #import "APContactBuilder.h"
 #import "APContactListBuilder.h"
-#import "APDeprecated.h"
 #import "APContactDataExtractor.h"
 #import "APImageExtractor.h"
 #import "APSocialServiceHelper.h"
@@ -24,6 +23,7 @@
 #import "APThread.h"
 #import "APAddressBookRefWrapper.h"
 #import "APAddressBook.h"
+#import "APAddressBookFramework.h"
 #import "APAddress.h"
 #import "APContact.h"
 #import "APContactDate.h"

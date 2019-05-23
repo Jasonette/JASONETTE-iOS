@@ -61,11 +61,27 @@
 }
 
 - (nonnull NSString*) SHA256String {
-    unsigned int outputLength = CC_SHA256_DIGEST_LENGTH;
-    unsigned char output[outputLength];
-    
-    CC_SHA256(self.bytes, (unsigned int) self.length, output);
-    return [self toHexString:output length:outputLength];
+	unsigned int outputLength = CC_SHA256_DIGEST_LENGTH;
+	unsigned char output[outputLength];
+	
+	CC_SHA256(self.bytes, (unsigned int) self.length, output);
+	return [self toHexString:output length:outputLength];
+}
+
+- (nonnull NSData*) SHA512 {
+	unsigned int outputLength = CC_SHA512_DIGEST_LENGTH;
+	unsigned char output[outputLength];
+	
+	CC_SHA512(self.bytes, (unsigned int) self.length, output);
+	return [NSData dataWithBytes:output length:outputLength];
+}
+
+- (nonnull NSString*) SHA512String {
+	unsigned int outputLength = CC_SHA512_DIGEST_LENGTH;
+	unsigned char output[outputLength];
+	
+	CC_SHA512(self.bytes, (unsigned int) self.length, output);
+	return [self toHexString:output length:outputLength];
 }
 
 - (nonnull NSString*) toHexString:(unsigned char*) data length: (unsigned int) length {

@@ -1,6 +1,6 @@
 /*
  * This file is part of the FreeStreamer project,
- * (C)Copyright 2011-2016 Matias Muhonen <mmu@iki.fi> 穆马帝
+ * (C)Copyright 2011-2018 Matias Muhonen <mmu@iki.fi> 穆马帝
  * See the file ''LICENSE'' for using the code.
  *
  * https://github.com/muhku/FreeStreamer
@@ -70,12 +70,14 @@ public:
     void startCachedDataPlayback();
     
     AS_Playback_Position playbackPosition();
+    UInt64 audioDataByteCount();
     float durationInSeconds();
     void seekToOffset(float offset);
     
     Input_Stream_Position streamPositionForOffset(float offset);
     
     float currentVolume();
+    void setDecoderRunState(bool decoderShouldRun);
     void setVolume(float volume);
     void setPlayRate(float playRate);
     
@@ -147,6 +149,7 @@ private:
     CFRunLoopTimerRef m_seekTimer;
     CFRunLoopTimerRef m_inputStreamTimer;
     CFRunLoopTimerRef m_stateSetTimer;
+    CFRunLoopTimerRef m_decodeTimer;
     
     AudioFileStreamID m_audioFileStream;	// the audio file stream parser
     AudioConverterRef m_audioConverter;
@@ -158,6 +161,7 @@ private:
     UInt8 *m_outputBuffer;
     
     UInt64 m_packetIdentifier;
+    UInt64 m_playingPacketIdentifier;
     UInt64 m_dataOffset;
     float m_seekOffset;
     size_t m_bounceCount;
@@ -195,7 +199,7 @@ private:
     bool m_converterRunOutOfData;
     bool m_decoderShouldRun;
     bool m_decoderFailed;
-    bool m_decoderActive;
+    bool m_decoderThreadCreated;
     
     pthread_mutex_t m_packetQueueMutex;
     pthread_mutex_t m_streamStateMutex;
