@@ -3410,6 +3410,12 @@
                     
                     if([transition isEqualToString:@"replace"]){
                         NSMutableArray *controllerStack = [NSMutableArray arrayWithArray:self->navigationController.viewControllers];
+
+                        JasonViewController *lastView = controllerStack.lastObject;
+                        if (lastView.isModal) {
+                            vc.isModal = YES;
+                        }
+
                         [controllerStack replaceObjectAtIndex:([controllerStack count] - 1) withObject:vc];
                         
                         // Assign the updated stack with animation
