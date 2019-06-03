@@ -1625,7 +1625,8 @@
                         @"height": [NSNumber numberWithFloat:bounds.size.height],
                         @"density": [NSNumber numberWithFloat:[[UIScreen mainScreen] scale]],
                         @"os": @{ @"name": @"ios", @"version": [[UIDevice currentDevice] systemVersion] },
-                        @"language": [[NSLocale preferredLanguages] objectAtIndex:0]
+                        @"language": [[NSLocale preferredLanguages] objectAtIndex:0],
+                        @"tz": [[NSTimeZone localTimeZone] name]
                         };
     
     dict[@"view"] = @{
