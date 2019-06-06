@@ -12,17 +12,17 @@ Create your own native iOS app with nothing but *JSON*. Then send it over `http(
 Follow or join these channels for questions and support, and to keep updated on latest releases and announcements.
 
 <table class="equalwidth follow">
-    <tr>
-        <td>
-            <a href="https://jasonette.now.sh">
-                
-                <img src="https://user-images.githubusercontent.com/292738/59071955-ba123600-888e-11e9-9593-760cc5701b91.png" style="width:100px;height:auto">
+<tr>
+<td>
+<a href="https://jasonette.now.sh">
 
-                <br>
-                <img src="https://jasonette.now.sh/badge.svg">
-            </a>
-        </td>
-    </tr>
+<img src="https://user-images.githubusercontent.com/292738/59071955-ba123600-888e-11e9-9593-760cc5701b91.png" style="width:100px;height:auto">
+
+<br>
+<img src="https://jasonette.now.sh/badge.svg">
+</a>
+</td>
+</tr>
 </table>
 
 
