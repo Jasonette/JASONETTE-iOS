@@ -24,6 +24,10 @@ edge code. More details in the [CONTRIBUTING](CONTRIBUTING.md) file.
 The [CHANGELOG](CHANGELOG.md) contains the release notes
 of each version.
 
+## [Documentation](https://jasonelle.com/docs)
+
+Documentation and examples in the [documentation repository](https://github.com/jasonelle/docs).
+
 
 ## Questions and Support
 
