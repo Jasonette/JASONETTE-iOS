@@ -17,7 +17,7 @@ Releases are made in the [Jasonelle Repo](https://github.com/jasonelle/jasonelle
 ## [Contribution](CONTRIBUTING.md)
 
 This repository uses `master` branch to store the bleeding
-edge code. More detials in the [CONTRIBUTING](CONTRIBUTING.md) file.
+edge code. More details in the [CONTRIBUTING](CONTRIBUTING.md) file.
 
 ## [Changelog](CHANGELOG.md)
 
