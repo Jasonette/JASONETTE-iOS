@@ -285,6 +285,12 @@
         } else if(dataType && [dataType isEqualToString:@"toFile"]){
             [self saveCookies];
             NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[url lastPathComponent]];
+            // iOS cant figure out what type of file something is if it doesn't end in the extension. so we truncate arguments that would
+            // be present on private files
+            NSRange pos = [filePath rangeOfString:@"?"];
+            if (pos.location != NSNotFound) {
+                filePath = [filePath substringToIndex:pos.location];
+            }
             NSError *error;
             NSData *data = (NSData *)responseObject;
             Boolean success = [data writeToFile:filePath options:0 error:&error];

@@ -76,7 +76,14 @@
     JasonDocumentViewer *viewer = [[JasonDocumentViewer alloc] init];
     JasonMemory *client = [JasonMemory client];
     // This is a bit of a hack; I'm not sure if there's a more proper way to access the return call of the previous action
-    viewer.fileURL = client._register[@"$jason"];
+    NSString *filePath = client._register[@"$jason"];
+    // iOS cant figure out what type of file something is if it doesn't end in the extension. so we truncate arguments that would
+    // be present on private files
+    NSRange pos = [filePath rangeOfString:@"?"];
+    if (pos.location != NSNotFound) {
+        filePath = [filePath substringToIndex:pos.location];
+    }
+    viewer.fileURL = filePath;
     QLPreviewController * preview = [[QLPreviewController alloc] init];
     preview.dataSource = viewer;
     [self.VC.navigationController presentViewController:preview animated:YES completion:nil];
