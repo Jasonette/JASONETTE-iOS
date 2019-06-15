@@ -2781,7 +2781,7 @@
         previous_footer[@"tabs"] = t;
         
         
-        if(!t){
+        if(!t || [t isKindOfClass:[NSNull class]]){
             tabController.tabBar.hidden = YES;
             tabController.viewControllers = @[navigationController]; // remove all tab bar items if there's no "items"
             return;
