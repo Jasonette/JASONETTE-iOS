@@ -2862,7 +2862,6 @@
 
 - (void)setupTabBar: (NSDictionary *)t forVC: (JasonViewController *)v{
     dispatch_async(dispatch_get_main_queue(), ^{
-        
         if(v.isModal) {
             // If the current view is modal, it's an entirely new view
             // so don't need to worry about how tabs should show up.

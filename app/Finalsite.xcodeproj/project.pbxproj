@@ -222,6 +222,7 @@
 		B2BE890DD6AEB0B9CEECD3AA /* Pods_Finalsite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4AF40196572C4F9B27CEBB9 /* Pods_Finalsite.framework */; };
 		CE4AFF1B212CA8FC006B31F5 /* FinalsiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */; };
 		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
+		FDA44F8722B7EE58006E413E /* JasonTimedAction.m in Sources */ = {isa = PBXBuildFile; fileRef = FDA44F8622B7EE58006E413E /* JasonTimedAction.m */; };
 		FDA859A7214066180079031C /* gallery.png in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A5214066180079031C /* gallery.png */; };
 /* End PBXBuildFile section */
 
@@ -532,6 +533,8 @@
 		EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSwitchComponent.h; sourceTree = "<group>"; };
 		EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSwitchComponent.m; sourceTree = "<group>"; };
 		FD5CBD7B21960AFD00B12C45 /* Finalsite.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Finalsite.entitlements; sourceTree = "<group>"; };
+		FDA44F8622B7EE58006E413E /* JasonTimedAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonTimedAction.m; sourceTree = "<group>"; };
+		FDA44F8822B8021D006E413E /* JasonTimedAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonTimedAction.h; sourceTree = "<group>"; };
 		FDA859A5214066180079031C /* gallery.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gallery.png; sourceTree = "<group>"; };
 		FDB723B02195FCF500468F0C /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FDB723B22195FCF500468F0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -936,6 +939,7 @@
 				045E5F3E1E36610B0088D5E6 /* $return */,
 				04DC19811F5474730021A7A6 /* $script */,
 				5E3177AB1D1F297400D87778 /* $timer */,
+				FDA44F8522B7EE02006E413E /* $timed */,
 				5E3177AA1D1F296300D87778 /* $util */,
 				0483D9B51FA16734004DDA37 /* $vision */,
 				042A7FD61FAC663500C1A3F2 /* $websocket */,
@@ -1279,6 +1283,15 @@
 				EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */,
 			);
 			name = switch;
+			sourceTree = "<group>";
+		};
+		FDA44F8522B7EE02006E413E /* $timed */ = {
+			isa = PBXGroup;
+			children = (
+				FDA44F8622B7EE58006E413E /* JasonTimedAction.m */,
+				FDA44F8822B8021D006E413E /* JasonTimedAction.h */,
+			);
+			name = $timed;
 			sourceTree = "<group>";
 		};
 		FDB723AF2195FCF500468F0C /* FinalsiteNotificationServiceExtension */ = {
@@ -1707,6 +1720,7 @@
 				5EE85B791DA582940049EACE /* JasonAction.m in Sources */,
 				04B1568C1F4B8D6600625C61 /* JasonPushAction.m in Sources */,
 				5E2CB5C61D9DF5B600DA2B83 /* JasonComponentFactory.m in Sources */,
+				FDA44F8722B7EE58006E413E /* JasonTimedAction.m in Sources */,
 				5E3177611D1E411F00D87778 /* Jason.m in Sources */,
 				5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */,
 				5E3176611D1E400C00D87778 /* JasonAppDelegate.m in Sources */,
