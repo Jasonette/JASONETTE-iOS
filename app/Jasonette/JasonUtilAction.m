@@ -149,6 +149,11 @@
     [[UIApplication sharedApplication] openURL:appStoreLink  options:@{} completionHandler:nil];
 }
 
+- (void)redirectToSettings{
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+
+}
+
 - (void)share{
     NSArray *items = self.options[@"items"];
     NSMutableArray *share_items = [[NSMutableArray alloc] init];
