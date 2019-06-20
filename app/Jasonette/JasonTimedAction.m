@@ -26,6 +26,22 @@
         // loadTime is before now, so timeIntervalSinceNow will be negative and we invert it
         if (-[loadTime timeIntervalSinceNow] > frequency) {
             [[Jason client] reload];
+        } else {
+            // Properly continue to success actions after this one
+            JasonMemory *memory = [JasonMemory client];
+            NSDictionary *caller = memory._caller;
+
+            // 1. propagate the memory._register to the next action
+            // 2. set the stack with the caller's success action
+            if(caller[@"success"]){
+                if(self.options) {
+                    [[Jason client] call: caller[@"success"] with:@{@"$jason": self.options}];
+                } else {
+                    [[Jason client] call: caller[@"success"] with:@{@"$jason": @{}}];
+                }
+            } else {
+                [[Jason client] finish];
+            }
         }
     }
 
