@@ -8,6 +8,7 @@
 #import "JasonNetworkAction.h"
 #import "JasonOptionHelper.h"
 #import "UICKeyChainStore.h"
+#import "MaterialActivityIndicator.h"
 
 @implementation JasonNetworkAction
 
@@ -58,7 +59,8 @@
         NSString *dataType = [self build_data_type: manager];
         NSMutableDictionary *parameters = [self build_params: session];
     
-        JasonOptionHelper * optionHelper = [[JasonOptionHelper alloc] initWithOptions:self.options];
+        JasonOptionHelper *optionHelper = [[JasonOptionHelper alloc] initWithOptions:self.options];
+        
         BOOL showLoading = [optionHelper getBoolean:@"show_loading"];
         if (showLoading) {
             [[Jason client] showLoadingOverlay];
@@ -121,7 +123,7 @@
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
                 [manager GET:url parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
-                    // Nothing
+                    [[Jason client] setLoadingProgress:downloadProgress.fractionCompleted];
                 } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
