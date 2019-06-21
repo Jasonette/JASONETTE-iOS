@@ -8,7 +8,6 @@
 #import "JasonNetworkAction.h"
 #import "JasonOptionHelper.h"
 #import "UICKeyChainStore.h"
-#import "MaterialActivityIndicator.h"
 
 @implementation JasonNetworkAction
 
