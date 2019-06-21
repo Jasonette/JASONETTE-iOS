@@ -39,9 +39,8 @@
                 } else {
                     [[Jason client] call: caller[@"success"] with:@{@"$jason": @{}}];
                 }
-            } else {
-                [[Jason client] finish];
             }
+            [[Jason client] finish];
         }
     }
 
