@@ -29,6 +29,7 @@
     AVCaptureVideoPreviewLayer *avPreviewLayer;
     NSMutableArray *queue;
     MDCActivityIndicator *activityIndicator;
+    UITextView *activityIndicatorText;
     UIView *loadingOverlayView;
 }
 @end
@@ -346,8 +347,21 @@
             self->loadingOverlayView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:0.6];
             self->activityIndicator.center = self->loadingOverlayView.center;
             [self->loadingOverlayView addSubview:self->activityIndicator];
+            
+            self->activityIndicatorText = [[UITextView alloc] init];
+            self->activityIndicatorText.backgroundColor = [UIColor clearColor];
+            self->activityIndicatorText.textColor = [UIColor colorWithRed:0.14 green:0.266 blue:0.387 alpha:1.0];
+            self->activityIndicatorText.text = @"100%";
+            self->activityIndicatorText.textAlignment = NSTextAlignmentCenter;
+            self->activityIndicatorText.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
+            [self->activityIndicatorText sizeToFit];
+            self->activityIndicatorText.text = @"";
+            self->activityIndicatorText.center = self->activityIndicator.center;
+            [self->loadingOverlayView addSubview:self->activityIndicatorText];
+            
             UIWindow *currentWindow = [UIApplication sharedApplication].keyWindow;
             [currentWindow addSubview:self->loadingOverlayView];
+            
         }
         [self->activityIndicator startAnimating];
     });
@@ -356,12 +370,16 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         self->loadingOverlayView.hidden = YES;
         [self->activityIndicator stopAnimating];
+        self->activityIndicatorText.text = @"";
         self->activityIndicator.indicatorMode = MDCActivityIndicatorModeIndeterminate;
     });
 }
 - (void)setLoadingProgress:(double)ratio {
-    activityIndicator.indicatorMode = MDCActivityIndicatorModeDeterminate;
-    activityIndicator.progress = ratio;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self->activityIndicator.indicatorMode = MDCActivityIndicatorModeDeterminate;
+        self->activityIndicator.progress = ratio;
+        self->activityIndicatorText.text = [NSString stringWithFormat:@"%d%%", (int)(ratio * 100)];
+    });
 }
 
 -(void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;{
