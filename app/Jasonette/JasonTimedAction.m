@@ -29,16 +29,11 @@
         } else {
             // Properly continue to success actions after this one
             JasonMemory *memory = [JasonMemory client];
-            NSDictionary *caller = memory._caller;
+            NSDictionary *success = memory._stack[@"success"];
 
-            // 1. propagate the memory._register to the next action
-            // 2. set the stack with the caller's success action
-            if(caller[@"success"]){
-                if(self.options) {
-                    [[Jason client] call: caller[@"success"] with:@{@"$jason": self.options}];
-                } else {
-                    [[Jason client] call: caller[@"success"] with:@{@"$jason": @{}}];
-                }
+            // If we have a success action to take call it before finishing
+            if(success){
+                [[Jason client] call:success];
             }
             [[Jason client] finish];
         }
