@@ -311,7 +311,9 @@
     NSData *data = [converted dataUsingEncoding: NSUTF8StringEncoding];
     id result = [NSJSONSerialization JSONObjectWithData: data options: 0 error: &error];
     if (result == nil) {
+#ifndef DEBUG
         NSLog(@"Error: %@", error.localizedDescription);
+#endif
         return nil;
     }
     return result;
@@ -939,7 +941,9 @@
         ret = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
         [inputStream close];
     } else {
+#ifndef DEBUG
         NSLog(@"JASON FILE NOT FOUND: %@", jsonFile);
+#endif
         ret = @{};
     }
     return ret;

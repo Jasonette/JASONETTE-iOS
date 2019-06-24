@@ -40,7 +40,9 @@
             
             JSContext *context = [[JSContext alloc] init];
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
+#ifndef DEBUG
                 NSLog(@"%@", value);
+#endif
             }];
 
             [context evaluateScript:js];
@@ -94,7 +96,9 @@
             [[JSCoreBom shared] extend:context];
 
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
+#ifndef DEBUG
                 NSLog(@"%@", value);
+#endif
             }];
             context[@"callback"] = ^(JSValue *val){
                 @try{
@@ -108,7 +112,9 @@
                     }
                 }
                 @catch(NSException *e){
+#ifndef DEBUG
                     NSLog(@"Failed");
+#endif
                     [[Jason client] error];
                 }
             };

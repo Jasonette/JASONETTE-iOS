@@ -21,7 +21,9 @@
         
         JSContext *context = [[JSContext alloc] init];
         [context setExceptionHandler:^(JSContext *context, JSValue *value) {
+#ifndef DEBUG
             NSLog(@"%@", value);
+#endif
         }];
 
         [context evaluateScript:js];
@@ -60,7 +62,9 @@
             
             JSContext *context = [[JSContext alloc] init];
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
+#ifndef DEBUG
                 NSLog(@"%@", value);
+#endif
             }];
 
             [context evaluateScript:js];
@@ -103,7 +107,9 @@
             
             JSContext *context = [[JSContext alloc] init];
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
+#ifndef DEBUG
                 NSLog(@"%@", value);
+#endif
             }];
 
             [context evaluateScript:js];
@@ -162,13 +168,17 @@
                 data = mutable_data;
             }
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
+#ifndef DEBUG
                 NSLog(@"Javascript error: %@", value);
+#endif
             }];
             
             [context evaluateScript:@"var console = {}"];
+#ifndef DEBUG
             context[@"console"][@"log"] = ^(NSString *message) {
                 NSLog(@"Javascript log: %@",message);
             };
+#endif
 
             [context evaluateScript:js];
             JSValue *parse = context[@"ST"][@"transform"];
