@@ -336,10 +336,12 @@
         if (self->loadingOverlayView) {
             self->loadingOverlayView.hidden = NO;
         } else {
+            UIColor *baseIndicatorColor = [UIColor colorWithRed:0.14 green:0.266 blue:0.387 alpha:1.0];
+            
             self->activityIndicator = [[MDCActivityIndicator alloc] init];
             self->activityIndicator.indicatorMode = MDCActivityIndicatorModeIndeterminate;
             [self->activityIndicator sizeToFit];
-            self->activityIndicator.cycleColors = @[[UIColor colorWithRed:0.14 green:0.266 blue:0.387 alpha:1.0]];
+            self->activityIndicator.cycleColors = @[baseIndicatorColor];
             self->activityIndicator.strokeWidth = 6;
             self->activityIndicator.radius = 32;
             
@@ -350,7 +352,7 @@
             
             self->activityIndicatorText = [[UITextView alloc] init];
             self->activityIndicatorText.backgroundColor = [UIColor clearColor];
-            self->activityIndicatorText.textColor = [UIColor colorWithRed:0.14 green:0.266 blue:0.387 alpha:1.0];
+            self->activityIndicatorText.textColor = baseIndicatorColor;
             self->activityIndicatorText.text = @"100%";
             self->activityIndicatorText.textAlignment = NSTextAlignmentCenter;
             self->activityIndicatorText.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
