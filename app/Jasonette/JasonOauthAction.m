@@ -8,6 +8,8 @@
 #import <TDOAuth/TDOAuth.h>
 #import <Accounts/Accounts.h>
 #import <Social/Social.h>
+#import <UICKeyChainStore/UICKeyChainStore.h>
+
 
 @implementation JasonOauthAction
 - (void)performSocialFrameworkRequestFor: (ACAccount *)account{
@@ -294,7 +296,7 @@
             for(NSString *key in header){
                 [request setValue:header[key] forHTTPHeaderField:key];
             }
-            [[manager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+            [[manager dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
                 if(!error){
                     [[Jason client] success:responseObject];
                 } else {
@@ -609,7 +611,7 @@
                     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
                     manager.requestSerializer = [AFJSONRequestSerializer serializer];
                     
-                    NSURLSessionDataTask *task = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                    NSURLSessionDataTask *task = [manager dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
                         // Ignore if the url is different
                         if(![request.URL.absoluteString isEqualToString:response.URL.absoluteString]) return;
                         
@@ -634,7 +636,7 @@
                                     NSString *view = authorize_options[@"view"];
                                     if(view && [view isEqualToString:@"app"]){
                                         // Launch external safari for oauth
-                                        [[UIApplication sharedApplication] openURL:URL];
+                                        [[UIApplication sharedApplication] openURL:URL options:@{} completionHandler:nil];
                                     } else {
                                         // By default use SFSafariViewController
                                         SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:URL];
@@ -792,7 +794,7 @@
                         
                         if(view && [view isEqualToString:@"app"]){
                             // Launch external safari for oauth
-                            [[UIApplication sharedApplication] openURL:U];
+                            [[UIApplication sharedApplication] openURL:U options:@{} completionHandler:nil];
                         } else {
                             // By default use SFSafariViewController
                             SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:U];
@@ -882,7 +884,7 @@
                 manager.responseSerializer = [AFHTTPResponseSerializer serializer];
                 manager.requestSerializer = [AFJSONRequestSerializer serializer];
                 
-                NSURLSessionDataTask *task = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                NSURLSessionDataTask *task = [manager dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
                     // Ignore if the url is different
                     if(![request.URL.absoluteString isEqualToString:response.URL.absoluteString]) return;
                     

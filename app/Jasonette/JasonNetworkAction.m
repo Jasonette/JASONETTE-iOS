@@ -7,7 +7,7 @@
 //
 #import "JasonNetworkAction.h"
 #import "JasonOptionHelper.h"
-#import "UICKeyChainStore.h"
+#import <UICKeyChainStore/UICKeyChainStore.h>
 
 @implementation JasonNetworkAction
 
@@ -233,7 +233,7 @@
         [req setHTTPMethod:@"PUT"];
         [req setURL:[NSURL URLWithString:responseObject[@"$jason"]]];
         
-        NSURLSessionDataTask *upload_task = [manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+        NSURLSessionDataTask *upload_task = [manager dataTaskWithRequest:req uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
             if (!error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self s3UploadDidSucceed: upload_filename withOriginalUrl: original_url];

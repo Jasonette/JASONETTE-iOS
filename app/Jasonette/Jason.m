@@ -6,13 +6,13 @@
 //
 #import "Jason.h"
 #import "JasonAppDelegate.h"
-#import "MaterialActivityIndicator.h"
+#import <MaterialComponents/MaterialActivityIndicator.h>
 #import "NSData+ImageContentType.h"
 #import "UIImage+GIF.h"
 #import "Finalsite-Swift.h"
 @interface Jason(){
     UINavigationController *navigationController;
-    JasonTabBarController *tabController;
+    UITabBarController *tabController;
     REMenu *menu_component;
     JasonViewController *VC;
     NSString *title;
@@ -351,7 +351,7 @@
 }
 - (void)hideLoadingOverlay {
     dispatch_async(dispatch_get_main_queue(), ^{
-        loadingOverlayView.hidden = YES;
+        self->loadingOverlayView.hidden = YES;
     });
 }
 
@@ -2177,7 +2177,9 @@
     NSError *error = nil;
     // Find back/front camera
     // based on options
-    NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    AVCaptureDeviceDiscoverySession *captureDeviceDiscoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInWideAngleCamera] mediaType:AVMediaTypeVideo position: AVCaptureDevicePositionUnspecified];
+    
+    NSArray *devices = [captureDeviceDiscoverySession devices];    
     AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     AVCaptureDevicePosition position;
     if(options[@"device"] && [options[@"device"] isEqualToString:@"back"]){
@@ -3307,7 +3309,7 @@
                 url = parsed_href[@"url"];
             }
             if(url){
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url] options:@{} completionHandler:nil];
             }
             [self unlock];
         } else {

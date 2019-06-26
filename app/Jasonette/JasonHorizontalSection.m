@@ -5,7 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonHorizontalSection.h"
-#import "MaterialPageControl.h"
+#import <MaterialComponents/MaterialPageControl.h>
 
 @interface JasonHorizontalSection (){
     UIImage *placeholder_image;

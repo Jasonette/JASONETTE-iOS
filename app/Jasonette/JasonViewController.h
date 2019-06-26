@@ -6,7 +6,6 @@
 //
 #import <UIKit/UIKit.h>
 #import "UIBarButtonItem+Badge.h"
-#import <SDWebImage/UIImageView+WebCache.h>
 #import "JasonHelper.h"
 #import "UIView+JasonComponentPayload.h"
 #import <HMSegmentedControl/HMSegmentedControl.h>

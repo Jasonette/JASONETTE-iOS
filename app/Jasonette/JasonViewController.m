@@ -1479,6 +1479,7 @@
         if(chat_input){
 
             __weak JasonViewController *weakSelf = self;
+            CGFloat original_height = self->original_height;
 
             [self.view addKeyboardPanningWithActionHandler:^(CGRect keyboardFrameInView, BOOL opening, BOOL closing) {
                 CGFloat m = MIN(original_height, keyboardFrameInView.origin.y);
@@ -1583,7 +1584,7 @@
                                                 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                                     
                                                     // colorize
-                                                    if(self->chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]){
+                                                    if(self->chat_input[@"left"][@"style"] && self->chat_input[@"left"][@"style"][@"color"]){
                                                         UIColor *newColor = [JasonHelper colorwithHexString:self->chat_input[@"left"][@"style"][@"color"] alpha:1.0];
                                                         image = [JasonHelper colorize:image into:newColor];
                                                     }

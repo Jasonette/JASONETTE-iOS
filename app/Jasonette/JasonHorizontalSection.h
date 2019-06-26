@@ -12,7 +12,7 @@
 #import "JasonComponentFactory.h"
 #import "JasonLayout.h"
 #import "UIView+JasonComponentPayload.h"
-#import "MaterialPageControl.h"
+#import <MaterialComponents/MaterialPageControl.h>
 #import <TTTAttributedLabel/TTTAttributedLabel.h>
 
 @interface JasonHorizontalSection : UITableViewCell <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
