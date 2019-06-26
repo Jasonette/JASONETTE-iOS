@@ -58,6 +58,13 @@
     _mainCountryForCode = [[entry nb_safeNumberAtIndex:22] boolValue];
     _leadingDigits = [entry nb_safeStringAtIndex:23];
     _leadingZeroPossible = [[entry nb_safeNumberAtIndex:26] boolValue];
+
+#if SHORT_NUMBER_SUPPORT
+    _shortCode = [[NBPhoneNumberDesc alloc] initWithEntry:[entry nb_safeArrayAtIndex:29]];
+    _standardRate = [[NBPhoneNumberDesc alloc] initWithEntry:[entry nb_safeArrayAtIndex:30]];
+    _carrierSpecific = [[NBPhoneNumberDesc alloc] initWithEntry:[entry nb_safeArrayAtIndex:31]];
+    _smsServices = [[NBPhoneNumberDesc alloc] initWithEntry:[entry nb_safeArrayAtIndex:33]];
+#endif // SHORT_NUMBER_SUPPORT
   }
 
   return self;

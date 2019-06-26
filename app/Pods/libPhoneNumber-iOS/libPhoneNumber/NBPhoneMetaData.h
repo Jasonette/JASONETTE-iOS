@@ -10,7 +10,7 @@
 
 @interface NBPhoneMetaData : NSObject
 
-// from phonemetadata.pb.js
+// from phonemetadata.proto
 /*  1 */ @property(nonatomic, strong) NBPhoneNumberDesc *generalDesc;
 /*  2 */ @property(nonatomic, strong) NBPhoneNumberDesc *fixedLine;
 /*  3 */ @property(nonatomic, strong) NBPhoneNumberDesc *mobile;
@@ -38,6 +38,15 @@
 /* 22 */ @property(nonatomic, assign) BOOL mainCountryForCode;
 /* 23 */ @property(nonatomic, strong) NSString *leadingDigits;
 /* 26 */ @property(nonatomic, assign) BOOL leadingZeroPossible;
+
+#if SHORT_NUMBER_SUPPORT
+
+/* 29 */ @property (nonatomic, strong) NBPhoneNumberDesc *shortCode;
+/* 30 */ @property (nonatomic, strong) NBPhoneNumberDesc *standardRate;
+/* 31 */ @property (nonatomic, strong) NBPhoneNumberDesc *carrierSpecific;
+/* 33 */ @property (nonatomic, strong) NBPhoneNumberDesc *smsServices;
+
+#endif // SHORT_NUMBER_SUPPORT
 
 - (instancetype)initWithEntry:(NSArray *)entry;
 @end

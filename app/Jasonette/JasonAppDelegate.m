@@ -120,4 +120,18 @@
     return YES;
 }
 
+
+#ifdef PUSH
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
+    NSString *device_token = [[NSString alloc]initWithFormat:@"%@",[[[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""]];
+    NSLog(@"Device Token = %@",device_token);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil userInfo:@{@"token": device_token}];
+}
+
+-(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    NSLog(@"Error = %@",error);
+}
+#endif
+
 @end

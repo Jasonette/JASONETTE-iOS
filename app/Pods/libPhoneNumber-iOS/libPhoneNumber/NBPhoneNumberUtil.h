@@ -15,6 +15,8 @@
 
 + (NBPhoneNumberUtil *)sharedInstance;
 
+@property(nonatomic, strong, readonly) NSDictionary *DIGIT_MAPPINGS;
+
 // regular expressions
 - (NSArray *)matchesByRegex:(NSString *)sourceString regex:(NSString *)pattern;
 - (NSArray *)matchedStringByRegex:(NSString *)sourceString regex:(NSString *)pattern;
@@ -129,9 +131,16 @@
 - (NSString *)formatNationalNumberWithPreferredCarrierCode:(NBPhoneNumber *)number
                                        fallbackCarrierCode:(NSString *)fallbackCarrierCode
                                                      error:(NSError **)error;
-
 - (BOOL)formattingRuleHasFirstGroupOnly:(NSString *)nationalPrefixFormattingRule;
 
-@property(nonatomic, strong, readonly) NSDictionary *DIGIT_MAPPINGS;
+/**
+ * Returns the mobile token for the provided country calling code if it has one, otherwise
+ * returns an empty string. A mobile token is a number inserted before the area code when dialing
+ * a mobile number from that country from abroad.
+ *
+ * @param countryCallingCode  the country calling code for which we want the mobile token.
+ * @return  the mobile token, as a string, for the given country calling code.
+ */
+- (NSString *)getCountryMobileTokenFromCountryCode:(NSInteger)countryCallingCode;
 
 @end

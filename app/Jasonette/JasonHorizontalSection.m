@@ -93,7 +93,7 @@
     
     [self.pageControl.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
     [self.pageControl.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
-    [self.pageControl.topAnchor constraintLessThanOrEqualToAnchor:self.bottomAnchor constant:10].active = true;
+    [self.pageControl.topAnchor constraintLessThanOrEqualToAnchor:self.bottomAnchor constant:-10].active = true;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {

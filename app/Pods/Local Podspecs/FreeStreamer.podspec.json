@@ -1,6 +1,6 @@
 {
   "name": "FreeStreamer",
-  "version": "3.9.3",
+  "version": "4.0.0",
   "license": "BSD",
   "summary": "A low-memory footprint streaming audio client for iOS",
   "homepage": "https://github.com/muhku/FreeStreamer/",
@@ -9,7 +9,7 @@
   },
   "source": {
     "git": "https://github.com/muhku/FreeStreamer.git",
-    "tag": "3.9.3"
+    "tag": "4.0.0"
   },
   "platforms": {
     "ios": "6.0"

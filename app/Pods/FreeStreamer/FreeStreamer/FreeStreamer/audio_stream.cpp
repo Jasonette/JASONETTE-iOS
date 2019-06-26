@@ -367,6 +367,8 @@ void Audio_Stream::close(bool closeParser)
     m_queuedTail = 0;
     m_cachedDataSize = 0;
     m_numPacketsToRewind = 0;
+	
+	m_processedPackets.clear();
     
     pthread_mutex_unlock(&m_packetQueueMutex);
     

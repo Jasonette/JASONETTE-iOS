@@ -14,14 +14,14 @@
 
 #import "MDCActivityIndicator.h"
 
-#import <QuartzCore/QuartzCore.h>
 #import <MDFInternationalization/MDFInternationalization.h>
 #import <MotionAnimator/MotionAnimator.h>
+#import <QuartzCore/QuartzCore.h>
 
 #import "MaterialApplication.h"
 #import "MaterialPalettes.h"
-#import "private/MDCActivityIndicatorMotionSpec.h"
 #import "private/MDCActivityIndicator+Private.h"
+#import "private/MDCActivityIndicatorMotionSpec.h"
 #import "private/MaterialActivityIndicatorStrings.h"
 #import "private/MaterialActivityIndicatorStrings_table.h"
 
@@ -248,7 +248,7 @@ static const CGFloat kSingleCycleRotation =
   if (!self.window || _backgrounded) {
     return;
   }
-  
+
   [self actuallyStartAnimating];
 }
 
@@ -289,7 +289,8 @@ static const CGFloat kSingleCycleRotation =
 
       [self actuallyStartAnimating];
 
-      self.cycleColorsIndex = self.cycleColors.count > 0 ? cycleStartIndex % self.cycleColors.count : 0;
+      self.cycleColorsIndex =
+          self.cycleColors.count > 0 ? cycleStartIndex % self.cycleColors.count : 0;
       [self applyPropertiesWithoutAnimation:^{
         [self updateStrokeColor];
       }];
@@ -523,10 +524,8 @@ static const CGFloat kSingleCycleRotation =
 - (void)addStopAnimation {
   MDCActivityIndicatorTransition *stopTransition = self.stopTransition;
 
-  CGFloat innerRotation =
-      [[_strokeLayer valueForKeyPath:MDMKeyPathRotation] floatValue];
-  CGFloat outerRotation =
-      [[_outerRotationLayer valueForKeyPath:MDMKeyPathRotation] floatValue];
+  CGFloat innerRotation = [[_strokeLayer valueForKeyPath:MDMKeyPathRotation] floatValue];
+  CGFloat outerRotation = [[_outerRotationLayer valueForKeyPath:MDMKeyPathRotation] floatValue];
   CGFloat totalRotation =
       (CGFloat)fmod(innerRotation + outerRotation, 2 * M_PI) / (CGFloat)(2 * M_PI);
 
@@ -603,27 +602,29 @@ static const CGFloat kSingleCycleRotation =
 
   [_animator animateWithTiming:timing.outerRotation
                        toLayer:_outerRotationLayer
-                    withValues:@[@(kOuterRotationIncrement * _cycleCount),
-                                 @(kOuterRotationIncrement * (_cycleCount + 1))]
+                    withValues:@[
+                      @(kOuterRotationIncrement * _cycleCount),
+                      @(kOuterRotationIncrement * (_cycleCount + 1))
+                    ]
                        keyPath:MDMKeyPathRotation];
 
   CGFloat startRotation = _cycleCount * (CGFloat)M_PI;
   CGFloat endRotation = startRotation + kCycleRotation * (CGFloat)M_PI;
   [_animator animateWithTiming:timing.innerRotation
                        toLayer:_strokeLayer
-                    withValues:@[@(startRotation), @(endRotation)]
+                    withValues:@[ @(startRotation), @(endRotation) ]
                        keyPath:MDMKeyPathRotation];
 
   [_animator animateWithTiming:timing.strokeStart
                        toLayer:_strokeLayer
-                    withValues:@[@0, @(kStrokeLength)]
+                    withValues:@[ @0, @(kStrokeLength) ]
                        keyPath:MDMKeyPathStrokeStart];
 
   // Ensure the stroke never completely disappears on start by animating from non-zero start and
   // to a value slightly larger than the strokeStart's final value.
   [_animator animateWithTiming:timing.strokeEnd
                        toLayer:_strokeLayer
-                    withValues:@[@(_minStrokeDifference), @(kStrokeLength + _minStrokeDifference)]
+                    withValues:@[ @(_minStrokeDifference), @(kStrokeLength + _minStrokeDifference) ]
                        keyPath:MDMKeyPathStrokeEnd];
 
   [CATransaction commit];
@@ -668,8 +669,8 @@ static const CGFloat kSingleCycleRotation =
   CGFloat pointCycleDuration = (CGFloat)MDCActivityIndicatorMotionSpec.pointCycleDuration;
   CGFloat pointCycleMinimumVariableDuration =
       (CGFloat)MDCActivityIndicatorMotionSpec.pointCycleMinimumVariableDuration;
-  CGFloat normalizedDuration = 2 * (targetRotation + _currentProgress) / kSingleCycleRotation *
-                               pointCycleDuration;
+  CGFloat normalizedDuration =
+      2 * (targetRotation + _currentProgress) / kSingleCycleRotation * pointCycleDuration;
   CGFloat strokeEndTravelDistance = targetRotation - _currentProgress + _minStrokeDifference;
   CGFloat totalDistance = targetRotation + strokeEndTravelDistance;
   CGFloat strokeStartDuration =
@@ -698,14 +699,14 @@ static const CGFloat kSingleCycleRotation =
     timing.strokeStart.delay = strokeEndDuration;
     [_animator animateWithTiming:timing.strokeStart
                          toLayer:_strokeLayer
-                      withValues:@[@0, @(targetRotation)]
+                      withValues:@[ @0, @(targetRotation) ]
                          keyPath:MDMKeyPathStrokeStart];
 
     timing.strokeEnd.duration = strokeEndDuration;
     timing.strokeEnd.delay = 0;
     [_animator animateWithTiming:timing.strokeEnd
                          toLayer:_strokeLayer
-                      withValues:@[@(_currentProgress), @(targetRotation + _minStrokeDifference)]
+                      withValues:@[ @(_currentProgress), @(targetRotation + _minStrokeDifference) ]
                          keyPath:MDMKeyPathStrokeEnd];
   }
   [CATransaction commit];
@@ -746,7 +747,8 @@ static const CGFloat kSingleCycleRotation =
       [CATransaction setCompletionBlock:^{
         [self
             strokeRotationCycleFinishedFromState:MDCActivityIndicatorStateTransitionToDeterminate];
-        if ([self.delegate respondsToSelector:@selector(activityIndicatorModeTransitionDidFinish:)]) {
+        if ([self.delegate
+                respondsToSelector:@selector(activityIndicatorModeTransitionDidFinish:)]) {
           [self.delegate activityIndicatorModeTransitionDidFinish:self];
         }
       }];
@@ -763,14 +765,14 @@ static const CGFloat kSingleCycleRotation =
       CGFloat endRotation = startRotation + rotationDelta * 2 * (CGFloat)M_PI;
       [_animator animateWithTiming:spec.innerRotation
                            toLayer:_strokeLayer
-                        withValues:@[@(startRotation), @(endRotation)]
+                        withValues:@[ @(startRotation), @(endRotation) ]
                            keyPath:MDMKeyPathRotation];
 
       _strokeLayer.strokeStart = 0;
 
       [_animator animateWithTiming:spec.strokeEnd
                            toLayer:_strokeLayer
-                        withValues:@[@(_minStrokeDifference), @(_currentProgress)]
+                        withValues:@[ @(_minStrokeDifference), @(_currentProgress) ]
                            keyPath:MDMKeyPathStrokeEnd];
     }
     [CATransaction commit];
@@ -800,7 +802,7 @@ static const CGFloat kSingleCycleRotation =
 
     [_animator animateWithTiming:MDCActivityIndicatorMotionSpec.willChangeProgress.strokeEnd
                          toLayer:_strokeLayer
-                      withValues:@[@(_lastProgress), @(_currentProgress)]
+                      withValues:@[ @(_lastProgress), @(_currentProgress) ]
                          keyPath:MDMKeyPathStrokeEnd];
   }
 
@@ -912,8 +914,8 @@ static const CGFloat kSingleCycleRotation =
   [_strokeLayer removeAllAnimations];
   [_outerRotationLayer removeAllAnimations];
 
-  // Reset current and latest progress, to ensure addProgressAnimationIfRequired adds a progress animation
-  // when returning from hidden.
+  // Reset current and latest progress, to ensure addProgressAnimationIfRequired adds a progress
+  // animation when returning from hidden.
   _currentProgress = 0;
   _lastProgress = 0;
 
@@ -931,11 +933,10 @@ static const CGFloat kSingleCycleRotation =
   static NSArray<UIColor *> *s_defaultCycleColors;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    s_defaultCycleColors =
-    @[ MDCPalette.bluePalette.tint500,
-       MDCPalette.redPalette.tint500,
-       MDCPalette.yellowPalette.tint500,
-       MDCPalette.greenPalette.tint500 ];
+    s_defaultCycleColors = @[
+      MDCPalette.bluePalette.tint500, MDCPalette.redPalette.tint500,
+      MDCPalette.yellowPalette.tint500, MDCPalette.greenPalette.tint500
+    ];
   });
   return s_defaultCycleColors;
 }
@@ -967,7 +968,7 @@ static const CGFloat kSingleCycleRotation =
   // not be in the main .app bundle, but rather in a nested framework, so figure out where we live
   // and use that as the search location.
   NSBundle *bundle = [NSBundle bundleForClass:[MDCActivityIndicator class]];
-  NSString *resourcePath = [(nil == bundle ? [NSBundle mainBundle] : bundle)resourcePath];
+  NSString *resourcePath = [(nil == bundle ? [NSBundle mainBundle] : bundle) resourcePath];
   return [resourcePath stringByAppendingPathComponent:bundleName];
 }
 
@@ -980,10 +981,8 @@ static const CGFloat kSingleCycleRotation =
 - (NSString *)defaultAccessibilityLabel {
   MaterialActivityIndicatorStringId keyIndex = kStr_MaterialActivityIndicatorAccessibilityLabel;
   NSString *key = kMaterialActivityIndicatorStringTable[keyIndex];
-  return NSLocalizedStringFromTableInBundle(key,
-                                            kMaterialActivityIndicatorStringsTableName,
-                                            [[self class] bundle],
-                                            @"Activity Indicator");
+  return NSLocalizedStringFromTableInBundle(key, kMaterialActivityIndicatorStringsTableName,
+                                            [[self class] bundle], @"Activity Indicator");
 }
 
 - (NSString *)accessibilityValue {
@@ -992,29 +991,24 @@ static const CGFloat kSingleCycleRotation =
       MaterialActivityIndicatorStringId keyIndex =
           kStr_MaterialActivityIndicatorInProgressAccessibilityValue;
       NSString *key = kMaterialActivityIndicatorStringTable[keyIndex];
-      return NSLocalizedStringFromTableInBundle(key,
-                                                kMaterialActivityIndicatorStringsTableName,
-                                                [[self class] bundle],
-                                                @"In Progress");
+      return NSLocalizedStringFromTableInBundle(key, kMaterialActivityIndicatorStringsTableName,
+                                                [[self class] bundle], @"In Progress");
     } else {
       NSUInteger percentage = (int)(self.progress * 100);
       MaterialActivityIndicatorStringId keyIndex =
           kStr_MaterialActivityIndicatorProgressCompletedAccessibilityValue;
       NSString *key = kMaterialActivityIndicatorStringTable[keyIndex];
-      NSString *localizedString = NSLocalizedStringFromTableInBundle(key,
-                                                                     kMaterialActivityIndicatorStringsTableName,
-                                                                     [[self class] bundle],
-                                                                     @"{percentage} Percent Complete");
+      NSString *localizedString = NSLocalizedStringFromTableInBundle(
+          key, kMaterialActivityIndicatorStringsTableName, [[self class] bundle],
+          @"{percentage} Percent Complete");
       return [NSString localizedStringWithFormat:localizedString, percentage];
     }
   } else {
     MaterialActivityIndicatorStringId keyIndex =
         kStr_MaterialActivityIndicatorProgressHaltedAccessibilityValue;
     NSString *key = kMaterialActivityIndicatorStringTable[keyIndex];
-    return NSLocalizedStringFromTableInBundle(key,
-                                              kMaterialActivityIndicatorStringsTableName,
-                                              [[self class] bundle],
-                                              @"Progress Halted");
+    return NSLocalizedStringFromTableInBundle(key, kMaterialActivityIndicatorStringsTableName,
+                                              [[self class] bundle], @"Progress Halted");
   }
 }
 
@@ -1030,6 +1024,6 @@ static const CGFloat kSingleCycleRotation =
   if (self) {
     self.animation = animation;
   }
-   return self;
+  return self;
 }
 @end

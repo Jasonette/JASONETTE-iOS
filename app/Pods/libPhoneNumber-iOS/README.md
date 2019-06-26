@@ -8,7 +8,7 @@
 
  - NBPhoneNumberUtil
  - NBAsYouTypeFormatter
- - NBTextFiled.swift (Swift 3)
+ - NBTextField.swift (Swift 3)
 
 > ARC only, or add the **"-fobjc-arc"** flag for non-ARC
 
@@ -114,7 +114,7 @@ import libPhoneNumberiOS
 ```
 
 ##### Case (2) with Bridging-Header
-```swift
+```obj-c
 // Manually added
 #import "NBPhoneNumberUtil.h"
 #import "NBPhoneNumber.h"
@@ -127,7 +127,7 @@ import libPhoneNumberiOS
 ```
 
 ##### Case (3) with CocoaPods
-import libPhoneNumberiOS
+import libPhoneNumber_iOS
 
 
 ##### - in swift class file
