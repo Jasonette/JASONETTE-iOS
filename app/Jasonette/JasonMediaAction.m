@@ -63,6 +63,7 @@
     // use Jason network.request and return to another action so we don't need to duplicate network request code to download the file
     [[Jason client] call:@{@"type": @"$network.request",
                            @"options": @{
+                                   @"show_loading": @"true",
                                    @"url": url,
                                    @"method": @"get",
                                    @"data_type": @"toFile"

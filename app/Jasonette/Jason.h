@@ -69,6 +69,7 @@
 - (void)loading:(BOOL)turnon;
 - (void)showLoadingOverlay;
 - (void)hideLoadingOverlay;
+- (void)setLoadingProgress:(double)ratio;
 - (void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;
 - (void)search;
 - (void)snapshot;
