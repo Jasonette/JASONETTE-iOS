@@ -134,15 +134,12 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
     NSString *device_token = [[NSString alloc]initWithFormat:@"%@",[[[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""]];
     
-#ifndef DEBUG
-    NSLog(@"Device Token = %@",device_token);
-#endif
     [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil userInfo:@{@"token": device_token}];
 }
 
 -(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-#ifndef DEBUG
+#ifdef DEBUG
     NSLog(@"Error = %@",error);
 #endif
 }

@@ -1107,7 +1107,7 @@
     }
     @catch(NSException *e){
         [[Jason client] call:@{@"type": @"$cache.reset", @"options": @{@"url": self.url}}];
-#ifndef DEBUG
+#ifdef DEBUG
         NSLog(@"Exception while rendering...");
         NSLog(@"Stack = %@", [JasonMemory client]._stack);
         NSLog(@"Register = %@", [JasonMemory client]._register);
@@ -1758,19 +1758,19 @@
     }
 }
 - (void) adView: (GADBannerView*) view didFailToReceiveAdWithError: (GADRequestError*) error{
-#ifndef DEBUG
+#ifdef DEBUG
     NSLog(@"Error on showing AD %@", error);
 #endif
 }
 - (void) adViewDidReceiveAd: (GADBannerView*) view{
-#ifndef DEBUG
+#ifdef DEBUG
     NSLog(@"Suucess on showing ad");
 #endif
     [self adjustBannerPosition];
 }
 
 - (void)interstitialDidReceiveAd:(GADInterstitial *)ad{
-#ifndef DEBUG
+#ifdef DEBUG
      NSLog(@"--->Suucess on showing interstitial ad");
 #endif
 }
@@ -1778,7 +1778,7 @@
 /// Called when an interstitial ad request completed without an interstitial to
 /// show. This is common since interstitials are shown sparingly to users.
 - (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error{
-#ifndef DEBUG
+#ifdef DEBUG
     NSLog(@" -->>Error on showing interstitial AD %@", error);
 #endif
 }

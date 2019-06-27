@@ -43,9 +43,6 @@
                     [self inject: js into: context];
                     dispatch_group_leave(requireGroup);
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-#ifndef DEBUG
-                    NSLog(@"Error");
-#endif
                     dispatch_group_leave(requireGroup);
                 }];
                 
@@ -65,11 +62,11 @@
 }
 
 - (void) inject: (NSString *) js into: (JSContext *)context{
+#ifdef DEBUG
     [context setExceptionHandler:^(JSContext *context, JSValue *value) {
-#ifndef DEBUG
         NSLog(@"%@", value);
-#endif
     }];
+#endif
     [context evaluateScript:js];
 }
 

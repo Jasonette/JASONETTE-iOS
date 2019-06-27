@@ -379,9 +379,7 @@
                 
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                    NSString* ErrorResponse = [[NSString alloc] initWithData:(NSData *)error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] encoding:NSUTF8StringEncoding];
-#ifndef DEBUG
-                   NSLog(@"#E = %@",ErrorResponse);
-#endif
+
                  [[Jason client] error];
             }];
         } else if([method isEqualToString:@"post"]){
@@ -519,7 +517,7 @@
 - (void)refresh_token:(NSString*)provider{
     NSString *client_id = self.options[@"access"][@"client_id"];
     NSString *client_secret = self.options[@"access"][@"client_secret"];
-#ifndef DEBUG
+#ifdef DEBUG
     NSLog(@"Failed. Refreshing Token...");
 #endif
     AFOAuthCredential *credential = [AFOAuthCredential retrieveCredentialWithIdentifier:provider];
@@ -531,7 +529,7 @@
                                         clientID:client_id
                                           secret:client_secret];
         [OAuth2Manager authenticateUsingOAuthWithURLString:access_options[@"path"] refreshToken:credential.refreshToken success:^(AFOAuthCredential *credential) {
-#ifndef DEBUG
+#ifdef DEBUG
             NSLog(@"Success! your new credential is %@", credential);
 #endif
             [AFOAuthCredential storeCredential:credential withIdentifier:client_id];
@@ -1024,11 +1022,11 @@
                                                             [[Jason client] success];
                                                         }
                                                         failure:^(NSError *error) {
-#ifndef DEBUG
+#ifdef DEBUG
                                                             NSLog(@"Error: %@", error);
 #endif
                                                             NSString* ErrorResponse = [[NSString alloc] initWithData:(NSData *)error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] encoding:NSUTF8StringEncoding];
-#ifndef DEBUG
+#ifdef DEBUG
                                                             NSLog(@"#ncoded = %@",ErrorResponse);
 #endif
 

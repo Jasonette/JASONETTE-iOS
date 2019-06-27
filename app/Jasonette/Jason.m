@@ -76,17 +76,11 @@
 #pragma mark - Jason Core API Notifications
 - (void)notifySuccess:(NSNotification *)notification {
     NSDictionary *args = notification.object;
-#ifndef DEBUG
-    NSLog(@"JasonCore: notifySuccess: %@", args);
-#endif
     [[Jason client] success:args];
 }
 
 - (void)notifyError:(NSNotification *)notification {
     NSDictionary *args = notification.object;
-#ifndef DEBUG
-    NSLog(@"JasonCore: notifyError: %@", args);
-#endif
     [[Jason client] error:args];
 }
 - (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC: (JasonViewController *)vc{
@@ -3793,9 +3787,6 @@
                     
                     // skip prefix to get module path
                     NSString *plugin_path = [type substringFromIndex:1];
-#ifndef DEBUG
-                    NSLog(@"Plugin: plugin path: %@", plugin_path);
-#endif
                     
                     // The module name is the plugin path w/o the last part
                     // e.g. "MyModule.MyClass.demo" -> "MyModule.MyClass"
@@ -3806,17 +3797,8 @@
                                                  componentsJoinedByString:@"."];
                         NSString *action_name = [mod_tokens lastObject];
                         
-#ifndef DEBUG
-                        NSLog(@"Plugin: module name: %@", module_name);
-                        NSLog(@"Plugin: action name: %@", action_name);
-#endif
-                        
                         Class PluginClass = NSClassFromString(module_name);
                         if (PluginClass) {
-                            
-#ifndef DEBUG
-                            NSLog(@"Plugin: class: %@", PluginClass);
-#endif
                             
                             // Initialize Plugin
                             module = [[PluginClass alloc] init];  // could go away if we had some sort of plug in registration
@@ -3940,7 +3922,7 @@
         }
     }
     @catch(NSException *e){
-#ifndef DEBUG
+#ifdef DEBUG
         NSLog(@"ERROR.. %@", e);
         NSLog(@"JasonStack : %@", [JasonMemory client]._stack);
         NSLog(@"Register : %@", [JasonHelper stringify:[JasonMemory client]._register]);
