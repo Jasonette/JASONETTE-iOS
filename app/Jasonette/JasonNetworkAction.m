@@ -133,7 +133,9 @@
     }
 }
 - (void)processError: (NSError *)error withOriginalUrl: (NSString*) original_url{
+#ifdef DEBUG
     NSLog(@"Error = %@", error);
+#endif
     [[Jason client] networkLoading:NO with:nil];
     [[Jason client] error: error.userInfo withOriginalUrl:original_url];
 }
@@ -169,7 +171,9 @@
                     NSError *error;
                     Boolean success = [mediaData writeToFile:tmpFile options:0 error:&error];
                     if (!success) {
+#ifdef DEBUG
                         NSLog(@"writeToFile failed with error %@", error);
+#endif
                     }
                     [weakSelf _uploadData: mediaData ofType: contentType withFilename: upload_filename fromOriginalUrl: original_url];
                 }
@@ -241,7 +245,9 @@
                 });
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
+#ifdef DEBUG
                     NSLog(@"error = %@", error);
+#endif
                     [self s3UploadDidFail: error withOriginalUrl:original_url];
                 });
             }
@@ -296,7 +302,9 @@
             NSData *data = (NSData *)responseObject;
             Boolean success = [data writeToFile:filePath options:0 error:&error];
             if (!success) {
+#ifdef DEBUG
                 NSLog(@"writeToFile failed with error %@", error);
+#endif
             }
             
             [[Jason client] success: filePath withOriginalUrl:original_url];
@@ -319,11 +327,15 @@
     if(![url isEqualToString:@""]) {
         NSURL *urlToCheck = [NSURL URLWithString:url];
         if(!urlToCheck){
+#ifdef DEBUG
             NSLog(@"Error = Invalid URL for $network.request call");
+#endif
             return YES;
         }
     } else {
+#ifdef DEBUG
         NSLog(@"Error = URL not specified for $network.request call");
+#endif
         return YES;
     }
     return NO;

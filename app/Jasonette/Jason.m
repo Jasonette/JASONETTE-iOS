@@ -77,13 +77,11 @@
 #pragma mark - Jason Core API Notifications
 - (void)notifySuccess:(NSNotification *)notification {
     NSDictionary *args = notification.object;
-    NSLog(@"JasonCore: notifySuccess: %@", args);
     [[Jason client] success:args];
 }
 
 - (void)notifyError:(NSNotification *)notification {
     NSDictionary *args = notification.object;
-    NSLog(@"JasonCore: notifyError: %@", args);
     [[Jason client] error:args];
 }
 - (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC: (JasonViewController *)vc{
@@ -1130,7 +1128,6 @@
                     self->VC.requires[url] = responseObject;
                     dispatch_group_leave(requireGroup);
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                    NSLog(@"Error");
                     dispatch_group_leave(requireGroup);
                 }];
             }
@@ -1217,7 +1214,6 @@
                     return_value[url] = responseObject;
                     dispatch_group_leave(requireGroup);
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                    NSLog(@"Error");
                     dispatch_group_leave(requireGroup);
                 }];
             }
@@ -3820,7 +3816,6 @@
                     
                     // skip prefix to get module path
                     NSString *plugin_path = [type substringFromIndex:1];
-                    NSLog(@"Plugin: plugin path: %@", plugin_path);
                     
                     // The module name is the plugin path w/o the last part
                     // e.g. "MyModule.MyClass.demo" -> "MyModule.MyClass"
@@ -3831,12 +3826,8 @@
                                                  componentsJoinedByString:@"."];
                         NSString *action_name = [mod_tokens lastObject];
                         
-                        NSLog(@"Plugin: module name: %@", module_name);
-                        NSLog(@"Plugin: action name: %@", action_name);
-                        
                         Class PluginClass = NSClassFromString(module_name);
                         if (PluginClass) {
-                            NSLog(@"Plugin: class: %@", PluginClass);
                             
                             // Initialize Plugin
                             module = [[PluginClass alloc] init];  // could go away if we had some sort of plug in registration
@@ -3960,9 +3951,11 @@
         }
     }
     @catch(NSException *e){
+#ifdef DEBUG
         NSLog(@"ERROR.. %@", e);
         NSLog(@"JasonStack : %@", [JasonMemory client]._stack);
         NSLog(@"Register : %@", [JasonHelper stringify:[JasonMemory client]._register]);
+#endif
         [self call:@{@"type": @"$util.banner", @"options": @{@"title": @"Error", @"description": @"Something went wrong. Please try again"}}];
         [self finish];
     }

@@ -112,9 +112,7 @@
     NSString *interface = [NSString stringWithFormat:@"$agent.interface = window.webkit.messageHandlers[\"%@\"];\n", identifier];
     NSString *summon = [raw stringByAppendingString:interface];
     webView.payload[@"state"] = @"rendered";
-    [webView evaluateJavaScript:summon completionHandler:^(id _Nullable res, NSError * _Nullable error) {
-        NSLog(@"Injected");
-    }];
+    [webView evaluateJavaScript:summon completionHandler:nil];
     
     // If there's a pending agent (because the method was called before the agent was initialized)
     // Try the request again.
@@ -474,7 +472,9 @@
             // Don't process return value.
             // Instead all communication back to Jasonette is taken care of by an explicit $agent.response() call
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 agent.payload[@"pending"] = options;
                 // The agent might not be ready. Put it in a queue.
             }
@@ -489,7 +489,9 @@
     if (progressView) {
         [progressView setAlpha:1.0f];
         [progressView setProgress:((WKWebView*)object).estimatedProgress animated:YES];
+#ifdef DEBUG
         NSLog(@"%f", progressView.progress);
+#endif
         if(((WKWebView*)object).estimatedProgress >= 1.0f) {
             [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 [progressView setAlpha:0.0f];

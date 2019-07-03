@@ -71,7 +71,6 @@
     return component;
 }
 + (void)actionButtonClicked:(UIButton *)sender{
-    NSLog(@"sender.payload = %@", sender.payload);
     if(sender.payload && sender.payload[@"action"]){
         [[Jason client] call: sender.payload[@"action"]];
     }
