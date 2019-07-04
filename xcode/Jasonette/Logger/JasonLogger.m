@@ -18,16 +18,15 @@ static NSDictionary * kLevelNames = nil;
     DTLogSetLogLevel(level);
     
     kLevelNames = @{
-       @(DTLogLevelDebug) : @"DEBUG",
-       @(DTLogLevelInfo) : @"INFO",
-       @(DTLogLevelAlert): @"ALERT",
-       @(DTLogLevelNotice): @"NOTICE",
-       @(DTLogLevelError): @"ERROR",
-       @(DTLogLevelWarning): @"WARNING",
-       @(DTLogLevelCritical): @"CRITICAL",
-       @(DTLogLevelEmergency): @"EMERGENCY"
-   };
-    
+        @(DTLogLevelDebug) : @"DEBUG",
+        @(DTLogLevelInfo) : @"INFO",
+        @(DTLogLevelAlert): @"ALERT",
+        @(DTLogLevelNotice): @"NOTICE",
+        @(DTLogLevelError): @"ERROR",
+        @(DTLogLevelWarning): @"WARNING",
+        @(DTLogLevelCritical): @"CRITICAL",
+        @(DTLogLevelEmergency): @"EMERGENCY"
+    };
 }
 
 + (nonnull DTLogBlock) handler {
@@ -43,14 +42,13 @@ static NSDictionary * kLevelNames = nil;
         va_start(args, format);
         
         [JasonLogger LogMessageWithLevel:@{
-                                           @"number": @(logLevel),
-                                           @"name": kLevelNames[@(logLevel)]
-                                           
-                                           }
-                                  format:format
-                                    args:args
+                                    @"number": @(logLevel),
+                                    @"name": kLevelNames[@(logLevel)]
+                                }
+                                format:format
+                                args:args
                                 fileName:fileName
-                              lineNumber:lineNumber];
+                                lineNumber:lineNumber];
         
         va_end(args);
     };
@@ -60,7 +58,7 @@ static NSDictionary * kLevelNames = nil;
 
 + (nonnull NSString *) LogMessageWithLevel: (NSDictionary *) logLevel
                                     format:(NSString *) format
-                                      args:(va_list) args
+                                    args:(va_list) args
                                   fileName:(NSString *) fileName
                                 lineNumber:(NSUInteger) lineNumber
 {

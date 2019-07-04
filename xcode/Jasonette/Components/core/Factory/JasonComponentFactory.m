@@ -18,7 +18,10 @@ static NSMutableDictionary * _stylesheet = nil;
 {
     
     UIView * empty = [UIView new];
-    NSString * type = [child[@"type"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString * type = [child[@"type"]
+                       stringByTrimmingCharactersInSet:
+                       [NSCharacterSet
+                        whitespaceAndNewlineCharacterSet]];
     
     DTLogDebug(@"Start to Create Component %@ With JSON %@ and Options %@", type, child, options);
     
@@ -30,7 +33,6 @@ static NSMutableDictionary * _stylesheet = nil;
     
     NSString * capitalizedType = [child[@"type"] capitalizedString];
     NSString * componentClassName = [NSString stringWithFormat:@"Jason%@Component", capitalizedType];
-    
     
     if(componentClassName)
     {
@@ -65,7 +67,10 @@ static NSMutableDictionary * _stylesheet = nil;
             return empty;
         }
         
+        DTLogDebug(@"Begin Preparing Styles for Component");
+        
         child = [self applyStylesheet:child];
+        
         UIView * styledComponent = [ComponentClass
                                     build:component
                                     withJSON:child
@@ -73,6 +78,7 @@ static NSMutableDictionary * _stylesheet = nil;
         
         if (child[@"focus"])
         {
+            DTLogDebug(@"%@ contain focus", child);
             [[Jason client] getVC].focusField = styledComponent;
         }
         
@@ -85,54 +91,85 @@ static NSMutableDictionary * _stylesheet = nil;
     return empty;
 }
 
-+ (NSMutableDictionary *)imageLoaded{
-    if (_imageLoaded == nil) {
-        _imageLoaded = [[NSMutableDictionary alloc] init];
-    }
-    return _imageLoaded;
-}
-+ (void)setImageLoaded:(NSMutableDictionary *)imageLoaded{
-    if (imageLoaded != _imageLoaded) {
-        _imageLoaded = [imageLoaded mutableCopy];
-    }
-}
-+ (NSMutableDictionary *)stylesheet{
-    if(_stylesheet == nil){
-        _stylesheet = [[NSMutableDictionary alloc] init];
-    }
-    return _stylesheet;
-}
-+ (void)setStylesheet:(NSMutableDictionary *)stylesheet{
-    if (stylesheet != _stylesheet){
-        _stylesheet = [stylesheet mutableCopy];
-    }
-}
 
-// Common
-+ (NSMutableDictionary *)applyStylesheet:(NSDictionary *)item{
-    NSMutableDictionary *new_style = [[NSMutableDictionary alloc] init];
-    if(item[@"class"]){
-        NSString *class_string = item[@"class"];
-        NSMutableArray *classes = [[class_string componentsSeparatedByString:@" "] mutableCopy];
++ (NSMutableDictionary *) applyStylesheet: (NSDictionary *) json
+{
+    // This function pre process the style of a component and returns a
+    // new dictionary that would be processed by the component class.
+    
+    NSMutableDictionary * styles = [NSMutableDictionary new];
+    
+    if(json[@"class"])
+    {
+        DTLogDebug(@"Component contains class option. Obtaining corresponding stylesheets");
+        
+        NSString * classValue = json[@"class"];
+        NSMutableArray * classes = [[classValue componentsSeparatedByString:@" "] mutableCopy];
         [classes removeObject:@""];
-        for(NSString *c in classes){
-            NSString *class_selector = c;
-            NSDictionary *class_style = self.stylesheet[class_selector];
-            for(NSString *key in [class_style allKeys]){
-                new_style[key] = class_style[key];
+        
+        for(NSString * classSelector in classes)
+        {
+            NSDictionary * classStyle = self.stylesheet[classSelector];
+            
+            for(NSString * key in [classStyle allKeys])
+            {
+                styles[key] = classStyle[key];
             }
         }
         
     }
-    if(item[@"style"]){
-        for(NSString *key in item[@"style"]){
-            new_style[key] = item[@"style"][key];
+    
+    if(json[@"style"])
+    {
+        for(NSString * key in json[@"style"])
+        {
+            styles[key] = json[@"style"][key];
         }
     }
     
-    NSMutableDictionary *stylized_item = [item mutableCopy];
-    stylized_item[@"style"] = new_style;
-    return stylized_item;
+    NSMutableDictionary * stylizedComponent = [json mutableCopy];
+    stylizedComponent[@"style"] = styles;
+    
+    DTLogDebug(@"Styles Successfully Obtained %@", stylizedComponent);
+    
+    return stylizedComponent;
+}
+
+
++ (NSMutableDictionary *) imageLoaded
+{
+    if (!_imageLoaded)
+    {
+        _imageLoaded = [NSMutableDictionary new];
+    }
+    
+    return _imageLoaded;
+}
+
++ (void) setImageLoaded: (NSMutableDictionary *) imageLoaded
+{
+    if (imageLoaded != _imageLoaded)
+    {
+        _imageLoaded = [imageLoaded mutableCopy];
+    }
+}
+
++ (NSMutableDictionary *) stylesheet
+{
+    if(!_stylesheet)
+    {
+        _stylesheet = [NSMutableDictionary new];
+    }
+    
+    return _stylesheet;
+}
+
++ (void) setStylesheet: (NSMutableDictionary *) stylesheet
+{
+    if (stylesheet != _stylesheet)
+    {
+        _stylesheet = [stylesheet mutableCopy];
+    }
 }
 
 @end
