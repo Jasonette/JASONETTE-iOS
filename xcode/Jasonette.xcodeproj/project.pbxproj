@@ -757,8 +757,8 @@
 		EFD8CCED22CE94F700B47B03 /* JasonComponent */ = {
 			isa = PBXGroup;
 			children = (
-				EFD8CCEE22CE94F700B47B03 /* JasonComponent.m */,
 				EFD8CCEF22CE94F700B47B03 /* JasonComponent.h */,
+				EFD8CCEE22CE94F700B47B03 /* JasonComponent.m */,
 			);
 			path = JasonComponent;
 			sourceTree = "<group>";
