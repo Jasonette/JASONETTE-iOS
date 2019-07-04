@@ -20,7 +20,7 @@ static NSMutableDictionary * _stylesheet = nil;
     UIView * empty = [UIView new];
     NSString * type = [child[@"type"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
-    DTLogInfo(@"Start to Create Component %@ With JSON %@ and Options %@", type, child, options);
+    DTLogDebug(@"Start to Create Component %@ With JSON %@ and Options %@", type, child, options);
     
     if(!type || [type isEqualToString:@""])
     {
