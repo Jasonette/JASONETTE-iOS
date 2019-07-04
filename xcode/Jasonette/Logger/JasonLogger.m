@@ -9,7 +9,6 @@
 #import "JasonLogger.h"
 
 static NSDictionary * kLevelNames = nil;
-static NSString * kLogFormat = @"%@ | %@";
 
 @implementation JasonLogger
 
@@ -37,7 +36,15 @@ static NSString * kLogFormat = @"%@ | %@";
         va_list args;
         va_start(args, format);
         
-        [JasonLogger LogMessageWithLevel:logLevel format:format args:args];
+        [JasonLogger LogMessageWithLevel:@{
+                                           @"number": @(logLevel),
+                                           @"name": kLevelNames[@(logLevel)]
+                                           
+                                           }
+                                  format:format
+                                    args:args
+                                fileName:fileName
+                              lineNumber:lineNumber];
         
         va_end(args);
     };
@@ -45,14 +52,16 @@ static NSString * kLogFormat = @"%@ | %@";
     return [DTLogHandler copy];
 }
 
-+ (nonnull NSString *) LogMessageWithLevel: (DTLogLevel) logLevel
++ (nonnull NSString *) LogMessageWithLevel: (NSDictionary *) logLevel
                                     format:(NSString *) format
                                       args:(va_list) args
+                                  fileName:(NSString *) fileName
+                                lineNumber:(NSUInteger) lineNumber
 {
     
     NSString * message = [[NSString alloc] initWithFormat:format arguments:args];
     
-    NSLog(kLogFormat, kLevelNames[@(logLevel)], message);
+    NSLog(@"%@ | %@ | %ld | %@", logLevel[@"name"], fileName, lineNumber, message);
     
     return message;
 }

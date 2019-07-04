@@ -10,7 +10,11 @@ This version is the current in development.
 
 ### Added
 
+- New Logger for Native Code. Makes easier to Spot Errors. See [xcode/Jasonette/Logger/README.md](xcode/Jasonette/Logger/README.md) For more details.
+
 ### Changed
+
+- Improved `JasonComponentFactory.h` to take in consideration `Swift` extensions.
 
 ### Fixed
 
