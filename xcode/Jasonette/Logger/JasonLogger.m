@@ -31,7 +31,13 @@ static NSDictionary * kLevelNames = nil;
 }
 
 + (nonnull DTLogBlock) handler {
-    DTLogBlock DTLogHandler = ^(NSUInteger logLevel, NSString *fileName, NSUInteger lineNumber, NSString *methodName, NSString *format, ...)
+    
+    DTLogBlock DTLogHandler = ^(NSUInteger logLevel,
+                                NSString *fileName,
+                                NSUInteger lineNumber,
+                                NSString *methodName,
+                                NSString *format,
+                                ...)
     {
         va_list args;
         va_start(args, format);
