@@ -402,11 +402,13 @@
 				5E3177771D1E414C00D87778 /* Media.xcassets */,
 			);
 			name = Config;
+			path = Jasonette;
 			sourceTree = "<group>";
 		};
 		5E3176501D1E400C00D87778 = {
 			isa = PBXGroup;
 			children = (
+				5E0F0B911D20FFE2009291BE /* Config */,
 				EF2B3BAD22CE547A009633F2 /* App */,
 				5E31765B1D1E400C00D87778 /* Jasonette */,
 				5E31765A1D1E400C00D87778 /* Products */,
@@ -428,7 +430,6 @@
 			children = (
 				EFD8CCEB22CE94F700B47B03 /* Components */,
 				5E0956291DA3112C007ADC78 /* Launcher */,
-				5E0F0B911D20FFE2009291BE /* Config */,
 				5E31777D1D1F1A8300D87778 /* Core */,
 				5E31777C1D1F19ED00D87778 /* Action */,
 				5E31777E1D1F1D1100D87778 /* View */,
