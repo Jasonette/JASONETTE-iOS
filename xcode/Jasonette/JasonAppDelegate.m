@@ -62,6 +62,8 @@
 #else
 #endif
     
+    DTLogInfo(@"Begin Bootstrapping Jasonette");
+    
     [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
     
     NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
@@ -77,7 +79,6 @@
     // Run "initialize" method for all extensions
     [self init_extensions: launchOptions];
     
-    
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey]){
         // launched with url. so wait until openURL is called.
         self.launchURL = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
@@ -88,26 +89,37 @@
     } else {
         [[Jason client] start:nil];
     }
+    
+    DTLogInfo(@"Jasonette Bootstraped");
     return YES;
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application
+- (void) applicationDidBecomeActive: (UIApplication *) application
 {
-    if (self.launchURL) {
+    if (self.launchURL)
+    {
         [self openURL:self.launchURL type: @"start"];
         self.launchURL = nil;
     }
 }
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+- (BOOL)application: (UIApplication *) application
+            openURL: (NSURL *) url
+  sourceApplication: (NSString *) sourceApplication
+         annotation: (id) annotation
+{
     if (!url) return NO;
     return [self openURL:url type: @"go"];
 }
 
-- (BOOL) openURL: (NSURL *) url type: (NSString *) type{
-    if([[url absoluteString] containsString:@"://oauth"]){
+- (BOOL) openURL: (NSURL *) url type: (NSString *) type
+{
+    if([[url absoluteString] containsString:@"://oauth"])
+    {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"oauth_callback" object:nil userInfo:@{@"url": url}];
-    } else if ([[url absoluteString] containsString:@"://href?"]){
+    }
+    else if ([[url absoluteString] containsString:@"://href?"])
+    {
         NSString *u = [url absoluteString];
         NSString *href_url = [JasonHelper getParamValueFor:@"url" fromUrl:u];
         NSString *href_view = [JasonHelper getParamValueFor:@"view" fromUrl:u];
@@ -137,24 +149,46 @@
 
 #ifdef PUSH
 #pragma mark - Remote Notification Delegate below iOS 9
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+- (void) application: (UIApplication *) application
+didRegisterUserNotificationSettings: (UIUserNotificationSettings *) notificationSettings
+{
     [application registerForRemoteNotifications];
 }
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
-    NSString *device_token = [[NSString alloc]initWithFormat:@"%@",[[[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""]];
-    NSLog(@"Device Token = %@",device_token);
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil userInfo:@{@"token": device_token}];
+
+- (void)application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken: (NSData *) deviceToken
+{
+    NSString * device_token = [[NSString alloc]initWithFormat:@"%@",
+                               [[[deviceToken description]
+                                 stringByTrimmingCharactersInSet:[NSCharacterSet
+                                                                  characterSetWithCharactersInString:@"<>"]]
+                                stringByReplacingOccurrencesOfString:@" " withString:@""]];
+    
+    DTLogDebug(@"Got Device Token %@", device_token);
+    
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil
+     userInfo:@{@"token": device_token}];
 }
 
--(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+- (void) application: (UIApplication *) application
+    didReceiveRemoteNotification:(NSDictionary *) userInfo
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotification" object:nil userInfo:userInfo];
+    
+    DTLogDebug(@"Received Remote Notification %@", userInfo);
+    
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:@"onRemoteNotification"
+     object:nil
+     userInfo:userInfo];
 }
 
--(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+- (void) application: (UIApplication *) application
+    didFailToRegisterForRemoteNotificationsWithError: (NSError *) error
 {
-    NSLog(@"Error = %@",error);
+    DTLogWarning(@"Notifications Failed to be Registered %@", error);
 }
+
 #endif
 
 @end

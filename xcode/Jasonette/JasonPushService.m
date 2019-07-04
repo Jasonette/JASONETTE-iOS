@@ -9,6 +9,8 @@
 #import "JasonPushService.h"
 #define SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
+#import <DTFoundation/DTLog.h>
+
 @implementation JasonPushService
 - (void) initialize: (NSDictionary *)launchOptions {
     
@@ -33,7 +35,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"onRemoteNotificationDeviceRegistered:" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onRemoteNotificationDeviceRegistered:) name:@"onRemoteNotificationDeviceRegistered" object:nil];
 #else
-    NSLog(@"Push notification turned off by default. If you'd like to suport push, uncomment the #define statement in Constants.h and turn on the push notification feature from the capabilities tab.");
+    DTLogWarning(@"Push notification turned off by default. If you'd like to suport push, uncomment the #define statement in Constants.h and turn on the push notification feature from the capabilities tab.");
 #endif
     
     

@@ -183,35 +183,52 @@
 #import "JasonPushAction.h"
 #define SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
+#import <DTFoundation/DTLog.h>
+
 @implementation JasonPushAction
 
 
-- (void)register{
+- (void) register
+{
     // currently only remote notification
 #ifdef PUSH
-    if(SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(@"10.0")) {
+    if(SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(@"10.0"))
+    {
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         JasonPushService *service = [Jason client].services[@"JasonPushService"];
-        if(service) {
+        
+        if(service)
+        {
             center.delegate = service;
         }
-        [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
-            if( !error && granted){
+        
+        [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error)
+        {
+            if( !error && granted)
+            {
                 [[UIApplication sharedApplication] registerForRemoteNotifications];
                 [[Jason client] success];
                 
-            } else {
+            }
+            else
+            {
                 [[Jason client] error];
             }
         }];
     }
-    else {
-        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+    else
+    {
+        [[UIApplication sharedApplication]
+         registerUserNotificationSettings:[UIUserNotificationSettings
+                                           settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge)
+                                           categories:nil]];
+        
         [[UIApplication sharedApplication] registerForRemoteNotifications];
+        
         [[Jason client] success];
     }
 #else
-    NSLog(@"Push notification turned off by default. If you'd like to suport push, uncomment the #define statement in Constants.h and turn on the push notification feature from the capabilities tab.");
+    DTLogWarning(@"Push notification turned off by default. If you'd like to suport push, uncomment the #define statement in Constants.h and turn on the push notification feature from the capabilities tab.");
 #endif
     
 }
