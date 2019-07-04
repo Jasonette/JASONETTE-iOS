@@ -25,6 +25,9 @@
     
     if(style)
     {
+        
+        DTLogDebug(@"Applying Styles To Component %@", json);
+        
         // background
         if([component respondsToSelector:@selector(backgroundColor)])
         {
@@ -203,13 +206,16 @@
         }
     }
     
+    DTLogDebug(@"Applied Standard Styles To Component");
     // text styling
     [self stylize:json text:component];
 }
 
-+ (void)stylize:(NSDictionary *)json
-           text:(UIView *) el
++ (void) stylize: (NSDictionary *) json
+           text: (UIView *) el
 {
+    DTLogDebug(@"Applying Styles for Text To Component %@", json);
+    
     NSDictionary * style = json[@"style"];
     
     if(style)
@@ -379,7 +385,6 @@
         
         // Font
         NSString * font;
-        
         if(style[@"font"])
         {
             font = style[@"font"];
