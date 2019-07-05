@@ -7,14 +7,15 @@
 #import "JasonAppDelegate.h"
 #import "JasonLogger.h"
 
+static NSURL * _launchURL;
+
 @interface JasonAppDelegate ()
 
 @end
 
-
 @implementation JasonAppDelegate
 
-- (void) init_extensions: (NSDictionary *) launchOptions
++ (void) init_extensions: (NSDictionary *) launchOptions
 {
     // 1. Find json files that start with $
     // 2. For each file, see if the class contains an "initialize" class method
@@ -46,13 +47,13 @@
         
         if(json[@"classname"])
         {
-            [self init_class:json[@"classname"]
+            [JasonAppDelegate init_class:json[@"classname"]
                 withLaunchOptions:launchOptions];
         }
     }
 }
 
-- (void) init_class: (NSString *) className
++ (void) init_class: (NSString *) className
   withLaunchOptions: (NSDictionary *) launchOptions
 {
     // TODO: Include something for Swift code detection on NSClassFromString returning nil
@@ -75,7 +76,7 @@
 #pragma clang diagnostic pop
 }
 
-- (BOOL) application: (UIApplication *) application
++ (BOOL) application: (UIApplication *) application
     didFinishLaunchingWithOptions:(NSDictionary *) launchOptions
 {
     
@@ -98,22 +99,25 @@
     
     [NSURLCache setSharedURLCache:URLCache];
     
-    
     // # initialize
     // Run "initialize" for built-in daemon type actions
-    NSArray *native_daemon_actions = @[@"JasonPushService", @"JasonVisionService", @"JasonWebsocketService", @"JasonAgentService"];
-    for(NSString *action in native_daemon_actions)
+    NSArray * native_daemon_actions = @[@"JasonPushService",
+                                        @"JasonVisionService",
+                                        @"JasonWebsocketService",
+                                        @"JasonAgentService"];
+    
+    for(NSString * action in native_daemon_actions)
     {
-        [self init_class:action withLaunchOptions:launchOptions];
+        [JasonAppDelegate init_class:action withLaunchOptions:launchOptions];
     }
     
     // Run "initialize" method for all extensions
-    [self init_extensions: launchOptions];
+    [JasonAppDelegate init_extensions: launchOptions];
     
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey])
     {
         // launched with url. so wait until openURL is called.
-        self.launchURL = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
+        _launchURL = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
         
     }
     else if(launchOptions && launchOptions.count > 0 && [launchOptions
@@ -131,28 +135,28 @@
     return YES;
 }
 
-- (void) applicationDidBecomeActive: (UIApplication *) application
++ (void) applicationDidBecomeActive: (UIApplication *) application
 {
     DTLogInfo(@"Application Did Become Active");
-    if (self.launchURL)
+    if (_launchURL)
     {
         DTLogInfo(@"Launch URL Detected");
-        [self openURL:self.launchURL type: @"start"];
-        self.launchURL = nil;
+        [JasonAppDelegate openURL:_launchURL type: @"start"];
+        _launchURL = nil;
     }
 }
 
-- (BOOL)application: (UIApplication *) application
++ (BOOL) application: (UIApplication *) application
             openURL: (NSURL *) url
   sourceApplication: (NSString *) sourceApplication
          annotation: (id) annotation
 {
     if (!url) return NO;
     DTLogInfo(@"Received Application openURL");
-    return [self openURL:url type: @"go"];
+    return [JasonAppDelegate openURL:url type: @"go"];
 }
 
-- (BOOL) openURL: (NSURL *) url
++ (BOOL) openURL: (NSURL *) url
             type: (NSString *) type
 {
     DTLogInfo(@"OpenURL Triggered");
@@ -214,16 +218,15 @@
 }
 
 
-#ifdef PUSH
 #pragma mark - Remote Notification Delegate below iOS 9
-- (void) application: (UIApplication *) application
++ (void) application: (UIApplication *) application
 didRegisterUserNotificationSettings: (UIUserNotificationSettings *) notificationSettings
 {
     DTLogDebug(@"Registering for Remote Notifications");
     [application registerForRemoteNotifications];
 }
 
-- (void)application:(UIApplication *)application
++ (void) application:(UIApplication *) application
     didRegisterForRemoteNotificationsWithDeviceToken: (NSData *) deviceToken
 {
     NSString * device_token = [[NSString alloc]initWithFormat:@"%@",
@@ -232,6 +235,7 @@ didRegisterUserNotificationSettings: (UIUserNotificationSettings *) notification
                                                                   characterSetWithCharactersInString:@"<>"]]
                                 stringByReplacingOccurrencesOfString:@" " withString:@""]];
     
+    DTLogInfo(@"Got Device Token");
     DTLogDebug(@"Got Device Token %@", device_token);
     
     [[NSNotificationCenter defaultCenter]
@@ -239,10 +243,10 @@ didRegisterUserNotificationSettings: (UIUserNotificationSettings *) notification
      userInfo:@{@"token": device_token}];
 }
 
-- (void) application: (UIApplication *) application
++ (void) application: (UIApplication *) application
     didReceiveRemoteNotification:(NSDictionary *) userInfo
 {
-    
+    DTLogInfo(@"Got Remote Notification");
     DTLogDebug(@"Received Remote Notification %@", userInfo);
     
     [[NSNotificationCenter defaultCenter]
@@ -251,12 +255,10 @@ didRegisterUserNotificationSettings: (UIUserNotificationSettings *) notification
      userInfo:userInfo];
 }
 
-- (void) application: (UIApplication *) application
++ (void) application: (UIApplication *) application
     didFailToRegisterForRemoteNotificationsWithError: (NSError *) error
 {
     DTLogWarning(@"Notifications Failed to be Registered %@", error);
 }
-
-#endif
 
 @end
