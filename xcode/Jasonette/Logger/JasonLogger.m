@@ -12,6 +12,7 @@
 #import "JasonLogger.h"
 
 static NSDictionary * kLevelNames = nil;
+static DTLogBlock _handler = nil;
 
 @implementation JasonLogger
 
@@ -52,31 +53,39 @@ static NSDictionary * kLevelNames = nil;
     [JasonLogger setupWithLogLevel:DTLogLevelError];
 }
 
++ (void) setHandler: (nonnull DTLogBlock) handler
+{
+    _handler = handler;
+}
+
 + (nonnull DTLogBlock) handler {
     
-    DTLogBlock DTLogHandler = ^(NSUInteger logLevel,
-                                NSString *fileName,
-                                NSUInteger lineNumber,
-                                NSString *methodName,
-                                NSString *format,
-                                ...)
+    if(!_handler)
     {
-        va_list args;
-        va_start(args, format);
-        
-        [JasonLogger LogMessageWithLevel:@{
-                                    @"number": @(logLevel),
-                                    @"name": kLevelNames[@(logLevel)]
-                                }
-                                format:format
-                                args:args
-                                fileName:fileName
-                                lineNumber:lineNumber];
-        
-        va_end(args);
-    };
+        _handler = ^(NSUInteger logLevel,
+                                    NSString *fileName,
+                                    NSUInteger lineNumber,
+                                    NSString *methodName,
+                                    NSString *format,
+                                    ...)
+        {
+            va_list args;
+            va_start(args, format);
+            
+            [JasonLogger LogMessageWithLevel:@{
+                                        @"number": @(logLevel),
+                                        @"name": kLevelNames[@(logLevel)]
+                                    }
+                                    format:format
+                                    args:args
+                                    fileName:fileName
+                                    lineNumber:lineNumber];
+            
+            va_end(args);
+        };
+    }
     
-    return [DTLogHandler copy];
+    return [_handler copy];
 }
 
 + (nonnull NSString *) LogMessageWithLevel: (NSDictionary *) logLevel
