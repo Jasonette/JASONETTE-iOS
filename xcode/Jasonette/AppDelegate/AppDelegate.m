@@ -21,6 +21,10 @@
     didFinishLaunchingWithOptions:(NSDictionary *) launchOptions
 {
     // Override point for customization after application launch.
+    
+    // Add any custom made service before launching
+    // [JasonAppDelegate setServices:@[@"MyCustomService"]];
+    
     [JasonAppDelegate application:application
     didFinishLaunchingWithOptions:launchOptions];
     
@@ -30,9 +34,9 @@
     //
     // }];
 #if DEBUG
-    [JasonLogger setupWithLogLevelDebug];
+    [JasonLogger setLogLevel:DTLogLevelDebug];
 #else
-    [JasonLogger setupWithLogLevelError];
+    [JasonLogger setLogLevel:DTLogLevelError];
 #endif
     
     return YES;

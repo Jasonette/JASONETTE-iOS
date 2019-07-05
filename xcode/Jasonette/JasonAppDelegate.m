@@ -8,6 +8,7 @@
 #import "JasonLogger.h"
 
 static NSURL * _launchURL;
+static NSArray * _services;
 
 @interface JasonAppDelegate ()
 
@@ -20,17 +21,25 @@ static NSURL * _launchURL;
     // 1. Find json files that start with $
     // 2. For each file, see if the class contains an "initialize" class method
     // 3. If so, run them one by one.
+    DTLogInfo(@"Initializing Extensions");
     NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
     
     NSArray * dirFiles = [[NSFileManager defaultManager]
                           contentsOfDirectoryAtPath:resourcePath
                           error:nil];
     
+    DTLogInfo(@"Loading jrs.json files");
     NSArray * jrs = [dirFiles filteredArrayUsingPredicate:
                      [NSPredicate
                       predicateWithFormat:@"(self ENDSWITH[c] '.json') AND (self BEGINSWITH[c] '$')"]];
     
     NSError * error = nil;
+    
+    if(jrs.count <= 0)
+    {
+        DTLogInfo(@"No extensions found with jrs.json");
+    }
+    
     for(int i = 0 ; i < jrs.count; i++)
     {
         NSString * filename = jrs[i];
@@ -47,8 +56,11 @@ static NSURL * _launchURL;
         
         if(json[@"classname"])
         {
+            DTLogInfo(@"Found %@ Extension", json[@"classname"]);
             [JasonAppDelegate init_class:json[@"classname"]
                 withLaunchOptions:launchOptions];
+        } else {
+            DTLogWarning(@"No 'classname' property found in jrs.json %@", json);
         }
     }
 }
@@ -58,7 +70,12 @@ static NSURL * _launchURL;
 {
     // TODO: Include something for Swift code detection on NSClassFromString returning nil
     Class ActionClass = NSClassFromString(className);
+    
+    DTLogInfo(@"Initializing %@", className);
+    
     id service;
+    
+    DTLogInfo(@"Adding Class %@ to the Stack", className);
     
     if([Jason client].services && [Jason client].services[className])
     {
@@ -71,9 +88,24 @@ static NSURL * _launchURL;
     }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
+    DTLogInfo(@"Calling initilize: method on class %@", className);
     [service performSelector: @selector(initialize:)
                   withObject: launchOptions];
 #pragma clang diagnostic pop
+}
+
++ (void) setServices: (nonnull NSArray *) services {
+    _services = services;
+}
+
++ (nonnull NSArray *) services
+{
+    if(!_services)
+    {
+        _services = @[];
+    }
+    
+    return _services;
 }
 
 + (BOOL) application: (UIApplication *) application
@@ -101,10 +133,13 @@ static NSURL * _launchURL;
     
     // # initialize
     // Run "initialize" for built-in daemon type actions
-    NSArray * native_daemon_actions = @[@"JasonPushService",
+    DTLogInfo(@"Initializing Services");
+    NSArray * native_daemon_actions = [@[@"JasonPushService",
                                         @"JasonVisionService",
                                         @"JasonWebsocketService",
-                                        @"JasonAgentService"];
+                                        @"JasonAgentService"]
+                                       arrayByAddingObjectsFromArray: [JasonAppDelegate
+                                                                       services]];
     
     for(NSString * action in native_daemon_actions)
     {
@@ -132,6 +167,7 @@ static NSURL * _launchURL;
     }
     
     DTLogInfo(@"Jasonette Bootstraped");
+    DTLogInfo(@"Begin Building View");
     return YES;
 }
 
