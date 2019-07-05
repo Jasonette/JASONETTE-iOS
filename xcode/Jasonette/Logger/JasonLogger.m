@@ -6,6 +6,9 @@
 //  Copyright © 2019 Jasonette. All rights reserved.
 //
 
+// Improved NSLog function with https://stackoverflow.com/a/7517513
+#define NSLog(FORMAT, ...) fprintf(stderr, "%s\n", [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String]);
+
 #import "JasonLogger.h"
 
 static NSDictionary * kLevelNames = nil;
@@ -65,7 +68,8 @@ static NSDictionary * kLevelNames = nil;
     
     NSString * message = [[NSString alloc] initWithFormat:format arguments:args];
     
-    NSLog(@"%@ | %@ | %ld | %@", logLevel[@"name"], fileName, lineNumber, message);
+    // Try to follow an approach similar to ratlog https://github.com/ratlog/ratlog-spec
+    NSLog(@"[%@] file: %@ | line: %ld | %@", logLevel[@"name"], fileName, lineNumber, message);
     
     return message;
 }
