@@ -25,6 +25,10 @@
     didFinishLaunchingWithOptions:launchOptions];
     
     // Can customize logging handler and level
+    // [JasonLogger setHandler:^(NSUInteger logLevel,
+    //  NSString *fileName, NSUInteger lineNumber, NSString *methodName, NSString *format, ...) {
+    //
+    // }];
 #if DEBUG
     [JasonLogger setupWithLogLevelDebug];
 #else
