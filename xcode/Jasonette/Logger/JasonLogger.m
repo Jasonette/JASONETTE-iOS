@@ -32,6 +32,26 @@ static NSDictionary * kLevelNames = nil;
     };
 }
 
++ (void) setupWithLogLevelDebug
+{
+    [JasonLogger setupWithLogLevel:DTLogLevelDebug];
+}
+
++ (void) setupWithLogLevelInfo
+{
+    [JasonLogger setupWithLogLevel:DTLogLevelInfo];
+}
+
++ (void) setupWithLogLevelWarning
+{
+    [JasonLogger setupWithLogLevel:DTLogLevelWarning];
+}
+
++ (void) setupWithLogLevelError
+{
+    [JasonLogger setupWithLogLevel:DTLogLevelError];
+}
+
 + (nonnull DTLogBlock) handler {
     
     DTLogBlock DTLogHandler = ^(NSUInteger logLevel,
