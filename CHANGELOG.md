@@ -16,7 +16,7 @@ This version is the current in development.
 
 - Improved `JasonComponentFactory.h` to take in consideration `Swift` extensions.
 
-- Establish `AppDelegate.h` as main *App Delegate* insted of `JasonAppDelegate.h`. The later will serve as a wrapper.
+- Establish `AppDelegate.h` as main *App Delegate* instead of `JasonAppDelegate.h`. The later will serve as a wrapper.
 
 ### Fixed
 
