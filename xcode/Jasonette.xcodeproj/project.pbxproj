@@ -388,7 +388,6 @@
 			children = (
 				5E31765F1D1E400C00D87778 /* JasonAppDelegate.h */,
 				5E3176601D1E400C00D87778 /* JasonAppDelegate.m */,
-				5E3176C01D1E411E00D87778 /* LaunchScreen.storyboard */,
 				5E31765D1D1E400C00D87778 /* main.m */,
 			);
 			name = Launcher;
@@ -397,6 +396,7 @@
 		5E0F0B911D20FFE2009291BE /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				5E3176C01D1E411E00D87778 /* LaunchScreen.storyboard */,
 				5E025B471DE017EB0016786A /* Constants.h */,
 				5E31766D1D1E400C00D87778 /* Info.plist */,
 				5E3177771D1E414C00D87778 /* Media.xcassets */,
