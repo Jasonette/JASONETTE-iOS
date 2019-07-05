@@ -23,6 +23,7 @@ static NSMutableDictionary * _stylesheet = nil;
                        [NSCharacterSet
                         whitespaceAndNewlineCharacterSet]];
     
+    DTLogInfo(@"Begin Building Component");
     DTLogDebug(@"Start to Create Component %@ With JSON %@ and Options %@", type, child, options);
     
     if(!type || [type isEqualToString:@""])
@@ -84,6 +85,8 @@ static NSMutableDictionary * _stylesheet = nil;
         
         [styledComponent setNeedsLayout];
         [styledComponent layoutIfNeeded];
+        
+        DTLogInfo(@"End Building Component");
         return styledComponent;
     }
     
@@ -98,6 +101,8 @@ static NSMutableDictionary * _stylesheet = nil;
     // new dictionary that would be processed by the component class.
     
     NSMutableDictionary * styles = [NSMutableDictionary new];
+    
+    DTLogInfo(@"Begin Obtaining Stylesheets for Component");
     
     if(json[@"class"])
     {
@@ -130,7 +135,8 @@ static NSMutableDictionary * _stylesheet = nil;
     NSMutableDictionary * stylizedComponent = [json mutableCopy];
     stylizedComponent[@"style"] = styles;
     
-    DTLogDebug(@"Styles Successfully Obtained %@", stylizedComponent);
+    DTLogInfo(@"End Stylesheet");
+    DTLogDebug(@"End Stylesheet for Component %@", stylizedComponent);
     
     return stylizedComponent;
 }

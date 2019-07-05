@@ -25,18 +25,17 @@
     
     if(style)
     {
-        
+        DTLogInfo(@"Component Will Start to Apply Styles");
         DTLogDebug(@"Applying Styles To Component %@", json);
         
         // background
         if([component respondsToSelector:@selector(backgroundColor)])
         {
             component.backgroundColor = [UIColor clearColor];
-            
             if(style && style[@"background"])
             {
+                DTLogInfo(@"Applying Background");
                 NSString * colorHex = style[@"background"];
-                component.backgroundColor = [UIColor clearColor];
                 if(colorHex)
                 {
                     component.backgroundColor = [JasonHelper
@@ -50,6 +49,7 @@
         if([component respondsToSelector:@selector(alpha)])
         {
             component.alpha = 1.0;
+            DTLogInfo(@"Applying Opacity");
             if(style && style[@"opacity"])
             {
                 CGFloat opacity = [style[@"opacity"] floatValue];
@@ -66,10 +66,12 @@
             
             if([component respondsToSelector:@selector(textColor)])
             {
+                DTLogInfo(@"Applying Text Color");
                 [component setValue:color forKey:@"textColor"];
             }
             else if([component respondsToSelector:@selector(tintColor)])
             {
+                DTLogInfo(@"Applying Tint Color");
                 [component setValue:color forKey:@"tintColor"];
             }
         }
@@ -86,13 +88,18 @@
                                                                                      parseRatio:style[@"ratio"]]
                                                                                  constant:0];
             ratio_constraint.identifier = @"ratio";
+            DTLogInfo(@"Applying Ratio");
             [component addConstraint:ratio_constraint];
         }
         
         // width
         if(style[@"width"])
         {
+            
             NSString * widthStr = style[@"width"];
+            
+            DTLogInfo(@"Applying Width %@", widthStr);
+            
             CGFloat width = [JasonHelper
                              pixelsInDirection:@"horizontal"
                              fromExpression:widthStr];
@@ -137,6 +144,9 @@
         if(style[@"height"])
         {
             NSString * heightStr = style[@"height"];
+            
+            DTLogInfo(@"Applying Hieght %@", heightStr);
+            
             CGFloat height = [JasonHelper
                               pixelsInDirection:@"vertical"
                               fromExpression:heightStr];
@@ -181,6 +191,8 @@
         component.layer.cornerRadius = 0;
         if(style[@"corner_radius"])
         {
+            DTLogInfo(@"Applying Corner Radius %@", style[@"corner_radius"]);
+            
             CGFloat radius = [style[@"corner_radius"] floatValue];
             component.layer.cornerRadius = radius;
             component.clipsToBounds = YES;
@@ -190,6 +202,7 @@
         component.layer.borderWidth = 0;
         if(style[@"border_width"])
         {
+            DTLogInfo(@"Applying Border Width %@", style[@"border_width"]);
             CGFloat borderWidth = [style[@"border_width"] floatValue];
             component.layer.borderWidth = borderWidth;
         }
@@ -198,6 +211,7 @@
         component.layer.borderColor = nil;
         if(style[@"border_color"])
         {
+            DTLogInfo(@"Applying Border Color");
             UIColor * color = [JasonHelper
                               colorwithHexString:style[@"border_color"]
                               alpha:1.0];
@@ -206,7 +220,7 @@
         }
     }
     
-    DTLogDebug(@"Applied Standard Styles To Component");
+    DTLogInfo(@"Applied Standard Styles To Component");
     // text styling
     [self stylize:json text:component];
 }
@@ -214,6 +228,7 @@
 + (void) stylize: (NSDictionary *) json
            text: (UIView *) el
 {
+    DTLogInfo(@"Begin Applying Styles for Text");
     DTLogDebug(@"Applying Styles for Text To Component %@", json);
     
     NSDictionary * style = json[@"style"];
@@ -223,6 +238,9 @@
         // Alignment
         if(style[@"align"])
         {
+            
+            DTLogInfo(@"Applying Align %@", style[@"align"]);
+            
             NSDictionary * alignment_map = @{
                                             @"left": @(NSTextAlignmentLeft),
                                             @"center": @(NSTextAlignmentCenter),
@@ -254,6 +272,7 @@
         
         if(style[@"autocorrect"])
         {
+            DTLogInfo(@"Applying Autocorrect On");
             if([el isKindOfClass:[UITextView class]])
             {
                 ((UITextView *)el).autocorrectionType = UITextAutocorrectionTypeYes;
@@ -265,6 +284,7 @@
         }
         else
         {
+            DTLogInfo(@"Applying Autocorrect Off");
             if([el isKindOfClass:[UITextView class]])
             {
                 ((UITextView *)el).autocorrectionType = UITextAutocorrectionTypeNo;
@@ -278,6 +298,7 @@
         
         if(style[@"autocapitalize"])
         {
+            DTLogInfo(@"Applying Autocapitalize On");
             if([el isKindOfClass:[UITextView class]])
             {
                 ((UITextView *)el).autocapitalizationType = UITextAutocapitalizationTypeSentences;
@@ -290,6 +311,7 @@
         }
         else
         {
+            DTLogInfo(@"Applying Autocapitalize Off");
             if([el isKindOfClass:[UITextView class]])
             {
                 ((UITextView *)el).autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -303,6 +325,7 @@
         
         if(style[@"spellcheck"])
         {
+            DTLogInfo(@"Applying SpellCheck On");
             if([el isKindOfClass:[UITextView class]])
             {
                 ((UITextView *)el).spellCheckingType = UITextSpellCheckingTypeYes;
@@ -315,6 +338,7 @@
         }
         else
         {
+            DTLogInfo(@"Applying SpellCheck Off");
             if([el isKindOfClass:[UITextView class]])
             {
                 ((UITextView *)el).spellCheckingType = UITextSpellCheckingTypeNo;
@@ -328,6 +352,9 @@
         if([el isKindOfClass:[UILabel class]] && [el respondsToSelector:@selector(textInsets)])
         {
 
+            
+            DTLogInfo(@"Applying Padding");
+            
             // Padding Handling
             NSString * padding_left = @"0";
             NSString * padding_right = @"0";
@@ -387,12 +414,14 @@
         NSString * font;
         if(style[@"font"])
         {
+            DTLogInfo(@"Applying Font");
             font = style[@"font"];
         }
         
         CGFloat size = 14.0;
         if(style[@"size"])
         {
+            DTLogInfo(@"Applying Size");
             size = [style[@"size"] floatValue];
         }
         
@@ -418,14 +447,19 @@
         {
             if(json[@"text"])
             {
+                DTLogInfo(@"ReSetting Text");
                 [el setValue:[json[@"text"] description] forKey:@"text"];
             }
         }
     }
+    
+    DTLogInfo(@"End Applying Styles for Text");
 }
 
 + (void)updateForm:(NSDictionary *)kv
 {
+    DTLogInfo(@"Updating Form");
+    DTLogDebug(@"Updating Form %@", kv);
     [[NSNotificationCenter defaultCenter]
      postNotificationName:@"updateForm"
      object:nil
