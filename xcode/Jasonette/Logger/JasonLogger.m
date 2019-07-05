@@ -18,8 +18,8 @@ static DTLogBlock _handler = nil;
 
 + (void) setupWithLogLevel: (DTLogLevel) level {
     
-    DTLogSetLoggerBlock([JasonLogger handler]);
-    DTLogSetLogLevel(level);
+    [JasonLogger setHandler:[JasonLogger handler]];
+    [JasonLogger setLogLevel:level];
     
     kLevelNames = @{
         @(DTLogLevelDebug) : @"DEBUG",
@@ -31,6 +31,11 @@ static DTLogBlock _handler = nil;
         @(DTLogLevelCritical): @"CRITICAL",
         @(DTLogLevelEmergency): @"EMERGENCY"
     };
+}
+
++ (void) setLogLevel: (DTLogLevel) level
+{
+    DTLogSetLogLevel(level);
 }
 
 + (void) setupWithLogLevelDebug
@@ -56,6 +61,7 @@ static DTLogBlock _handler = nil;
 + (void) setHandler: (nonnull DTLogBlock) handler
 {
     _handler = handler;
+    DTLogSetLoggerBlock(_handler);
 }
 
 + (nonnull DTLogBlock) handler {

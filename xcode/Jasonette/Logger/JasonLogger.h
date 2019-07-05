@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface JasonLogger : NSObject
 
 + (void) setupWithLogLevel:(DTLogLevel) level;
+
++ (void) setLogLevel:(DTLogLevel) level;
 + (void) setHandler:(nonnull DTLogBlock) handler;
 
 + (void) setupWithLogLevelDebug;
