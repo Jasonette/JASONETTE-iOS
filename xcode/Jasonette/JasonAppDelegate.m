@@ -16,7 +16,7 @@ static NSArray * _services;
 
 @implementation JasonAppDelegate
 
-+ (void) init_extensions: (NSDictionary *) launchOptions
++ (void) initializeExtensionsWithOptions: (NSDictionary *) launchOptions
 {
     // 1. Find json files that start with $
     // 2. For each file, see if the class contains an "initialize" class method
@@ -57,16 +57,16 @@ static NSArray * _services;
         if(json[@"classname"])
         {
             DTLogInfo(@"Found %@ Extension", json[@"classname"]);
-            [JasonAppDelegate init_class:json[@"classname"]
-                withLaunchOptions:launchOptions];
+            [JasonAppDelegate initializeClass:json[@"classname"]
+                withOptions:launchOptions];
         } else {
             DTLogWarning(@"No 'classname' property found in jrs.json %@", json);
         }
     }
 }
 
-+ (void) init_class: (NSString *) className
-  withLaunchOptions: (NSDictionary *) launchOptions
++ (void) initializeClass: (NSString *) className
+  withOptions: (NSDictionary *) launchOptions
 {
     // TODO: Include something for Swift code detection on NSClassFromString returning nil
     Class ActionClass = NSClassFromString(className);
@@ -88,13 +88,15 @@ static NSArray * _services;
     }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
+    // TODO: Find a way to remove those clang diagnostic pragmas
     DTLogInfo(@"Calling initilize: method on class %@", className);
     [service performSelector: @selector(initialize:)
                   withObject: launchOptions];
 #pragma clang diagnostic pop
 }
 
-+ (void) setServices: (nonnull NSArray *) services {
++ (void) setServices: (nonnull NSArray *) services
+{
     _services = services;
 }
 
@@ -134,40 +136,40 @@ static NSArray * _services;
     // # initialize
     // Run "initialize" for built-in daemon type actions
     DTLogInfo(@"Initializing Services");
-    NSArray * native_daemon_actions = [@[@"JasonPushService",
+    NSArray * services = [@[@"JasonPushService",
                                         @"JasonVisionService",
                                         @"JasonWebsocketService",
                                         @"JasonAgentService"]
                                        arrayByAddingObjectsFromArray: [JasonAppDelegate
                                                                        services]];
     
-    for(NSString * action in native_daemon_actions)
+    for(NSString * service in services)
     {
-        [JasonAppDelegate init_class:action withLaunchOptions:launchOptions];
+        [JasonAppDelegate
+         initializeClass:service
+         withOptions:launchOptions];
     }
     
     // Run "initialize" method for all extensions
-    [JasonAppDelegate init_extensions: launchOptions];
+    [JasonAppDelegate initializeExtensionsWithOptions: launchOptions];
     
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey])
     {
         // launched with url. so wait until openURL is called.
+        DTLogInfo(@"Launched with Url");
         _launchURL = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
         
     }
-    else if(launchOptions && launchOptions.count > 0 && [launchOptions
-                                                         objectForKey: UIApplicationLaunchOptionsRemoteNotificationKey])
+    else if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey])
     {
         // launched with push notification.
-        [[Jason client] start: nil];
-    }
-    else
-    {
-        [[Jason client] start:nil];
+        DTLogInfo(@"Launched with Push Notification");
     }
     
     DTLogInfo(@"Jasonette Bootstraped");
     DTLogInfo(@"Begin Building View");
+    
+    [[Jason client] start:nil];
     return YES;
 }
 
