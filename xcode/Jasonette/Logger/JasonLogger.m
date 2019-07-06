@@ -85,6 +85,7 @@ static DTLogBlock _handler = nil;
                                     format:format
                                     args:args
                                     fileName:fileName
+                                    methodName:methodName
                                     lineNumber:lineNumber];
             
             va_end(args);
@@ -98,13 +99,19 @@ static DTLogBlock _handler = nil;
                                     format:(NSString *) format
                                     args:(va_list) args
                                   fileName:(NSString *) fileName
+                                methodName:(NSString *) methodName
                                 lineNumber:(NSUInteger) lineNumber
 {
     
     NSString * message = [[NSString alloc] initWithFormat:format arguments:args];
     
     // Try to follow an approach similar to ratlog https://github.com/ratlog/ratlog-spec
-    NSLog(@"[%@] file: %@ | line: %ld | %@", logLevel[@"name"], fileName, lineNumber, message);
+    NSLog(@"[%@] file: %@ | method: %@ | line: %ld | %@",
+          logLevel[@"name"],
+          fileName,
+          methodName,
+          lineNumber,
+          message);
     
     return message;
 }

@@ -64,6 +64,9 @@
         if([[method lowercaseString] isEqualToString:@"post"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
+
+#pragma message "POST Request"
+                
                 [manager POST:url parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
                     // Nothing
                 } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -76,6 +79,9 @@
         } else if([[method lowercaseString] isEqualToString:@"put"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
+
+#pragma message "PUT Request"
+                
                 [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
                     [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -86,6 +92,9 @@
         } else if([[method lowercaseString] isEqualToString:@"delete"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
+
+#pragma message "DELETE Request"
+                
                 [manager DELETE:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
                     [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -95,6 +104,9 @@
         } else if([[method lowercaseString] isEqualToString:@"head"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
+
+#pragma message "HEAD Request"
+                
                 [manager HEAD:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task) {
                     [self done: task for: url ofType: dataType with: nil original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -104,6 +116,9 @@
         } else if([[method lowercaseString] isEqualToString:@"patch"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
+
+#pragma message "PATCH Request"
+                
                 [manager PATCH:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
                     [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -114,6 +129,9 @@
             // GET
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
+
+#pragma message "GET Request"
+                
                 [manager GET:url parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
                     // Nothing
                 } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -211,6 +229,9 @@
     }
     
     [manager.operationQueue cancelAllOperations];
+
+#pragma message "Sign URL Request"
+    
     [manager GET:sign_url parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
         // Nothing
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {

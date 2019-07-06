@@ -8,6 +8,9 @@
 #import "JasonAppDelegate.h"
 #import "NSData+ImageContentType.h"
 #import "UIImage+GIF.h"
+
+#import "JasonLogger.h"
+
 @interface Jason(){
     UINavigationController *navigationController;
     UITabBarController *tabController;
@@ -1064,6 +1067,7 @@
                 }
                 
                 // 6. Start request
+#pragma message "Start Request in Include"
                 [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     VC.requires[url] = responseObject;
                     dispatch_group_leave(requireGroup);
@@ -1153,6 +1157,7 @@
                 }
                 
                 // 5. Start request
+#pragma message "Start Request in Require"
                 [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     return_value[url] = responseObject;
                     dispatch_group_leave(requireGroup);
@@ -1808,6 +1813,8 @@
             jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
             
             manager.responseSerializer = jsonResponseSerializer;
+
+#pragma message "Start Request in Reload"
             
             [manager GET:VC.url parameters:parameters
                 progress:^(NSProgress * _Nonnull downloadProgress) { }
