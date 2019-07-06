@@ -349,9 +349,19 @@
 
 + (NSDictionary *) sessionForUrl: (NSString *) url
 {
+    DTLogDebug(@"Obtaining Session for URL %@", url);
+    
     NSString * domain = [[[NSURL URLWithString:url] host] lowercaseString];
     
-    DTLogDebug(@"Obtaining Session for URL %@", url);
+    if(!domain || [domain isEqualToString:@""])
+    {
+        
+#pragma message "TODO: Try finding a way for local files to be used without file://"
+        
+        DTLogError(@"Domain not found. Need to specify file:// if is a local file.");
+        DTLogInfo(@"Got %@ - Try using file://%@", url, url);
+    }
+    
     DTLogDebug(@"Domain %@", domain);
     
     UICKeyChainStore * keychain = [UICKeyChainStore

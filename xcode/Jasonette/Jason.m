@@ -157,51 +157,87 @@
 
 #pragma mark - Jason Core API (USE ONLY THESE METHODS TO ACCESS Jason Core!)
 
-- (void)start: (NSDictionary *) href{
+- (void) start: (NSDictionary *) href
+{
     /**************************************************
      *
      * Public API for initializing Jason
      * (ex) [[Jason client] start] from JasonAppDelegate
      *
      **************************************************/
-    JasonAppDelegate *app = (JasonAppDelegate *)[[UIApplication sharedApplication] delegate];
-    NSDictionary *plist = [self getSettings];
+    
+    DTLogInfo(@"Starting App");
+    
+    JasonAppDelegate * app = (JasonAppDelegate *)[[UIApplication sharedApplication] delegate];
+    NSDictionary * plist = [self getSettings];
     ROOT_URL = plist[@"url"];
+    DTLogDebug(@"Root Url %@", ROOT_URL);
+    
+    if(!ROOT_URL || [ROOT_URL isEqualToString:@""])
+    {
+        DTLogError(@"Url not found in settings.plist");
+        DTLogInfo(@"Loading error.json");
+    }
+    
     INITIAL_LOADING = [plist[@"loading"] boolValue];
-    NSString *launch_url = plist[@"launch"];
-    NSDictionary *launch = nil;
-    if (launch_url && launch_url.length > 0) {
+    DTLogDebug(@"Initial Loading: %@", (INITIAL_LOADING ? @"YES" : @"NO"));
+    
+    NSString * launch_url = plist[@"launch"];
+    NSDictionary * launch = nil;
+    if (launch_url && launch_url.length > 0)
+    {
+        DTLogDebug(@"Loading Preloader Launch Local Json %@", launch_url);
         launch = [JasonHelper read_local_json:launch_url];
     }
+    
     // FLEX DEBUGGER
 #if DEBUG
-    if(plist[@"debug"] && [plist[@"debug"] boolValue]){
+    if(plist[@"debug"] && [plist[@"debug"] boolValue])
+    {
+        DTLogInfo(@"Loading Flex Debugger");
         [[FLEXManager sharedManager] showExplorer];
     }
 #endif
     
-    JasonViewController *vc = [[JasonViewController alloc] init];
-    if(href){
-        if(href[@"url"]){
+    JasonViewController * vc = [[JasonViewController alloc] init];
+    vc.url = ROOT_URL;
+    vc.loading = INITIAL_LOADING;
+    
+    if(href)
+    {
+        DTLogDebug(@"Loading href %@", href);
+        if(href[@"url"])
+        {
             vc.url = href[@"url"];
+            DTLogDebug(@"With Url %@", vc.url);
         }
-        if(href[@"options"]){
+        
+        if(href[@"options"])
+        {
             vc.options = href[@"options"];
+            DTLogDebug(@"With Options %@", vc.options);
         }
-        if(href[@"loading"]){
+        
+        if(href[@"loading"])
+        {
             vc.loading = href[@"loading"];
+            DTLogDebug(@"With Loading %@", vc.loading);
         }
-    } else {
-        vc.url = ROOT_URL;
-        vc.loading = INITIAL_LOADING;
+        
     }
-    if (launch) {
+    
+    if (launch)
+    {
+        DTLogDebug(@"SettingLaunch Preloader %@", launch);
         vc.preload = launch;
     }
+    
+    DTLogDebug(@"Loading View");
     vc.view.backgroundColor = [UIColor whiteColor];
     vc.extendedLayoutIncludesOpaqueBars = YES;
     
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+    DTLogDebug(@"Loading Navigation Controller");
+    UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:vc];
     
     navigationController.navigationBar.shadowImage = [UIImage new];
     [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
@@ -209,7 +245,8 @@
     navigationController.navigationBar.backgroundColor = [UIColor clearColor];
     [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
     
-    UITabBarController *tab = [[UITabBarController alloc] init];
+    DTLogDebug(@"Loading TabBar Controller");
+    UITabBarController * tab = [[UITabBarController alloc] init];
     tab.tabBar.backgroundColor = [UIColor whiteColor];
     tab.tabBar.shadowImage = [[UIImage alloc] init];
     tab.viewControllers = @[nav];
@@ -217,11 +254,13 @@
     
     [tab setDelegate:self];
     
+    DTLogDebug(@"Setting App Root Window");
     app.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     app.window.rootViewController = tab;
     
     [app.window makeKeyAndVisible];
 }
+
 - (void)call: (NSDictionary *)action{
     /**************************************************
      *
@@ -1668,16 +1707,31 @@
     }
     return [newKeys copy];
 }
--(NSDictionary*)getSettings{
-    NSDictionary * infoPlistSettings = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"settings"];
-    if(infoPlistSettings != nil){//target's info.plist file contains customized settings
+
+- (NSDictionary *) getSettings
+{
+    DTLogInfo(@"Getting settings");
+    NSDictionary * infoPlistSettings = [[NSBundle mainBundle]
+                                        objectForInfoDictionaryKey:@"settings"];
+    if(infoPlistSettings)
+    {
+        // target's info.plist file contains customized settings
+        DTLogDebug(@"Reading from settings object inside info.plist");
         return infoPlistSettings;
-    }else{//settings not found in target's Info.plist - get from file
-        NSURL *file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
-        NSDictionary *settingsPlistSettings = [NSDictionary dictionaryWithContentsOfURL:file];
-        return settingsPlistSettings;
     }
+   
+    // settings not found in target's Info.plist - get from file
+    DTLogDebug(@"Reading from settings.plist file");
+    NSURL * file = [[NSBundle mainBundle]
+                   URLForResource:@"settings"
+                   withExtension:@"plist"];
+    
+    NSDictionary * settingsPlistSettings = [NSDictionary
+                                            dictionaryWithContentsOfURL:file];
+    
+    return settingsPlistSettings;
 }
+
 - (NSDictionary *)getEnv{
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
     NSURL *file = [[NSBundle mainBundle] URLForResource:@"Info" withExtension:@"plist"];
@@ -1790,9 +1844,13 @@
 }
 
 # pragma mark - View rendering (high level)
-- (void)reload{
+- (void) reload
+{
+    
+    DTLogInfo(@"Reloading View");
+    
     VC.data = nil;
-    VC.form = [[NSMutableDictionary alloc] init];
+    VC.form = [@{} mutableCopy];
     if(VC.url){
         [self networkLoading:VC.loading with:nil];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];

@@ -7,7 +7,7 @@
 	<key>client_secret</key>
 	<string></string>
 	<key>url</key>
-	<string>file://hello.json</string>
+	<string>hello.json</string>
 	<key>loading</key>
 	<false/>
 	<key>launch</key>
