@@ -22,12 +22,13 @@ This version is the current in development.
 
 - Fixed Crash on parsing local json files with wrong syntax.
 - Fixed Crash when no `$jason` property is present in json.
+- Fixed Blank Screen when no `url` is found in `settings.plist`.
 
 ### Removed
 
 ### Notes
 
-- This version is a complete overhaul focusing on 
+This version is a complete overhaul focusing on 
 modularization of the code and update of the libraries, improving the quality of the framework, maintaining the same json api.
 
 ## [1.0](https://github.com/jasonelle/jasonelle/releases/tag/v1.0)

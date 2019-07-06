@@ -6,12 +6,12 @@
 	<string></string>
 	<key>client_secret</key>
 	<string></string>
-	<key>url</key>
-	<string>hello.json</string>
 	<key>loading</key>
 	<false/>
 	<key>launch</key>
 	<string></string>
+	<key>url</key>
+	<string>file://hello.json</string>
 	<key>debug</key>
 	<false/>
 </dict>

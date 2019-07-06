@@ -177,6 +177,7 @@
     {
         DTLogError(@"Url not found in settings.plist");
         DTLogInfo(@"Loading error.json");
+        ROOT_URL = @"file://error.json";
     }
     
     INITIAL_LOADING = [plist[@"loading"] boolValue];
@@ -199,6 +200,7 @@
     }
 #endif
     
+    DTLogDebug(@"Creating View Controller");
     JasonViewController * vc = [[JasonViewController alloc] init];
     vc.url = ROOT_URL;
     vc.loading = INITIAL_LOADING;
@@ -258,10 +260,12 @@
     app.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     app.window.rootViewController = tab;
     
+    DTLogDebug(@"Start Displaying");
     [app.window makeKeyAndVisible];
 }
 
-- (void)call: (NSDictionary *)action{
+- (void) call: (NSDictionary *) action
+{
     /**************************************************
      *
      * Invoke any action from any module
@@ -270,8 +274,10 @@
      **************************************************/
     [self call: action with: nil];
 }
-- (void)call: (id)action with: (NSDictionary*)data{
-    JasonMemory *memory = [JasonMemory client];
+
+- (void) call: (id) action with: (NSDictionary *) data
+{
+    JasonMemory * memory = [JasonMemory client];
     // If executing, queue the action with "call" type
     if (memory.executing || !VC.events) {
         if (!queue) {

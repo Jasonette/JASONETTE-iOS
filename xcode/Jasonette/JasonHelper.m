@@ -355,11 +355,12 @@
     
     if(!domain || [domain isEqualToString:@""])
     {
-        
-#pragma message "TODO: Try finding a way for local files to be used without file://"
-        
-        DTLogError(@"Domain not found. Need to specify file:// if is a local file.");
-        DTLogInfo(@"Got %@ - Try using file://%@", url, url);
+        // domain could not be found if this is a base64 data (for example an image)
+        if(![url containsString:@"data:"])
+        {
+            DTLogError(@"Domain not found. Need to specify file:// if is a local file.");
+            DTLogInfo(@"Got %@ - Try using file://%@", url, url);
+        }
     }
     
     DTLogDebug(@"Domain %@", domain);
@@ -945,6 +946,7 @@
 
 + (nonnull NSString *) getLocalPathForFileUrl: (nonnull NSString *) url
 {
+    DTLogDebug(@"Getting Local Path For File");
     NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString * webrootPath = [resourcePath stringByAppendingPathComponent:@""];
     NSString * protocol = @"file:/";
@@ -995,7 +997,9 @@
     }
     else
     {
-        DTLogWarning(@"Jason File Not Found %@", json);
+        DTLogError(@"Jason File Not Found %@", url);
+        DTLogInfo(@"Loading error.json");
+        result = [JasonHelper loadErrorJson];
     }
     
     return result;
