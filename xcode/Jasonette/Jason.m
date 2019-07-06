@@ -1020,9 +1020,10 @@
 
 - (void)include: (id)json andCompletionHandler:(void(^)(id obj))callback{
     
-    DTLogInfo(@"Including JSON");
+    DTLogInfo(@"Include Json");
+    DTLogDebug(@"\n==============================\n\n\n");
     NSString *j = [JasonHelper stringify:json];
-    DTLogDebug(@"%@", j);
+    DTLogDebug(@"%@\n==============================\n\n'n", j);
     
     // 1. Extract "@": "path@URL" patterns and create an array from the URLs
     // 2. Make concurrent requests to each item in the array
@@ -1133,10 +1134,12 @@
     
 }
 
-- (void)require{
-    
-    NSString *origin_url = VC.url;
-    
+- (void) require
+{
+    DTLogInfo(@"Require Json");
+    DTLogDebug(@"\n==============================\n\n\n");
+    NSString * origin_url = VC.url;
+    DTLogDebug(@"%@\n==============================\n\n\n", origin_url);
     /*
      
      {
@@ -1206,7 +1209,7 @@
                     return_value[url] = responseObject;
                     dispatch_group_leave(requireGroup);
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                    NSLog(@"Error");
+                    DTLogError(@"Error %@", error);
                     dispatch_group_leave(requireGroup);
                 }];
                 
@@ -3387,7 +3390,7 @@
                      * [Default] Push transition
                      *
                      ****************************************************************************/
-#pragma message TODO: See NSClassFromString and put the method in a wrapper
+#pragma message "TODO: See NSClassFromString and put the method in a wrapper"
                     Class v = NSClassFromString(viewClass);
                     JasonViewController *vc = [[v alloc] init];
                     if(href){
