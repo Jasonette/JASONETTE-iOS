@@ -7,7 +7,7 @@
             "layers": [
                 {
                     "type": "label",
-                    "text": "Offline",
+                    "text": "Error Loading Screen",
                     "style": {
                         "top": "50%-30",
                         "align": "center",

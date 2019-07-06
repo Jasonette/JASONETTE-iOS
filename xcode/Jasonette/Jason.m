@@ -38,25 +38,47 @@
 
 
 #pragma mark - Jason Core initializers
-+ (Jason*)client {
+
++ (Jason *) client
+{
+    // This follows the singleton pattern
     static dispatch_once_t predicate = 0;
     static id sharedObject = nil;
+    
     dispatch_once(&predicate, ^{
+        DTLogInfo(@"Initializing Shared Client Object");
         sharedObject = [[self alloc] init];
     });
+    
     return sharedObject;
 }
-- (id)init {
-    if (self = [super init]) {
+
+- (id) init
+{
+    if (self = [super init])
+    {
+        DTLogInfo(@"Initialing Jason Object");
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onForeground) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter]
+         addObserver:self
+         selector:@selector(onForeground)
+         name:UIApplicationDidBecomeActiveNotification
+         object:nil];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter]
+         addObserver:self
+         selector:@selector(onBackground)
+         name:UIApplicationDidEnterBackgroundNotification
+         object:nil];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onOrientationChange) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+        [[NSNotificationCenter defaultCenter]
+         addObserver:self
+         selector:@selector(onOrientationChange)
+         name:UIApplicationDidChangeStatusBarOrientationNotification
+         object:nil];
         
         self.searchMode = NO;
-        self.services = [[NSMutableDictionary alloc] init];
+        self.services = [@{} mutableCopy];
         
         // Add observers for public API
         [[NSNotificationCenter defaultCenter]
@@ -72,31 +94,51 @@
          object:nil];
         
     }
+    
     return self;
 }
-- (JasonViewController *)getVC {
+
+- (JasonViewController *) getVC
+{
     return VC;
 }
 
 #pragma mark - Jason Core API Notifications
-- (void)notifySuccess:(NSNotification *)notification {
-    NSDictionary *args = notification.object;
-    NSLog(@"JasonCore: notifySuccess: %@", args);
+- (void) notifySuccess: (NSNotification *) notification
+{
+    NSDictionary * args = notification.object;
+    DTLogDebug(@"JasonCore: notifySuccess: %@", args);
     [[Jason client] success:args];
 }
 
-- (void)notifyError:(NSNotification *)notification {
-    NSDictionary *args = notification.object;
-    NSLog(@"JasonCore: notifyError: %@", args);
+- (void) notifyError: (NSNotification *) notification
+{
+    NSDictionary * args = notification.object;
+    DTLogDebug(@"JasonCore: notifyError: %@", args);
     [[Jason client] error:args];
 }
-- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC: (JasonViewController *)vc{
+
+- (void) loadViewByFile: (NSString *) url
+                asFinal:(BOOL) final
+                   onVC: (JasonViewController *) vc
+{
+    DTLogInfo(@"Loading View from URL %@ in View Controller", url);
     VC = vc;
     [self loadViewByFile:url asFinal:final];
 }
-- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final{
+
+- (void) loadViewByFile: (NSString *) url
+                asFinal: (BOOL) final
+{
+    
+    DTLogInfo(@"Loading View By File %@", url);
+    
     id jsonResponseObject = [JasonHelper read_local_json:url];
-    [self include:jsonResponseObject andCompletionHandler:^(id res){
+    
+    [self
+     include:jsonResponseObject
+     andCompletionHandler:^(id res)
+    {
         VC.original = @{@"$jason": res[@"$jason"]};
         [self drawViewFromJason: VC.original asFinal:final];
     }];
@@ -978,7 +1020,9 @@
 
 - (void)include: (id)json andCompletionHandler:(void(^)(id obj))callback{
     
+    DTLogInfo(@"Including JSON");
     NSString *j = [JasonHelper stringify:json];
+    DTLogDebug(@"%@", j);
     
     // 1. Extract "@": "path@URL" patterns and create an array from the URLs
     // 2. Make concurrent requests to each item in the array
@@ -2279,8 +2323,6 @@
     
     if(nav) v.old_header = [nav mutableCopy];
     
-    
-    
     UIColor *background = [JasonHelper colorwithHexString:@"#ffffff" alpha:1.0];
     UIColor *color = [JasonHelper colorwithHexString:@"#000000" alpha:1.0];
     
@@ -2903,15 +2945,25 @@
                 } else {
                     // If it's not the first time (the tab bars are already visible)
                     // check the URLs and update if changed.
-                    if([v.url isEqualToString:url]){
+                    if([v.url isEqualToString:url])
+                    {
                         // Do nothing
+#pragma message "TODO: Check if Tabs Refresh on Double Tab"
                         v.tabNeedsRefresh = YES;
                         tabFound = YES;
-                    } else {
+                    }
+                    else
+                    {
                         UINavigationController *nav = tabController.viewControllers[i];
                         JasonViewController *vc = [[nav viewControllers] firstObject];
+                        
                         vc.url = url;
-                        if (tabNeedsRefresh) vc.tabNeedsRefresh = tabNeedsRefresh;
+                        
+                        if (tabNeedsRefresh)
+                        {
+                            vc.tabNeedsRefresh = tabNeedsRefresh;
+                        }
+                        
                         vc.options = [self filloutTemplate:options withData:[self variables]];
                         vc.loading = loading;
                         vc.preload = preload;
@@ -3093,10 +3145,13 @@
  
  *************************************************************/
 
-- (void)onShow{
+- (void)onShow
+{
     NSDictionary *events = [VC valueForKey:@"events"];
-    if(events){
-        if(events[@"$show"]){
+    if(events)
+    {
+        if(events[@"$show"])
+        {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 // Temporary solution to make sure onShow doesn't interrupt rendering.
                 // Will need to put some time into it to figure out a more
@@ -3104,48 +3159,74 @@
                 // Similar pattern to using setTimeout(function(){ ... }, 0)
                 // in javascript to schedule a task one clock tick later
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    NSDictionary *variables = [self variables];
+                    NSDictionary * variables = [self variables];
+                    DTLogInfo(@"Calling $show event");
+                    DTLogDebug(@"%@", variables);
                     [self call:events[@"$show"] with:variables];
                 });
             });
         }
     }
 }
-- (void)onLoad: (Boolean) online{
+
+- (void) onLoad: (Boolean) online
+{
     [JasonMemory client].executing = NO;
     NSDictionary *events = [VC valueForKey:@"events"];
-    if(events && events[@"$load"]){
-        if(!VC.contentLoaded){
-            NSDictionary *variables = [self variables];
+    if(events && events[@"$load"])
+    {
+        if(!VC.contentLoaded)
+        {
+            DTLogInfo(@"Calling $load event");
+            NSDictionary * variables = [self variables];
+            DTLogDebug(@"%@", variables);
             [self call:events[@"$load"] with:variables];
         }
-    } else {
+        
+    }
+    else
+    {
         [self onShow];
     }
-    if(online){
+    
+    if(online)
+    {
         // if online is YES, it means the content is being loaded from remote, since the remote content has finished loading, set contentLoaded to YES
         // if it's NO, it means it's an offline content, so the real online content is yet to come, so shouldn't set contentLoaded to YES
+        DTLogInfo(@"Content Loading From Online Remote");
         VC.contentLoaded = YES;
     }
 }
-- (void)onBackground{
+
+- (void)onBackground
+{
     isForeground = NO;
-    NSDictionary *events = [VC valueForKey:@"events"];
-    if(events){
-        if(events[@"$background"]){
+    NSDictionary * events = [VC valueForKey:@"events"];
+    if(events)
+    {
+        if(events[@"$background"])
+        {
+            DTLogInfo(@"Calling $background event");
             [self call:events[@"$background"]];
         }
     }
 }
-- (void)onForeground{
+
+- (void) onForeground
+{
     // Clear the app icon badge
+    DTLogInfo(@"Clearing Icon Badge");
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     
     // Don't trigger if the view has already come foreground once (because this can be triggered by things like push notification / geolocation alerts)
-    if(!isForeground){
+    if(!isForeground)
+    {
         NSDictionary *events = [VC valueForKey:@"events"];
-        if(events){
-            if(events[@"$foreground"]){
+        if(events)
+        {
+            if(events[@"$foreground"])
+            {
+                DTLogInfo(@"Calling $foreground event");
                 [self call:events[@"$foreground"]];
             }
         }
@@ -3153,18 +3234,22 @@
     isForeground = YES;
 }
 
-- (void) onOrientationChange {
-    JasonViewController *vc = (JasonViewController *)[[Jason client] getVC];
-    WKWebView *agent = vc.agents[@"$webcontainer"];
+- (void) onOrientationChange
+{
+    JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
+    WKWebView * agent = vc.agents[@"$webcontainer"];
     
-    if (agent) {
+    if (agent)
+    {
+        DTLogDebug(@"$webcontainer agent detected");
         CGRect bounds = [[UIScreen mainScreen] bounds];
         agent.frame = bounds;
     }
 }
 
 # pragma mark - View Linking
-- (void)go:(NSDictionary *)href{
+- (void) go: (NSDictionary *) href
+{
     /*******************************
      *
      * Linking View to another View
@@ -3184,7 +3269,7 @@
         NSString *fresh = href[@"fresh"];
         JasonMemory *memory = [JasonMemory client];
         memory.executing = NO;
-        queue = [[NSMutableArray alloc] init];
+        queue = [@[] mutableCopy];
         
         if([transition isEqualToString:@"root"]){
             [self start: nil];
@@ -3302,6 +3387,7 @@
                      * [Default] Push transition
                      *
                      ****************************************************************************/
+#pragma message TODO: See NSClassFromString and put the method in a wrapper
                     Class v = NSClassFromString(viewClass);
                     JasonViewController *vc = [[v alloc] init];
                     if(href){
@@ -3836,9 +3922,9 @@
         }
     }
     @catch(NSException *e){
-        NSLog(@"ERROR.. %@", e);
-        NSLog(@"JasonStack : %@", [JasonMemory client]._stack);
-        NSLog(@"Register : %@", [JasonHelper stringify:[JasonMemory client]._register]);
+        DTLogError(@"ERROR.. %@", e);
+        DTLogError(@"JasonStack : %@", [JasonMemory client]._stack);
+        DTLogError(@"Register : %@", [JasonHelper stringify:[JasonMemory client]._register]);
         [self call:@{@"type": @"$util.banner", @"options": @{@"title": @"Error", @"description": @"Something went wrong. Please try again"}}];
         [self finish];
     }
@@ -3884,10 +3970,15 @@
 
 # pragma mark - Helpers, Delegates & Misc.
 
-- (void)cache_view{
+- (void) cache_view
+{
     // Experimental: Store cache content for offline
-    if(VC.original && VC.rendered && VC.original[@"$jason"][@"head"][@"offline"]){
-        if(![[VC.rendered description] containsString:@"{{"] && ![[self.options description] containsString:@"}}"]){
+    DTLogInfo(@"Loading View From Cache");
+    if(VC.original && VC.rendered && VC.original[@"$jason"][@"head"][@"offline"])
+    {
+        DTLogInfo(@"Offline Mode Activated");
+        if(![[VC.rendered description] containsString:@"{{"] && ![[self.options description] containsString:@"}}"])
+        {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 NSString *normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
                 normalized_url = [normalized_url stringByReplacingOccurrencesOfString:@"/" withString:@"_"];

@@ -5,6 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonHelper.h"
+#import "JasonLogger.h"
 
 @implementation JasonHelper
 + (NSDate *)dateWithISO8601String:(NSString *)dateString
@@ -922,27 +923,59 @@
     }
     return [f copy];
 }
-+ (id) read_local_json: (NSString *)url {
-    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];
-    NSString *loc = @"file:/";
+
++ (nonnull NSString *) getLocalPathForFileUrl: (nonnull NSString *) url
+{
+    NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString * webrootPath = [resourcePath stringByAppendingPathComponent:@""];
+    NSString * protocol = @"file:/";
     
-    NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
+    NSString * file = [url
+                           stringByReplacingOccurrencesOfString:protocol
+                           withString:webrootPath];
     
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    id ret;
+    return file;
+}
+
++ (id) read_local_json: (NSString *) url
+{
     
-    if ([fileManager fileExistsAtPath:jsonFile]) {
-        NSError *error = nil;
-        NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
+    DTLogInfo(@"Reading Local JSON from URL %@", url);
+    
+    NSString * json = [JasonHelper getLocalPathForFileUrl:url];
+    
+    DTLogDebug(@"Loading Json File %@", json);
+    
+    NSFileManager * fileManager = [NSFileManager defaultManager];
+    id result = @{};
+    
+    if ([fileManager fileExistsAtPath:json])
+    {
+        NSError * error = nil;
+        NSInputStream * inputStream = [[NSInputStream alloc] initWithFileAtPath:json];
+        
         [inputStream open];
-        ret = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+        
+        result = [NSJSONSerialization
+               JSONObjectWithStream: inputStream
+               options:kNilOptions
+               error:&error];
+        
         [inputStream close];
-    } else {
-        NSLog(@"JASON FILE NOT FOUND: %@", jsonFile);
-        ret = @{};
+        
+        if(error)
+        {
+            DTLogError(@"Error Parsing Json %@", error);
+            DTLogInfo(@"Loading error.json");
+            result = [JasonHelper read_local_json:@"file://error.json"];
+        }
     }
-    return ret;
+    else
+    {
+        DTLogWarning(@"Jason File Not Found %@", json);
+    }
+    
+    return result;
 }
 + (NSString *)normalized_url: (NSString *)url forOptions: (id)options{
     NSString *normalized_url = [url lowercaseString];
