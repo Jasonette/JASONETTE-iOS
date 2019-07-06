@@ -46,4 +46,6 @@
 + (NSString *) read_local_file: (NSString *)url;
 + (NSString *) get_local_path: (NSString *) url;
 + (id) getPlistSettings: (NSString *)key;
+
++ (id) loadErrorJson;
 @end

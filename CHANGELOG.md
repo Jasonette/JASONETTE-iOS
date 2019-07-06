@@ -20,6 +20,9 @@ This version is the current in development.
 
 ### Fixed
 
+- Fixed Crash on parsing local json files with wrong syntax.
+- Fixed Crash when no `$jason` property is present in json.
+
 ### Removed
 
 ### Notes

@@ -114,7 +114,7 @@
 - (void) notifyError: (NSNotification *) notification
 {
     NSDictionary * args = notification.object;
-    DTLogDebug(@"JasonCore: notifyError: %@", args);
+    DTLogWarning(@"JasonCore: notifyError: %@", args);
     [[Jason client] error:args];
 }
 
@@ -139,7 +139,18 @@
      include:jsonResponseObject
      andCompletionHandler:^(id res)
     {
-        VC.original = @{@"$jason": res[@"$jason"]};
+        id result = [JasonHelper loadErrorJson][@"$jason"];
+        if(res[@"$jason"])
+        {
+            result = res[@"$jason"];
+        }
+        else
+        {
+            DTLogError(@"Missing $jason property in \n%@\n\n", res);
+            DTLogInfo(@"Loading error.json");
+        }
+        
+        VC.original = @{@"$jason": result};
         [self drawViewFromJason: VC.original asFinal:final];
     }];
 }
@@ -1023,7 +1034,7 @@
     DTLogInfo(@"Include Json");
     DTLogDebug(@"\n==============================\n\n\n");
     NSString *j = [JasonHelper stringify:json];
-    DTLogDebug(@"%@\n==============================\n\n'n", j);
+    DTLogDebug(@"%@\n\n==============================\n\n\n", j);
     
     // 1. Extract "@": "path@URL" patterns and create an array from the URLs
     // 2. Make concurrent requests to each item in the array
@@ -1283,51 +1294,75 @@
     return include_resolved;
 }
 
-- (Jason *)detach:(JasonViewController*)viewController{
+- (Jason *) detach: (JasonViewController *) viewController
+{
     // Need to clean up before leaving the view
+    DTLogDebug(@"Detaching View Controller");
     VC = (JasonViewController*)viewController;
     
     // Reset Timers
-    for(NSString *timer_name in VC.timers){
+    DTLogDebug(@"Resetting Timers If Any");
+    for(NSString *timer_name in VC.timers)
+    {
         NSTimer *timer = VC.timers[timer_name];
         [timer invalidate];
         [VC.timers removeObjectForKey:timer_name];
     }
     
     // Reset Audios
-    for(NSString *audio_name in VC.audios){
+    DTLogDebug(@"Resetting Audios If Any");
+    for(NSString *audio_name in VC.audios)
+    {
         FSAudioStream *audio = VC.audios[audio_name];
         [audio stop];
         [VC.audios removeObjectForKey:audio];
     }
     
     // Reset Video
-    for(AVPlayer *player in VC.playing){
+    DTLogDebug(@"Resetting Videos If Any");
+    for(AVPlayer *player in VC.playing)
+    {
         [player pause];
     }
+    
     [VC.playing removeAllObjects];
     
     [VC.view endEditing:YES];
     
     
     // Reset Agent
-    for(NSString *key in ((JasonViewController*)VC).agents) {
+    DTLogDebug(@"Resetting Agent If Any");
+    for(NSString *key in ((JasonViewController*)VC).agents)
+    {
         JasonAgentService *agent = self.services[@"JasonAgentService"];
-        if ([key isEqualToString:@"$webcontainer"]) {
+        if ([key isEqualToString:@"$webcontainer"])
+        {
             // Web container is a special case agent => because it may function as a full-fledged view of the app,
             // we can't just kill the entire thing just because the app transitioned from view A to B.
             // View A should always be ready when we come back from view B.
-            if (VC.isMovingFromParentViewController || VC.isBeingDismissed) {
+            DTLogDebug(@"$webcontainer found");
+            if (VC.isMovingFromParentViewController || VC.isBeingDismissed)
+            {
                 // Web container AND coming back from the child view therefore it's ok to kill the child view's web container agent
+                DTLogDebug(@"Web container AND coming back from the child view therefore it's ok to kill the child view's web container agent");
                 [agent clear:key forVC:VC];
-            } else {
+            }
+            else
+            {
                 // Otherwise it could be:
                 // 1. Going from view A to view B (Don't kill view A's agent)
+                DTLogDebug(@"Going from view A to view B (Don't kill view A's agent)");
+                DTLogDebug(@"Not clearing $webcontainer");
             }
-        } else {
+        }
+        else
+        {
+            DTLogDebug(@"Clearing Agent %@", key);
             [agent clear:key forVC:VC];
         }
     }
+    
+    DTLogDebug(@"Cleaning Up Memory");
     [JasonMemory client].executing = NO;
     
     return self;

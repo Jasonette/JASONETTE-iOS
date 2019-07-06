@@ -346,11 +346,20 @@
         return [value description];
     }
 }
-+ (NSDictionary *)sessionForUrl:(NSString *)url{
-    NSString *domain = [[[NSURL URLWithString:url] host] lowercaseString];
-    UICKeyChainStore *keychain = [UICKeyChainStore keyChainStoreWithService:domain];
+
++ (NSDictionary *) sessionForUrl: (NSString *) url
+{
+    NSString * domain = [[[NSURL URLWithString:url] host] lowercaseString];
+    
+    DTLogDebug(@"Obtaining Session for URL %@", url);
+    DTLogDebug(@"Domain %@", domain);
+    
+    UICKeyChainStore * keychain = [UICKeyChainStore
+                                   keyChainStoreWithService:domain];
+    
     return [keychain[@"session"] propertyList];
 }
+
 +(NSDictionary*)dictFromJSONFile:(NSString*)filename{
     NSString *filePath = [[NSBundle mainBundle] pathForResource:filename ofType:@"json"];
     NSData* data = [NSData dataWithContentsOfFile:filePath];
@@ -937,6 +946,10 @@
     return file;
 }
 
++ (id) loadErrorJson {
+    return [JasonHelper read_local_json:@"file://error.json"];
+}
+
 + (id) read_local_json: (NSString *) url
 {
     
@@ -967,7 +980,7 @@
         {
             DTLogError(@"Error Parsing Json %@", error);
             DTLogInfo(@"Loading error.json");
-            result = [JasonHelper read_local_json:@"file://error.json"];
+            result = [JasonHelper loadErrorJson];
         }
     }
     else
