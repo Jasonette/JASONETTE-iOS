@@ -9,8 +9,11 @@
 
 @implementation JasonParser
 
-- (void)format
+- (void) format
 {
+    
+    DTLogDebug(@"Loading Parser Format with Data %@", self.options);
+    
     NSDictionary *data = self.options[@"data"];
     id schema = self.options[@"template"];
     if(data && data.count > 0){
@@ -57,6 +60,9 @@
        type: (NSString *) type
        with: (id)parser
 {
+    
+    DTLogInfo(@"Begin Parsing Document");
+    
     if(type && [[type lowercaseString] isEqualToString:@"html"]){
         if(data && [data count] > 0){
             NSString *str = data[@"$jason"];

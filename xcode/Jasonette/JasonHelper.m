@@ -306,19 +306,35 @@
     NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
     return queryItem.value;
 }
-+ (id)objectify:(NSString *)str{
-    NSString *converted = str;
-    NSError *error;
-    NSData *data = [converted dataUsingEncoding: NSUTF8StringEncoding];
-    id result = [NSJSONSerialization JSONObjectWithData: data options: 0 error: &error];
-    if (result == nil) {
-        NSLog(@"Error: %@", error.localizedDescription);
+
++ (id) objectify: (NSString *) str
+{
+    
+    DTLogDebug(@"Objectifying String");
+    
+    NSString * converted = str;
+    NSError * error = nil;
+    NSData * data = [converted dataUsingEncoding: NSUTF8StringEncoding];
+    
+    id result = [NSJSONSerialization
+                 JSONObjectWithData: data
+                 options: kNilOptions
+                 error: &error];
+    
+    if (!result || error)
+    {
+        DTLogError(@"Error: %@", error.localizedDescription);
         return nil;
     }
+    
     return result;
 }
 
-+ (NSString *)stringify:(id)value{
++ (NSString *) stringify: (id) value
+{
+    
+    DTLogDebug(@"Stringifying Object");
+    
     /*
     NSError *error;
     @try {
@@ -330,7 +346,8 @@
     }
     return @"";
      */
-    
+
+#pragma message "TODO: Update SBJson4Writer Lib"
     SBJson4Writer *writer = [[SBJson4Writer alloc] init];
 //    writer.humanReadable = YES;
     writer.humanReadable = NO;
@@ -958,7 +975,9 @@
     return file;
 }
 
-+ (id) loadErrorJson {
++ (id) loadErrorJson
+{
+    DTLogDebug(@"Loading error.json");
     return [JasonHelper read_local_json:@"file://error.json"];
 }
 
@@ -991,14 +1010,12 @@
         if(error)
         {
             DTLogError(@"Error Parsing Json %@", error);
-            DTLogInfo(@"Loading error.json");
             result = [JasonHelper loadErrorJson];
         }
     }
     else
     {
         DTLogError(@"Jason File Not Found %@", url);
-        DTLogInfo(@"Loading error.json");
         result = [JasonHelper loadErrorJson];
     }
     

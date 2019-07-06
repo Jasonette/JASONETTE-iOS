@@ -139,15 +139,16 @@
      include:jsonResponseObject
      andCompletionHandler:^(id res)
     {
-        id result = [JasonHelper loadErrorJson][@"$jason"];
+        id result = @{};
         if(res[@"$jason"])
         {
             result = res[@"$jason"];
         }
         else
         {
+            result = [JasonHelper loadErrorJson][@"$jason"];
             DTLogError(@"Missing $jason property in \n%@\n\n", res);
-            DTLogInfo(@"Loading error.json");
+            
         }
         
         VC.original = @{@"$jason": result};
@@ -1074,50 +1075,73 @@
 
 # pragma mark - View initialization & teardown
 
-- (void)include: (id)json andCompletionHandler:(void(^)(id obj))callback{
+- (void) include: (id) json
+    andCompletionHandler: (void(^)(id obj))callback
+{
     
     DTLogInfo(@"Include Json");
-    DTLogDebug(@"\n==============================\n\n\n");
-    NSString *j = [JasonHelper stringify:json];
-    DTLogDebug(@"%@\n\n==============================\n\n\n", j);
+    NSString * j = [JasonHelper stringify:json];
+    DTLogDebug(@"%@", j);
     
     // 1. Extract "@": "path@URL" patterns and create an array from the URLs
     // 2. Make concurrent requests to each item in the array
     // 3. Store each result under "[URL]" key
     // 4. Whenever we need to process JSON and encouter the "@" : "path@URL" pattern, we look into the "[URL]" value and parse it using path (if it exists)
-    NSError* regexError = nil;
+    NSError * regexError = nil;
     
     // The pattern leaves out any url that starts with "$" because that will be handled by resolve_local_reference
-    NSString *pattern = @"\"([+@])\"[ ]*:[ ]*\"([^$\"@]+@)?([^$\"]+)\"";
+    NSString * pattern = @"\"([+@])\"[ ]*:[ ]*\"([^$\"@]+@)?([^$\"]+)\"";
     
-    NSMutableSet *urlSet = [[NSMutableSet alloc] init];
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&regexError];
+    NSMutableSet * urlSet = [NSMutableSet new];
+    NSRegularExpression * regex = [NSRegularExpression
+                                   regularExpressionWithPattern:pattern
+                                   options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators
+                                   error:&regexError];
+    if(regexError)
+    {
+        DTLogWarning(@"Regex Error in Extracting URL pattern %@ error %@", pattern, regexError);
+    }
     
-    NSArray *matches = [regex matchesInString:j options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, j.length)];
-    for(int i = 0; i<matches.count; i++){
-        NSTextCheckingResult* match = matches[i];
-        NSRange group1 = [match rangeAtIndex:1];
-        NSRange group2 = [match rangeAtIndex:2];
+    NSArray * matches = [regex matchesInString:j
+                                       options:NSMatchingWithoutAnchoringBounds
+                                         range:NSMakeRange(0, j.length)];
+    
+    for(int i = 0; i < matches.count; i++)
+    {
+        NSTextCheckingResult * match = matches[i];
+//        // Unused for now. Maybe become handy in the future
+//        NSRange group1 = [match rangeAtIndex:1];
+//        NSRange group2 = [match rangeAtIndex:2];
+//        if(group1.length > 0)
+//        {
+//            DTLogDebug(@"Matches Group 1 %@", group1);
+//        }
+//
+//        if(group2.length > 0)
+//        {
+//            // Group2 is for path
+//            DTLogDebug(@"Matches Group 2 %@", group2);
+//        }
         NSRange group3 = [match rangeAtIndex:3];
-        if(group1.length > 0){
-            
-        }
-        if(group2.length > 0){
-            // Group2 is for path
-        }
-        if(group3.length > 0){
-            // Group2 is for the URL
-            NSString *url = [j substringWithRange:group3];
-            if(!VC.requires[url]){
+        if(group3.length > 0)
+        {
+            // Group 3 is for the URL
+            NSString * url = [j substringWithRange:group3];
+            if(!VC.requires[url])
+            {
+                DTLogDebug(@"Adding object to url set %@", url);
                 [urlSet addObject:url];
             }
         }
     }
     
     // 1. Create a dispatch_group
-    if(urlSet.count > 0){
+    if(urlSet.count > 0)
+    {
         dispatch_group_t requireGroup = dispatch_group_create();
-        for(NSString *url in urlSet){
+        
+        for(NSString * url in urlSet)
+        {
             // 2. Enter dispatch_group
             dispatch_group_enter(requireGroup);
             
@@ -1193,9 +1217,9 @@
 - (void) require
 {
     DTLogInfo(@"Require Json");
-    DTLogDebug(@"\n==============================\n\n\n");
     NSString * origin_url = VC.url;
-    DTLogDebug(@"%@\n==============================\n\n\n", origin_url);
+    DTLogDebug(@"%@", origin_url);
+    
     /*
      
      {
@@ -1324,18 +1348,35 @@
     return include_resolved;
 }
 
-- (id)resolve_local_reference: (NSString *)json{
-    NSError *error;
+- (id) resolve_local_reference: (NSString *) json
+{
+    
+    
+    DTLogInfo(@"Resolving Local References");
     
     // Local - convert "@": "$document.blah.blah" to "{{#include $root.$document.blah.blah}}": {}
-    NSString *local_pattern = @"\"[+@]\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"";
-    NSRegularExpression* local_regex = [NSRegularExpression regularExpressionWithPattern:local_pattern options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
-    NSString *converted = [local_regex stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root.$1}}\": {}"];
+    NSError * error;
+    NSString * local_pattern = @"\"[+@]\"[ ]*:[ ]*\"[ ]*(\\$document[^\"]*)\"";
+    NSRegularExpression * local_regex = [NSRegularExpression
+                                         regularExpressionWithPattern:local_pattern
+                                         options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators
+                                         error:&error];
+    
+    NSString * converted = [local_regex
+                            stringByReplacingMatchesInString:json
+                            options:kNilOptions
+                            range:NSMakeRange(0, json.length)
+                            withTemplate:@"\"{{#include \\$root.$1}}\": {}"];
+    
     id tpl = [JasonHelper objectify:converted];
-    NSMutableDictionary *refs = [VC.requires mutableCopy];
+    
+    NSMutableDictionary * refs = [VC.requires mutableCopy];
+    
     refs[@"$document"] = VC.original;
+    
     id include_resolved = [JasonParser parse:refs with:tpl];
     VC.original = include_resolved;
+    
     return include_resolved;
 }
 

@@ -1462,14 +1462,21 @@
         
         
         chat_input = body[@"footer"][@"input"];
-        if(chat_input){
+        if(chat_input)
+        {
 
-            __weak JasonViewController *weakSelf = self;
+            __weak JasonViewController * weakSelf = self;
+            CGFloat originalHeight = original_height;
 
-            [self.view addKeyboardPanningWithActionHandler:^(CGRect keyboardFrameInView, BOOL opening, BOOL closing) {
-                CGFloat m = MIN(original_height, keyboardFrameInView.origin.y);
-                if(opening || (closing && m >= weakSelf.view.frame.size.height)){
-                    CGRect newViewFrame = CGRectMake(weakSelf.view.frame.origin.x, weakSelf.view.frame.origin.y, weakSelf.view.frame.size.width, m);
+            [self.view addKeyboardPanningWithActionHandler:^(CGRect keyboardFrameInView, BOOL opening, BOOL closing)
+            {
+                CGFloat m = MIN(originalHeight, keyboardFrameInView.origin.y);
+                
+                if(opening || (closing && m >= weakSelf.view.frame.size.height))
+                {
+                    CGRect newViewFrame = CGRectMake(weakSelf.view.frame.origin.x,
+                                                     weakSelf.view.frame.origin.y,
+                                                     weakSelf.view.frame.size.width, m);
                     weakSelf.view.frame = newViewFrame;
                 }
             }];
