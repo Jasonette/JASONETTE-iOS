@@ -138,7 +138,7 @@
 
 - (void) loadViewByFile: (NSString *) url
                 asFinal: (BOOL) final
-{   
+{
     DTLogInfo(@"Loading View By File %@", url);
     
     id jsonResponseObject = [JasonHelper read_local_json:url];
@@ -2043,6 +2043,7 @@
                 {
                     parameters[key] = session[@"body"][key];
                 }
+            }
         }
         
         if(VC.fresh)
@@ -2141,10 +2142,17 @@
             [manager GET:VC.url parameters:parameters
                 progress:^(NSProgress * _Nonnull downloadProgress) { }
                  success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                     
                      // Ignore if the url is different
-                     if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url]) return;
+                     if(![JasonHelper isURL:task.originalRequest.URL equivalentTo:VC.url])
+                     {
+                         return;
+                     }
+                     
                      VC.original = responseObject;
-                     [self include:responseObject andCompletionHandler:^(id res){
+                     
+                     [self include:responseObject andCompletionHandler:^(id res)
+                     {
                          dispatch_async(dispatch_get_main_queue(), ^{
                              VC.contentLoaded = NO;
                              
@@ -4306,6 +4314,6 @@
         [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
     }
 }
-
+    
 @end
 
