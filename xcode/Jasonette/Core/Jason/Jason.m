@@ -3356,48 +3356,7 @@
         DTLogDebug(@"Footer Contains Tabs");
         NSArray * tabs = VC.rendered[@"footer"][@"tabs"][@"items"];
         NSDictionary * selected_tab = tabs[indexOfTab];
-        
-        if(VC.tabNeedsRefresh)
-        {
-#pragma TODO: Test if some use case needs this property to work
-            DTLogDebug(@"Tab %ld Needs Refresh", indexOfTab);
-        }
-        
-//        /* This code contains the logic to refresh.
-//           the problem is that refreshing more than one time
-//           causes the screen to go blank. For now, loading the view each
-//           time is enough.
-//           TODO: Evaluate if in the future this code will be used.
-//        */
-//
-//        if (VC.tabNeedsRefresh)
-//        {
-//            DTLogDebug(@"Tab Needs Refresh");
-//
-//            if(selected_tab[@"href"] && selected_tab[@"href"][@"url"])
-//            {
-//                [((UINavigationController *)viewController) popToRootViewControllerAnimated:NO];
-//                VC = ((UINavigationController *)viewController).viewControllers.lastObject;
-//                VC.url = selected_tab[@"href"][@"url"];
-//                VC.rendered = nil;
-//                [self setupHeader:nil];
-//                [VC reload: @{} final:NO];
-//                VC.contentLoaded = NO;
-//                return YES;
-//            }
-//            else if (selected_tab[@"url"])
-//            {
-//                [((UINavigationController *)viewController) popToRootViewControllerAnimated:NO];
-//                VC = ((UINavigationController *)viewController).viewControllers.lastObject;
-//                VC.url = selected_tab[@"url"];
-//                VC.rendered = nil;
-//                [self setupHeader:nil];
-//                [VC reload: @{} final:NO];
-//                VC.contentLoaded = NO;
-//                return YES;
-//            }
-//        }
-//
+
         BOOL containsHref = (selected_tab &&
                              (selected_tab[@"href"] ||
                               selected_tab[@"href"][@"url"] ||
@@ -3421,6 +3380,27 @@
             }
             
             DTLogDebug(@"Tab %ld contains href %@", indexOfTab, href);
+            
+            if(VC.tabNeedsRefresh)
+            {
+                DTLogDebug(@"Tab %ld Needs Refresh", indexOfTab);
+                [[Jason client] call: @{@"type": @"$reload"}];
+                return YES;
+                /* This code contains the logic to refresh.
+                   the problem is that refreshing more than one time
+                   causes the screen to go blank. The solution was to call the $reload action.
+                   TODO: Evaluate if in the future this code will be used.
+                */
+//                [((UINavigationController *) viewController) popToRootViewControllerAnimated:NO];
+//                VC = ((UINavigationController *) viewController).viewControllers.lastObject;
+//                VC.url = href;
+//                VC.rendered = nil;
+//                [self setupHeader:nil];
+//                [VC reload: VC.rendered final:NO];
+//                VC.contentLoaded = NO;
+//                VC.tabNeedsRefresh = NO;
+//                return YES;
+            }
             
             NSString * transition = selected_tab[@"href"][@"transition"];
             NSString * view = selected_tab[@"href"][@"view"];

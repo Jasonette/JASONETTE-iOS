@@ -1398,12 +1398,14 @@
 - (void) setupLayers: (NSDictionary *) body
 {
     DTLogDebug(@"Removing Layers");
-    for(UIView *v in self.layers)
+    for(UIView * layer in self.layers)
     {
-        [v removeFromSuperview];
+        [layer removeFromSuperview];
     }
     
-    self.layers = [JasonLayer setupLayers: body withView:self.view];
+    self.layers = [JasonLayer
+                   setupLayers: body
+                   withView:self.view];
 }
 
 - (void) setupSections:(NSDictionary *) body
