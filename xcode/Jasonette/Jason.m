@@ -11,6 +11,7 @@
 
 #import "JasonLogger.h"
 #import "JasonNetworking.h"
+#import "JasonNSClassFromString.h"
 
 @interface Jason()
 {
@@ -3763,7 +3764,7 @@
                      *
                      ****************************************************************************/
                     
-                    Class v = NSClassFromString(viewClass);
+                    Class v = [JasonNSClassFromString classFromString:viewClass];
                     JasonViewController *vc = [[v alloc] init];
                     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
                     UITabBarController *tab = [[UITabBarController alloc] init];
@@ -3808,8 +3809,7 @@
                      * [Default] Push transition
                      *
                      ****************************************************************************/
-#pragma message "TODO: See NSClassFromString and put the method in a wrapper"
-                    Class v = NSClassFromString(viewClass);
+                    Class v = [JasonNSClassFromString classFromString:viewClass];
                     JasonViewController *vc = [[v alloc] init];
                     if(href){
                         if(href[@"url"]){
@@ -3963,7 +3963,7 @@
                 }
                 // 2. via "view": "[VIEWCONTROLLER_CLASSNAME]" format
                 else {
-                    Class CustomViewController = NSClassFromString(href[@"view"]);
+                    Class CustomViewController = [JasonNSClassFromString classFromString:href[@"view"]];
                     vc = [[CustomViewController alloc] init];
                     nav = [[UINavigationController alloc] initWithRootViewController:vc];
                 }
@@ -4225,7 +4225,7 @@
                         NSLog(@"Plugin: module name: %@", module_name);
                         NSLog(@"Plugin: action name: %@", action_name);
                         
-                        Class PluginClass = NSClassFromString(module_name);
+                        Class PluginClass = [JasonNSClassFromString classFromString:module_name];
                         if (PluginClass) {
                             NSLog(@"Plugin: class: %@", PluginClass);
                             
@@ -4294,7 +4294,7 @@
                     }
                     
                     if(resolved_classname){
-                        Class ActionClass = NSClassFromString(resolved_classname);
+                        Class ActionClass = [JasonNSClassFromString classFromString:resolved_classname]; 
                         if(ActionClass){
                             // This means I have implemented this already
                             NSString *methodName = tokens[1];

@@ -6,6 +6,7 @@
 //
 #import "JasonAppDelegate.h"
 #import "JasonLogger.h"
+#import "JasonNSClassFromString.h"
 
 static NSURL * _launchURL;
 static NSArray * _services;
@@ -68,8 +69,8 @@ static NSArray * _services;
 + (void) initializeClass: (NSString *) className
   withOptions: (NSDictionary *) launchOptions
 {
-    // TODO: Include something for Swift code detection on NSClassFromString returning nil
-    Class ActionClass = NSClassFromString(className);
+    Class ActionClass = [JasonNSClassFromString
+                         classFromString:className];
     
     DTLogInfo(@"Initializing %@", className);
     
@@ -87,7 +88,7 @@ static NSArray * _services;
         [Jason client].services[className] = service;
     }
     
-    // TODO: Find a way to remove those clang diagnostic pragmas
+#pragma message "TODO: Find a way to remove those clang diagnostic pragmas"
     DTLogInfo(@"Calling initilize: method on class %@", className);
     
     SEL initialize = NSSelectorFromString(@"initialize:");

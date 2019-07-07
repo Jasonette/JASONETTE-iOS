@@ -5,7 +5,8 @@
 //  Copyright © 2016 gliechtenstein.
 //  Copyright © 2019 Jasonelle Team.
 #import "JasonComponentFactory.h"
-#import <DTFoundation/DTLog.h>
+#import "JasonLogger.h"
+#import "JasonNSClassFromString.h"
 
 @implementation JasonComponentFactory
 
@@ -37,28 +38,8 @@ static NSMutableDictionary * _stylesheet = nil;
     
     if(componentClassName)
     {
-        Class<JasonComponentProtocol> ComponentClass = NSClassFromString(componentClassName);
-        
-        if(!ComponentClass)
-        {
-            /**
-             
-             Maybe is a Swift Component. NSClassFromString return nil on these.
-             see https://stackoverflow.com/questions/28706602/nsclassfromstring-using-a-swift-file
-             and https://github.com/Jasonette/JASONETTE-iOS/issues/363#event-2459148079
-             
-             If you are using Swift for an Extension then try including the @objc() annotation.
-             
-             @objc(MySwiftClass)
-             class MySwiftClass {
-             ...
-             }
-             
-             */
-            NSString * prefix = [[NSBundle mainBundle] infoDictionary][@"CFBundleExecutable"];
-            componentClassName = [NSString stringWithFormat:@"%@.%@", prefix, componentClassName];
-            ComponentClass = NSClassFromString(componentClassName);
-        }
+        Class<JasonComponentProtocol> ComponentClass = [JasonNSClassFromString
+                                                        classFromString:componentClassName];
         
         if(!ComponentClass)
         {

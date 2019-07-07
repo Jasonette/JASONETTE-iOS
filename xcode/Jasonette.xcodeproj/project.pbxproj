@@ -73,6 +73,7 @@
 		5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B801DA5C0080049EACE /* JasonLayer.m */; };
 		5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF904351DD10F6E00C8A94E /* JasonLogAction.m */; };
 		9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */; };
+		EF072F5922D2673D00973DE1 /* JasonNSClassFromString.m in Sources */ = {isa = PBXBuildFile; fileRef = EF072F5822D2673D00973DE1 /* JasonNSClassFromString.m */; };
 		EF0968AF22D03BFB00E7B3DA /* JasonNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0968AE22D03BFB00E7B3DA /* JasonNetworking.m */; };
 		EF0B4EAE22CFBF4000761ED8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0B4EAD22CFBF4000761ED8 /* AppDelegate.m */; };
 		EF2B3BAF22CE54AC009633F2 /* hello.json in Resources */ = {isa = PBXBuildFile; fileRef = EF2B3BAE22CE54AC009633F2 /* hello.json */; };
@@ -210,6 +211,8 @@
 		9A16EE0D1E592DC4006D3F73 /* JasonOptionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonOptionHelper.h; sourceTree = "<group>"; };
 		9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonOptionHelper.m; sourceTree = "<group>"; };
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
+		EF072F5722D2673D00973DE1 /* JasonNSClassFromString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonNSClassFromString.h; sourceTree = "<group>"; };
+		EF072F5822D2673D00973DE1 /* JasonNSClassFromString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonNSClassFromString.m; sourceTree = "<group>"; };
 		EF0968AD22D03BFB00E7B3DA /* JasonNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonNetworking.h; sourceTree = "<group>"; };
 		EF0968AE22D03BFB00E7B3DA /* JasonNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonNetworking.m; sourceTree = "<group>"; };
 		EF0B4EAC22CFBF4000761ED8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -604,6 +607,7 @@
 		5E3177901D1F229200D87778 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				EF072F5622D2672200973DE1 /* JasonNSClassFromString */,
 				EF2B3BB022CE5FB1009633F2 /* Logger */,
 				9A16EE101E592DC9006D3F73 /* Option */,
 				5E3177041D1E411E00D87778 /* JasonHelper.h */,
@@ -713,6 +717,15 @@
 				9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */,
 			);
 			name = Option;
+			sourceTree = "<group>";
+		};
+		EF072F5622D2672200973DE1 /* JasonNSClassFromString */ = {
+			isa = PBXGroup;
+			children = (
+				EF072F5722D2673D00973DE1 /* JasonNSClassFromString.h */,
+				EF072F5822D2673D00973DE1 /* JasonNSClassFromString.m */,
+			);
+			path = JasonNSClassFromString;
 			sourceTree = "<group>";
 		};
 		EF0968AC22D03BD200E7B3DA /* Networking */ = {
@@ -1170,6 +1183,7 @@
 				EF2B3BB322CE5FC4009633F2 /* JasonLogger.m in Sources */,
 				EFD8CD2022CE94F700B47B03 /* JasonTextareaComponent.m in Sources */,
 				5E31774C1D1E411F00D87778 /* JasonMediaAction.m in Sources */,
+				EF072F5922D2673D00973DE1 /* JasonNSClassFromString.m in Sources */,
 				045E09331FC4A93F003A6341 /* JasonAgentService.m in Sources */,
 				5E3177241D1E411F00D87778 /* JasonHorizontalSectionItem.m in Sources */,
 				5E3177221D1E411F00D87778 /* JasonHorizontalSection.m in Sources */,

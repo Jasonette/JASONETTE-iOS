@@ -6,6 +6,7 @@
 //
 #import "JasonHelper.h"
 #import "JasonLogger.h"
+#import "JasonNSClassFromString.h"
 
 @implementation JasonHelper
 + (NSDate *)dateWithISO8601String:(NSString *)dateString
@@ -947,18 +948,30 @@
   FlushBuffer();
   return resultData;
 }
-+ (NSArray *)childOf: (UIView *)view withClassName: (NSString *)className {
-    NSMutableArray *f = [[NSMutableArray alloc] init];
-    Class klass = NSClassFromString (className);
-    if([view isKindOfClass:klass]){
-        [f addObject:view];
+
++ (NSArray *) childOf: (UIView *) view
+       withClassName: (NSString *) className
+{
+    NSMutableArray * views = [@[] mutableCopy];
+    
+    Class class = [JasonNSClassFromString
+                   classFromString:className];
+    
+    if([view isKindOfClass:class])
+    {
+        [views addObject:view];
     }
-    if(view.subviews && view.subviews.count > 0){
-        for(UIView *v in view.subviews){
-            [f addObjectsFromArray: [self childOf:v withClassName:className]];
+    
+    if(view.subviews && view.subviews.count > 0)
+    {
+        for(UIView * item in view.subviews)
+        {
+            [views addObjectsFromArray: [self childOf:item
+                                    withClassName:className]];
         }
     }
-    return [f copy];
+    
+    return [views copy];
 }
 
 + (nonnull NSString *) getLocalPathForFileUrl: (nonnull NSString *) url
