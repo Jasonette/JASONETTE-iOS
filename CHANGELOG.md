@@ -26,6 +26,7 @@ This version is the current in development.
 - Fixed Crash when no `$jason` property is present in json.
 - Fixed Crash when url contained html content in a json expected return.
 - Fixed Blank Screen when no `url` is found in `settings.plist`.
+- Fixed Blank Screen if you click a `Tab Item` more than once.
 
 
 ### Removed

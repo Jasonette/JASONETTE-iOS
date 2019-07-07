@@ -1045,8 +1045,8 @@
 
 - (void) finishRefreshing
 {
-    DTLogDebug(@"Finish Refreshing");
     dispatch_async(dispatch_get_main_queue(), ^{
+        DTLogDebug(@"Refresh Control End Refreshing");
         [refreshControl performSelector:@selector(endRefreshing) withObject:nil afterDelay:0.0];
     });
 }
@@ -1122,7 +1122,7 @@
     }
     @catch(NSException *e)
     {
-        DTLogDebug(@"Calling $cache.reset");
+        DTLogDebug(@"Calling $cache.reset for url %@", self.url);
         [[Jason client] call:@{@"type": @"$cache.reset", @"options": @{@"url": self.url}}];
         DTLogWarning(@"Exception while rendering...");
         DTLogWarning(@"%@", e);

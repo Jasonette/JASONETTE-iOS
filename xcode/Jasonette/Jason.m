@@ -3328,63 +3328,142 @@
     });
 }
 
-- (BOOL)tabBarController:(UITabBarController *)theTabBarController shouldSelectViewController:(UIViewController *)viewController{
+- (BOOL) tabBarController:(UITabBarController *) theTabBarController
+    shouldSelectViewController:(UIViewController *) viewController
+{
     
-    NSUInteger indexOfTab = [theTabBarController.viewControllers indexOfObject:viewController];
+    NSUInteger indexOfTab = [theTabBarController.viewControllers
+                             indexOfObject:viewController];
     
+    DTLogDebug(@"Tab Bar Touched At Index %ld", indexOfTab);
     
     // If moving away to a different tab bar, stop all actions currently running
-    if(indexOfTab != theTabBarController.selectedIndex){
+    if(indexOfTab != theTabBarController.selectedIndex)
+    {
+        DTLogDebug(@"Moving Away, Stopping all Actions");
         [JasonMemory client].executing = NO;
     }
     
-    
-    if(VC.rendered && VC.rendered[@"footer"] && VC.rendered[@"footer"][@"tabs"] && VC.rendered[@"footer"][@"tabs"][@"items"]){
-        NSArray *tabs = VC.rendered[@"footer"][@"tabs"][@"items"];
-        NSDictionary *selected_tab = tabs[indexOfTab];
-        if (VC.tabNeedsRefresh) {
-            if(selected_tab[@"href"] && selected_tab[@"href"][@"url"]){
-                [((UINavigationController *)viewController) popToRootViewControllerAnimated:NO];
-                VC = ((UINavigationController *)viewController).viewControllers.lastObject;
-                VC.url = selected_tab[@"href"][@"url"];
-                VC.rendered = nil;
-                [self setupHeader:nil];
-                [VC reload: @{} final:NO];
-                VC.contentLoaded = NO;
-                return YES;
-            } else if (selected_tab[@"url"]) {
-                [((UINavigationController *)viewController) popToRootViewControllerAnimated:NO];
-                VC = ((UINavigationController *)viewController).viewControllers.lastObject;
-                VC.url = selected_tab[@"url"];
-                VC.rendered = nil;
-                [self setupHeader:nil];
-                [VC reload: @{} final:NO];
-                VC.contentLoaded = NO;
-                return YES;
-            }
+    BOOL footerContainTabs = (VC.rendered &&
+                              VC.rendered[@"footer"] &&
+                              VC.rendered[@"footer"][@"tabs"] &&
+                              VC.rendered[@"footer"][@"tabs"][@"items"]
+                              );
+                              
+    if(footerContainTabs)
+    {
+        DTLogDebug(@"Footer Contains Tabs");
+        NSArray * tabs = VC.rendered[@"footer"][@"tabs"][@"items"];
+        NSDictionary * selected_tab = tabs[indexOfTab];
+        
+        if(VC.tabNeedsRefresh)
+        {
+#pragma TODO: Test if some use case needs this property to work
+            DTLogDebug(@"Tab %ld Needs Refresh", indexOfTab);
         }
         
-        if(selected_tab[@"href"]){
-            NSString *transition = selected_tab[@"href"][@"transition"];
-            NSString *view = selected_tab[@"href"][@"view"];
-            if(transition){
-                if([transition isEqualToString:@"modal"]){
-                    [self go: [self filloutTemplate:selected_tab[@"href"] withData:[self variables]]];
+//        /* This code contains the logic to refresh.
+//           the problem is that refreshing more than one time
+//           causes the screen to go blank. For now, loading the view each
+//           time is enough.
+//           TODO: Evaluate if in the future this code will be used.
+//        */
+//
+//        if (VC.tabNeedsRefresh)
+//        {
+//            DTLogDebug(@"Tab Needs Refresh");
+//
+//            if(selected_tab[@"href"] && selected_tab[@"href"][@"url"])
+//            {
+//                [((UINavigationController *)viewController) popToRootViewControllerAnimated:NO];
+//                VC = ((UINavigationController *)viewController).viewControllers.lastObject;
+//                VC.url = selected_tab[@"href"][@"url"];
+//                VC.rendered = nil;
+//                [self setupHeader:nil];
+//                [VC reload: @{} final:NO];
+//                VC.contentLoaded = NO;
+//                return YES;
+//            }
+//            else if (selected_tab[@"url"])
+//            {
+//                [((UINavigationController *)viewController) popToRootViewControllerAnimated:NO];
+//                VC = ((UINavigationController *)viewController).viewControllers.lastObject;
+//                VC.url = selected_tab[@"url"];
+//                VC.rendered = nil;
+//                [self setupHeader:nil];
+//                [VC reload: @{} final:NO];
+//                VC.contentLoaded = NO;
+//                return YES;
+//            }
+//        }
+//
+        BOOL containsHref = (selected_tab &&
+                             (selected_tab[@"href"] ||
+                              selected_tab[@"href"][@"url"] ||
+                              selected_tab[@"url"])
+                             );
+        
+        if(containsHref)
+        {
+            NSString * href = @"";
+            if(selected_tab[@"href"])
+            {
+                href = selected_tab[@"href"];
+                if(selected_tab[@"href"][@"url"])
+                {
+                    href = selected_tab[@"href"][@"url"];
+                }
+            }
+            else if(selected_tab[@"url"])
+            {
+                href = selected_tab[@"url"];
+            }
+            
+            DTLogDebug(@"Tab %ld contains href %@", indexOfTab, href);
+            
+            NSString * transition = selected_tab[@"href"][@"transition"];
+            NSString * view = selected_tab[@"href"][@"view"];
+            
+            if(transition)
+            {
+                if([transition isEqualToString:@"modal"])
+                {
+                    DTLogDebug(@"Loading with transition %@", transition);
+                    [self go: [self
+                               filloutTemplate:href
+                               withData:[self variables]]];
                     return NO;
                 }
             }
-            if(view){
-                if([view isEqualToString:@"web"] || [view isEqualToString:@"app"]){
-                    [self go: [self filloutTemplate:selected_tab[@"href"] withData:[self variables]]];
+            
+            if(view)
+            {
+                if([view isEqualToString:@"web"] || [view isEqualToString:@"app"])
+                {
+                    DTLogDebug(@"Loading using %@ view", view);
+                    [self go: [self
+                               filloutTemplate:href
+                               withData:[self variables]]];
                     return NO;
                 }
             }
-        } else if(selected_tab[@"action"]){
+            
+        }
+        else if(selected_tab[@"action"])
+        {
             [self call:selected_tab[@"action"]];
             return NO;
         }
+        else
+        {
+            DTLogDebug(@"Tab %ld dows not contains href or url property %@", indexOfTab, selected_tab);
+            return NO;
+        }
+        
+        return YES;
     }
     
+    DTLogDebug(@"Footer does not contain Tabs");
     return YES;
 }
 
