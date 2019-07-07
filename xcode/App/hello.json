@@ -6,9 +6,6 @@
                 "$foreground": {
                     "type": "$reload"
                 }
-            },
-            "styles": {
-                "@": "http://google.com"
             }
         },
         "body": {

@@ -8,7 +8,9 @@
 
 #import "AppDelegate.h"
 #import "JasonAppDelegate.h"
+#import "JasonNetworking.h"
 #import "JasonLogger.h"
+
 
 @interface AppDelegate ()
 
@@ -38,6 +40,13 @@
 #else
     [JasonLogger setLogLevel:DTLogLevelError];
 #endif
+    
+//    // You can configure Network calls creating custom object for the session manager
+      // and response serializer.
+//    [JasonNetworking setSessionManager:(nonnull AFHTTPSessionManager *)];
+//    [JasonNetworking setResponseSerializer:(nonnull AFJSONResponseSerializer *)];
+//    [JasonNetworking setHeaders:(nonnull NSDictionary *)];
+//    [JasonNetworking setAcceptedContentTypes:(nonnull NSArray<NSString *> *)];
     
     return YES;
 }

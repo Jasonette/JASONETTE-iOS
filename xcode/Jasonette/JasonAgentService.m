@@ -8,6 +8,7 @@
 #import "JasonAgentService.h"
 #import "JasonViewController.h"
 #import "JasonLogger.h"
+#import "JasonNetworking.h"
 
 @interface JasonAgentService()
 {
@@ -402,9 +403,13 @@
                         }
                         dispatch_group_leave(requireGroup);
                     } else if([inject_url hasPrefix:@"http"]) {
-                        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-                        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-                        manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"text/javascript", @"text/plain", @"application/javascript", nil];
+                        
+                        AFHTTPSessionManager * manager = [JasonNetworking manager];
+                        manager.responseSerializer = [JasonNetworking serializer];
+                        
+                        manager.responseSerializer.acceptableContentTypes = [NSSet
+                                                                             setWithObjects:@"text/javascript", @"text/plain", @"application/javascript", nil];
+                        
                         [manager GET:inject_url parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
                             // Nothing
                         } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {

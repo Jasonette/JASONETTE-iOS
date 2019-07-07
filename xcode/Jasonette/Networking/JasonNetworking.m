@@ -23,14 +23,16 @@ static NSDictionary * _headers;
         _sessionManager = [AFHTTPSessionManager manager];
     }
     
-    return _sessionManager;
+    // Return a new manager on each call
+    return [[_sessionManager class] manager];
 }
 
 + (void) setSessionManager: (AFHTTPSessionManager *) manager
 {
-    if(!manager)
+    if(!manager || ![manager respondsToSelector:NSSelectorFromString(@"manager")])
     {
         DTLogWarning(@"AFHTTPSessionManager not found");
+        manager = nil;
     }
     
     _sessionManager = manager;
@@ -43,15 +45,17 @@ static NSDictionary * _headers;
         _responseSerializer = [AFJSONResponseSerializer serializer];
     }
     
-    return _responseSerializer;
+    return [[_responseSerializer class] serializer];
 }
 
 + (void) setResponseSerializer: (AFJSONResponseSerializer *) serializer
 {
-    if(!serializer)
+    if(!serializer || ![serializer respondsToSelector:NSSelectorFromString(@"serializer")])
     {
         DTLogWarning(@"AFJSONResponseSerializer not found");
+        serializer = nil;
     }
+    
     _responseSerializer = serializer;
 }
 

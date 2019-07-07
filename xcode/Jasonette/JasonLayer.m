@@ -7,10 +7,14 @@
 #import "JasonLayer.h"
 #import "NSData+ImageContentType.h"
 #import "UIImage+GIF.h"
+#import "JasonLogger.h"
 
 @implementation JasonLayer
 static NSMutableDictionary *_stylesheet = nil;
-+ (NSArray *)setupLayers: (NSDictionary *)body withView: (UIView *)rootView{
+
++ (NSArray *)setupLayers: (NSDictionary *)body withView: (UIView *)rootView
+{
+    DTLogDebug(@"Setting Up Layers");
     NSArray *layer_items = body[@"layers"];
     NSMutableArray *layers = [[NSMutableArray alloc] init];
     

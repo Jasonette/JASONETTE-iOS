@@ -12,6 +12,8 @@ This version is the current in development.
 
 - New Logger for Native Code. Makes easier to Spot Errors. See [xcode/Jasonette/Logger/README.md](xcode/Jasonette/Logger/README.md) For more details.
 
+- Added `JasonNetworking.h` to enable configuring `AFHTTPSessionManager` and `AFJSONResponseSerializer`.
+
 ### Changed
 
 - Improved `JasonComponentFactory.h` to take in consideration `Swift` extensions.
@@ -22,7 +24,9 @@ This version is the current in development.
 
 - Fixed Crash on parsing local json files with wrong syntax.
 - Fixed Crash when no `$jason` property is present in json.
+- Fixed Crash when url contained html content in a json expected return.
 - Fixed Blank Screen when no `url` is found in `settings.plist`.
+
 
 ### Removed
 

@@ -1335,19 +1335,40 @@
                 [jsonAcceptableContentTypes addObject:@"application/json"];
                 [jsonAcceptableContentTypes addObject:@"application/vnd.api+json"];
                 
+                for (NSString * contentType in [JasonNetworking acceptedContentTypes])
+                {
+                    [jsonAcceptableContentTypes addObject:contentType];
+                }
+                
                 jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
                 manager.responseSerializer = jsonResponseSerializer;
                 
                 // 4. Attach session
                 NSDictionary *session = [JasonHelper sessionForUrl:url];
-                if(session && session.count > 0 && session[@"header"]){
-                    for(NSString *key in session[@"header"]){
-                        [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                if(session && session.count > 0 && session[@"header"])
+                {
+                    for(NSString *key in session[@"header"])
+                    {
+                        [manager.requestSerializer
+                         setValue:session[@"header"][key]
+                         forHTTPHeaderField:key];
                     }
                 }
-                NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-                if(session && session.count > 0 && session[@"body"]){
-                    for(NSString *key in session[@"body"]){
+                
+                NSDictionary * headers = [JasonNetworking headers];
+                for (NSString * key in headers)
+                {
+                    [manager.requestSerializer
+                     setValue:headers[key]
+                     forHTTPHeaderField:key];
+                }
+                
+                NSMutableDictionary * parameters = [@{} mutableCopy];
+                
+                if(session && session.count > 0 && session[@"body"])
+                {
+                    for(NSString * key in session[@"body"])
+                    {
                         parameters[key] = session[@"body"][key];
                     }
                 }
@@ -1364,7 +1385,7 @@
                 }
                      failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
                 {
-                    DTLogError(@"Error %@", error);
+                    DTLogError(@"Failed Requiring %@ %@", url, error);
                     dispatch_group_leave(requireGroup);
                 }];
                 
@@ -1373,26 +1394,43 @@
     }
     
     dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-        for(NSString *key in self.options){
-            if([self.options[key] isKindOfClass:[NSArray class]]){
-                NSMutableArray *items = [[NSMutableArray alloc] init];
-                for(NSString *url in self.options[key]){
-                    if(return_value[url]){
+        
+        NSMutableDictionary * dict = [@{} mutableCopy];
+        
+        for(NSString * key in self.options)
+        {
+            if([self.options[key] isKindOfClass:[NSArray class]])
+            {
+                NSMutableArray * items = [@[] mutableCopy];
+                
+                for(NSString *url in self.options[key])
+                {
+                    if(return_value[url])
+                    {
                         [items addObject:return_value[url]];
-                    } else {
+                    }
+                    else
+                    {
                         [items addObject:@""];
                     }
                 }
+                
                 dict[key] = items;
-            } else if([self.options[key] isKindOfClass:[NSString class]]){
-                if(return_value[self.options[key]]){
+                
+            }
+            else if([self.options[key] isKindOfClass:[NSString class]])
+            {
+                if(return_value[self.options[key]])
+                {
                     dict[key] = return_value[self.options[key]];
-                } else {
+                }
+                else
+                {
                     dict[key] = @"";
                 }
             }
         }
+        
         // require could take a long time to finish, so we make sure at this point
         // we are looking at the same URL we began with
         [self success:dict withOriginalUrl:origin_url];
@@ -2132,6 +2170,12 @@
             [jsonAcceptableContentTypes addObject:@"text/plain"];
             [jsonAcceptableContentTypes addObject:@"text/html"];
             [jsonAcceptableContentTypes addObject:@"application/json"];
+            [jsonAcceptableContentTypes addObject:@"application/vnd.api+json"];
+            
+            for (NSString * contentType in [JasonNetworking acceptedContentTypes])
+            {
+                [jsonAcceptableContentTypes addObject:contentType];
+            }
             
             jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
             
@@ -2160,6 +2204,7 @@
                              [self drawViewFromJason: VC.original asFinal:YES];
                          });
                      }];
+                     
                  } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
             {
                      if(!VC.offline)

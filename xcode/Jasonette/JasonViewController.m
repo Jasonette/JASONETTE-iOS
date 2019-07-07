@@ -1042,15 +1042,22 @@
         }
     });
 }
-- (void)finishRefreshing{
+
+- (void) finishRefreshing
+{
+    DTLogDebug(@"Finish Refreshing");
     dispatch_async(dispatch_get_main_queue(), ^{
         [refreshControl performSelector:@selector(endRefreshing) withObject:nil afterDelay:0.0];
     });
 }
-- (void)refresh {
-    if(self.events[@"$pull"]){
-            NSDictionary *pull_event = self.events[@"$pull"];
-            [[Jason client] call:pull_event];
+
+- (void) refresh
+{
+    if(self.events[@"$pull"])
+    {
+        DTLogDebug(@"Triggered $pull event");
+        NSDictionary * pull_event = self.events[@"$pull"];
+        [[Jason client] call:pull_event];
     }
 }
 
@@ -1076,78 +1083,111 @@
     JasonLayer.stylesheet = [self.style mutableCopy];
     JasonLayer.stylesheet[@"$default"] = @{@"color": self.view.tintColor};
     
-    @try{
+    @try
+    {
         dispatch_async(dispatch_get_main_queue(), ^{
         
             [self setupHeader: body];
             [self setupLayers:body];
             [self setupFooter: body];
             [self setupSections:body];
+            
             #ifdef ADS
             [self setupAds:body];
             #endif
             
             
-            if (default_bottom_padding == 0) {
+            if (default_bottom_padding == 0)
+            {
                 CGFloat bottom_padding = 0.0;
-                if (body[@"footer"] && body[@"footer"][@"tabs"]) {
+                if (body[@"footer"] && body[@"footer"][@"tabs"])
+                {
                     bottom_padding += self.tabBarController.tabBar.frame.size.height;
                 }
-                if (body[@"footer"] && body[@"footer"][@"input"]) {
+                
+                if (body[@"footer"] && body[@"footer"][@"input"])
+                {
                     bottom_padding += self.composeBarView.frame.size.height;
                 }
                 default_bottom_padding = bottom_padding;
-                self.tableView.contentInset = UIEdgeInsetsMake(self.tableView.contentInset.top, self.tableView.contentInset.left, self.tableView.contentInset.bottom+bottom_padding, self.tableView.contentInset.right);
+                self.tableView.contentInset = UIEdgeInsetsMake(self.tableView.contentInset.top,
+                                                               self.tableView.contentInset.left,
+                                                               self.tableView.contentInset.bottom + bottom_padding,
+                                                               self.tableView.contentInset.right);
             }
             
             original_bottom_inset = self.tableView.contentInset.bottom;
+            DTLogDebug(@"Done Reloading");
         });
     }
-    @catch(NSException *e){
+    @catch(NSException *e)
+    {
+        DTLogDebug(@"Calling $cache.reset");
         [[Jason client] call:@{@"type": @"$cache.reset", @"options": @{@"url": self.url}}];
         DTLogWarning(@"Exception while rendering...");
+        DTLogWarning(@"%@", e);
         DTLogWarning(@"Stack = %@", [JasonMemory client]._stack);
         DTLogWarning(@"Register = %@", [JasonMemory client]._register);
     }
-    
 }
 
-- (void)scrollToTop{
-    if(self.tableView.numberOfSections >= 1){
+- (void) scrollToTop
+{
+    if(self.tableView.numberOfSections >= 1)
+    {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            [self.tableView
+             scrollToRowAtIndexPath:indexPath
+             atScrollPosition:UITableViewScrollPositionTop
+             animated:YES];
         });
     }
 }
-- (void)scrollToBottom{
-    if(self.tableView.numberOfSections >= 1){
+
+- (void) scrollToBottom
+{
+    if(self.tableView.numberOfSections >= 1)
+    {
         NSInteger lastSectionIndex = self.tableView.numberOfSections - 1;
         NSInteger lastRowIndex = [self.tableView numberOfRowsInSection:lastSectionIndex] - 1;
-        if(lastRowIndex >= 0){
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:lastRowIndex inSection:lastSectionIndex];
+        if(lastRowIndex >= 0)
+        {
+            NSIndexPath * indexPath = [NSIndexPath
+                                      indexPathForRow:lastRowIndex
+                                      inSection:lastSectionIndex];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+                [self.tableView
+                 scrollToRowAtIndexPath:indexPath
+                 atScrollPosition:UITableViewScrollPositionTop
+                 animated:YES];
             });
         }
     }
 }
 
 // CHAT INPUT RELATED
-- (void)composeBarViewDidPressButton:(PHFComposeBarView *)c{
-    if(chat_input && chat_input[@"right"] && chat_input[@"right"][@"action"]) {
+- (void)composeBarViewDidPressButton:(PHFComposeBarView *)c
+{
+    if(chat_input && chat_input[@"right"] && chat_input[@"right"][@"action"])
+    {
         [c setText:@""];
         [[Jason client] call:chat_input[@"right"][@"action"]];
     }
 }
-- (void)composeBarViewDidPressUtilityButton:(PHFComposeBarView *)c{
-    if(chat_input && chat_input[@"left"] && chat_input[@"left"][@"action"]){
+
+- (void)composeBarViewDidPressUtilityButton:(PHFComposeBarView *)c
+{
+    if(chat_input && chat_input[@"left"] && chat_input[@"left"][@"action"])
+    {
         [[Jason client] call:chat_input[@"left"][@"action"]];
     }
 }
-- (void)setupHeader: (NSDictionary *)body{
-    
-    
+
+- (void) setupHeader: (NSDictionary *)body
+{
+    DTLogDebug(@"Setting Up Header");
     // NAV (deprecated. See 'header' below)
     NSDictionary *nav = body[@"nav"];
     if(nav){
@@ -1355,21 +1395,28 @@
     }
 }
 
-- (void)setupLayers: (NSDictionary *)body{
-    for(UIView *v in self.layers){
+- (void) setupLayers: (NSDictionary *) body
+{
+    DTLogDebug(@"Removing Layers");
+    for(UIView *v in self.layers)
+    {
         [v removeFromSuperview];
     }
+    
     self.layers = [JasonLayer setupLayers: body withView:self.view];
 }
-- (void)setupSections:(NSDictionary *)body{
-    
+
+- (void) setupSections:(NSDictionary *) body
+{
+    DTLogDebug(@"Setting Up Sections");
     raw_sections = body[@"sections"];
     
-    if(!raw_sections){
+    if(!raw_sections)
+    {
         [self.view sendSubviewToBack:self.tableView];
     }
     
-    JasonComponentFactory.imageLoaded = [[NSMutableDictionary alloc] init];
+    JasonComponentFactory.imageLoaded = [@{} mutableCopy];
     
     // Get rid of all nodes pruned out by #if templating
     // => Need to search for any keys that include {{}} and get rid of it from the object or array
@@ -1426,50 +1473,64 @@
     
     [self reloadSections: raw_sections];
 }
-- (void)reloadSections:(NSArray *)sections{
-    if(sections && [sections isKindOfClass:[NSArray class]]){
+
+- (void) reloadSections: (NSArray *) sections
+{
+    DTLogDebug(@"Reloading Sections");
+    if(sections && [sections isKindOfClass:[NSArray class]])
+    {
         self.sections = [sections mutableCopy];
-    } else {
+    }
+    else
+    {
         // Render even when no body has been passed
-        self.sections = [[NSMutableArray alloc] init];
+        self.sections = [@[] mutableCopy];
     }
     
-    rowcount = [[NSMutableArray alloc] init];
-    headers = [[NSMutableArray alloc] init];
+    rowcount = [@[] mutableCopy];
+    headers = [@[] mutableCopy];
     NSInteger total_rowcount = 0;
     
-    if(tabs){
+    if(tabs)
+    {
         [self.sections insertObject:@{@"header": tabs} atIndex:0];
     }
     
     
-    for(NSDictionary *section in self.sections){
-        NSMutableDictionary *header = section[@"header"];
-        NSNumber *rowcount_for_section = [NSNumber numberWithLong:[section[@"items"] count]];
+    for(NSDictionary * section in self.sections)
+    {
+        NSMutableDictionary * header = section[@"header"];
+        NSNumber * rowcount_for_section = [NSNumber numberWithLong:[section[@"items"] count]];
         [rowcount addObject:rowcount_for_section];
         total_rowcount = total_rowcount + [rowcount_for_section longValue];
-        if(!header || [[NSNull null] isEqual:header]){
+        
+        if(!header || [[NSNull null] isEqual:header])
+        {
             // No header
             [headers addObject:@{}];
         } else {
             [headers addObject:section[@"header"]];
         }
     }
+    
     [self.tableView reloadData];
-    if(!top_aligned){
+    if(!top_aligned)
+    {
         [self scrollToBottom];
     }
     
 }
-- (void)setupFooter: (NSDictionary *)body{
+
+- (void) setupFooter: (NSDictionary *) body
+{
     
-    if(body[@"footer"] && body[@"footer"][@"input"]){
-        
-        
+    DTLogDebug(@"Setting Up Footer");
+    if(body[@"footer"] && body[@"footer"][@"input"])
+    {
         chat_input = body[@"footer"][@"input"];
         if(chat_input)
         {
-
+            DTLogDebug(@"Chat Input Detected");
             __weak JasonViewController * weakSelf = self;
             CGFloat originalHeight = original_height;
 
@@ -1753,30 +1814,35 @@
         self.bannerAd.frame = CGRectMake(0, self.view.frame.size.height - self.bannerAd.frame.size.height - self.tabBarController.tabBar.frame.size.height, self.bannerAd.frame.size.width, self.bannerAd.frame.size.height);
     }
 }
-- (void) adView: (GADBannerView*) view didFailToReceiveAdWithError: (GADRequestError*) error{
-    NSLog(@"Error on showing AD %@", error);
+
+- (void) adView: (GADBannerView*) view
+didFailToReceiveAdWithError: (GADRequestError*) error
+{
+    DTLogWarning(@"Error on showing AD %@", error);
 }
-- (void) adViewDidReceiveAd: (GADBannerView*) view{
-    NSLog(@"Suucess on showing ad");
+
+- (void) adViewDidReceiveAd: (GADBannerView*) view
+{
+    DTLogDebug(@"Success on showing ad");
     [self adjustBannerPosition];
 }
 
-- (void)interstitialDidReceiveAd:(GADInterstitial *)ad{
-     NSLog(@"--->Suucess on showing interstitial ad");
+- (void) interstitialDidReceiveAd:(GADInterstitial *)ad
+{
+     DTLogInfo(@"Success on showing interstitial ad");
 }
 
 /// Called when an interstitial ad request completed without an interstitial to
 /// show. This is common since interstitials are shown sparingly to users.
-- (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error{
-    NSLog(@" -->>Error on showing interstitial AD %@", error);
+- (void) interstitial:(GADInterstitial *) ad
+    didFailToReceiveAdWithError:(GADRequestError *) error
+{
+    DTLogWarning(@"Error on showing interstitial AD %@", error);
 }
 
 #endif
 
 /********************************/
-
-
-
 
 
 - (void)attributedLabel:(__unused TTTAttributedLabel *)label
@@ -1868,9 +1934,6 @@
         }
     }
 }
-
-
-
 
 
 // Self sizing cells cache logic
