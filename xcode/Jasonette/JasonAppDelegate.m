@@ -86,13 +86,23 @@ static NSArray * _services;
         service = [[ActionClass alloc] init];
         [Jason client].services[className] = service;
     }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundeclared-selector"
+    
     // TODO: Find a way to remove those clang diagnostic pragmas
     DTLogInfo(@"Calling initilize: method on class %@", className);
-    [service performSelector: @selector(initialize:)
-                  withObject: launchOptions];
+    
+    SEL initialize = NSSelectorFromString(@"initialize:");
+    if([service respondsToSelector:initialize])
+    {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        [service performSelector: initialize
+                      withObject: launchOptions];
 #pragma clang diagnostic pop
+    }
+    else
+    {
+        DTLogWarning(@"Service %@ does not implement initialize: method", className);
+    }
 }
 
 + (void) setServices: (nonnull NSArray *) services

@@ -7,15 +7,20 @@
 
 #import "JasonAgentService.h"
 #import "JasonViewController.h"
+#import "JasonLogger.h"
 
-@interface JasonAgentService(){
-    NSDictionary *pending_injections;
+@interface JasonAgentService()
+{
+    NSDictionary * pending_injections;
 }
 @end
 
 @implementation JasonAgentService
-- (void) initialize: (NSDictionary *)launchOptions {
+- (void) initialize: (NSDictionary *) launchOptions
+{
+    DTLogDebug(@"initialize");
 }
+
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
     
     // agent.js handler

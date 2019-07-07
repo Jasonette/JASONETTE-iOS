@@ -154,28 +154,41 @@
     } else {
        // default: json
 //        if(data && [data count] > 0){
-        if(data){
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"st" ofType:@"js"];
+        if(data)
+        {
+            DTLogDebug(@"Loading st.js");
+            NSString * path = [[NSBundle mainBundle] pathForResource:@"st" ofType:@"js"];
             NSStringEncoding encoding;
-            NSError *error = nil;
-            NSString *js = [NSString stringWithContentsOfFile:path
+            NSError * error = nil;
+            NSString * js = [NSString stringWithContentsOfFile:path
                                                    usedEncoding:&encoding
                                                           error:&error];
+            if(error)
+            {
+                DTLogError(@"Could not Load st.js %@", error);
+            }
             
-
-            JSContext *context = [Jason client].jscontext;
-            if(!context) {
+            JSContext * context = [Jason client].jscontext;
+            if(!context)
+            {
                 context = [[JSContext alloc] init];
             }
             
-            NSDictionary *globals = [context.globalObject toDictionary];
-            if(globals && globals.count > 0) {
-                NSMutableDictionary *mutable_data = [data mutableCopy];
-                for(NSString *key in globals) {
-                    [mutable_data setValue:[context.globalObject objectForKeyedSubscript:key] forKey:key];
+            NSDictionary * globals = [context.globalObject toDictionary];
+            if(globals && globals.count > 0)
+            {
+                NSMutableDictionary * mutable_data = [data mutableCopy];
+                
+                for(NSString *key in globals)
+                {
+                    [mutable_data setValue:[context.globalObject
+                                            objectForKeyedSubscript:key]
+                                    forKey:key];
                 }
+                
                 data = mutable_data;
             }
+            
             [context setExceptionHandler:^(JSContext *context, JSValue *value) {
                 DTLogWarning(@"%@", value);
             }];
@@ -185,10 +198,13 @@
                 DTLogDebug(@"JS: %@",message);
             };
 
-
+            DTLogDebug(@"Applying st.js to json");
+            
             [context evaluateScript:js];
-            JSValue *parse = context[@"ST"][@"transform"];
-            JSValue *val = [parse callWithArguments:@[parser, data]];
+            JSValue * parse = context[@"ST"][@"transform"];
+            JSValue * val = [parse callWithArguments:@[parser, data]];
+            
+            DTLogDebug(@"Got Transformed JSON");
             
             @try{
                 if([val isString]){

@@ -10,28 +10,37 @@
 #import "UIImage+GIF.h"
 
 #import "JasonLogger.h"
+#import "JasonNetworking.h"
 
-@interface Jason(){
-    UINavigationController *navigationController;
-    UITabBarController *tabController;
-    REMenu *menu_component;
-    JasonViewController *VC;
-    NSString *title;
-    NSString *desc;
-    NSString *icon;
+@interface Jason()
+{
+    UINavigationController * navigationController;
+    UITabBarController * tabController;
+    REMenu * menu_component;
+    JasonViewController * VC;
+    
+    NSString * title;
+    NSString * desc;
+    NSString * icon;
+    
     id module;
-    UIBarButtonItem *rightButtonItem;
-    NSString *ROOT_URL;
+    UIBarButtonItem * rightButtonItem;
+    
+    NSString * ROOT_URL;
     BOOL INITIAL_LOADING;
+    
     BOOL isForeground;
     BOOL header_needs_refresh;
-    NSDictionary *rendered_page;
-    NSMutableDictionary *previous_footer;
-    NSMutableDictionary *previus_header;
-    AVCaptureVideoPreviewLayer *avPreviewLayer;
-    NSMutableArray *queue;
+    
+    NSDictionary * rendered_page;
+    NSMutableDictionary * previous_footer;
+    NSMutableDictionary * previus_header;
+    
+    AVCaptureVideoPreviewLayer * avPreviewLayer;
+    NSMutableArray * queue;
     BOOL tabNeedsRefresh;
 }
+
 @end
 
 @implementation Jason
@@ -129,8 +138,7 @@
 
 - (void) loadViewByFile: (NSString *) url
                 asFinal: (BOOL) final
-{
-    
+{   
     DTLogInfo(@"Loading View By File %@", url);
     
     id jsonResponseObject = [JasonHelper read_local_json:url];
@@ -1081,7 +1089,6 @@
     
     DTLogInfo(@"Include Json");
     NSString * j = [JasonHelper stringify:json];
-    DTLogDebug(@"%@", j);
     
     // 1. Extract "@": "path@URL" patterns and create an array from the URLs
     // 2. Make concurrent requests to each item in the array
@@ -1146,72 +1153,129 @@
             dispatch_group_enter(requireGroup);
             
             // 3. Check if local
-            if ([url hasPrefix:@"file://"]) {
-                NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-                NSString *webrootPath = [resourcePath stringByAppendingPathComponent:@""];
-                NSString *loc = @"file:/";
+            if ([url hasPrefix:@"file://"])
+            {
+                DTLogDebug(@"%@ is local file", url);
+                NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
+                NSString * webrootPath = [resourcePath stringByAppendingPathComponent:@""];
+                NSString * loc = @"file:/";
                 
-                NSString *jsonFile = [url stringByReplacingOccurrencesOfString:loc withString:webrootPath];
+                NSString * jsonFile = [url
+                                      stringByReplacingOccurrencesOfString:loc
+                                      withString:webrootPath];
                 
-                NSFileManager *fileManager = [NSFileManager defaultManager];
+                NSFileManager * fileManager = [NSFileManager defaultManager];
                 
-                if ([fileManager fileExistsAtPath:jsonFile]) {
-                    NSError *error = nil;
-                    NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
+                if ([fileManager fileExistsAtPath:jsonFile])
+                {
+                    NSError * error = nil;
+                    NSInputStream * inputStream = [[NSInputStream alloc] initWithFileAtPath:jsonFile];
                     [inputStream open];
                     
-                    id jsonResponseObject = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
+                    id jsonResponseObject = [NSJSONSerialization
+                                             JSONObjectWithStream: inputStream
+                                             options:kNilOptions
+                                             error:&error];
+                    
+                    if(error)
+                    {
+                        DTLogError(@"Failed to Parse Local Json %@", error);
+                        jsonResponseObject = @{};
+                    }
+                    
                     VC.requires[url] = jsonResponseObject;
                     [inputStream close];
                 }
+                
                 dispatch_group_leave(requireGroup);
                 
-            } else {
+            }
+            else
+            {
                 // 4. Setup networking
-                AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-                AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
-                NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                DTLogDebug(@"Fetching %@ from Network", url);
+                AFHTTPSessionManager * manager = [JasonNetworking manager];
+                AFJSONResponseSerializer * jsonResponseSerializer = [JasonNetworking serializer];
+                
+                NSMutableSet * jsonAcceptableContentTypes = [NSMutableSet
+                                                            setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                
                 [jsonAcceptableContentTypes addObject:@"text/plain"];
+                [jsonAcceptableContentTypes addObject:@"text/html"];
+                [jsonAcceptableContentTypes addObject:@"application/json"];
                 [jsonAcceptableContentTypes addObject:@"application/vnd.api+json"];
+                
+                for (NSString * contentType in [JasonNetworking acceptedContentTypes])
+                {
+                    [jsonAcceptableContentTypes addObject:contentType];
+                }
                 
                 jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
                 manager.responseSerializer = jsonResponseSerializer;
                 
                 // 5. Attach session
-                NSDictionary *session = [JasonHelper sessionForUrl:url];
-                if(session && session.count > 0 && session[@"header"]){
-                    for(NSString *key in session[@"header"]){
-                        [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+                NSDictionary * session = [JasonHelper sessionForUrl:url];
+                if(session && session.count > 0 && session[@"header"])
+                {
+                    for(NSString * key in session[@"header"])
+                    {
+                        [manager.requestSerializer
+                         setValue:session[@"header"][key]
+                         forHTTPHeaderField:key];
                     }
                 }
-                NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-                if(session && session.count > 0 && session[@"body"]){
-                    for(NSString *key in session[@"body"]){
+                
+                NSDictionary * headers = [JasonNetworking headers];
+                for (NSString * key in headers)
+                {
+                    [manager.requestSerializer
+                     setValue:headers[key]
+                     forHTTPHeaderField:key];
+                }
+                
+                NSMutableDictionary * parameters = [@{} mutableCopy];
+                if(session && session.count > 0 && session[@"body"])
+                {
+                    for(NSString * key in session[@"body"])
+                    {
                         parameters[key] = session[@"body"][key];
                     }
                 }
                 
                 // 6. Start request
 #pragma message "Start Request in Include"
-                [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                [manager GET:url
+                  parameters: parameters
+                    progress:^(NSProgress * _Nonnull downloadProgress) { }
+                     success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
+                {
                     VC.requires[url] = responseObject;
                     dispatch_group_leave(requireGroup);
-                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                    NSLog(@"Error");
+                         
+                }
+                     failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
+                {
+                    DTLogWarning(@"Error Fetching JSON From Url %@ %@", url, error);
+                    VC.requires[url] = @{};
                     dispatch_group_leave(requireGroup);
                 }];
             }
         }
         
+        DTLogDebug(@"Remote References Detected");
         dispatch_group_notify(requireGroup, dispatch_get_main_queue(), ^{
             id resolved = [self resolve_remote_reference: j];
-            [self include:resolved andCompletionHandler:callback];
+            [self
+             include:resolved
+             andCompletionHandler:callback];
         });
-    } else {
-        id resolved = [self resolve_local_reference:j];
-        callback(resolved);
+        
+        return;
     }
     
+    DTLogDebug(@"Local References Detected");
+    id resolved = [self resolve_local_reference:j];
+    callback(resolved);
 }
 
 - (void) require
@@ -1260,10 +1324,15 @@
                 
             } else {
                 // 3. Setup networking
-                AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-                AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
-                NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                AFHTTPSessionManager * manager = [JasonNetworking manager];
+                AFJSONResponseSerializer * jsonResponseSerializer = [JasonNetworking serializer];
+                
+                NSMutableSet * jsonAcceptableContentTypes = [NSMutableSet
+                                                             setWithSet:jsonResponseSerializer.acceptableContentTypes];
+                
                 [jsonAcceptableContentTypes addObject:@"text/plain"];
+                [jsonAcceptableContentTypes addObject:@"text/html"];
+                [jsonAcceptableContentTypes addObject:@"application/json"];
                 [jsonAcceptableContentTypes addObject:@"application/vnd.api+json"];
                 
                 jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
@@ -1285,10 +1354,16 @@
                 
                 // 5. Start request
 #pragma message "Start Request in Require"
-                [manager GET:url parameters: parameters progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                [manager GET:url
+                  parameters: parameters
+                    progress:^(NSProgress * _Nonnull downloadProgress) { }
+                     success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
+                {
                     return_value[url] = responseObject;
                     dispatch_group_leave(requireGroup);
-                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                }
+                     failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
+                {
                     DTLogError(@"Error %@", error);
                     dispatch_group_leave(requireGroup);
                 }];
@@ -1325,25 +1400,42 @@
     });
 }
 
-- (id)resolve_remote_reference: (NSString *)json{
+- (id) resolve_remote_reference: (NSString *) json
+{
+    DTLogDebug(@"Resolving Remote References");
     NSError *error;
     
     // Remote url with path - convert "@": "blah.blah@https://www.google.com" to "{{#include $root[\"https://www.google.com\"].blah.blah}}": {}
     // The pattern leaves out the pattern where it starts with "$" because that's a $document and will be resolved by resolve_local_reference
-    NSString *remote_pattern_with_path = @"\"([+@])\"[ ]*:[ ]*\"(([^$\"@]+)(@))([^\"]+)\"";
-    NSRegularExpression* remote_regex_with_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_with_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
-    NSString *converted = [remote_regex_with_path stringByReplacingMatchesInString:json options:0 range:NSMakeRange(0, json.length) withTemplate:@"\"{{#include \\$root[\\\\\"$5\\\\\"].$3}}\": {}"];
+    NSString * remote_pattern_with_path = @"\"([+@])\"[ ]*:[ ]*\"(([^$\"@]+)(@))([^\"]+)\"";
+    NSRegularExpression * remote_regex_with_path = [NSRegularExpression
+                                                    regularExpressionWithPattern:remote_pattern_with_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
+    
+    NSString * converted = [remote_regex_with_path
+                            stringByReplacingMatchesInString:json
+                            options:kNilOptions
+                            range:NSMakeRange(0, json.length)
+                            withTemplate:@"\"{{#include \\$root[\\\\\"$5\\\\\"].$3}}\": {}"];
     
     // Remote url without path - convert "@": "https://www.google.com" to "{{#include $root[\"https://www.google.com\"]}}": {}
     // The pattern leaves out the pattern where it starts with "$" because that's a $document and will be resolved by resolve_local_reference
-    NSString *remote_pattern_without_path = @"\"([+@])\"[ ]*:[ ]*\"([^$\"]+)\"";
-    NSRegularExpression* remote_regex_without_path = [NSRegularExpression regularExpressionWithPattern:remote_pattern_without_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators error:&error];
-    converted = [remote_regex_without_path stringByReplacingMatchesInString:converted options:0 range:NSMakeRange(0, converted.length) withTemplate:@"\"{{#include \\$root[\\\\\"$2\\\\\"]}}\": {}"];
+    NSString * remote_pattern_without_path = @"\"([+@])\"[ ]*:[ ]*\"([^$\"]+)\"";
+    NSRegularExpression * remote_regex_without_path = [NSRegularExpression
+                                                       regularExpressionWithPattern:remote_pattern_without_path options:NSRegularExpressionCaseInsensitive|NSRegularExpressionDotMatchesLineSeparators
+                                                       error:&error];
+    
+    converted = [remote_regex_without_path
+                 stringByReplacingMatchesInString:converted options:kNilOptions
+                 range:NSMakeRange(0, converted.length)
+                 withTemplate:@"\"{{#include \\$root[\\\\\"$2\\\\\"]}}\": {}"];
     
     id tpl = [JasonHelper objectify:converted];
-    NSMutableDictionary *refs = [VC.requires mutableCopy];
+    
+    NSMutableDictionary * refs = [VC.requires mutableCopy];
+    
     refs[@"$document"] = VC.original;
     id include_resolved = [JasonParser parse:refs with:tpl];
+    
     VC.original = include_resolved;
     return include_resolved;
 }
@@ -1712,8 +1804,11 @@
  * 3. Retruns the instantiated result
  *
  ****************************************************************************/
-- (id)filloutTemplate: (id)template withData:(id)data{
-    
+- (id) filloutTemplate: (id) template
+              withData: (id) data
+{
+
+    DTLogInfo(@"Fill Out Template With Data");
     // Step 1. Take the passed in data and merge it with env variables ($get, $cache, $keys, $jason)
     NSMutableDictionary *data_stub = [data mutableCopy];
     NSDictionary *kv = [self variables];
@@ -1898,105 +1993,145 @@
     
     VC.data = nil;
     VC.form = [@{} mutableCopy];
-    if(VC.url){
+    
+    if(VC.url)
+    {
         [self networkLoading:VC.loading with:nil];
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        AFHTTPSessionManager * manager = [JasonNetworking manager];
         NSDictionary *session = [JasonHelper sessionForUrl:VC.url];
         
         // Set Header if specified  "header"
-        NSDictionary *headers = self.options[@"header"];
+        NSDictionary * headers = self.options[@"header"];
         // legacy code : headers is deprecated
-        if(!headers){
+        if(!headers)
+        {
             headers = self.options[@"headers"];
         }
         
-        if(headers && headers.count > 0){
-            for(NSString *key in headers){
-                [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
+        if(headers && headers.count > 0)
+        {
+            for(NSString * key in headers)
+            {
+                [manager.requestSerializer
+                 setValue:headers[key]
+                 forHTTPHeaderField:key];
             }
         }
-        if(session && session.count > 0 && session[@"header"]){
-            for(NSString *key in session[@"header"]){
-                [manager.requestSerializer setValue:session[@"header"][key] forHTTPHeaderField:key];
+        
+        if(session && session.count > 0 && session[@"header"])
+        {
+            for(NSString *key in session[@"header"])
+            {
+                [manager.requestSerializer
+                 setValue:session[@"header"][key]
+                 forHTTPHeaderField:key];
             }
         }
         
         
-        NSMutableDictionary *parameters;
-        if(VC.options[@"data"]){
+        NSMutableDictionary * parameters = nil;
+        if(VC.options[@"data"])
+        {
             parameters = [VC.options[@"data"] mutableCopy];
-        } else {
-            if(session && session.count > 0 && session[@"body"]){
+        }
+        else
+        {
+            if(session && session.count > 0 && session[@"body"])
+            {
                 parameters = [@{} mutableCopy];
-                for(NSString *key in session[@"body"]){
+                for(NSString *key in session[@"body"])
+                {
                     parameters[key] = session[@"body"][key];
                 }
-            } else {
-                parameters = nil;
-            }
         }
         
-        if(VC.fresh){
-            [manager.requestSerializer setCachePolicy: NSURLRequestReloadIgnoringLocalCacheData];
-            if(!parameters){
+        if(VC.fresh)
+        {
+            DTLogDebug(@"Ignoring Cache Because `fresh` was enabled");
+            [manager.requestSerializer
+             setCachePolicy: NSURLRequestReloadIgnoringLocalCacheData];
+            
+            if(!parameters)
+            {
                 parameters = [@{} mutableCopy];
             }
-            int timestamp = [[NSDate date] timeIntervalSince1970];
             
+            int timestamp = [[NSDate date] timeIntervalSince1970];
             parameters[@"timestamp"] = [NSString stringWithFormat:@"%d", timestamp];
         }
         
-        VC.contentLoaded=NO;
+        VC.contentLoaded = NO;
         
         /**************************************************
          * Experimental : Offline handling
          * => Only load from cache initially if head contains "offline":"true"
          ***************************************************/
-        NSString *normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
-        NSData *data = [NSData dataWithContentsOfFile:path];
-        if(data && data.length > 0){
+            
+        NSString * normalized_url = [JasonHelper
+                                     normalized_url:VC.url
+                                     forOptions:VC.options];
+            
+        NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString * documentsDirectory = [paths objectAtIndex:0];
+        NSString * path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
+        NSData * data = [NSData dataWithContentsOfFile:path];
+            
+        if(data && data.length > 0)
+        {
             NSDictionary *responseObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-            if(responseObject && responseObject[@"$jason"] && responseObject[@"$jason"][@"head"] && responseObject[@"$jason"][@"head"][@"offline"]){
+            
+            if(responseObject && responseObject[@"$jason"] && responseObject[@"$jason"][@"head"] && responseObject[@"$jason"][@"head"][@"offline"])
+            {
                 // get rid of $load and $show so they don't get triggered
-                if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$load"]){
+                if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$load"])
+                {
                     [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$load"];
                 }
-                if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$show"]){
+                
+                if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$show"])
+                {
                     [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$show"];
                 }
+                
                 VC.offline = YES;
                 [self drawViewFromJason: responseObject asFinal:NO];
             }
         }
-        VC.requires = [[NSMutableDictionary alloc] init];
+        
+        VC.requires = [@{} mutableCopy];
         
         /**************************************************
          * Handling data uri
          ***************************************************/
-        if([VC.url hasPrefix:@"data:application/json"]){
+        if([VC.url hasPrefix:@"data:application/json"])
+        {
             // if data uri, parse it into NSData
             NSURL *url = [NSURL URLWithString:VC.url];
             NSData *jsonData = [NSData dataWithContentsOfURL:url];
             NSError* error;
             VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
             [self drawViewFromJason: VC.original asFinal:YES];
-        } else if([VC.url hasPrefix:@"file://"]) {
+        }
+        else if([VC.url hasPrefix:@"file://"])
+        {
             [self loadViewByFile: VC.url asFinal:YES];
         }
         
         /**************************************************
          * Normally urls are not in data-uri.
          ***************************************************/
-        else {
+        else
+        {
             
-            AFJSONResponseSerializer *jsonResponseSerializer = [AFJSONResponseSerializer serializer];
-            NSMutableSet *jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
+            AFJSONResponseSerializer * jsonResponseSerializer = [JasonNetworking serializer];
+            NSMutableSet * jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
             
             // Assumes that content type is json, even the text/plain ones (Some hosting sites respond with data_type of text/plain even when it's actually a json, so we accept even text/plain as json by default)
+            
             [jsonAcceptableContentTypes addObject:@"text/plain"];
+            [jsonAcceptableContentTypes addObject:@"text/html"];
+            [jsonAcceptableContentTypes addObject:@"application/json"];
+            
             jsonResponseSerializer.acceptableContentTypes = jsonAcceptableContentTypes;
             
             manager.responseSerializer = jsonResponseSerializer;
@@ -2017,8 +2152,11 @@
                              [self drawViewFromJason: VC.original asFinal:YES];
                          });
                      }];
-                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                     if(!VC.offline){
+                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
+            {
+                     if(!VC.offline)
+                     {
+                         DTLogWarning(@"%@", error);
                          [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
                          [[Jason client] call: @{
                                                  @"type": @"$util.alert",
@@ -2032,8 +2170,13 @@
         }
     }
 }
-- (void)drawViewFromJason: (NSDictionary *)jason asFinal: (BOOL) final{
+    
+- (void) drawViewFromJason: (NSDictionary *) jason
+        asFinal: (BOOL) final
+    {
 
+        DTLogDebug(@"Drawing View From Jason");
+        
     tabNeedsRefresh = YES;
     VC.tabNeedsRefresh = YES;
     
@@ -2177,11 +2320,13 @@
     [self loading:NO];
     [self networkLoading:NO with:nil];
 }
+    
 - (void)drawAdvancedBackground:(NSDictionary*)bg{
     dispatch_async(dispatch_get_main_queue(), ^{
         [self drawAdvancedBackground:bg forVC:VC];
     });
 }
+    
 - (void)drawAdvancedBackground:(NSDictionary *)bg forVC: (JasonViewController *)vc {
     NSString *type = bg[@"type"];
     if([vc.background.payload[@"background"] isEqual:bg]) {
@@ -3379,6 +3524,7 @@
 
 - (void) onOrientationChange
 {
+    DTLogDebug(@"Changed Orientation");
     JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
     WKWebView * agent = vc.agents[@"$webcontainer"];
     
@@ -3690,32 +3836,40 @@
                     nav = [[UINavigationController alloc] initWithRootViewController:vc];
                 }
                 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundeclared-selector"
                 // Option 1. Present as modal
-                if([transition isEqualToString:@"modal"]){
-                    if(href[@"options"]){
-                        if([vc respondsToSelector: @selector(jason)]) {
+                if([transition isEqualToString:@"modal"])
+                {
+                    
+                    if(href[@"options"])
+                    {
+                        
+                        if([vc respondsToSelector: NSSelectorFromString(@"jason")])
+                        {
                             [vc setValue:href[@"options"] forKey:@"jason"];
                         }
                     }
+                    
                     [self unlock];
                     [navigationController presentViewController:nav animated:YES completion:^{
                     }];
                     CFRunLoopWakeUp(CFRunLoopGetCurrent());
                 }
                 // Option 2. Push transition
-                else {
-                    if(href[@"options"]){
-                        if([vc respondsToSelector: @selector(jason)]) {
+                else
+                {
+                    
+                    if(href[@"options"])
+                    {
+                        if([vc respondsToSelector: NSSelectorFromString(@"jason")])
+                        {
                             [vc setValue:href[@"options"] forKey:@"jason"];
                         }
                     }
+                    
                     [self unlock];
                     [navigationController pushViewController:vc animated:YES];
                 }
             }
-#pragma clang diagnostic pop
             
         }
     });

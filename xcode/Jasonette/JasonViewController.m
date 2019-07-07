@@ -5,6 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonViewController.h"
+#import "JasonLogger.h"
 
 @interface JasonViewController ()
 {
@@ -1054,8 +1055,12 @@
 }
 
 
-- (void)reload: (NSDictionary *)body final: (BOOL)final{
-    indexPathsForImage = [[NSMutableDictionary alloc] init];
+- (void) reload: (NSDictionary *) body
+          final: (BOOL) final
+{
+    DTLogDebug(@"Reload");
+    indexPathsForImage = [@{} mutableCopy];
+    
     isSearching = NO;
     [self finishRefreshing];
     download_image_counter = 0;
@@ -1100,9 +1105,9 @@
     }
     @catch(NSException *e){
         [[Jason client] call:@{@"type": @"$cache.reset", @"options": @{@"url": self.url}}];
-        NSLog(@"Exception while rendering...");
-        NSLog(@"Stack = %@", [JasonMemory client]._stack);
-        NSLog(@"Register = %@", [JasonMemory client]._register);
+        DTLogWarning(@"Exception while rendering...");
+        DTLogWarning(@"Stack = %@", [JasonMemory client]._stack);
+        DTLogWarning(@"Register = %@", [JasonMemory client]._register);
     }
     
 }

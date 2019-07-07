@@ -7,6 +7,7 @@
 //
 
 #import "JasonWebsocketService.h"
+#import "JasonLogger.h"
 
 @implementation JasonWebsocketService
 
@@ -45,7 +46,9 @@
  *****************************************/
 
 
-- (void) initialize: (NSDictionary *)launchOptions {
+- (void) initialize: (NSDictionary *) launchOptions
+{
+    DTLogDebug(@"initialize");
 }
 
 - (void) open: (NSDictionary *) options {

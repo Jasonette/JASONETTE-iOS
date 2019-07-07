@@ -7,6 +7,7 @@
 //
 
 #import "JasonVisionService.h"
+#import "JasonLogger.h"
 
 /**
  * When a code is recognized, this service:
@@ -30,9 +31,12 @@
 
 
 @implementation JasonVisionService
-- (void) initialize: (NSDictionary *)launchOptions {
+- (void) initialize: (NSDictionary *)launchOptions
+{
     self.is_open = NO;
+    DTLogDebug(@"initialize");
 }
+
 - (void)captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects fromConnection:(AVCaptureConnection *)connection {
     
     if(!self.is_open) return;

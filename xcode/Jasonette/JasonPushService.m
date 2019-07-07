@@ -7,24 +7,31 @@
 //
 
 #import "JasonPushService.h"
+#import "JasonLogger.h"
+
 #define SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
-#import <DTFoundation/DTLog.h>
 
 @implementation JasonPushService
-- (void) initialize: (NSDictionary *)launchOptions {
+- (void) initialize: (NSDictionary *) launchOptions
+{
     
+    DTLogDebug(@"initialize");
     
 #ifdef PUSH
     
-    NSDictionary *userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    if(userInfo) {
-        if(userInfo[@"href"]){
+    NSDictionary * userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if(userInfo)
+    {
+        if(userInfo[@"href"])
+        {
             [[Jason client] call: @{
                 @"type": @"$href",
                 @"options": userInfo[@"href"]
             }];
-        } else if(userInfo[@"action"]) {
+        }
+        else if(userInfo[@"action"])
+        {
             [[Jason client] call:userInfo[@"action"]];
         }
     }
@@ -46,19 +53,23 @@
 
 // Common remote notification processor
 
-- (void)process: (NSDictionary *) payload {
-    NSDictionary *events = [[[Jason client] getVC] valueForKey:@"events"];
-    if(events){
-        if(events[@"$push.onmessage"]){
-            [[Jason client] call:events[@"$push.onmessage"] with: @{@"$jason": payload}];
+- (void) process: (NSDictionary *) payload
+{
+    NSDictionary * events = [[[Jason client] getVC] valueForKey:@"events"];
+    if(events)
+    {
+        if(events[@"$push.onmessage"])
+        {
+            DTLogDebug(@"Calling $push.onmessage event");
+            [[Jason client]
+             call:events[@"$push.onmessage"]
+             with: @{@"$jason": payload}];
         }
     }
 }
 
-
-
-
-- (void)onRemoteNotification: (NSNotification *)notification{
+- (void) onRemoteNotification: (NSNotification *) notification
+{
     [self process:notification.userInfo];
 }
 
