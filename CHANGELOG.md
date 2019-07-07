@@ -20,6 +20,8 @@ This version is the current in development.
 
 - Establish `AppDelegate.h` as main *App Delegate* instead of `JasonAppDelegate.h`. The later will serve as a wrapper.
 
+- Improved Code Organization.
+
 ### Fixed
 
 - Fixed Crash on parsing local json files with wrong syntax.
