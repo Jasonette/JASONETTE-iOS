@@ -4630,12 +4630,15 @@
 }
 
 # pragma mark - Action invocation related
+
 /**********************************************************************************************************************
  *
  * Generates 'options' object to be passed to the next action in the call chain by looking at the stack, register, etc.
  *
  *********************************************************************************************************************/
-- (NSDictionary *) options {
+
+- (NSDictionary *) options
+{
     JasonMemory * memory = [JasonMemory client];
 
     /*********************************************************************************************************
@@ -4686,7 +4689,10 @@
     }
 
 }
-- (void) exec {
+
+- (void) exec
+{
+    DTLogDebug(@"Executing Action");
     @try{
         JasonMemory * memory = [JasonMemory client];
         // need to set the 'executing' state to NO initially
@@ -4712,7 +4718,7 @@
             // Type 1. Action Call by name (trigger)
             if (trigger)
             {
-
+                DTLogDebug(@"Trigger Detected");
                 /****************************************************************************************
                    // "trigger" is a syntactic sugar for calling `$lambda` action
 
@@ -4800,9 +4806,10 @@
             // Type 2. Action Call by type (normal)
             else if (type)
             {
+                DTLogDebug(@"Action Call by Type");
                 NSArray * tokens = [type componentsSeparatedByString:@"."];
 
-            // Jason Core actions: "METHOD" format => Within Jason.m
+                // Jason Core actions: "METHOD" format => Within Jason.m
                 if (tokens.count == 1)
                 {
                     if (type.length > 1 && [type hasPrefix:@"$"])
@@ -4814,14 +4821,23 @@
                         // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
                         memory.executing = YES;
 
+                        if([self respondsToSelector:method])
+                        {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                        [self performSelector:method];
+                            DTLogDebug(@"Performing %@", actionName);
+                            [self performSelector:method];
 #pragma clang diagnostic pop
+                        }
+                        else
+                        {
+                            DTLogDebug(@"Could Not Perform %@", actionName);
+                        }
                     }
                 }
                 else if ([type hasPrefix:@"@"])
                 {
+                    DTLogDebug(@"Plugin method detected");
                     /*
                      * Call a 'plug in method'.  We now take the full type w/o the '@‘ prefix
                      * and try to load that class.  This gives us more freedom with class names
@@ -4850,25 +4866,28 @@
 
                     // skip prefix to get module path
                     NSString * plugin_path = [type substringFromIndex:1];
-                    NSLog(@"Plugin: plugin path: %@", plugin_path);
+                    DTLogDebug(@"Plugin: plugin path: %@", plugin_path);
 
                     // The module name is the plugin path w/o the last part
                     // e.g. "MyModule.MyClass.demo" -> "MyModule.MyClass"
                     //      "MyClass.demo" -> "MyClass"
                     NSArray * mod_tokens = [plugin_path componentsSeparatedByString:@"."];
+                    
                     if (mod_tokens.count > 1)
                     {
-                        NSString * module_name = [[mod_tokens subarrayWithRange:NSMakeRange(0, mod_tokens.count - 1)]
+                        NSString * module_name = [[mod_tokens
+                                                   subarrayWithRange:NSMakeRange(0, mod_tokens.count - 1)]
                                                   componentsJoinedByString:@"."];
+                        
                         NSString * action_name = [mod_tokens lastObject];
 
-                        NSLog(@"Plugin: module name: %@", module_name);
-                        NSLog(@"Plugin: action name: %@", action_name);
+                        DTLogDebug(@"Plugin: module name: %@", module_name);
+                        DTLogDebug(@"Plugin: action name: %@", action_name);
 
                         Class PluginClass = [JasonNSClassFromString classFromString:module_name];
                         if (PluginClass)
                         {
-                            NSLog(@"Plugin: class: %@", PluginClass);
+                            DTLogDebug(@"Plugin: class: %@", PluginClass);
 
                             // Initialize Plugin
                             module = [[PluginClass alloc] init];  // could go away if we had some sort of plug in registration
@@ -4886,6 +4905,7 @@
                         }
                         else
                         {
+                            DTLogDebug(@"Plugin Class '%@ doesn't exist.", module_name);
                             [[Jason client] call:@{ @"type": @"$util.banner",
                                                     @"options": @{
                                                         @"title": @"Error",
@@ -4898,27 +4918,39 @@
                     else
                     {
                 // ignore error: "@ModuleName" -> missing action name
+                        DTLogDebug(@"Missing Action Name");
                     }
                 }
 
                 // Module actions: "$CLASS.METHOD" format => Calls other classes
                 else
                 {
-
+                    DTLogDebug(@"$class.method format");
                     NSString * className = tokens[0];
 
-                // first take a look at the json file to resolve classname
+                    // first take a look at the json file to resolve classname
                     NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
                     NSString * jrjson_filename = [NSString stringWithFormat:@"%@/%@.json", resourcePath, className];
                     NSFileManager * fileManager = [NSFileManager defaultManager];
                     NSString * resolved_classname = nil;
+                    
                     if ([fileManager fileExistsAtPath:jrjson_filename])
                     {
                         NSError * error;
                         NSInputStream * inputStream = [[NSInputStream alloc] initWithFileAtPath:jrjson_filename];
+                        
                         [inputStream open];
-                        NSDictionary * json = [NSJSONSerialization JSONObjectWithStream:inputStream options:kNilOptions error:&error];
+                        NSDictionary * json = [NSJSONSerialization
+                                               JSONObjectWithStream:inputStream
+                                               options:kNilOptions
+                                               error:&error];
                         [inputStream close];
+                        
+                        if(error)
+                        {
+                            DTLogWarning(@"%@", error);
+                        }
+                        
                         if (json[@"classname"])
                         {
                             resolved_classname = json[@"classname"];
@@ -4945,6 +4977,7 @@
 
                     if (resolved_classname)
                     {
+                        DTLogDebug(@"Resolved Classname %@", resolved_classname);
                         Class ActionClass = [JasonNSClassFromString classFromString:resolved_classname];
                         if (ActionClass)
                         {
@@ -4956,14 +4989,12 @@
 
                             module = [[ActionClass alloc] init];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundeclared-selector"
-
-                            if ([module respondsToSelector:@selector(VC)])
+                            if ([module respondsToSelector:NSSelectorFromString(@"VC")])
                             {
                                 [module setValue:VC forKey:@"VC"];
                             }
-                            if ([module respondsToSelector:@selector(options)])
+                            
+                            if ([module respondsToSelector:NSSelectorFromString(@"options")])
                             {
                                 [module setValue:options forKey:@"options"];
                             }
@@ -4971,16 +5002,16 @@
                             // Set 'executing' to YES to prevent other actions from being accidentally executed concurrently
                             memory.executing = YES;
 
-#pragma clang diagnostic pop
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                            DTLogDebug(@"Perform %@", methodName);
                             [module performSelector:method];
 #pragma clang diagnostic pop
 
                         }
                         else
                         {
+                            DTLogWarning(@"%@ class doesn't exist.", resolved_classname);
                             [[Jason client] call:@{ @"type": @"$util.banner",
                                                     @"options": @{
                                                         @"title": @"Error",
@@ -5024,20 +5055,31 @@
         [self finish];
     }
 }
-- (void) exception {
+
+- (void) exception
+{
     [[JasonMemory client] exception];
     [self exec];
 }
-- (void) next {
+
+- (void) next
+{
     [[JasonMemory client] pop];
     [self exec];
 }
-- (void) finish {
+
+- (void) finish
+{
+    DTLogDebug(@"Finish");
     [self unlock];
 }
-- (void) unlock {
+
+- (void) unlock
+{
+    DTLogDebug(@"Unlock");
     [self loading:NO];
     JasonMemory * mem = [JasonMemory client];
+    
     if (mem && mem._stack && mem._stack[@"type"] && [mem._stack[@"type"] isEqualToString:@"$ok"])
     {
         // don't touch the return value;
@@ -5046,6 +5088,7 @@
     {
         [JasonMemory client]._register = @{};
     }
+    
     [JasonMemory client]._stack = @{};
     [JasonMemory client].locked = NO;
     [JasonMemory client].executing = NO;
