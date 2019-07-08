@@ -29,42 +29,65 @@ static NSArray * _services;
                           contentsOfDirectoryAtPath:resourcePath
                                               error:nil];
 
-    DTLogInfo(@"Loading jrs.json files");
+    DTLogInfo(@"Loading jr.json files");
     NSArray * jrs = [dirFiles filteredArrayUsingPredicate:
                      [NSPredicate
                       predicateWithFormat:@"(self ENDSWITH[c] '.json') AND (self BEGINSWITH[c] '$')"]];
 
-    NSError * error = nil;
 
     if (jrs.count <= 0)
     {
-        DTLogInfo(@"No extensions found with jrs.json");
+        DTLogInfo(@"No extensions found with jr.json");
+        return;
     }
 
-    for (int i = 0; i < jrs.count; i++)
+    NSString * filename;
+    NSString * absolutePath;
+    NSInputStream * inputStream;
+    NSError * error = nil;
+    NSDictionary * json;
+    NSString * class;
+    
+    for (filename in jrs)
     {
-        NSString * filename = jrs[i];
-        NSString * absolute_path = [NSString stringWithFormat:@"%@/%@", resourcePath, filename];
+        
+        DTLogDebug(@"Parsing %@", filename);
+        
+        absolutePath = [NSString stringWithFormat:@"%@/%@", resourcePath, filename];
 
-        NSInputStream * inputStream = [[NSInputStream alloc] initWithFileAtPath:absolute_path];
+        inputStream = [[NSInputStream alloc] initWithFileAtPath:absolutePath];
+        error = nil;
+        
         [inputStream open];
 
-        NSDictionary * json = [NSJSONSerialization
+        json = [NSJSONSerialization
                                JSONObjectWithStream:inputStream
                                             options:kNilOptions
                                               error:&error];
         [inputStream close];
 
-        if (json[@"classname"])
+        if(error)
         {
-            DTLogInfo(@"Found %@ Extension", json[@"classname"]);
-            [JasonAppDelegate initializeClass:json[@"classname"]
-                                  withOptions:launchOptions];
+            DTLogInfo(@"Error parsing %@ %@", filename, error);
+            continue;
         }
-        else
+        
+        if (!json[@"classname"])
         {
-            DTLogWarning(@"No 'classname' property found in jrs.json %@", json);
+            DTLogWarning(@"No 'classname' property found in jr.json %@ %@", filename, json);
+            continue;
         }
+        
+        if (!json[@"name"])
+        {
+            // If no name property, then Jasonette would try to autodetect based on filename
+            DTLogWarning(@"No 'name' property found in jr.json %@ %@", filename, json);
+        }
+        
+        class = json[@"classname"];
+        DTLogInfo(@"Initializing %@ Extension", class);
+        [JasonAppDelegate initializeClass:class
+                              withOptions:launchOptions];
     }
 }
 

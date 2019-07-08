@@ -93,6 +93,8 @@
 		EF07308D22D28B2400973DE1 /* JasonWebsocketService.m in Sources */ = {isa = PBXBuildFile; fileRef = EF07303322D28B2400973DE1 /* JasonWebsocketService.m */; };
 		EF07308E22D28B2400973DE1 /* JasonVisionService.m in Sources */ = {isa = PBXBuildFile; fileRef = EF07303522D28B2400973DE1 /* JasonVisionService.m */; };
 		EF07308F22D28B2400973DE1 /* JasonAgentService.m in Sources */ = {isa = PBXBuildFile; fileRef = EF07303822D28B2400973DE1 /* JasonAgentService.m */; };
+		EF82979B22D30A71003ED64B /* jr.sample.json in Resources */ = {isa = PBXBuildFile; fileRef = EF82979922D30A71003ED64B /* jr.sample.json */; };
+		EF82979C22D30A71003ED64B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = EF82979A22D30A71003ED64B /* README.md */; };
 		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
 /* End PBXBuildFile section */
 
@@ -251,6 +253,8 @@
 		EF07303822D28B2400973DE1 /* JasonAgentService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonAgentService.m; sourceTree = "<group>"; };
 		EF07303922D28B2400973DE1 /* JasonAgentService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonAgentService.h; sourceTree = "<group>"; };
 		EF82979222D28D96003ED64B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Jasonette/Info.plist; sourceTree = SOURCE_ROOT; };
+		EF82979922D30A71003ED64B /* jr.sample.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = jr.sample.json; sourceTree = "<group>"; };
+		EF82979A22D30A71003ED64B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -280,6 +284,7 @@
 			children = (
 				EF072F5E22D28B2400973DE1 /* App */,
 				EF072F6122D28B2400973DE1 /* Config */,
+				EF82979822D30A71003ED64B /* Extensions */,
 				EF072F6A22D28B2400973DE1 /* Jasonette */,
 				5E31765A1D1E400C00D87778 /* Products */,
 				024EC1D04366A4267780A921 /* Pods */,
@@ -351,14 +356,14 @@
 		EF072F6B22D28B2400973DE1 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				EF072F8F22D28B2400973DE1 /* AppDelegate */,
+				EF072F8C22D28B2400973DE1 /* Jason */,
 				EF072F6C22D28B2400973DE1 /* Logger */,
 				EF072F7022D28B2400973DE1 /* Memory */,
 				EF072F7322D28B2400973DE1 /* Networking */,
 				EF072F7922D28B2400973DE1 /* Parser */,
 				EF072F7C22D28B2400973DE1 /* Components */,
 				EF072F8722D28B2400973DE1 /* Actions */,
-				EF072F8C22D28B2400973DE1 /* Jason */,
-				EF072F8F22D28B2400973DE1 /* AppDelegate */,
 				EF072F9222D28B2400973DE1 /* Stack */,
 				EF072F9522D28B2400973DE1 /* Views */,
 				EF072F9B22D28B2400973DE1 /* Assets */,
@@ -1026,6 +1031,15 @@
 			path = $agent;
 			sourceTree = "<group>";
 		};
+		EF82979822D30A71003ED64B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				EF82979922D30A71003ED64B /* jr.sample.json */,
+				EF82979A22D30A71003ED64B /* README.md */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1111,11 +1125,13 @@
 				EF07303D22D28B2400973DE1 /* LaunchScreen.storyboard in Resources */,
 				EF07303C22D28B2400973DE1 /* Media.xcassets in Resources */,
 				EF07305B22D28B2400973DE1 /* rss.js in Resources */,
+				EF82979C22D30A71003ED64B /* README.md in Resources */,
 				EF07305622D28B2400973DE1 /* Next@2x.png in Resources */,
 				EF07305E22D28B2400973DE1 /* agent.js in Resources */,
 				EF07305122D28B2400973DE1 /* placeholderr@2x.png in Resources */,
 				EF07305C22D28B2400973DE1 /* xhtml.js in Resources */,
 				EF07305F22D28B2400973DE1 /* error.json in Resources */,
+				EF82979B22D30A71003ED64B /* jr.sample.json in Resources */,
 				EF07303A22D28B2400973DE1 /* settings.plist in Resources */,
 				EF07308422D28B2400973DE1 /* JasonHorizontalSection.xib in Resources */,
 				EF07308722D28B2400973DE1 /* JasonHorizontalSectionItem.xib in Resources */,

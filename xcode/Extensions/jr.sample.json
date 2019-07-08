@@ -1,0 +1,12 @@
+{
+    "version": "1.0.0",
+    "name": "",
+    "classname": "",
+    "type": "action|component|service",
+    "platform": "ios|android",
+    "language" : "objective-c|swift|java|kotlin",
+    "author" : "",
+    "href" : "",
+    "license" : "MIT",
+    "description": ""
+}

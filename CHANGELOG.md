@@ -14,6 +14,8 @@ This version is the current in development.
 
 - Added `JasonNetworking.h` to enable configuring `AFHTTPSessionManager` and `AFJSONResponseSerializer`.
 
+- Docs on how to implement extensions.
+
 ### Changed
 
 - Improved `JasonComponentFactory.h` to take in consideration `Swift` extensions.
