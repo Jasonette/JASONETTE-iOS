@@ -18,84 +18,84 @@ static NSDictionary * _headers;
 
 + (nonnull AFHTTPSessionManager *) manager
 {
-    if(!_sessionManager)
+    if (!_sessionManager)
     {
         _sessionManager = [AFHTTPSessionManager manager];
     }
-    
+
     // Return a new manager on each call
     return [[_sessionManager class] manager];
 }
 
-+ (void) setSessionManager: (AFHTTPSessionManager *) manager
++ (void) setSessionManager:(AFHTTPSessionManager *)manager
 {
-    if(!manager || ![manager respondsToSelector:NSSelectorFromString(@"manager")])
+    if (!manager || ![manager respondsToSelector:NSSelectorFromString(@"manager")])
     {
         DTLogWarning(@"AFHTTPSessionManager not found");
         manager = nil;
     }
-    
+
     _sessionManager = manager;
 }
 
 + (nonnull AFJSONResponseSerializer *) serializer
 {
-    if(!_responseSerializer)
+    if (!_responseSerializer)
     {
         _responseSerializer = [AFJSONResponseSerializer serializer];
     }
-    
+
     return [[_responseSerializer class] serializer];
 }
 
-+ (void) setResponseSerializer: (AFJSONResponseSerializer *) serializer
++ (void) setResponseSerializer:(AFJSONResponseSerializer *)serializer
 {
-    if(!serializer || ![serializer respondsToSelector:NSSelectorFromString(@"serializer")])
+    if (!serializer || ![serializer respondsToSelector:NSSelectorFromString(@"serializer")])
     {
         DTLogWarning(@"AFJSONResponseSerializer not found");
         serializer = nil;
     }
-    
+
     _responseSerializer = serializer;
 }
 
 + (nonnull NSArray *) acceptedContentTypes
 {
-    if(!_acceptedContentTypes)
+    if (!_acceptedContentTypes)
     {
         _acceptedContentTypes = @[];
     }
-    
+
     return _acceptedContentTypes;
 }
 
-+ (void) setAcceptedContentTypes : (nonnull NSArray *) types
++ (void) setAcceptedContentTypes:(nonnull NSArray *)types
 {
-    if(!types || [types count] <= 0)
+    if (!types || [types count] <= 0)
     {
         DTLogWarning(@"Setting Empty Content Types");
     }
-    
+
     _acceptedContentTypes = types;
 }
 
 + (nonnull NSDictionary *) headers
 {
-    if(!_headers)
+    if (!_headers)
     {
         _headers = @{};
     }
-    
+
     return _headers;
 }
 
-+ (void) setHeaders : (nonnull NSDictionary *) headers
++ (void) setHeaders:(nonnull NSDictionary *)headers
 {
-    if(!headers)
+    if (!headers)
     {
         DTLogWarning(@"Setting Empty Headers");
     }
-    
+
     _headers = headers;
 }
 

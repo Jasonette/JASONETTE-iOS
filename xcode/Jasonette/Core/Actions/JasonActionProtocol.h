@@ -9,6 +9,6 @@
 
 @protocol JasonActionProtocol <NSObject>
 @optional
-@property (nonatomic, strong) JasonViewController *VC;
-@property (nonatomic, strong) NSDictionary *options;
+@property (nonatomic, strong) JasonViewController * VC;
+@property (nonatomic, strong) NSDictionary * options;
 @end

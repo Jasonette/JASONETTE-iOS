@@ -29,60 +29,60 @@
 
 @interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, UIWebViewDelegate>
 
-@property (strong, nonatomic) NSDictionary *parser;
-@property (strong, nonatomic) NSDictionary *data;
-@property (strong, nonatomic) NSDictionary *options;
-@property (strong, nonatomic) NSDictionary *rendered;
-@property (strong, nonatomic) NSDictionary *global;
-@property (strong, nonatomic) NSMutableArray *playing;
+@property (strong, nonatomic) NSDictionary * parser;
+@property (strong, nonatomic) NSDictionary * data;
+@property (strong, nonatomic) NSDictionary * options;
+@property (strong, nonatomic) NSDictionary * rendered;
+@property (strong, nonatomic) NSDictionary * global;
+@property (strong, nonatomic) NSMutableArray * playing;
 @property (nonatomic, assign) BOOL touching;
 @property (nonatomic, assign) BOOL searchMode;
 @property (nonatomic, assign) BOOL oauth_in_process;
-@property (strong, nonatomic) NSMutableDictionary *services;
-@property (strong, nonatomic) AVCaptureSession *avCaptureSession;
+@property (strong, nonatomic) NSMutableDictionary * services;
+@property (strong, nonatomic) AVCaptureSession * avCaptureSession;
 
-- (JasonViewController *)getVC;
+- (JasonViewController *) getVC;
 
-@property (strong, nonatomic) JSContext *jscontext;
+@property (strong, nonatomic) JSContext * jscontext;
 
-+ (Jason*)client;
-- (Jason*)attach:(JasonViewController*)viewController;
-- (Jason*)detach:(JasonViewController*)viewController;
++ (Jason *) client;
+- (Jason *) attach:(JasonViewController *)viewController;
+- (Jason *) detach:(JasonViewController *)viewController;
 
-- (void)cancel;
-- (void)ok;
-- (void)ok:(NSDictionary *)result;
-- (void)finish;
+- (void) cancel;
+- (void) ok;
+- (void) ok:(NSDictionary *)result;
+- (void) finish;
 
-- (void)error:(id)result withOriginalUrl:(NSString*)url;
-- (void)error:(id)result;
-- (void)error;
+- (void) error:(id)result withOriginalUrl:(NSString *)url;
+- (void) error:(id)result;
+- (void) error;
 
-- (void)success:(id)result withOriginalUrl:(NSString*)url;
-- (void)success:(id)result;
-- (void)success;
+- (void) success:(id)result withOriginalUrl:(NSString *)url;
+- (void) success:(id)result;
+- (void) success;
 
-- (void)go:(NSDictionary *)href;
-- (void)call: (NSDictionary*)action;
-- (void)call: (id)action with: (NSDictionary *)data;
+- (void) go:(NSDictionary *)href;
+- (void) call:(NSDictionary *)action;
+- (void) call:(id)action with:(NSDictionary *)data;
 
-- (void)loading:(BOOL)turnon;
-- (void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;
-- (void)search;
-- (void)snapshot;
+- (void) loading:(BOOL)turnon;
+- (void) networkLoading:(BOOL)turnon with:(NSDictionary *)options;
+- (void) search;
+- (void) snapshot;
 
-- (void)reload;
+- (void) reload;
 
-- (void)start:(NSDictionary *)href;
+- (void) start:(NSDictionary *)href;
 
-- (void)loadViewByFile: (NSString *)url asFinal: (BOOL)final;
-- (void) loadViewByFile: (NSString *)url asFinal:(BOOL)final onVC:(JasonViewController*) vc;
-- (id)filloutTemplate: (id)template withData:(id)data;
-- (NSDictionary *)variables;
+- (void) loadViewByFile:(NSString *)url asFinal:(BOOL)final;
+- (void) loadViewByFile:(NSString *)url asFinal:(BOOL)final onVC:(JasonViewController *)vc;
+- (id) filloutTemplate:(id)template withData:(id)data;
+- (NSDictionary *) variables;
 
-- (void)setupTabBar: (NSDictionary *)t forVC: (JasonViewController*) vc;
-- (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController*) vc;
-- (void)drawBackground:(NSString *)bg forVC: (JasonViewController *)vc;
-- (void)drawAdvancedBackground:(NSDictionary *)bg forVC: (JasonViewController *)vc;
+- (void) setupTabBar:(NSDictionary *)t forVC:(JasonViewController *)vc;
+- (void) setupHeader:(NSDictionary *)nav forVC:(JasonViewController *)vc;
+- (void) drawBackground:(NSString *)bg forVC:(JasonViewController *)vc;
+- (void) drawAdvancedBackground:(NSDictionary *)bg forVC:(JasonViewController *)vc;
 @end
 

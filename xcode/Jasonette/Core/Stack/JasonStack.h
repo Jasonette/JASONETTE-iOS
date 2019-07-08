@@ -7,15 +7,15 @@
 #import <Foundation/Foundation.h>
 
 @interface JasonStack : NSObject
-@property (nonatomic, strong) NSMutableArray *items;
+@property (nonatomic, strong) NSMutableArray * items;
 
 /** @name Static Initializer */
 #pragma mark Static Initializer
-+ (id)stack;
++ (id) stack;
 
 /** @name Access methods */
 #pragma mark Access methods
-- (void)push:(id)object;
-- (id)pop;
+- (void) push:(id)object;
+- (id) pop;
 
 @end

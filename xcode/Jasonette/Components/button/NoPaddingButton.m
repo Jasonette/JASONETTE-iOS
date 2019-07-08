@@ -9,17 +9,20 @@
 #import "NoPaddingButton.h"
 
 @implementation NoPaddingButton
-- (CGSize)intrinsicContentSize {
+- (CGSize) intrinsicContentSize {
     CGSize labelContentSize = self.titleLabel.intrinsicContentSize;
     CGSize imageContentSize = self.imageView.frame.size;
 
-    if(labelContentSize.width > 0){
+    if (labelContentSize.width > 0)
+    {
         // label type => use the size sans padding
         UIEdgeInsets insets = self.contentEdgeInsets;
         labelContentSize.height += insets.top + insets.bottom;
         labelContentSize.width += insets.left + insets.right;
         return labelContentSize;
-    } else {
+    }
+    else
+    {
         // image type => use the default size
         UIEdgeInsets insets = self.contentEdgeInsets;
         imageContentSize.height += insets.top + insets.bottom;

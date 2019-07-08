@@ -43,7 +43,7 @@
  *
  *  @return JasonOptionHelper instance
  */
-- (nonnull instancetype) initWithOptions:(nonnull NSDictionary *) options;
+- (nonnull instancetype) initWithOptions:(nonnull NSDictionary *)options;
 
 /*!
  *  @brief Check if an array of Keys exists in the Option Dictionary
@@ -52,7 +52,7 @@
  *
  *  @return YES if all the keys provided exists. NO otherwise.
  */
-- (BOOL) hasParams:(nonnull NSArray<NSString *> *) params;
+- (BOOL) hasParams:(nonnull NSArray<NSString *> *)params;
 
 /*!
  *  @brief Check if the Key exists in the Option Dictionary
@@ -61,7 +61,7 @@
  *
  *  @return YES if the key provided exists. NO otherwise.
  */
-- (BOOL) hasParam:(nonnull NSString *) param;
+- (BOOL) hasParam:(nonnull NSString *)param;
 
 /*!
  *  @brief Get a generic object inside the options dictionary
@@ -70,7 +70,7 @@
  *
  *  @return generic object or nil
  */
-- (nullable id) get: (nonnull NSString *) key;
+- (nullable id) get:(nonnull NSString *)key;
 
 /*!
  *  @brief Get a generic object inside the options dictionary
@@ -80,7 +80,7 @@
  *
  *  @return generic object or nil
  */
-- (nullable id) getWithKeys: (nonnull NSArray <NSString *> *) keys;
+- (nullable id) getWithKeys:(nonnull NSArray <NSString *> *)keys;
 
 /*!
  *  @brief Get a string object inside the options dictionary
@@ -89,7 +89,7 @@
  *
  *  @return string object or nil
  */
-- (nullable NSString *) getString:(nonnull NSString *) key;
+- (nullable NSString *) getString:(nonnull NSString *)key;
 
 /*!
  *  @brief Get a string object inside the options dictionary.
@@ -99,7 +99,7 @@
  *
  *  @return string object or nil
  */
-- (nullable NSString *) getStringWithEmptyAsNil:(nonnull NSString *) key;
+- (nullable NSString *) getStringWithEmptyAsNil:(nonnull NSString *)key;
 
 /*!
  *  @brief Get a string object inside the options dictionary
@@ -109,7 +109,7 @@
  *
  *  @return string object or nil
  */
-- (nullable NSString *) getStringWithKeyNames:(nonnull NSArray<NSString *> *) keys;
+- (nullable NSString *) getStringWithKeyNames:(nonnull NSArray<NSString *> *)keys;
 
 /*!
  *  @brief Get a string object inside the options dictionary
@@ -120,7 +120,7 @@
  *
  *  @return string object or nil.
  */
-- (nullable NSString *) getStringWithKeyNamesWithEmptyAsNil:(nonnull NSArray<NSString *> *) keys;
+- (nullable NSString *) getStringWithKeyNamesWithEmptyAsNil:(nonnull NSArray<NSString *> *)keys;
 
 /*!
  *  @brief Get a dictionary object inside the options dictionary
@@ -129,7 +129,7 @@
  *
  *  @return dictionary object or nil
  */
-- (nullable NSDictionary *) getDict: (nonnull NSString *) key;
+- (nullable NSDictionary *) getDict:(nonnull NSString *)key;
 
 /*!
  *  @brief Get a dictionary object inside the options dictionary
@@ -139,7 +139,7 @@
  *
  *  @return dictionary object or nil
  */
-- (nullable NSDictionary *) getDictWithKeyNames:(nonnull NSArray<NSString *> *) keys;
+- (nullable NSDictionary *) getDictWithKeyNames:(nonnull NSArray<NSString *> *)keys;
 
 
 /*!
@@ -150,7 +150,7 @@
  *
  *  @return number object or nil
  */
-- (nullable NSNumber *) getNumber: (nonnull NSString *) key;
+- (nullable NSNumber *) getNumber:(nonnull NSString *)key;
 
 /*!
  *  @brief Get a number object inside the options dictionary
@@ -160,7 +160,7 @@
  *
  *  @return number object or nil
  */
-- (nullable NSNumber *) getNumberWithKeyNames:(nonnull NSArray<NSString *> *) keys;
+- (nullable NSNumber *) getNumberWithKeyNames:(nonnull NSArray<NSString *> *)keys;
 
 /*!
  *  @brief Get a boolean inside the options dictionary.
@@ -169,7 +169,7 @@
  *
  *  @return YES or NO
  */
-- (BOOL) getBoolean: (nonnull NSString *) key;
+- (BOOL) getBoolean:(nonnull NSString *)key;
 
 /*!
  *  @brief Get a boolean inside the options dictionary
@@ -179,6 +179,6 @@
  *
  *  @return YES or NO
  */
-- (BOOL) getBooleanWithKeyNames:(nonnull NSArray<NSString *> *) keys;
+- (BOOL) getBooleanWithKeyNames:(nonnull NSArray<NSString *> *)keys;
 
 @end

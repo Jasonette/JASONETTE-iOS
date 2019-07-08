@@ -11,8 +11,8 @@
 #import "Jason.h"
 
 @interface JasonWebsocketService : NSObject <SRWebSocketDelegate>
-@property (nonatomic, strong) SRWebSocket *websocket;
-- (void) open: (NSDictionary *)options;
+@property (nonatomic, strong) SRWebSocket * websocket;
+- (void) open:(NSDictionary *)options;
 - (void) close;
-- (void) send: (NSDictionary *)options;
+- (void) send:(NSDictionary *)options;
 @end

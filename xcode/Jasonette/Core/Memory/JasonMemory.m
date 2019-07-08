@@ -14,6 +14,7 @@
     // This follows the singleton pattern
     static dispatch_once_t predicate = 0;
     static id sharedObject = nil;
+
     dispatch_once(&predicate, ^{
         DTLogDebug(@"Initializing Internal Memory Client");
         sharedObject = [[self alloc] init];
@@ -33,10 +34,10 @@
     return self;
 }
 
-- (void) setRegister: (id)value
-              forKey: (NSString *) key
+- (void) setRegister:(id)value
+    forKey:(NSString *)key
 {
-    if(![key isEqualToString:@"$jason"])
+    if (![key isEqualToString:@"$jason"])
     {
         DTLogDebug(@"Setting Register %@ for Key %@", value, key);
         NSMutableDictionary * temp_register = [self._register mutableCopy];
@@ -49,8 +50,9 @@
 {
     // pops the stack so self.current_stack contains the next action to execute
     NSDictionary * callback = self._stack[@"success"];
+
     self._stack = @{};
-    if(callback)
+    if (callback)
     {
         DTLogDebug(@"Calling Next Action %@", callback);
         self._stack = callback;
@@ -60,8 +62,9 @@
 - (void) exception
 {
     NSDictionary * failure = self._stack[@"error"];
+
     self._stack = @{};
-    if(failure)
+    if (failure)
     {
         DTLogWarning(@"Got Failure %@", failure);
         self._stack = failure;

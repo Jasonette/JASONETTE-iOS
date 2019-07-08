@@ -12,7 +12,7 @@
 
 #pragma mark - Private
 
-- (nullable id) safeGet:(nonnull NSString *) key
+- (nullable id) safeGet:(nonnull NSString *)key
 {
     if (self.options)
     {
@@ -21,55 +21,55 @@
             return self.options[key];
         }
     }
-    
+
     return nil;
 }
 
-- (nullable id) safeGetKeys:(nonnull NSArray<NSString *> *) keys
+- (nullable id) safeGetKeys:(nonnull NSArray<NSString *> *)keys
 {
     id result = nil;
-    
+
     for (NSString * key in keys)
     {
-        if([self safeGet:key])
+        if ([self safeGet:key])
         {
             result = [self safeGet:key];
         }
     }
-    
+
     return result;
 }
 
-- (nullable NSString *) emptyAsNil:(nullable NSString *) string
+- (nullable NSString *) emptyAsNil:(nullable NSString *)string
 {
-    NSString  * result = @"";
-    
-    if(string)
+    NSString * result = @"";
+
+    if (string)
     {
-        
+
         result = [string
                   stringByTrimmingCharactersInSet:[NSCharacterSet
                                                    whitespaceAndNewlineCharacterSet]];
     }
-    
+
     return ([result isEqualToString:@""] ? nil : string);
 }
 
 #pragma mark - Public
 
-- (nonnull instancetype) initWithOptions:(nonnull NSDictionary *) options
+- (nonnull instancetype) initWithOptions:(nonnull NSDictionary *)options
 {
     self = [super init];
-    
+
     if (self)
     {
         self.options = options;
     }
-    
+
     return self;
 }
 
-- (BOOL) hasParams:(nonnull NSArray<NSString *> *) params
+- (BOOL) hasParams:(nonnull NSArray<NSString *> *)params
 {
     for (NSString * param in params)
     {
@@ -78,72 +78,72 @@
             return NO;
         }
     }
-    
+
     return YES;
 }
 
-- (BOOL) hasParam:(nonnull NSString *) param
+- (BOOL) hasParam:(nonnull NSString *)param
 {
     return [self hasParams:@[param]];
 }
 
-- (nullable id) get: (nonnull NSString *) key
+- (nullable id) get:(nonnull NSString *)key
 {
     return [self safeGet:key];
 }
 
-- (nullable id) getWithKeys: (nonnull NSArray <NSString *> *) keys
+- (nullable id) getWithKeys:(nonnull NSArray <NSString *> *)keys
 {
     return [self safeGetKeys:keys];
 }
 
-- (nullable NSString *) getString:(nonnull NSString *) key
+- (nullable NSString *) getString:(nonnull NSString *)key
 {
     return (NSString *) [self safeGet:key];
 }
 
-- (nullable NSString *) getStringWithEmptyAsNil:(nonnull NSString *) key
+- (nullable NSString *) getStringWithEmptyAsNil:(nonnull NSString *)key
 {
     return [self emptyAsNil:[self getString:key]];
 }
 
 
-- (nullable NSString *) getStringWithKeyNames:(nonnull NSArray<NSString *> *) keys
+- (nullable NSString *) getStringWithKeyNames:(nonnull NSArray<NSString *> *)keys
 {
     return (NSString *) [self safeGetKeys:keys];
 }
 
-- (nullable NSString *) getStringWithKeyNamesWithEmptyAsNil:(nonnull NSArray<NSString *> *) keys
+- (nullable NSString *) getStringWithKeyNamesWithEmptyAsNil:(nonnull NSArray<NSString *> *)keys
 {
     return [self emptyAsNil:[self getStringWithKeyNames:keys]];
 }
 
-- (nullable NSDictionary *) getDict: (nonnull NSString *) key
+- (nullable NSDictionary *) getDict:(nonnull NSString *)key
 {
     return (NSDictionary *) [self safeGet:key];
 }
 
-- (nullable NSDictionary *) getDictWithKeyNames:(nonnull NSArray<NSString *> *) keys
+- (nullable NSDictionary *) getDictWithKeyNames:(nonnull NSArray<NSString *> *)keys
 {
     return (NSDictionary *) [self safeGetKeys:keys];
 }
 
-- (nullable NSNumber *) getNumber: (nonnull NSString *) key
+- (nullable NSNumber *) getNumber:(nonnull NSString *)key
 {
     return (NSNumber *) [self safeGet:key];
 }
 
-- (nullable NSNumber *) getNumberWithKeyNames:(nonnull NSArray<NSString *> *) keys
+- (nullable NSNumber *) getNumberWithKeyNames:(nonnull NSArray<NSString *> *)keys
 {
     return (NSNumber *) [self safeGetKeys:keys];
 }
 
-- (BOOL) getBoolean: (nonnull NSString *) key
+- (BOOL) getBoolean:(nonnull NSString *)key
 {
     return [[self getNumber:key] boolValue];
 }
 
-- (BOOL) getBooleanWithKeyNames:(nonnull NSArray<NSString *> *) keys
+- (BOOL) getBooleanWithKeyNames:(nonnull NSArray<NSString *> *)keys
 {
     return [[self getNumberWithKeyNames:keys] boolValue];
 }

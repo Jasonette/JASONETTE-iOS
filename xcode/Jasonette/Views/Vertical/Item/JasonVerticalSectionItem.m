@@ -9,13 +9,14 @@
 @implementation JasonVerticalSectionItem
 
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+- (void) setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 }
 
-- (void)prepareForReuse {
+- (void) prepareForReuse {
     [super prepareForReuse];
-    for(UIView *subview in [self.contentView subviews]) {
+    for (UIView * subview in [self.contentView subviews])
+    {
         [subview removeFromSuperview];
     }
 }

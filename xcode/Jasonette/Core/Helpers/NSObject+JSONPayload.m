@@ -9,14 +9,14 @@
 #import "NSObject+JSONPayload.h"
 
 @implementation NSObject (JSONPayload)
--(void)setPayload:(id)payload
+- (void) setPayload:(id)payload
 {
-    objc_setAssociatedObject( self, "_payload", payload, OBJC_ASSOCIATION_RETAIN_NONATOMIC ) ;
+    objc_setAssociatedObject(self, "_payload", payload, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
--(id)payload
+- (id) payload
 {
-    return objc_getAssociatedObject( self, "_payload" ) ;
+    return objc_getAssociatedObject(self, "_payload");
 }
 
 @end

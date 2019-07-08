@@ -10,16 +10,16 @@
 
 @interface UIBarButtonItem (Badge)
 
-@property (strong, atomic) UILabel *badge;
+@property (strong, atomic) UILabel * badge;
 
 // Badge value to be display
-@property (nonatomic) NSString *badgeValue;
+@property (nonatomic) NSString * badgeValue;
 // Badge background color
-@property (nonatomic) UIColor *badgeBGColor;
+@property (nonatomic) UIColor * badgeBGColor;
 // Badge text color
-@property (nonatomic) UIColor *badgeTextColor;
+@property (nonatomic) UIColor * badgeTextColor;
 // Badge font
-@property (nonatomic) UIFont *badgeFont;
+@property (nonatomic) UIFont * badgeFont;
 // Padding value for the badge
 @property (nonatomic) CGFloat badgePadding;
 // Minimum size badge to small

@@ -15,8 +15,8 @@
 #import <TTTAttributedLabel/TTTAttributedLabel.h>
 
 @interface JasonHorizontalSection : UITableViewCell <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
-@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
-@property (strong, nonatomic) NSArray *items;
-@property (strong, nonatomic) NSDictionary *style;
-@property (strong, nonatomic) NSDictionary *stylesheet;
+@property (weak, nonatomic) IBOutlet UICollectionView * collectionView;
+@property (strong, nonatomic) NSArray * items;
+@property (strong, nonatomic) NSDictionary * style;
+@property (strong, nonatomic) NSDictionary * stylesheet;
 @end

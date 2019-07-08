@@ -31,36 +31,41 @@
 
 
 @implementation JasonVisionService
-- (void) initialize: (NSDictionary *)launchOptions
+- (void) initialize:(NSDictionary *)launchOptions
 {
     self.is_open = NO;
     DTLogDebug(@"initialize");
 }
 
-- (void)captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects fromConnection:(AVCaptureConnection *)connection {
-    
-    if(!self.is_open) return;
-    
-    NSDictionary *events = [[[Jason client] getVC] valueForKey:@"events"];
-    if(![JasonMemory client].executing) {
-      for (AVMetadataObject *metadata in metadataObjects) {
-          AVMetadataMachineReadableCodeObject *transformed = (AVMetadataMachineReadableCodeObject *)metadata;
-          self.is_open = NO;
-          [[Jason client] call: events[@"$vision.onscan"] with: @{
-              @"$jason": @{
-                  @"content": transformed.stringValue,
-                  @"type": transformed.type
-                  //                   @"corners": transformed.corners,
-                  //                   @"bounds": @{
-                  //                       @"left": [NSNumber numberWithFloat: transformed.bounds.origin.x],
-                  //                       @"top": [NSNumber numberWithFloat: transformed.bounds.origin.y],
-                  //                       @"width": [NSNumber numberWithFloat: transformed.bounds.size.width],
-                  //                       @"height": [NSNumber numberWithFloat: transformed.bounds.size.height]
-                  //                   }
-              }
-          }];
-          return;
-      }
+- (void) captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects fromConnection:(AVCaptureConnection *)connection {
+
+    if (!self.is_open)
+    {
+        return;
+    }
+
+    NSDictionary * events = [[[Jason client] getVC] valueForKey:@"events"];
+    if (![JasonMemory client].executing)
+    {
+        for (AVMetadataObject * metadata in metadataObjects)
+        {
+            AVMetadataMachineReadableCodeObject * transformed = (AVMetadataMachineReadableCodeObject *) metadata;
+            self.is_open = NO;
+            [[Jason client] call:events[@"$vision.onscan"] with:@{
+                 @"$jason": @{
+                     @"content": transformed.stringValue,
+                     @"type": transformed.type
+                     //                   @"corners": transformed.corners,
+                     //                   @"bounds": @{
+                     //                       @"left": [NSNumber numberWithFloat: transformed.bounds.origin.x],
+                     //                       @"top": [NSNumber numberWithFloat: transformed.bounds.origin.y],
+                     //                       @"width": [NSNumber numberWithFloat: transformed.bounds.size.width],
+                     //                       @"height": [NSNumber numberWithFloat: transformed.bounds.size.height]
+                     //                   }
+                 }
+            }];
+            return;
+        }
     }
 }
 

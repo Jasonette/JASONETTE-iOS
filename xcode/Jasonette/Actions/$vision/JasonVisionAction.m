@@ -10,17 +10,18 @@
 
 @implementation JasonVisionAction
 /**
-* {
-*     "type": "$vision.scan"
-* }
-*
-* Scans code specified in
-*   https://developer.apple.com/documentation/avfoundation/avmetadataobjecttype?language=objc for iOS
-*   https://developers.google.com/vision/android/barcodes-overview for Android
-*/
+ * {
+ *     "type": "$vision.scan"
+ * }
+ *
+ * Scans code specified in
+ *   https://developer.apple.com/documentation/avfoundation/avmetadataobjecttype?language=objc for iOS
+ *   https://developers.google.com/vision/android/barcodes-overview for Android
+ */
 
 - (void) scan {
-    JasonVisionService *service = [Jason client].services[@"JasonVisionService"];
+    JasonVisionService * service = [Jason client].services[@"JasonVisionService"];
+
     service.is_open = YES;
     [[Jason client] success];
 }

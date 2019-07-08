@@ -17,68 +17,70 @@ static NSArray * _services;
 
 @implementation JasonAppDelegate
 
-+ (void) initializeExtensionsWithOptions: (NSDictionary *) launchOptions
++ (void) initializeExtensionsWithOptions:(NSDictionary *)launchOptions
 {
     // 1. Find json files that start with $
     // 2. For each file, see if the class contains an "initialize" class method
     // 3. If so, run them one by one.
     DTLogInfo(@"Initializing Extensions");
     NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
-    
+
     NSArray * dirFiles = [[NSFileManager defaultManager]
                           contentsOfDirectoryAtPath:resourcePath
-                          error:nil];
-    
+                                              error:nil];
+
     DTLogInfo(@"Loading jrs.json files");
     NSArray * jrs = [dirFiles filteredArrayUsingPredicate:
                      [NSPredicate
                       predicateWithFormat:@"(self ENDSWITH[c] '.json') AND (self BEGINSWITH[c] '$')"]];
-    
+
     NSError * error = nil;
-    
-    if(jrs.count <= 0)
+
+    if (jrs.count <= 0)
     {
         DTLogInfo(@"No extensions found with jrs.json");
     }
-    
-    for(int i = 0 ; i < jrs.count; i++)
+
+    for (int i = 0; i < jrs.count; i++)
     {
         NSString * filename = jrs[i];
         NSString * absolute_path = [NSString stringWithFormat:@"%@/%@", resourcePath, filename];
-        
+
         NSInputStream * inputStream = [[NSInputStream alloc] initWithFileAtPath:absolute_path];
         [inputStream open];
-        
+
         NSDictionary * json = [NSJSONSerialization
-                               JSONObjectWithStream: inputStream
-                               options:kNilOptions
-                               error:&error];
+                               JSONObjectWithStream:inputStream
+                                            options:kNilOptions
+                                              error:&error];
         [inputStream close];
-        
-        if(json[@"classname"])
+
+        if (json[@"classname"])
         {
             DTLogInfo(@"Found %@ Extension", json[@"classname"]);
             [JasonAppDelegate initializeClass:json[@"classname"]
-                withOptions:launchOptions];
-        } else {
+                                  withOptions:launchOptions];
+        }
+        else
+        {
             DTLogWarning(@"No 'classname' property found in jrs.json %@", json);
         }
     }
 }
 
-+ (void) initializeClass: (NSString *) className
-  withOptions: (NSDictionary *) launchOptions
++ (void) initializeClass:(NSString *)className
+    withOptions:(NSDictionary *)launchOptions
 {
     Class ActionClass = [JasonNSClassFromString
                          classFromString:className];
-    
+
     DTLogInfo(@"Initializing %@", className);
-    
+
     id service;
-    
+
     DTLogInfo(@"Adding Class %@ to the Stack", className);
-    
-    if([Jason client].services && [Jason client].services[className])
+
+    if ([Jason client].services && [Jason client].services[className])
     {
         service = [Jason client].services[className];
     }
@@ -87,17 +89,17 @@ static NSArray * _services;
         service = [[ActionClass alloc] init];
         [Jason client].services[className] = service;
     }
-    
+
 #pragma message "TODO: Find a way to remove those clang diagnostic pragmas"
     DTLogInfo(@"Calling initilize: method on class %@", className);
-    
+
     SEL initialize = NSSelectorFromString(@"initialize:");
-    if([service respondsToSelector:initialize])
+    if ([service respondsToSelector:initialize])
     {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [service performSelector: initialize
-                      withObject: launchOptions];
+        [service performSelector:initialize
+                      withObject:launchOptions];
 #pragma clang diagnostic pop
     }
     else
@@ -106,160 +108,163 @@ static NSArray * _services;
     }
 }
 
-+ (void) setServices: (nonnull NSArray *) services
++ (void) setServices:(nonnull NSArray *)services
 {
     _services = services;
 }
 
 + (nonnull NSArray *) services
 {
-    if(!_services)
+    if (!_services)
     {
         _services = @[];
     }
-    
+
     return _services;
 }
 
-+ (BOOL) application: (UIApplication *) application
-    didFinishLaunchingWithOptions:(NSDictionary *) launchOptions
++ (BOOL) application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    
+
 #if DEBUG
     [JasonLogger setupWithLogLevelDebug];
 #else
     [JasonLogger setupWithLogLevelError];
 #endif
-    
+
     DTLogInfo(@"Begin Bootstrapping Jasonette");
-    
+
     [[NSUserDefaults standardUserDefaults]
      setValue:@(NO)
-     forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
-    
+       forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
+
     NSURLCache * URLCache = [[NSURLCache alloc]
-                            initWithMemoryCapacity:4 * 1024 * 1024
-                            diskCapacity:20 * 1024 * 1024
-                            diskPath:nil];
-    
+                             initWithMemoryCapacity:4 * 1024 * 1024
+                                       diskCapacity:20 * 1024 * 1024
+                                           diskPath:nil];
+
     [NSURLCache setSharedURLCache:URLCache];
-    
+
     // # initialize
     // Run "initialize" for built-in daemon type actions
     DTLogInfo(@"Initializing Services");
     NSArray * services = [@[@"JasonPushService",
-                                        @"JasonVisionService",
-                                        @"JasonWebsocketService",
-                                        @"JasonAgentService"]
-                                       arrayByAddingObjectsFromArray: [JasonAppDelegate
-                                                                       services]];
-    
-    for(NSString * service in services)
+                            @"JasonVisionService",
+                            @"JasonWebsocketService",
+                            @"JasonAgentService"]
+                          arrayByAddingObjectsFromArray:[JasonAppDelegate
+                                                         services]];
+
+    for (NSString * service in services)
     {
         [JasonAppDelegate
          initializeClass:service
-         withOptions:launchOptions];
+             withOptions:launchOptions];
     }
-    
+
     // Run "initialize" method for all extensions
-    [JasonAppDelegate initializeExtensionsWithOptions: launchOptions];
-    
-    if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey])
+    [JasonAppDelegate initializeExtensionsWithOptions:launchOptions];
+
+    if (launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey])
     {
         // launched with url. so wait until openURL is called.
         DTLogInfo(@"Launched with Url");
         _launchURL = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
-        
+
     }
-    else if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey])
+    else if (launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey])
     {
         // launched with push notification.
         DTLogInfo(@"Launched with Push Notification");
     }
-    
+
     DTLogInfo(@"Jasonette Bootstraped");
     DTLogInfo(@"Begin Building View");
-    
+
     [[Jason client] start:nil];
     return YES;
 }
 
-+ (void) applicationDidBecomeActive: (UIApplication *) application
++ (void) applicationDidBecomeActive:(UIApplication *)application
 {
     DTLogInfo(@"Application Did Become Active");
     if (_launchURL)
     {
         DTLogInfo(@"Launch URL Detected");
-        [JasonAppDelegate openURL:_launchURL type: @"start"];
+        [JasonAppDelegate openURL:_launchURL type:@"start"];
         _launchURL = nil;
     }
 }
 
-+ (BOOL) application: (UIApplication *) application
-            openURL: (NSURL *) url
-  sourceApplication: (NSString *) sourceApplication
-         annotation: (id) annotation
++ (BOOL) application:(UIApplication *)application
+    openURL:(NSURL *)url
+    sourceApplication:(NSString *)sourceApplication
+    annotation:(id)annotation
 {
-    if (!url) return NO;
+    if (!url)
+    {
+        return NO;
+    }
     DTLogInfo(@"Received Application openURL");
-    return [JasonAppDelegate openURL:url type: @"go"];
+    return [JasonAppDelegate openURL:url type:@"go"];
 }
 
-+ (BOOL) openURL: (NSURL *) url
-            type: (NSString *) type
++ (BOOL) openURL:(NSURL *)url
+    type:(NSString *)type
 {
     DTLogInfo(@"OpenURL Triggered");
     DTLogDebug(@"Opening Url %@ Type %@", [url absoluteString], type);
-    
-    if([[url absoluteString] containsString:@"://oauth"])
+
+    if ([[url absoluteString] containsString:@"://oauth"])
     {
         DTLogInfo(@"://oauth call detected");
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"oauth_callback" object:nil userInfo:@{@"url": url}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"oauth_callback" object:nil userInfo:@{ @"url": url }];
         return YES;
     }
-    
+
     if ([[url absoluteString] containsString:@"://href?"])
     {
         DTLogInfo(@"://href? call detected");
-        
+
         NSString * u = [url absoluteString];
         NSString * href_url = [JasonHelper getParamValueFor:@"url" fromUrl:u];
         NSString * href_view = [JasonHelper getParamValueFor:@"view" fromUrl:u];
         NSString * href_transition = [JasonHelper getParamValueFor:@"transition" fromUrl:u];
-        
+
         DTLogInfo(@"Checking href config");
         NSMutableDictionary * href = [@{} mutableCopy];
-        if(href_url && href_url.length > 0)
+        if (href_url && href_url.length > 0)
         {
             DTLogDebug(@"href url %@", href_url);
             href[@"url"] = href_url;
         }
-        
-        if(href_view && href_view.length > 0)
+
+        if (href_view && href_view.length > 0)
         {
             DTLogDebug(@"href view %@", href_view);
             href[@"view"] = href_view;
         }
-        
+
         href[@"transition"] = @"modal";
-        if(href_transition && href_transition.length > 0)
+        if (href_transition && href_transition.length > 0)
         {
             DTLogDebug(@"href transition %@", href_transition);
             href[@"transition"] = href_transition;
         }
-        
-        if([type isEqualToString:@"go"])
+
+        if ([type isEqualToString:@"go"])
         {
             DTLogInfo(@"Type is Go");
             [[Jason client] go:href];
             return YES;
         }
-        
+
         DTLogInfo(@"Type is Start");
         [[Jason client] start:href];
         return YES;
     }
-    
+
     // Only start if we're not going through an oauth auth process
     DTLogInfo(@"No Auth process found. Start normal");
     [[Jason client] start:nil];
@@ -268,44 +273,44 @@ static NSArray * _services;
 
 
 #pragma mark - Remote Notification Delegate below iOS 9
-+ (void) application: (UIApplication *) application
-didRegisterUserNotificationSettings: (UIUserNotificationSettings *) notificationSettings
++ (void) application:(UIApplication *)application
+    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
     DTLogDebug(@"Registering for Remote Notifications");
     [application registerForRemoteNotifications];
 }
 
-+ (void) application:(UIApplication *) application
-    didRegisterForRemoteNotificationsWithDeviceToken: (NSData *) deviceToken
++ (void) application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     NSString * device_token = [[NSString alloc]initWithFormat:@"%@",
                                [[[deviceToken description]
                                  stringByTrimmingCharactersInSet:[NSCharacterSet
                                                                   characterSetWithCharactersInString:@"<>"]]
                                 stringByReplacingOccurrencesOfString:@" " withString:@""]];
-    
+
     DTLogInfo(@"Got Device Token");
     DTLogDebug(@"Got Device Token %@", device_token);
-    
+
     [[NSNotificationCenter defaultCenter]
      postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil
-     userInfo:@{@"token": device_token}];
+                 userInfo:@{ @"token": device_token }];
 }
 
-+ (void) application: (UIApplication *) application
-    didReceiveRemoteNotification:(NSDictionary *) userInfo
++ (void) application:(UIApplication *)application
+    didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
     DTLogInfo(@"Got Remote Notification");
     DTLogDebug(@"Received Remote Notification %@", userInfo);
-    
+
     [[NSNotificationCenter defaultCenter]
      postNotificationName:@"onRemoteNotification"
-     object:nil
-     userInfo:userInfo];
+                   object:nil
+                 userInfo:userInfo];
 }
 
-+ (void) application: (UIApplication *) application
-    didFailToRegisterForRemoteNotificationsWithError: (NSError *) error
++ (void) application:(UIApplication *)application
+    didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
     DTLogWarning(@"Notifications Failed to be Registered %@", error);
 }

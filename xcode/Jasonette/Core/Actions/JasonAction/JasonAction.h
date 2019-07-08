@@ -10,7 +10,7 @@
 #import "Jason.h"
 
 @interface JasonAction : NSObject
-@property (nonatomic, strong) JasonViewController *VC;
-@property (nonatomic, strong) NSDictionary *options;
-@property (nonatomic, strong) NSMutableDictionary *cache;
+@property (nonatomic, strong) JasonViewController * VC;
+@property (nonatomic, strong) NSDictionary * options;
+@property (nonatomic, strong) NSMutableDictionary * cache;
 @end

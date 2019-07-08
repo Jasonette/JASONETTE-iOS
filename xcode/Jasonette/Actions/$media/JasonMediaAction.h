@@ -10,5 +10,5 @@
 #import <AVFoundation/AVFoundation.h>
 #import "JasonPortraitPicker.h"
 #import <AVKit/AVKit.h>
-@interface JasonMediaAction : JasonAction <UINavigationControllerDelegate,UIImagePickerControllerDelegate>
+@interface JasonMediaAction : JasonAction <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end

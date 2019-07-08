@@ -10,24 +10,24 @@
 
 @implementation JasonLabelComponent
 
-+ (UIView *) build: (TTTAttributedLabel *) component
-          withJSON: (NSDictionary *) json
-       withOptions: (NSDictionary *)options
++ (UIView *) build:(TTTAttributedLabel *)component
+    withJSON:(NSDictionary *)json
+    withOptions:(NSDictionary *)options
 {
-    
+
     DTLogDebug(@"Creating label Component With JSON %@", json);
-    
-    if(!component)
+
+    if (!component)
     {
-        component = (TTTAttributedLabel*)[[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+        component = (TTTAttributedLabel *) [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
     }
-    
-    if(json)
+
+    if (json)
     {
         // Enable automatic number of lines in label.
         component.numberOfLines = 0;
-        
-        if(json[@"text"] && ![json[@"text"] isEqual:[NSNull null]])
+
+        if (json[@"text"] && ![json[@"text"] isEqual:[NSNull null]])
         {
             component.text = [json[@"text"] description];
         }
@@ -36,11 +36,11 @@
             DTLogWarning(@"Label component with empty text %@", json);
         }
     }
-    
+
     // Apply Common Style
     [self stylize:json
-        component:component];
-    
+        component :component];
+
     return component;
 }
 

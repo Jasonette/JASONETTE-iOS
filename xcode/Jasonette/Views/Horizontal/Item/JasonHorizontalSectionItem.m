@@ -11,17 +11,20 @@
     BOOL isWidthCalculated;
 }
 
-- (void)prepareForReuse {
+- (void) prepareForReuse {
     [super prepareForReuse];
-    for(UIView *subview in [self.contentView subviews]) {
+    for (UIView * subview in [self.contentView subviews])
+    {
         [subview removeFromSuperview];
     }
 }
-- (UICollectionViewLayoutAttributes *)preferredLayoutAttributesFittingAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
+- (UICollectionViewLayoutAttributes *) preferredLayoutAttributesFittingAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
 
 {
-    UICollectionViewLayoutAttributes *attributes = [layoutAttributes copy];
-    if(!isWidthCalculated){
+    UICollectionViewLayoutAttributes * attributes = [layoutAttributes copy];
+
+    if (!isWidthCalculated)
+    {
         [self setNeedsLayout];
         [self layoutIfNeeded];
         float desiredWidth = [self.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].width;
