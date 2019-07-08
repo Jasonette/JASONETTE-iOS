@@ -317,11 +317,12 @@
 		EF072F6122D28B2400973DE1 /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				EF82979222D28D96003ED64B /* Info.plist */,
-				EF072F6222D28B2400973DE1 /* Media.xcassets */,
-				EF072F6322D28B2400973DE1 /* LaunchScreen.storyboard */,
-				EF072F6422D28B2400973DE1 /* Constants.h */,
 				EF072F6522D28B2400973DE1 /* AppDelegate */,
+				EF82979222D28D96003ED64B /* Info.plist */,
+				EF072F6322D28B2400973DE1 /* LaunchScreen.storyboard */,
+				EF072F6722D28B2400973DE1 /* main.m */,
+				EF072F6422D28B2400973DE1 /* Constants.h */,
+				EF072F6222D28B2400973DE1 /* Media.xcassets */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -330,7 +331,6 @@
 			isa = PBXGroup;
 			children = (
 				EF072F6622D28B2400973DE1 /* AppDelegate.h */,
-				EF072F6722D28B2400973DE1 /* main.m */,
 				EF072F6822D28B2400973DE1 /* AppDelegate.m */,
 			);
 			path = AppDelegate;
