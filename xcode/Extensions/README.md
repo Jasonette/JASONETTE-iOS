@@ -131,7 +131,7 @@ Defines actions that could be performed using the `action` property.
 }
 ```
 
-> Interface
+> Interface:
 > The action must be child of `JasonAction` and follow the naming convention.
 
 ```objc
@@ -141,7 +141,7 @@ Defines actions that could be performed using the `action` property.
 @end
 ```
 
-> Implementation
+> Implementation:
 > Each method will be available as `$myaction.mymethod`
 > in this case would be `$myaction.get`
 
@@ -257,7 +257,7 @@ A component is an `UIView` that could be rendered by the `JasonComponentFactory`
 }
 ```
 
-> Interface
+> Interface:
 > The component must be child of `JasonComponent` and follow the naming convention.
 
 ```objc
@@ -267,7 +267,7 @@ A component is an `UIView` that could be rendered by the `JasonComponentFactory`
 @end
 ```
 
-> Implementation
+> Implementation:
 > The component must implement the following method
 
 ```objc
@@ -281,6 +281,18 @@ A component is an `UIView` that could be rendered by the `JasonComponentFactory`
 - `component`: Should be returned with all the styles and options applied.
 - `json`: Contains the properties `name`, `action` and `style`.
 - `options`: Contains the params.
+
+##### component can be nil
+
+Component param can be `nil`. always check and build the component
+if needed.
+
+```objc
+if (!component)
+{
+    component = [[UIView alloc] init];
+}
+```
 
 #### Methods
 
