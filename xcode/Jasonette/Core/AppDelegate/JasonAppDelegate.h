@@ -36,6 +36,4 @@
 + (void) application:(UIApplication *)application
     didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 
-#pragma mark - Services
-+ (void) setServices:(nonnull NSArray *)services;
 @end

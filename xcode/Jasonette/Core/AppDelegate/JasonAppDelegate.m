@@ -85,7 +85,7 @@ static NSArray * _services;
         }
         
         class = json[@"classname"];
-        DTLogInfo(@"Initializing %@ Extension", class);
+        DTLogInfo(@"Initializing %@ Extension", filename);
         [JasonAppDelegate initializeClass:class
                               withOptions:launchOptions];
     }
@@ -94,116 +94,136 @@ static NSArray * _services;
 + (void) initializeClass:(NSString *)className
     withOptions:(NSDictionary *)launchOptions
 {
+    DTLogInfo(@"Initializing %@", className);
+    
+    if(![className hasPrefix:@"Jason"])
+    {
+        DTLogWarning(@"Class %@ does not start with 'Jason'", className);
+        DTLogWarning(@"Use the format Jason{MyClass}Action|Component|Service. Example: JasonMyCustomAction.\nSkipping");
+        return;
+    }
+    
+    if(!([className hasSuffix:@"Action"] || [className hasSuffix:@"Component"] || [className hasSuffix:@"Service"]))
+    {
+        DTLogWarning(@"Class %@ does not end with 'Action', 'Component' or 'Service'", className);
+        DTLogWarning(@"Use the format Jason{MyClass}Action|Component|Service. Example: JasonMyCustomAction.\nSkipping");
+        return;
+    }
+    
+    DTLogInfo(@"Calling initilize: method on class %@", className);
     Class ActionClass = [JasonNSClassFromString
                          classFromString:className];
-
-    DTLogInfo(@"Initializing %@", className);
-
-    id service;
-
-    DTLogInfo(@"Adding Class %@ to the Stack", className);
-
+    id extension;
+    
     if ([Jason client].services && [Jason client].services[className])
     {
-        service = [Jason client].services[className];
+        extension = [Jason client].services[className];
     }
     else
     {
-        service = [[ActionClass alloc] init];
-        [Jason client].services[className] = service;
+        DTLogInfo(@"Adding Class %@ to the Stack", className);
+        extension = [[ActionClass alloc] init];
+        [Jason client].services[className] = extension;
     }
-
-#pragma message "TODO: Find a way to remove those clang diagnostic pragmas"
-    DTLogInfo(@"Calling initilize: method on class %@", className);
-
+    
     SEL initialize = NSSelectorFromString(@"initialize:");
-    if ([service respondsToSelector:initialize])
+    
+    if ([extension respondsToSelector:initialize])
     {
+#pragma message "TODO: Find a way to remove those clang diagnostic pragmas"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [service performSelector:initialize
+        [extension performSelector:initialize
                       withObject:launchOptions];
 #pragma clang diagnostic pop
+        return;
     }
-    else
+
+    DTLogWarning(@"Class %@ does not implement initialize: method. Skipping", className);
+}
+
++ (void) initializeServicesWithOptions: (NSDictionary *) launchOptions
+{
+    // # initialize
+    // Run "initialize" for built-in daemon type actions
+    DTLogInfo(@"Initializing Core Services");
+    NSArray * services = @[@"JasonPushService",
+                          @"JasonVisionService",
+                          @"JasonWebsocketService",
+                          @"JasonAgentService"];
+    
+    for (NSString * service in services)
     {
-        DTLogWarning(@"Service %@ does not implement initialize: method", className);
+        [JasonAppDelegate
+         initializeClass:service
+         withOptions:launchOptions];
     }
 }
 
-+ (void) setServices:(nonnull NSArray *)services
++ (void) setLaunchURLWithOptions: (NSDictionary *) launchOptions
 {
-    _services = services;
-}
-
-+ (nonnull NSArray *) services
-{
-    if (!_services)
+    if (launchOptions && launchOptions.count > 0 &&
+        launchOptions[UIApplicationLaunchOptionsURLKey])
     {
-        _services = @[];
+        // launched with url. so wait until openURL is called.
+        _launchURL = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
+        DTLogInfo(@"Launched with Url %@", _launchURL);
+        
     }
-
-    return _services;
+    else if (launchOptions && launchOptions.count > 0 &&
+             launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey])
+    {
+        // launched with push notification.
+        DTLogInfo(@"Launched with Push Notification");
+    }
 }
 
-+ (BOOL) application:(UIApplication *)application
-    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
++ (void) setCache
 {
+    int MegaByte = 1024 * 1024;
+    NSURLCache * URLCache = [[NSURLCache alloc]
+                             initWithMemoryCapacity:4 * MegaByte
+                             diskCapacity:20 * MegaByte
+                             diskPath:nil];
+    
+    [NSURLCache setSharedURLCache:URLCache];
+}
 
++ (void) setLayoutConstraintsConfiguration
+{
+    [[NSUserDefaults standardUserDefaults]
+     setValue:@(NO)
+     forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
+}
+
++ (void) setLogger
+{
 #if DEBUG
     [JasonLogger setupWithLogLevelDebug];
 #else
     [JasonLogger setupWithLogLevelError];
 #endif
+}
 
++ (BOOL) application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    [JasonAppDelegate setLogger];
     DTLogInfo(@"Begin Bootstrapping Jasonette");
 
-    [[NSUserDefaults standardUserDefaults]
-     setValue:@(NO)
-       forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
-
-    NSURLCache * URLCache = [[NSURLCache alloc]
-                             initWithMemoryCapacity:4 * 1024 * 1024
-                                       diskCapacity:20 * 1024 * 1024
-                                           diskPath:nil];
-
-    [NSURLCache setSharedURLCache:URLCache];
-
-    // # initialize
-    // Run "initialize" for built-in daemon type actions
-    DTLogInfo(@"Initializing Services");
-    NSArray * services = [@[@"JasonPushService",
-                            @"JasonVisionService",
-                            @"JasonWebsocketService",
-                            @"JasonAgentService"]
-                          arrayByAddingObjectsFromArray:[JasonAppDelegate
-                                                         services]];
-
-    for (NSString * service in services)
-    {
-        [JasonAppDelegate
-         initializeClass:service
-             withOptions:launchOptions];
-    }
+    [JasonAppDelegate setLayoutConstraintsConfiguration];
+    [JasonAppDelegate setCache];
+    
+    // Run "initialize" method for the core services
+    [JasonAppDelegate initializeServicesWithOptions:launchOptions];
 
     // Run "initialize" method for all extensions
     [JasonAppDelegate initializeExtensionsWithOptions:launchOptions];
 
-    if (launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey])
-    {
-        // launched with url. so wait until openURL is called.
-        DTLogInfo(@"Launched with Url");
-        _launchURL = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
-
-    }
-    else if (launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey])
-    {
-        // launched with push notification.
-        DTLogInfo(@"Launched with Push Notification");
-    }
+    [JasonAppDelegate setLaunchURLWithOptions:launchOptions];
 
     DTLogInfo(@"Jasonette Bootstraped");
-    DTLogInfo(@"Begin Building View");
+    DTLogInfo(@"Begin Building Screen");
 
     [[Jason client] start:nil];
     return YES;
