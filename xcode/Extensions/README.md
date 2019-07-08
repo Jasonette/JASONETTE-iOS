@@ -282,9 +282,9 @@ A component is an `UIView` that could be rendered by the `JasonComponentFactory`
 - `json`: Contains the properties `name`, `action` and `style`.
 - `options`: Contains the params.
 
-##### component can be nil
+##### component can't be nil
 
-Component param can be `nil`. always check and build the component
+Component param can't be `nil`. always check and build the component
 if needed.
 
 ```objc
