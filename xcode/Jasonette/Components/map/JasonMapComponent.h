@@ -9,5 +9,5 @@
 #import "NSObject+JSONPayload.h"
 
 @interface JasonMapComponent : JasonComponent <MKMapViewDelegate>
-+ (void) setRegion:(MKMapView *)mapView;
++ (void)setRegion:(MKMapView *)mapView;
 @end

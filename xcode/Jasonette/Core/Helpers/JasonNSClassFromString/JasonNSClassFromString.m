@@ -11,25 +11,23 @@
 
 @implementation JasonNSClassFromString
 
-+ (nullable Class) classFromString:(nonnull NSString *)className
++ (nullable Class)classFromString:(nonnull NSString *)className
 {
-    if (!className)
-    {
+    if (!className) {
         className = @"";
     }
 
-    Class class = NSClassFromString(className);
-    if (!class)
-    {
+    Class class = NSClassFromString (className);
+
+    if (!class) {
         NSString * prefix = [[NSBundle mainBundle] infoDictionary][@"CFBundleExecutable"];
         // Swift Classes contains the bundle executable as prefix
         className = [NSString stringWithFormat:@"%@.%@", prefix, className];
-        class = NSClassFromString(className);
+        class = NSClassFromString (className);
     }
 
-    if (!class)
-    {
-        DTLogWarning(@"Class %@ not found", className);
+    if (!class) {
+        DTLogWarning (@"Class %@ not found", className);
     }
 
     return class;

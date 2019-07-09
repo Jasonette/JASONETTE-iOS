@@ -9,22 +9,22 @@
 #import "JasonNSClassFromString.h"
 
 @implementation JasonHelper
-+ (NSDate *) dateWithISO8601String:(NSString *)dateString
++ (NSDate *)dateWithISO8601String:(NSString *)dateString
 {
-    if (!dateString || [[NSNull null] isEqual:dateString])
-    {
+    if (!dateString || [[NSNull null] isEqual:dateString]) {
         return nil;
     }
-    if ([dateString hasSuffix:@"Z"])
-    {
+
+    if ([dateString hasSuffix:@"Z"]) {
         dateString = [[dateString substringToIndex:(dateString.length - 1)] stringByAppendingString:@"-0000"];
     }
+
     return [self dateFromString:dateString
                      withFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
 }
 
-+ (NSDate *) dateFromString:(NSString *)dateString
-    withFormat:(NSString *)dateFormat
++ (NSDate *)dateFromString:(NSString *)dateString
+                withFormat:(NSString *)dateFormat
 {
     NSDateFormatter * dateFormatter = [[NSDateFormatter alloc] init];
 
@@ -37,10 +37,9 @@
     NSDate * date = [dateFormatter dateFromString:dateString];
     return date;
 }
-+ (MFMessageComposeViewController *) sendSMS:(NSString *)message to:(NSString *)phone {
 
-    if (![MFMessageComposeViewController canSendText])
-    {
++ (MFMessageComposeViewController *)sendSMS:(NSString *)message to:(NSString *)phone {
+    if (![MFMessageComposeViewController canSendText]) {
         return nil;
     }
 
@@ -52,47 +51,50 @@
     [messageController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
     return messageController;
 }
-+ (UIColor *) darkerColorForColor:(UIColor *)c
+
++ (UIColor *)darkerColorForColor:(UIColor *)c
 {
     CGFloat r, g, b, a;
 
-    if ([c getRed:&r green:&g blue:&b alpha:&a])
-    {
-        return [UIColor colorWithRed:MAX(r - 0.1, 0.0)
-                               green:MAX(g - 0.1, 0.0)
-                                blue:MAX(b - 0.1, 0.0)
+    if ([c getRed:&r green:&g blue:&b alpha:&a]) {
+        return [UIColor colorWithRed:MAX (r - 0.1, 0.0)
+                               green:MAX (g - 0.1, 0.0)
+                                blue:MAX (b - 0.1, 0.0)
                                alpha:a];
     }
+
     return nil;
 }
-+ (UIColor *) lighterColorForColor:(UIColor *)c
+
++ (UIColor *)lighterColorForColor:(UIColor *)c
 {
     CGFloat r, g, b, a;
 
-    if ([c getRed:&r green:&g blue:&b alpha:&a])
-    {
-        return [UIColor colorWithRed:MIN(r + 0.1, 1.0)
-                               green:MIN(g + 0.1, 1.0)
-                                blue:MIN(b + 0.1, 1.0)
+    if ([c getRed:&r green:&g blue:&b alpha:&a]) {
+        return [UIColor colorWithRed:MIN (r + 0.1, 1.0)
+                               green:MIN (g + 0.1, 1.0)
+                                blue:MIN (b + 0.1, 1.0)
                                alpha:a];
     }
+
     return nil;
 }
-+ (NSString *) hexStringFromColor:(UIColor *)color {
-    const CGFloat * components = CGColorGetComponents(color.CGColor);
+
++ (NSString *)hexStringFromColor:(UIColor *)color {
+    const CGFloat * components = CGColorGetComponents (color.CGColor);
 
     CGFloat r = components[0];
     CGFloat g = components[1];
     CGFloat b = components[2];
 
     return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
-            lroundf(r * 255),
-            lroundf(g * 255),
-            lroundf(b * 255)];
+            lroundf (r * 255),
+            lroundf (g * 255),
+            lroundf (b * 255)];
 }
-+ (BOOL) isColorTranslucent:(NSString *)str {
-    if ([str localizedCaseInsensitiveContainsString:@"rgba("])
-    {
+
++ (BOOL)isColorTranslucent:(NSString *)str {
+    if ([str localizedCaseInsensitiveContainsString:@"rgba("]) {
         NSScanner * scanner = [NSScanner scannerWithString:str];
         NSString * junk, * red, * green, * blue, * opacity;
         [scanner scanUpToCharactersFromSet:[NSCharacterSet decimalDigitCharacterSet] intoString:&junk];
@@ -103,25 +105,20 @@
         [scanner scanUpToCharactersFromSet:[NSCharacterSet punctuationCharacterSet] intoString:&blue];
         [scanner scanUpToCharactersFromSet:[NSCharacterSet decimalDigitCharacterSet] intoString:&junk];
         [scanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@")"] intoString:&opacity];
-        if (opacity.floatValue < 1.0)
-        {
+
+        if (opacity.floatValue < 1.0) {
             return YES;
-        }
-        else
-        {
+        } else {
             return NO;
         }
-    }
-    else
-    {
+    } else {
         return NO;
     }
 }
-+ (UIColor *) colorwithHexString:(NSString *)hexStr alpha:(CGFloat)alpha
-{
 
-    if ([hexStr localizedCaseInsensitiveContainsString:@"rgb("])
-    {
++ (UIColor *)colorwithHexString:(NSString *)hexStr alpha:(CGFloat)alpha
+{
+    if ([hexStr localizedCaseInsensitiveContainsString:@"rgb("]) {
         NSScanner * scanner = [NSScanner scannerWithString:hexStr];
         NSString * junk, * red, * green, * blue;
         [scanner scanUpToCharactersFromSet:[NSCharacterSet decimalDigitCharacterSet] intoString:&junk];
@@ -132,9 +129,7 @@
         [scanner scanUpToCharactersFromSet:[NSCharacterSet punctuationCharacterSet] intoString:&blue];
         UIColor * color = [UIColor colorWithRed:red.intValue / 255.0 green:green.intValue / 255.0 blue:blue.intValue / 255.0 alpha:1.0];
         return color;
-    }
-    else if ([hexStr localizedCaseInsensitiveContainsString:@"rgba("])
-    {
+    } else if ([hexStr localizedCaseInsensitiveContainsString:@"rgba("]) {
         NSScanner * scanner = [NSScanner scannerWithString:hexStr];
         NSString * junk, * red, * green, * blue, * opacity;
         [scanner scanUpToCharactersFromSet:[NSCharacterSet decimalDigitCharacterSet] intoString:&junk];
@@ -147,9 +142,7 @@
         [scanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@")"] intoString:&opacity];
         UIColor * color = [UIColor colorWithRed:red.intValue / 255.0 green:green.intValue / 255.0 blue:blue.intValue / 255.0 alpha:opacity.floatValue];
         return color;
-    }
-    else
-    {
+    } else {
         // -----------------------------------------
         // Convert hex string to an integer
         // -----------------------------------------
@@ -165,137 +158,133 @@
         // -----------------------------------------
         // Create color object, specifying alpha
         // -----------------------------------------
-        UIColor * color = [UIColor colorWithRed:((CGFloat) ((hexint & 0xFF0000) >> 16)) / 255
-                                          green:((CGFloat) ((hexint & 0xFF00) >> 8)) / 255
-                                           blue:((CGFloat) (hexint & 0xFF)) / 255
+        UIColor * color = [UIColor colorWithRed:((CGFloat)((hexint & 0xFF0000) >> 16)) / 255
+                                          green:((CGFloat)((hexint & 0xFF00) >> 8)) / 255
+                                           blue:((CGFloat)(hexint & 0xFF)) / 255
                                           alpha:alpha];
 
         return color;
-
     }
-
-
 }
 
-+ (NSObject *) cleanNull:(NSObject *)obj type:(NSString *)type {
-    if (!obj || [[NSNull null] isEqual:obj])
-    {
-        if ([type isEqualToString:@"string"])
-        {
++ (NSObject *)cleanNull:(NSObject *)obj type:(NSString *)type {
+    if (!obj || [[NSNull null] isEqual:obj]) {
+        if ([type isEqualToString:@"string"]) {
             return @"";
-        }
-        else if ([type isEqualToString:@"number"])
-        {
+        } else if ([type isEqualToString:@"number"]) {
             return @0;
-        }
-        else
-        {
+        } else {
             return nil;
         }
-    }
-    else
-    {
+    } else {
         return obj;
     }
 }
 
-+ (NSObject *) clean:(NSObject *)obj {
-    if (!obj || [[NSNull null] isEqual:obj])
-    {
++ (NSObject *)clean:(NSObject *)obj {
+    if (!obj || [[NSNull null] isEqual:obj]) {
         return nil;
-    }
-    else
-    {
+    } else {
         return obj;
     }
 }
 
-+ (UIImage *) scaleImage:(UIImage *)image ToSize:(CGSize)newSize {
-
++ (UIImage *)scaleImage:(UIImage *)image ToSize:(CGSize)newSize {
     CGRect scaledImageRect = CGRectZero;
 
     CGFloat aspectWidth = newSize.width / image.size.width;
     CGFloat aspectHeight = newSize.height / image.size.height;
-    CGFloat aspectRatio = MIN(aspectWidth, aspectHeight);
+    CGFloat aspectRatio = MIN (aspectWidth, aspectHeight);
 
     scaledImageRect.size.width = image.size.width * aspectRatio;
     scaledImageRect.size.height = image.size.height * aspectRatio;
     scaledImageRect.origin.x = (newSize.width - scaledImageRect.size.width) / 2.0f;
     scaledImageRect.origin.y = (newSize.height - scaledImageRect.size.height) / 2.0f;
 
-    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0);
+    UIGraphicsBeginImageContextWithOptions (newSize, NO, 0);
     [image drawInRect:scaledImageRect];
-    UIImage * scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    UIImage * scaledImage = UIGraphicsGetImageFromCurrentImageContext ();
+    UIGraphicsEndImageContext ();
 
     return scaledImage;
-
 }
-+ (id) valueOf:(id)object forKeyPathWithIndexes:(NSString *)fullPath
+
++ (id)valueOf:(id)object forKeyPathWithIndexes:(NSString *)fullPath
 {
     NSRange testrange = [fullPath rangeOfString:@"["];
 
-    if (testrange.location == NSNotFound)
-    {
+    if (testrange.location == NSNotFound) {
         return [object valueForKeyPath:fullPath];
     }
 
     NSArray * parts = [fullPath componentsSeparatedByString:@"."];
     id currentObj = object;
-    for (NSString * part in parts)
-    {
+
+    for (NSString * part in parts) {
         NSRange range1 = [part rangeOfString:@"["];
-        if (range1.location == NSNotFound)
-        {
+
+        if (range1.location == NSNotFound) {
             currentObj = [currentObj valueForKey:part];
-        }
-        else
-        {
+        } else {
             NSString * arrayKey = [part substringToIndex:range1.location];
             int index = [[[part substringToIndex:part.length - 1] substringFromIndex:range1.location + 1] intValue];
             currentObj = [[currentObj valueForKey:arrayKey] objectAtIndex:index];
         }
     }
+
     return currentObj;
 }
-+ (NSString *) mimeTypeForData:(NSData *)data {
+
++ (NSString *)mimeTypeForData:(NSData *)data {
     uint8_t c;
 
     [data getBytes:&c length:1];
 
-    switch (c)
-    {
+    switch (c) {
         case 0xFF:
             return @"image/jpeg";
+
             break;
+
         case 0x89:
             return @"image/png";
+
             break;
+
         case 0x47:
             return @"image/gif";
+
             break;
+
         case 0x49:
         case 0x4D:
             return @"image/tiff";
+
             break;
+
         case 0x25:
             return @"application/pdf";
+
             break;
+
         case 0xD0:
             return @"application/vnd";
+
             break;
+
         case 0x46:
             return @"text/plain";
+
             break;
+
         default:
             return nil;// @"application/octet-stream";
     }
     return nil;
 }
 
-
-+ (UIImage *) colorize:(UIImage *)image into:(UIColor *)color {
-    UIGraphicsBeginImageContextWithOptions(image.size, YES, [[UIScreen mainScreen] scale]);
++ (UIImage *)colorize:(UIImage *)image into:(UIColor *)color {
+    UIGraphicsBeginImageContextWithOptions (image.size, YES, [[UIScreen mainScreen] scale]);
 
     CGRect contextRect;
     contextRect.origin.x = 0.0f;
@@ -305,44 +294,41 @@
     // Retrieve source image and begin image context
     CGSize itemImageSize = [image size];
     CGPoint itemImagePosition;
-    itemImagePosition.x = ceilf((contextRect.size.width - itemImageSize.width) / 2);
-    itemImagePosition.y = ceilf((contextRect.size.height - itemImageSize.height) );
+    itemImagePosition.x = ceilf ((contextRect.size.width - itemImageSize.width) / 2);
+    itemImagePosition.y = ceilf ((contextRect.size.height - itemImageSize.height) );
 
-    UIGraphicsBeginImageContextWithOptions(contextRect.size, NO, [[UIScreen mainScreen] scale]);
+    UIGraphicsBeginImageContextWithOptions (contextRect.size, NO, [[UIScreen mainScreen] scale]);
 
-    CGContextRef c = UIGraphicsGetCurrentContext();
+    CGContextRef c = UIGraphicsGetCurrentContext ();
 
     // Setup shadow
     // Setup transparency layer and clip to mask
-    CGContextBeginTransparencyLayer(c, NULL);
-    CGContextScaleCTM(c, 1.0, -1.0);
-    CGContextClipToMask(c, CGRectMake(itemImagePosition.x, -itemImagePosition.y, itemImageSize.width, -itemImageSize.height), [image CGImage]);
+    CGContextBeginTransparencyLayer (c, NULL);
+    CGContextScaleCTM (c, 1.0, -1.0);
+    CGContextClipToMask (c, CGRectMake (itemImagePosition.x, -itemImagePosition.y, itemImageSize.width, -itemImageSize.height), [image CGImage]);
 
     // Fill and end the transparency layer
-    CGColorSpaceRef colorSpace = CGColorGetColorSpace(color.CGColor);
-    CGColorSpaceModel model = CGColorSpaceGetModel(colorSpace);
-    const CGFloat * colors = CGColorGetComponents(color.CGColor);
+    CGColorSpaceRef colorSpace = CGColorGetColorSpace (color.CGColor);
+    CGColorSpaceModel model = CGColorSpaceGetModel (colorSpace);
+    const CGFloat * colors = CGColorGetComponents (color.CGColor);
 
-    if (model == kCGColorSpaceModelMonochrome)
-    {
-        CGContextSetRGBFillColor(c, colors[0], colors[0], colors[0], colors[1]);
+    if (model == kCGColorSpaceModelMonochrome) {
+        CGContextSetRGBFillColor (c, colors[0], colors[0], colors[0], colors[1]);
+    } else {
+        CGContextSetRGBFillColor (c, colors[0], colors[1], colors[2], colors[3]);
     }
-    else
-    {
-        CGContextSetRGBFillColor(c, colors[0], colors[1], colors[2], colors[3]);
-    }
+
     contextRect.size.height = -contextRect.size.height;
     contextRect.size.height -= 15;
-    CGContextFillRect(c, contextRect);
-    CGContextEndTransparencyLayer(c);
+    CGContextFillRect (c, contextRect);
+    CGContextEndTransparencyLayer (c);
 
-    UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    UIImage * img = UIGraphicsGetImageFromCurrentImageContext ();
+    UIGraphicsEndImageContext ();
     return img;
 }
 
-+ (NSString *) getParamValueFor:(NSString *)key fromUrl:(NSString *)url {
-
++ (NSString *)getParamValueFor:(NSString *)key fromUrl:(NSString *)url {
     NSURLComponents * urlComponents = [NSURLComponents componentsWithURL:[NSURL URLWithString:url] resolvingAgainstBaseURL:NO];
     NSArray * queryItems = urlComponents.queryItems;
     NSPredicate * predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
@@ -351,10 +337,9 @@
     return queryItem.value;
 }
 
-+ (id) objectify:(NSString *)str
++ (id)objectify:(NSString *)str
 {
-
-    DTLogDebug(@"Objectifying String");
+    DTLogDebug (@"Objectifying String");
 
     NSString * converted = str;
     NSError * error = nil;
@@ -365,30 +350,28 @@
                             options:kNilOptions
                               error:&error];
 
-    if (!result || error)
-    {
-        DTLogError(@"Error: %@", error.localizedDescription);
+    if (!result || error) {
+        DTLogError (@"Error: %@", error.localizedDescription);
         return nil;
     }
 
     return result;
 }
 
-+ (NSString *) stringify:(id)value
++ (NSString *)stringify:(id)value
 {
-
-    DTLogDebug(@"Stringifying Object");
+    DTLogDebug (@"Stringifying Object");
 
     /*
-       NSError *error;
-       @try {
-        NSData *data = [NSJSONSerialization dataWithJSONObject:value options:NSJSONWritingPrettyPrinted error:&error];
-        NSString* str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        return str;
-       } @catch (NSException *exception) {
-        return @"";
-       }
-       return @"";
+     * NSError *error;
+     * @try {
+     *  NSData *data = [NSJSONSerialization dataWithJSONObject:value options:NSJSONWritingPrettyPrinted error:&error];
+     *  NSString* str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+     *  return str;
+     * } @catch (NSException *exception) {
+     *  return @"";
+     * }
+     * return @"";
      */
 
 #pragma message "TODO: Update SBJson4Writer Lib"
@@ -398,12 +381,10 @@
     writer.sortKeys = YES;
     @try {
         NSString * ret = [writer stringWithObject:value];
-        if (ret)
-        {
+
+        if (ret) {
             return ret;
-        }
-        else
-        {
+        } else {
             return [value description];
         }
     } @catch (NSException * exception) {
@@ -411,23 +392,21 @@
     }
 }
 
-+ (NSDictionary *) sessionForUrl:(NSString *)url
++ (NSDictionary *)sessionForUrl:(NSString *)url
 {
-    DTLogDebug(@"Obtaining Session for URL %@", url);
+    DTLogDebug (@"Obtaining Session for URL %@", url);
 
     NSString * domain = [[[NSURL URLWithString:url] host] lowercaseString];
 
-    if (!domain || [domain isEqualToString:@""])
-    {
+    if (!domain || [domain isEqualToString:@""]) {
         // domain could not be found if this is a base64 data (for example an image)
-        if (![url containsString:@"data:"])
-        {
-            DTLogError(@"Domain not found. Need to specify file:// if is a local file.");
-            DTLogInfo(@"Got %@ - Try using file://%@", url, url);
+        if (![url containsString:@"data:"]) {
+            DTLogError (@"Domain not found. Need to specify file:// if is a local file.");
+            DTLogInfo (@"Got %@ - Try using file://%@", url, url);
         }
     }
 
-    DTLogDebug(@"Domain %@", domain);
+    DTLogDebug (@"Domain %@", domain);
 
     UICKeyChainStore * keychain = [UICKeyChainStore
                                    keyChainStoreWithService:domain];
@@ -435,150 +414,132 @@
     return [keychain[@"session"] propertyList];
 }
 
-+ (NSDictionary *) dictFromJSONFile:(NSString *)filename {
++ (NSDictionary *)dictFromJSONFile:(NSString *)filename {
     NSString * filePath = [[NSBundle mainBundle] pathForResource:filename ofType:@"json"];
     NSData * data = [NSData dataWithContentsOfFile:filePath];
     __autoreleasing NSError * error = nil;
     id result = [NSJSONSerialization JSONObjectWithData:data
-                                                options:kNilOptions error:&error];
+                                                options:kNilOptions
+                                                  error:&error];
 
     // Be careful here. You add this as a category to NSDictionary
     // but you get an id back, which means that result
     // might be an NSArray as well!
-    if (error != nil)
-    {
+    if (error != nil) {
         return nil;
     }
+
     return result;
 }
-+ (NSDictionary *) jasonify:(NSString *)str {
-    if (!str)
-    {
+
++ (NSDictionary *)jasonify:(NSString *)str {
+    if (!str) {
         return nil;
     }
-    if (str.length == 0)
-    {
+
+    if (str.length == 0) {
         return nil;
     }
 
     NSData * webData = [str dataUsingEncoding:NSUTF8StringEncoding];
     NSError * error;
     NSDictionary * jsonDict = [NSJSONSerialization JSONObjectWithData:webData options:0 error:&error];
-    if (jsonDict)
-    {
+
+    if (jsonDict) {
         // starts with $jason
         // has head
         // has body
         NSDictionary * res = jsonDict[@"$jason"];
-        if (res && res.count > 0)
-        {
+
+        if (res && res.count > 0) {
             return jsonDict;
         }
     }
+
     return nil;
 }
-+ (NSString *) linkify:(NSString *)url {
-    if (url && url.length > 0)
-    {
+
++ (NSString *)linkify:(NSString *)url {
+    if (url && url.length > 0) {
         url = [url stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if ([[url lowercaseString] hasPrefix:@"data:"])
-        {
+
+        if ([[url lowercaseString] hasPrefix:@"data:"]) {
             url = url;
-        }
-        else if ([[url lowercaseString] hasPrefix:@"http://"] || [[url lowercaseString] hasPrefix:@"https://"])
-        {
+        } else if ([[url lowercaseString] hasPrefix:@"http://"] || [[url lowercaseString] hasPrefix:@"https://"]) {
             url = url;
-        }
-        else if ([[url lowercaseString] hasPrefix:@"file://"])
-        {
+        } else if ([[url lowercaseString] hasPrefix:@"file://"]) {
             url = url;
-        }
-        else
-        {
+        } else {
             url = [NSString stringWithFormat:@"http://%@", url];
         }
 
-        if ([url containsString:@"#"])
-        {
+        if ([url containsString:@"#"]) {
             url = [url stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet illegalCharacterSet] invertedSet]];
-        }
-        else
-        {
+        } else {
             url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
         }
-
     }
+
     return url;
 }
-+ (NSString *) prependProtocolToUrl:(NSString *)url {
-    if ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"])
-    {
+
++ (NSString *)prependProtocolToUrl:(NSString *)url {
+    if ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"]) {
         return url;
-    }
-    else
-    {
+    } else {
         return [NSString stringWithFormat:@"http://%@", url];
     }
 }
-+ (void) setStatusBarBackgroundColor:(UIColor *)color {
-    UIView * statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
 
-    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)])
-    {
++ (void)setStatusBarBackgroundColor:(UIColor *)color
+{
+    UIView * statusBar = [[[UIApplication
+                            sharedApplication]
+                           valueForKey:@"statusBarWindow"]
+                          valueForKey:@"statusBar"];
+
+    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
         statusBar.backgroundColor = color;
     }
 }
-+ (id) parse:(id)data ofType:(NSString *)type with:(id)template {
-    if (template)
-    {
+
++ (id)parse:(id)data ofType:(NSString *)type with:(id)template {
+    if (template) {
         id res = [JasonParser parse:data type:type with:template];
-        if ([res isKindOfClass:[NSArray class]])
-        {
-            return (NSArray *) res;
-        }
-        else
-        {
+
+        if ([res isKindOfClass:[NSArray class]]) {
+            return (NSArray *)res;
+        } else {
             return res;
         }
-    }
-    else
-    {
-        if (data)
-        {
+    } else {
+        if (data) {
             return data;
-        }
-        else
-        {
+        } else {
             return @{};
         }
     }
 }
-+ (id) parse:(id)data with:(id)template {
-    if (template)
-    {
+
++ (id)parse:(id)data with:(id)template {
+    if (template) {
         id res = [JasonParser parse:data with:template];
-        if ([res isKindOfClass:[NSArray class]])
-        {
-            return (NSArray *) res;
-        }
-        else
-        {
+
+        if ([res isKindOfClass:[NSArray class]]) {
+            return (NSArray *)res;
+        } else {
             return res;
         }
-    }
-    else
-    {
-        if (data)
-        {
+    } else {
+        if (data) {
             return data;
-        }
-        else
-        {
+        } else {
             return @{};
         }
     }
 }
-+ (BOOL) isURL:(NSURL *)url equivalentTo:(NSString *)urlString {
+
++ (BOOL)isURL:(NSURL *)url equivalentTo:(NSString *)urlString {
     NSURLComponents * urlComponents = [[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:NO];
 
     urlComponents.query = nil; // Strip out query parameters.
@@ -588,54 +549,48 @@
     urlComponents2.query = nil; // Strip out query parameters.
     return [urlComponents.string isEqualToString:urlComponents2.string];
 }
-+ (CGFloat) parseRatio:(NSString *)ratio {
-    if ([ratio containsString:@":"] || [ratio containsString:@"/"])
-    {
+
++ (CGFloat)parseRatio:(NSString *)ratio {
+    if ([ratio containsString:@":"] || [ratio containsString:@"/"]) {
         NSError * error = nil;
         NSRegularExpression * regex = [NSRegularExpression regularExpressionWithPattern:@"^[ ]*([0-9]+)[ ]*[:/][ ]*([0-9]+)[ ]*$" options:0 error:&error];
-        NSRange searchedRange = NSMakeRange(0, [ratio length]);
+        NSRange searchedRange = NSMakeRange (0, [ratio length]);
         NSTextCheckingResult * match = [regex firstMatchInString:ratio options:0 range:searchedRange];
-        if (match)
-        {
+
+        if (match) {
             NSString * w = [ratio substringWithRange:[match rangeAtIndex:1]];
             NSString * h = [ratio substringWithRange:[match rangeAtIndex:2]];
             return [w floatValue] / [h floatValue];
-        }
-        else
-        {
+        } else {
             return 1; // shouldn't happen
         }
-    }
-    else
-    {
+    } else {
         return [ratio floatValue];
     }
 }
-+ (CGFloat) pixelsInDirection:(NSString *)direction fromExpression:(id)exp {
+
++ (CGFloat)pixelsInDirection:(NSString *)direction fromExpression:(id)exp {
     NSError * error = nil;
     CGFloat full_dimension;
 
-    if (!exp)
-    {
+    if (!exp) {
         return 0;
     }
 
     NSString * expression = [exp description];
 
-    if ([direction isEqualToString:@"vertical"])
-    {
+    if ([direction isEqualToString:@"vertical"]) {
         full_dimension = [[UIScreen mainScreen] bounds].size.height;
-    }
-    else
-    {
+    } else {
         full_dimension = [[UIScreen mainScreen] bounds].size.width;
     }
-    NSRange searchedRange = NSMakeRange(0, [expression length]);
+
+    NSRange searchedRange = NSMakeRange (0, [expression length]);
     NSRegularExpression * regexPercentageWithPixels = [NSRegularExpression regularExpressionWithPattern:@"^([0-9.]+)%[ ]*([+-]?)[ ]*([0-9]+)$" options:0 error:&error];
     NSTextCheckingResult * matchPercentageWithPixels = [regexPercentageWithPixels firstMatchInString:expression options:0 range:searchedRange];
     CGFloat dimension = full_dimension;
-    if (matchPercentageWithPixels)
-    {
+
+    if (matchPercentageWithPixels) {
         // Percentage +/- Pixels
         // Calculate percentage
         NSString * percentage = [expression substringWithRange:[matchPercentageWithPixels rangeAtIndex:1]];
@@ -647,32 +602,24 @@
 
         // Determine sign
         NSString * sign = [expression substringWithRange:[matchPercentageWithPixels rangeAtIndex:2]];
-        if ([sign isEqualToString:@"+"])
-        {
+
+        if ([sign isEqualToString:@"+"]) {
             dimension = dimension + p;
-        }
-        else if ([sign isEqualToString:@"-"])
-        {
+        } else if ([sign isEqualToString:@"-"]) {
             dimension = dimension - p;
         }
-
-    }
-    else
-    {
-
+    } else {
         NSRegularExpression * regexPixels = [NSRegularExpression regularExpressionWithPattern:@"^([0-9.]+)$" options:0 error:&error];
         NSTextCheckingResult * matchPixels = [regexPixels firstMatchInString:expression options:0 range:searchedRange];
-        if (matchPixels)
-        {
+
+        if (matchPixels) {
             // Pixels only
             dimension = [expression floatValue];
-        }
-        else
-        {
+        } else {
             NSRegularExpression * regexFractionWithPixels = [NSRegularExpression regularExpressionWithPattern:@"^([0-9]+)\\/([0-9]+)[ ]*([+-]?)[ ]*([0-9]+)$" options:0 error:&error];
             NSTextCheckingResult * matchFractionWithPixels = [regexFractionWithPixels firstMatchInString:expression options:0 range:searchedRange];
-            if (matchFractionWithPixels)
-            {
+
+            if (matchFractionWithPixels) {
                 // Percetnage +/- Pixels
                 NSString * top = [expression substringWithRange:[matchFractionWithPixels rangeAtIndex:1]];
                 NSString * bottom = [expression substringWithRange:[matchFractionWithPixels rangeAtIndex:2]];
@@ -687,34 +634,25 @@
 
                 // Determine sign
                 NSString * sign = [expression substringWithRange:[matchFractionWithPixels rangeAtIndex:3]];
-                if ([sign isEqualToString:@"+"])
-                {
+
+                if ([sign isEqualToString:@"+"]) {
                     dimension = dimension + p;
-                }
-                else if ([sign isEqualToString:@"-"])
-                {
+                } else if ([sign isEqualToString:@"-"]) {
                     dimension = dimension - p;
                 }
-
-            }
-            else
-            {
-
+            } else {
                 NSRegularExpression * regexPercentage = [NSRegularExpression regularExpressionWithPattern:@"^([0-9.]+)%$" options:0 error:&error];
                 NSTextCheckingResult * matchPercentage = [regexPercentage firstMatchInString:expression options:0 range:searchedRange];
-                if (matchPercentage)
-                {
+
+                if (matchPercentage) {
                     // Percentage only
                     NSString * p = [expression substringWithRange:[matchPercentage rangeAtIndex:1]];
                     dimension = full_dimension * ([p floatValue] / 100);
-                }
-                else
-                {
-
+                } else {
                     NSRegularExpression * regexFraction = [NSRegularExpression regularExpressionWithPattern:@"^([0-9]+)\\/([0-9]+)$" options:0 error:&error];
                     NSTextCheckingResult * matchFraction = [regexFraction firstMatchInString:expression options:0 range:searchedRange];
-                    if (matchFraction)
-                    {
+
+                    if (matchFraction) {
                         // Fraction only
 
                         NSString * top = [expression substringWithRange:[matchFraction rangeAtIndex:1]];
@@ -724,15 +662,13 @@
                     }
                 }
             }
-
         }
-
     }
+
     return dimension;
-
 }
-+ (NSString *) getSignature:(NSDictionary *)item {
 
++ (NSString *)getSignature:(NSDictionary *)item {
     NSError * error;
     NSData * jsonData = [NSJSONSerialization dataWithJSONObject:item options:0 error:&error];
     NSString * json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
@@ -745,89 +681,79 @@
                                                                               error:&error];
     NSString * signature = [regex stringByReplacingMatchesInString:json
                                                            options:0
-                                                             range:NSMakeRange(0, [json length])
+                                                             range:NSMakeRange (0, [json length])
                                                       withTemplate:@"\"jason\":\"jason\""];
 
 
     return signature;
-
 }
 
-+ (UIImage *) takescreenshot
++ (UIImage *)takescreenshot
 {
     CGSize imageSize = CGSizeZero;
 
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 
-    if (UIInterfaceOrientationIsPortrait(orientation))
-    {
+    if (UIInterfaceOrientationIsPortrait (orientation)) {
         imageSize = [UIScreen mainScreen].bounds.size;
-    }
-    else
-    {
-        imageSize = CGSizeMake([UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width);
+    } else {
+        imageSize = CGSizeMake ([UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width);
     }
 
-    UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    for (UIWindow * window in [[UIApplication sharedApplication] windows])
-    {
-        CGContextSaveGState(context);
-        CGContextTranslateCTM(context, window.center.x, window.center.y);
-        CGContextConcatCTM(context, window.transform);
-        CGContextTranslateCTM(context, -window.bounds.size.width * window.layer.anchorPoint.x, -window.bounds.size.height * window.layer.anchorPoint.y);
-        if (orientation == UIInterfaceOrientationLandscapeLeft)
-        {
-            CGContextRotateCTM(context, M_PI_2);
-            CGContextTranslateCTM(context, 0, -imageSize.width);
+    UIGraphicsBeginImageContextWithOptions (imageSize, NO, 0);
+    CGContextRef context = UIGraphicsGetCurrentContext ();
+
+    for (UIWindow * window in [[UIApplication sharedApplication] windows]) {
+        CGContextSaveGState (context);
+        CGContextTranslateCTM (context, window.center.x, window.center.y);
+        CGContextConcatCTM (context, window.transform);
+        CGContextTranslateCTM (context, -window.bounds.size.width * window.layer.anchorPoint.x, -window.bounds.size.height * window.layer.anchorPoint.y);
+
+        if (orientation == UIInterfaceOrientationLandscapeLeft) {
+            CGContextRotateCTM (context, M_PI_2);
+            CGContextTranslateCTM (context, 0, -imageSize.width);
+        } else if (orientation == UIInterfaceOrientationLandscapeRight) {
+            CGContextRotateCTM (context, -M_PI_2);
+            CGContextTranslateCTM (context, -imageSize.height, 0);
+        } else if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
+            CGContextRotateCTM (context, M_PI);
+            CGContextTranslateCTM (context, -imageSize.width, -imageSize.height);
         }
-        else if (orientation == UIInterfaceOrientationLandscapeRight)
-        {
-            CGContextRotateCTM(context, -M_PI_2);
-            CGContextTranslateCTM(context, -imageSize.height, 0);
-        }
-        else if (orientation == UIInterfaceOrientationPortraitUpsideDown)
-        {
-            CGContextRotateCTM(context, M_PI);
-            CGContextTranslateCTM(context, -imageSize.width, -imageSize.height);
-        }
-        if ([window respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)])
-        {
+
+        if ([window respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]) {
             [window drawViewHierarchyInRect:window.bounds afterScreenUpdates:YES];
-        }
-        else
-        {
+        } else {
             [window.layer renderInContext:context];
         }
-        CGContextRestoreGState(context);
+
+        CGContextRestoreGState (context);
     }
 
-    UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    UIImage * image = UIGraphicsGetImageFromCurrentImageContext ();
+    UIGraphicsEndImageContext ();
     return image;
 }
 
-+ (NSString *) UTF8StringFromData:(NSData *)data
++ (NSString *)UTF8StringFromData:(NSData *)data
 {
     // First we try strict decoding to avoid iconv overhead when not needed (majority of cases).
     NSString * str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 
-    if (!str)
-    {
+    if (!str) {
         // Here data contains invalid characters, so we'll try to clean them up.
         return [[NSString alloc] initWithData:[self dataByHealingUTF8Stream:data] encoding:NSUTF8StringEncoding];
     }
+
     return str;
 }
 
 // Replaces all broken sequences by � character and returns NSData with valid UTF-8 bytes.
 
-+ (NSData *) dataByHealingUTF8Stream:(NSData *)data
++ (NSData *)dataByHealingUTF8Stream:(NSData *)data
 {
     NSUInteger length = [data length];
 
-    if (length == 0)
-    {
+    if (length == 0) {
         return data;
     }
 
@@ -864,255 +790,220 @@
     char buffer[bufferMaxSize]; // not initialized, but will be filled in completely before copying to resultData
     NSUInteger bufferIndex = 0;
 
-  #define FlushBuffer() if (bufferIndex > 0) { \
+  #define FlushBuffer() \
+    if (bufferIndex > 0) { \
         [resultData appendBytes:buffer length:bufferIndex]; \
         bufferIndex = 0; \
-}
-  #define CheckBuffer() if ((bufferIndex + 5) >= bufferMaxSize) { \
+    }
+  #define CheckBuffer() \
+    if ((bufferIndex + 5) >= bufferMaxSize) { \
         [resultData appendBytes:buffer length:bufferIndex]; \
         bufferIndex = 0; \
-}
+    }
 
     NSUInteger byteIndex = 0;
     BOOL invalidByte = NO;
-    while (byteIndex < length)
-    {
+
+    while (byteIndex < length) {
         char byte = bytes[byteIndex];
 
         // ASCII character is always a UTF-8 character
-        if ((byte & b10000000) == b00000000) // 0xxxxxxx
-        {
-            CheckBuffer();
+        if ((byte & b10000000) == b00000000) { // 0xxxxxxx
+            CheckBuffer ();
             buffer[bufferIndex++] = byte;
-        }
-        else if ((byte & b11100000) == b11000000) // 110xxxxx 10xxxxxx
-        {
-            if (byteIndex + 1 >= length)
-            {
-                FlushBuffer();
+        } else if ((byte & b11100000) == b11000000) { // 110xxxxx 10xxxxxx
+            if (byteIndex + 1 >= length) {
+                FlushBuffer ();
                 return resultData;
             }
+
             char byte2 = bytes[++byteIndex];
-            if ((byte2 & b11000000) == b10000000)
-            {
+
+            if ((byte2 & b11000000) == b10000000) {
                 // This 2-byte character still can be invalid. Check if we can create a string with it.
                 unsigned char tuple[] = { byte, byte2 };
-                CFStringRef cfstr = CFStringCreateWithBytes(kCFAllocatorDefault, tuple, 2, kCFStringEncodingUTF8, false);
-                if (cfstr)
-                {
-                    CFRelease(cfstr);
-                    CheckBuffer();
+                CFStringRef cfstr = CFStringCreateWithBytes (kCFAllocatorDefault, tuple, 2, kCFStringEncodingUTF8, false);
+
+                if (cfstr) {
+                    CFRelease (cfstr);
+                    CheckBuffer ();
                     buffer[bufferIndex++] = byte;
                     buffer[bufferIndex++] = byte2;
-                }
-                else
-                {
+                } else {
                     invalidByte = YES;
                 }
-            }
-            else
-            {
+            } else {
                 byteIndex -= 1;
                 invalidByte = YES;
             }
-        }
-        else if ((byte & b11110000) == b11100000) // 1110xxxx 10xxxxxx 10xxxxxx
-        {
-            if (byteIndex + 2 >= length)
-            {
-                FlushBuffer();
+        } else if ((byte & b11110000) == b11100000) { // 1110xxxx 10xxxxxx 10xxxxxx
+            if (byteIndex + 2 >= length) {
+                FlushBuffer ();
                 return resultData;
             }
+
             char byte2 = bytes[++byteIndex];
             char byte3 = bytes[++byteIndex];
+
             if ((byte2 & b11000000) == b10000000 &&
-                (byte3 & b11000000) == b10000000)
-            {
+                (byte3 & b11000000) == b10000000) {
                 // This 3-byte character still can be invalid. Check if we can create a string with it.
                 unsigned char tuple[] = { byte, byte2, byte3 };
-                CFStringRef cfstr = CFStringCreateWithBytes(kCFAllocatorDefault, tuple, 3, kCFStringEncodingUTF8, false);
-                if (cfstr)
-                {
-                    CFRelease(cfstr);
-                    CheckBuffer();
+                CFStringRef cfstr = CFStringCreateWithBytes (kCFAllocatorDefault, tuple, 3, kCFStringEncodingUTF8, false);
+
+                if (cfstr) {
+                    CFRelease (cfstr);
+                    CheckBuffer ();
                     buffer[bufferIndex++] = byte;
                     buffer[bufferIndex++] = byte2;
                     buffer[bufferIndex++] = byte3;
-                }
-                else
-                {
+                } else {
                     invalidByte = YES;
                 }
-            }
-            else
-            {
+            } else {
                 byteIndex -= 2;
                 invalidByte = YES;
             }
-        }
-        else if ((byte & b11111000) == b11110000) // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-        {
-            if (byteIndex + 3 >= length)
-            {
-                FlushBuffer();
+        } else if ((byte & b11111000) == b11110000) { // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+            if (byteIndex + 3 >= length) {
+                FlushBuffer ();
                 return resultData;
             }
+
             char byte2 = bytes[++byteIndex];
             char byte3 = bytes[++byteIndex];
             char byte4 = bytes[++byteIndex];
+
             if ((byte2 & b11000000) == b10000000 &&
                 (byte3 & b11000000) == b10000000 &&
-                (byte4 & b11000000) == b10000000)
-            {
+                (byte4 & b11000000) == b10000000) {
                 // This 4-byte character still can be invalid. Check if we can create a string with it.
                 unsigned char tuple[] = { byte, byte2, byte3, byte4 };
-                CFStringRef cfstr = CFStringCreateWithBytes(kCFAllocatorDefault, tuple, 4, kCFStringEncodingUTF8, false);
-                if (cfstr)
-                {
-                    CFRelease(cfstr);
-                    CheckBuffer();
+                CFStringRef cfstr = CFStringCreateWithBytes (kCFAllocatorDefault, tuple, 4, kCFStringEncodingUTF8, false);
+
+                if (cfstr) {
+                    CFRelease (cfstr);
+                    CheckBuffer ();
                     buffer[bufferIndex++] = byte;
                     buffer[bufferIndex++] = byte2;
                     buffer[bufferIndex++] = byte3;
                     buffer[bufferIndex++] = byte4;
-                }
-                else
-                {
+                } else {
                     invalidByte = YES;
                 }
-            }
-            else
-            {
+            } else {
                 byteIndex -= 3;
                 invalidByte = YES;
             }
-        }
-        else if ((byte & b11111100) == b11111000) // 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-        {
-            if (byteIndex + 4 >= length)
-            {
-                FlushBuffer();
+        } else if ((byte & b11111100) == b11111000) { // 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+            if (byteIndex + 4 >= length) {
+                FlushBuffer ();
                 return resultData;
             }
+
             char byte2 = bytes[++byteIndex];
             char byte3 = bytes[++byteIndex];
             char byte4 = bytes[++byteIndex];
             char byte5 = bytes[++byteIndex];
+
             if ((byte2 & b11000000) == b10000000 &&
                 (byte3 & b11000000) == b10000000 &&
                 (byte4 & b11000000) == b10000000 &&
-                (byte5 & b11000000) == b10000000)
-            {
+                (byte5 & b11000000) == b10000000) {
                 // This 5-byte character still can be invalid. Check if we can create a string with it.
                 unsigned char tuple[] = { byte, byte2, byte3, byte4, byte5 };
-                CFStringRef cfstr = CFStringCreateWithBytes(kCFAllocatorDefault, tuple, 5, kCFStringEncodingUTF8, false);
-                if (cfstr)
-                {
-                    CFRelease(cfstr);
-                    CheckBuffer();
+                CFStringRef cfstr = CFStringCreateWithBytes (kCFAllocatorDefault, tuple, 5, kCFStringEncodingUTF8, false);
+
+                if (cfstr) {
+                    CFRelease (cfstr);
+                    CheckBuffer ();
                     buffer[bufferIndex++] = byte;
                     buffer[bufferIndex++] = byte2;
                     buffer[bufferIndex++] = byte3;
                     buffer[bufferIndex++] = byte4;
                     buffer[bufferIndex++] = byte5;
-                }
-                else
-                {
+                } else {
                     invalidByte = YES;
                 }
-            }
-            else
-            {
+            } else {
                 byteIndex -= 4;
                 invalidByte = YES;
             }
-        }
-        else if ((byte & b11111110) == b11111100) // 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-        {
-            if (byteIndex + 5 >= length)
-            {
-                FlushBuffer();
+        } else if ((byte & b11111110) == b11111100) { // 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+            if (byteIndex + 5 >= length) {
+                FlushBuffer ();
                 return resultData;
             }
+
             char byte2 = bytes[++byteIndex];
             char byte3 = bytes[++byteIndex];
             char byte4 = bytes[++byteIndex];
             char byte5 = bytes[++byteIndex];
             char byte6 = bytes[++byteIndex];
+
             if ((byte2 & b11000000) == b10000000 &&
                 (byte3 & b11000000) == b10000000 &&
                 (byte4 & b11000000) == b10000000 &&
                 (byte5 & b11000000) == b10000000 &&
-                (byte6 & b11000000) == b10000000)
-            {
+                (byte6 & b11000000) == b10000000) {
                 // This 6-byte character still can be invalid. Check if we can create a string with it.
                 unsigned char tuple[] = { byte, byte2, byte3, byte4, byte5, byte6 };
-                CFStringRef cfstr = CFStringCreateWithBytes(kCFAllocatorDefault, tuple, 6, kCFStringEncodingUTF8, false);
-                if (cfstr)
-                {
-                    CFRelease(cfstr);
-                    CheckBuffer();
+                CFStringRef cfstr = CFStringCreateWithBytes (kCFAllocatorDefault, tuple, 6, kCFStringEncodingUTF8, false);
+
+                if (cfstr) {
+                    CFRelease (cfstr);
+                    CheckBuffer ();
                     buffer[bufferIndex++] = byte;
                     buffer[bufferIndex++] = byte2;
                     buffer[bufferIndex++] = byte3;
                     buffer[bufferIndex++] = byte4;
                     buffer[bufferIndex++] = byte5;
                     buffer[bufferIndex++] = byte6;
-                }
-                else
-                {
+                } else {
                     invalidByte = YES;
                 }
-
-            }
-            else
-            {
+            } else {
                 byteIndex -= 5;
                 invalidByte = YES;
             }
-        }
-        else
-        {
+        } else {
             invalidByte = YES;
         }
 
-        if (invalidByte)
-        {
+        if (invalidByte) {
 #if DEBUG
-            if (warningsCounter)
-            {
+
+            if (warningsCounter) {
                 warningsCounter--;
                 // NSLog(@"NSData dataByHealingUTF8Stream: broken byte encountered at index %d", byteIndex);
             }
+
 #endif
             invalidByte = NO;
-            FlushBuffer();
+            FlushBuffer ();
             [resultData appendData:replacementCharacterData];
         }
 
         byteIndex++;
     }
-    FlushBuffer();
+    FlushBuffer ();
     return resultData;
 }
 
-+ (NSArray *) childOf:(UIView *)view
-    withClassName:(NSString *)className
++ (NSArray *)childOf:(UIView *)view
+       withClassName:(NSString *)className
 {
     NSMutableArray * views = [@[] mutableCopy];
 
     Class class = [JasonNSClassFromString
                    classFromString:className];
 
-    if ([view isKindOfClass:class])
-    {
+    if ([view isKindOfClass:class]) {
         [views addObject:view];
     }
 
-    if (view.subviews && view.subviews.count > 0)
-    {
-        for (UIView * item in view.subviews)
-        {
+    if (view.subviews && view.subviews.count > 0) {
+        for (UIView * item in view.subviews) {
             [views addObjectsFromArray:[self childOf:item
                                        withClassName     :className]];
         }
@@ -1121,9 +1012,9 @@
     return [views copy];
 }
 
-+ (nonnull NSString *) getLocalPathForFileUrl:(nonnull NSString *)url
++ (nonnull NSString *)getLocalPathForFileUrl:(nonnull NSString *)url
 {
-    DTLogDebug(@"Getting Local Path For File");
+    DTLogDebug (@"Getting Local Path For File");
     NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString * webrootPath = [resourcePath stringByAppendingPathComponent:@""];
     NSString * protocol = @"file:/";
@@ -1135,26 +1026,24 @@
     return file;
 }
 
-+ (id) loadErrorJson
++ (id)loadErrorJson
 {
-    DTLogDebug(@"Loading error.json");
+    DTLogDebug (@"Loading error.json");
     return [JasonHelper read_local_json:@"file://error.json"];
 }
 
-+ (id) read_local_json:(NSString *)url
++ (id)read_local_json:(NSString *)url
 {
-
-    DTLogInfo(@"Reading Local JSON from URL %@", url);
+    DTLogInfo (@"Reading Local JSON from URL %@", url);
 
     NSString * json = [JasonHelper getLocalPathForFileUrl:url];
 
-    DTLogDebug(@"Loading Json File %@", json);
+    DTLogDebug (@"Loading Json File %@", json);
 
     NSFileManager * fileManager = [NSFileManager defaultManager];
     id result = @{};
 
-    if ([fileManager fileExistsAtPath:json])
-    {
+    if ([fileManager fileExistsAtPath:json]) {
         NSError * error = nil;
         NSInputStream * inputStream = [[NSInputStream alloc] initWithFileAtPath:json];
 
@@ -1167,53 +1056,52 @@
 
         [inputStream close];
 
-        if (error)
-        {
-            DTLogError(@"Error Parsing Json %@", error);
+        if (error) {
+            DTLogError (@"Error Parsing Json %@", error);
             result = [JasonHelper loadErrorJson];
         }
-    }
-    else
-    {
-        DTLogError(@"Jason File Not Found %@", url);
+    } else {
+        DTLogError (@"Jason File Not Found %@", url);
         result = [JasonHelper loadErrorJson];
     }
 
     return result;
 }
-+ (NSString *) normalized_url:(NSString *)url forOptions:(id)options {
+
++ (NSString *)normalized_url:(NSString *)url forOptions:(id)options {
     NSString * normalized_url = [url lowercaseString];
 
     normalized_url = [normalized_url stringByAppendingString:[NSString stringWithFormat:@"|%@", options]];
     NSRegularExpression * regex = [NSRegularExpression regularExpressionWithPattern:@"[/:]" options:NSRegularExpressionCaseInsensitive error:nil];
-    normalized_url = [regex stringByReplacingMatchesInString:normalized_url options:0 range:NSMakeRange(0, [normalized_url length]) withTemplate:@"_"];
+    normalized_url = [regex stringByReplacingMatchesInString:normalized_url options:0 range:NSMakeRange (0, [normalized_url length]) withTemplate:@"_"];
     normalized_url = [[normalized_url componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@""];
     return normalized_url;
 }
-+ (NSString *) read_local_file:(NSString *)url {
+
++ (NSString *)read_local_file:(NSString *)url {
     NSString * fullPath = [self get_local_path:url];
     NSString * contents = [NSString stringWithContentsOfFile:fullPath encoding:NSUTF8StringEncoding error:NULL];
 
     return contents;
 }
-+ (NSString *) get_local_path:(NSString *)url {
+
++ (NSString *)get_local_path:(NSString *)url {
     NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString * fullPath = [url stringByReplacingOccurrencesOfString:@"file:/" withString:resourcePath];
 
     return fullPath;
 }
-+ (id) getPlistSettings:(NSString *)key {
+
++ (id)getPlistSettings:(NSString *)key {
     NSDictionary * infoPlistSettings = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"settings"];
 
-    if (infoPlistSettings != nil)
-    {
+    if (infoPlistSettings != nil) {
         return infoPlistSettings[key];
-    }
-    else
-    {
+    } else {
         NSURL * file = [[NSBundle mainBundle] URLForResource:@"settings" withExtension:@"plist"];
         NSDictionary * settingsPlistSettings = [NSDictionary dictionaryWithContentsOfURL:file];
         return settingsPlistSettings[key];
     }
 }
+
 @end

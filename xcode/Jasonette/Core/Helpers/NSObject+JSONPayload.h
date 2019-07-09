@@ -11,6 +11,6 @@
 
 @interface NSObject (JSONPayload)
 
-@property ( nonatomic, strong ) NSMutableDictionary * payload;
+@property (nonatomic, strong) NSMutableDictionary * payload;
 
 @end

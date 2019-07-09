@@ -11,7 +11,7 @@
 
 @interface JasonLayout : NSObject
 @property (class, nonatomic, strong) NSMutableDictionary * stylesheet;
-+ (NSMutableDictionary *) applyStylesheet:(NSDictionary *)item;
-+ (NSDictionary *) build:(NSDictionary *)item atIndexPath:(NSIndexPath *)indexPath withForm:(NSDictionary *)form;
-+ (NSDictionary *) fill:(UIStackView *)layout with:(NSDictionary *)item atIndexPath:(NSIndexPath *)indexPath withForm:(NSDictionary *)form;
++ (NSMutableDictionary *)applyStylesheet:(NSDictionary *)item;
++ (NSDictionary *)build:(NSDictionary *)item atIndexPath:(NSIndexPath *)indexPath withForm:(NSDictionary *)form;
++ (NSDictionary *)fill:(UIStackView *)layout with:(NSDictionary *)item atIndexPath:(NSIndexPath *)indexPath withForm:(NSDictionary *)form;
 @end

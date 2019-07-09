@@ -16,10 +16,10 @@
 @property (class, nonatomic, strong) NSMutableDictionary * imageLoaded;
 @property (class, nonatomic, strong) NSMutableDictionary * stylesheet;
 
-+ (UIView *) build:(UIView *)component
-    withJSON:(NSDictionary *)child
-    withOptions:(NSMutableDictionary *)options;
++ (UIView *)build:(UIView *)component
+         withJSON:(NSDictionary *)child
+      withOptions:(NSMutableDictionary *)options;
 
-+ (NSMutableDictionary *) applyStylesheet:(NSDictionary *)item;
++ (NSMutableDictionary *)applyStylesheet:(NSDictionary *)item;
 
 @end

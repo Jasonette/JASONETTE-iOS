@@ -7,36 +7,30 @@
 #import "JasonConvertAction.h"
 
 @implementation JasonConvertAction
-- (void) string {
+- (void)string {
     NSString * dataString = self.options[@"data"];
 
-    if (dataString && dataString.length > 0)
-    {
+    if (dataString && dataString.length > 0) {
         NSData * data = [dataString dataUsingEncoding:NSUTF8StringEncoding];
         id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         [[Jason client] success:json];
-    }
-    else
-    {
+    } else {
         [[Jason client] success:@{}];
     }
 }
-- (void) csv {
-    if (self.options)
-    {
+
+- (void)csv {
+    if (self.options) {
         NSString * data = self.options[@"data"];
-        if (data && data.length > 0)
-        {
+
+        if (data && data.length > 0) {
             NSMutableDictionary * o = [self.options mutableCopy];
             [o removeObjectForKey:@"data"];
-            for (NSString * key in o)
-            {
-                if ([o[key] isEqualToString:@"true"])
-                {
+
+            for (NSString * key in o) {
+                if ([o[key] isEqualToString:@"true"]) {
                     o[key] = @YES;
-                }
-                else if ([o[key] isEqualToString:@"false"])
-                {
+                } else if ([o[key] isEqualToString:@"false"]) {
                     o[key] = @NO;
                 }
             }
@@ -50,58 +44,44 @@
 
             JSContext * context = [[JSContext alloc] init];
             [context setExceptionHandler:^(JSContext * context, JSValue * value) {
-                 NSLog(@"%@", value);
-             }];
+                         NSLog (@"%@", value);
+                     }];
 
             [context evaluateScript:js];
 
             JSValue * parse = context[@"csv"][@"run"];
             JSValue * val = [parse callWithArguments:@[data, o]];
 
-            @try{
-                if ([val isString])
-                {
+            @try {
+                if ([val isString]) {
                     [[Jason client] success:[val toString]];
-                }
-                else if ([val toDictionary][@"0"])
-                {
+                } else if ([val toDictionary][@"0"]) {
                     // Array check
                     [[Jason client] success:[val toArray]];
-                }
-                else
-                {
+                } else {
                     [[Jason client] success:[val toDictionary]];
                 }
-            }
-            @catch (NSException * e) {
+            } @catch (NSException * e) {
                 [[Jason client] error];
             }
-
-
-        }
-        else
-        {
+        } else {
             [[Jason client] success];
         }
     }
 }
 
-- (void) rss {
-    if (self.options)
-    {
+- (void)rss {
+    if (self.options) {
         NSString * data = self.options[@"data"];
-        if (data && data.length > 0)
-        {
+
+        if (data && data.length > 0) {
             NSMutableDictionary * o = [self.options mutableCopy];
             [o removeObjectForKey:@"data"];
-            for (NSString * key in o)
-            {
-                if ([o[key] isEqualToString:@"true"])
-                {
+
+            for (NSString * key in o) {
+                if ([o[key] isEqualToString:@"true"]) {
                     o[key] = @YES;
-                }
-                else if ([o[key] isEqualToString:@"false"])
-                {
+                } else if ([o[key] isEqualToString:@"false"]) {
                     o[key] = @NO;
                 }
             }
@@ -117,36 +97,27 @@
             [[JSCoreBom shared] extend:context];
 
             [context setExceptionHandler:^(JSContext * context, JSValue * value) {
-                 NSLog(@"%@", value);
-             }];
-            context[@"callback"] = ^(JSValue * val){
-                @try{
-                    if ([val isString])
-                    {
+                         NSLog (@"%@", value);
+                     }];
+            context[@"callback"] = ^(JSValue * val) {
+                @try {
+                    if ([val isString]) {
                         [[Jason client] success:[val toString]];
-                    }
-                    else if ([val toDictionary][@"0"])
-                    {
+                    } else if ([val toDictionary][@"0"]) {
                         // Array check
                         [[Jason client] success:[val toArray]];
-                    }
-                    else
-                    {
+                    } else {
                         [[Jason client] success:[val toDictionary]];
                     }
-                }
-                @catch (NSException * e) {
-                    NSLog(@"Failed");
+                } @catch (NSException * e) {
+                    NSLog (@"Failed");
                     [[Jason client] error];
                 }
             };
             [context evaluateScript:js];
             JSValue * parse = context[@"rss"][@"run"];
             [parse callWithArguments:@[data, o]];
-
-        }
-        else
-        {
+        } else {
             [[Jason client] success];
         }
     }

@@ -7,8 +7,7 @@
 #import "JasonCacheAction.h"
 
 @implementation JasonCacheAction
-- (void) reset {
-
+- (void)reset {
     NSString * normalized_url = [self.VC.url lowercaseString];
     NSMutableDictionary * set = [[NSMutableDictionary alloc] init];
 
@@ -16,17 +15,16 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
     self.VC.current_cache = set;
     [[Jason client] success:set];
-
 }
+
 /*
  + (NSDictionary *)get:(NSString *)url{
-    NSString *normalized_url = [url lowercaseString];
-    return [[NSUserDefaults standardUserDefaults] objectForKey:normalized_url];
-   }
+ +  NSString *normalized_url = [url lowercaseString];
+ +  return [[NSUserDefaults standardUserDefaults] objectForKey:normalized_url];
+ + }
  */
-- (void) set {
-    if ([[self.options description] containsString:@"{{"] && [[self.options description] containsString:@"}}"])
-    {
+- (void)set {
+    if ([[self.options description] containsString:@"{{"] && [[self.options description] containsString:@"}}"]) {
         [[Jason client] error];
         return;
     }
@@ -35,18 +33,17 @@
         NSString * normalized_url = [self.VC.url lowercaseString];
         NSDictionary * to_set = [[NSUserDefaults standardUserDefaults] objectForKey:normalized_url];
         NSMutableDictionary * mutated;
-        if (to_set && to_set.count > 0)
-        {
+
+        if (to_set && to_set.count > 0) {
             mutated = [to_set mutableCopy];
-            for (NSString * key in self.options)
-            {
+
+            for (NSString * key in self.options) {
                 mutated[key] = self.options[key];
             }
-        }
-        else
-        {
+        } else {
             mutated = [self.options mutableCopy];
         }
+
         [[NSUserDefaults standardUserDefaults] setObject:mutated forKey:normalized_url];
         [[NSUserDefaults standardUserDefaults] synchronize];
 
@@ -55,6 +52,6 @@
     } @catch (NSException * e) {
         [[Jason client] error];
     }
-
 }
+
 @end

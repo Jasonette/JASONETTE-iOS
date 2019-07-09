@@ -11,23 +11,21 @@
 
 @implementation JasonSwitchComponent
 
-+ (UIView *) build:(UISwitch *)component
-    withJSON:(NSDictionary *)json
-    withOptions:(NSDictionary *)options
++ (UIView *)build:(UISwitch *)component
+         withJSON:(NSDictionary *)json
+      withOptions:(NSDictionary *)options
 {
-
-    if (!component)
-    {
+    if (!component) {
         component = [UISwitch new];
     }
 
     component.payload = [[NSMutableDictionary alloc] init];
-    if (json && json[@"name"])
-    {
+
+    if (json && json[@"name"]) {
         component.payload[@"name"] = [json[@"name"] description];
     }
-    if (json && json[@"action"])
-    {
+
+    if (json && json[@"action"]) {
         component.payload[@"action"] = json[@"action"];
     }
 
@@ -37,10 +35,8 @@
 
     [component setOn:isOn animated:YES];
 
-    if (component.isOn)
-    {
-        if (component.payload && component.payload[@"name"])
-        {
+    if (component.isOn) {
+        if (component.payload && component.payload[@"name"]) {
             [self updateForm:@{ component.payload[@"name"]: @(component.isOn) }];
         }
     }
@@ -53,21 +49,18 @@
 
     // Custom Styles
     NSMutableDictionary * style;
-    if (json[@"style"])
-    {
+
+    if (json[@"style"]) {
         style = [json[@"style"] mutableCopy];
     }
 
-
-    if (style[@"color"])
-    {
+    if (style[@"color"]) {
         NSString * colorHex = style[@"color"];
         UIColor * color = [JasonHelper colorwithHexString:colorHex alpha:1.0];
         [component setOnTintColor:color];
     }
 
-    if (style[@"color:disabled"])
-    {
+    if (style[@"color:disabled"]) {
         NSString * colorHex = style[@"color:disabled"];
         UIColor * color = [JasonHelper colorwithHexString:colorHex alpha:1.0];
         [component setTintColor:color];
@@ -78,17 +71,13 @@
     return component;
 }
 
-
-+ (void) switchUpdated:(UISwitch *)component
++ (void)switchUpdated:(UISwitch *)component
 {
-
-    if (component.payload && component.payload[@"name"])
-    {
+    if (component.payload && component.payload[@"name"]) {
         [self updateForm:@{ component.payload[@"name"]: @(component.isOn) }];
     }
 
-    if (component.payload[@"action"])
-    {
+    if (component.payload[@"action"]) {
         [[Jason client] call:component.payload[@"action"]];
     }
 }

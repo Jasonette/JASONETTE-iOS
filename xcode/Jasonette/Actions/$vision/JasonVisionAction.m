@@ -19,10 +19,11 @@
  *   https://developers.google.com/vision/android/barcodes-overview for Android
  */
 
-- (void) scan {
+- (void)scan {
     JasonVisionService * service = [Jason client].services[@"JasonVisionService"];
 
     service.is_open = YES;
     [[Jason client] success];
 }
+
 @end

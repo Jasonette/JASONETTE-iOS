@@ -15,9 +15,9 @@
 @property (nonatomic, assign) BOOL need_to_exec;
 @property (nonatomic, assign) BOOL executing;
 
-+ (JasonMemory *) client;
-- (void) pop;
-- (void) exception;
-- (void) setRegister:(id)value forKey:(NSString *)key;
++ (JasonMemory *)client;
+- (void)         pop;
+- (void)         exception;
+- (void)         setRegister:(id)value forKey:(NSString *)key;
 
 @end

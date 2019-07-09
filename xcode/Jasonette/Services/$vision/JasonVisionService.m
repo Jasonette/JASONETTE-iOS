@@ -31,27 +31,25 @@
 
 
 @implementation JasonVisionService
-- (void) initialize:(NSDictionary *)launchOptions
+- (void)initialize:(NSDictionary *)launchOptions
 {
     self.is_open = NO;
-    DTLogDebug(@"initialize");
+    DTLogDebug (@"initialize");
 }
 
-- (void) captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects fromConnection:(AVCaptureConnection *)connection {
-
-    if (!self.is_open)
-    {
+- (void)captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects fromConnection:(AVCaptureConnection *)connection {
+    if (!self.is_open) {
         return;
     }
 
     NSDictionary * events = [[[Jason client] getVC] valueForKey:@"events"];
-    if (![JasonMemory client].executing)
-    {
-        for (AVMetadataObject * metadata in metadataObjects)
-        {
-            AVMetadataMachineReadableCodeObject * transformed = (AVMetadataMachineReadableCodeObject *) metadata;
+
+    if (![JasonMemory client].executing) {
+        for (AVMetadataObject * metadata in metadataObjects) {
+            AVMetadataMachineReadableCodeObject * transformed = (AVMetadataMachineReadableCodeObject *)metadata;
             self.is_open = NO;
-            [[Jason client] call:events[@"$vision.onscan"] with:@{
+            [[Jason client] call:events[@"$vision.onscan"]
+                            with:@{
                  @"$jason": @{
                      @"content": transformed.stringValue,
                      @"type": transformed.type

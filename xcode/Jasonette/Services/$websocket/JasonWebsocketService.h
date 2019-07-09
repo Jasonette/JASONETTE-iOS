@@ -12,7 +12,7 @@
 
 @interface JasonWebsocketService : NSObject <SRWebSocketDelegate>
 @property (nonatomic, strong) SRWebSocket * websocket;
-- (void) open:(NSDictionary *)options;
-- (void) close;
-- (void) send:(NSDictionary *)options;
+- (void)open:(NSDictionary *)options;
+- (void)close;
+- (void)send:(NSDictionary *)options;
 @end

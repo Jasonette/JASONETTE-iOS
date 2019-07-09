@@ -13,25 +13,21 @@
 
 
 @implementation JasonPushService
-- (void) initialize:(NSDictionary *)launchOptions
+- (void)initialize:(NSDictionary *)launchOptions
 {
-
-    DTLogDebug(@"initialize");
+    DTLogDebug (@"initialize");
 
 #ifdef PUSH
 
     NSDictionary * userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (userInfo)
-    {
-        if (userInfo[@"href"])
-        {
+
+    if (userInfo) {
+        if (userInfo[@"href"]) {
             [[Jason client] call:@{
                  @"type": @"$href",
                  @"options": userInfo[@"href"]
             }];
-        }
-        else if (userInfo[@"action"])
-        {
+        } else if (userInfo[@"action"]) {
             [[Jason client] call:userInfo[@"action"]];
         }
     }
@@ -41,11 +37,9 @@
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"onRemoteNotificationDeviceRegistered:" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onRemoteNotificationDeviceRegistered:) name:@"onRemoteNotificationDeviceRegistered" object:nil];
-#else
-    DTLogWarning(@"Push notification turned off by default. If you'd like to suport push, uncomment the #define statement in Constants.h and turn on the push notification feature from the capabilities tab.");
+#else  /* ifdef PUSH */
+    DTLogWarning (@"Push notification turned off by default. If you'd like to suport push, uncomment the #define statement in Constants.h and turn on the push notification feature from the capabilities tab.");
 #endif /* ifdef PUSH */
-
-
 }
 
 // The "PUSH" constant is defined in Constants.h
@@ -53,15 +47,13 @@
 
 // Common remote notification processor
 
-- (void) process:(NSDictionary *)payload
+- (void)process:(NSDictionary *)payload
 {
     NSDictionary * events = [[[Jason client] getVC] valueForKey:@"events"];
 
-    if (events)
-    {
-        if (events[@"$push.onmessage"])
-        {
-            DTLogDebug(@"Calling $push.onmessage event");
+    if (events) {
+        if (events[@"$push.onmessage"]) {
+            DTLogDebug (@"Calling $push.onmessage event");
             [[Jason client]
              call:events[@"$push.onmessage"]
              with:@{ @"$jason": payload }];
@@ -69,47 +61,39 @@
     }
 }
 
-- (void) onRemoteNotification:(NSNotification *)notification
+- (void)onRemoteNotification:(NSNotification *)notification
 {
     [self process:notification.userInfo];
 }
 
-- (void) onRemoteNotificationDeviceRegistered:(NSNotification *)notification {
+- (void)onRemoteNotificationDeviceRegistered:(NSNotification *)notification {
     NSDictionary * payload = notification.userInfo;
     NSDictionary * events = [[[Jason client] getVC] valueForKey:@"events"];
 
-    if (events)
-    {
-        if (events[@"$push.onregister"])
-        {
+    if (events) {
+        if (events[@"$push.onregister"]) {
             [[Jason client] call:events[@"$push.onregister"] with:@{ @"$jason": @{ @"token": payload[@"token"] } }];
         }
     }
 }
 
-
 #pragma mark - UNUserNotificationCenter Delegate above iOS 10
 
-- (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
     [self process:notification.request.content.userInfo];
-    completionHandler(UNNotificationPresentationOptionNone);
+    completionHandler (UNNotificationPresentationOptionNone);
 }
 
-- (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler {
-    if (response.notification.request.content.userInfo)
-    {
-        if (response.notification.request.content.userInfo[@"href"])
-        {
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler {
+    if (response.notification.request.content.userInfo) {
+        if (response.notification.request.content.userInfo[@"href"]) {
             [[Jason client] go:response.notification.request.content.userInfo[@"href"]];
-        }
-        else if (response.notification.request.content.userInfo[@"action"])
-        {
+        } else if (response.notification.request.content.userInfo[@"action"]) {
             [[Jason client] call:response.notification.request.content.userInfo[@"action"]];
         }
     }
 
-    completionHandler();
+    completionHandler ();
 }
-
 
 @end

@@ -7,19 +7,17 @@
 #import "JasonSpaceComponent.h"
 
 @implementation JasonSpaceComponent
-+ (UIView *) build:(UIView *)component withJSON:(NSDictionary *)json withOptions:(NSDictionary *)options {
-    if (!component)
-    {
++ (UIView *)build:(UIView *)component withJSON:(NSDictionary *)json withOptions:(NSDictionary *)options {
+    if (!component) {
         component = [[UIView alloc] init];
     }
-    if ([options[@"parent"] isEqualToString:@"vertical"])
-    {
+
+    if ([options[@"parent"] isEqualToString:@"vertical"]) {
         [component setContentHuggingPriority:1 forAxis:UILayoutConstraintAxisVertical];
-    }
-    else if ([options[@"parent"] isEqualToString:@"horizontal"])
-    {
+    } else if ([options[@"parent"] isEqualToString:@"horizontal"]) {
         [component setContentHuggingPriority:1 forAxis:UILayoutConstraintAxisHorizontal];
     }
+
     component.translatesAutoresizingMaskIntoConstraints = false;
 
     // Apply Common Style

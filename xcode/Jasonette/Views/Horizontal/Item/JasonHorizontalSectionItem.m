@@ -6,25 +6,24 @@
 //
 #import "JasonHorizontalSectionItem.h"
 
-@implementation JasonHorizontalSectionItem
-{
+@implementation JasonHorizontalSectionItem {
     BOOL isWidthCalculated;
 }
 
-- (void) prepareForReuse {
+- (void)prepareForReuse {
     [super prepareForReuse];
-    for (UIView * subview in [self.contentView subviews])
-    {
+
+    for (UIView * subview in [self.contentView subviews]) {
         [subview removeFromSuperview];
     }
 }
-- (UICollectionViewLayoutAttributes *) preferredLayoutAttributesFittingAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
+
+- (UICollectionViewLayoutAttributes *)preferredLayoutAttributesFittingAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
 
 {
     UICollectionViewLayoutAttributes * attributes = [layoutAttributes copy];
 
-    if (!isWidthCalculated)
-    {
+    if (!isWidthCalculated) {
         [self setNeedsLayout];
         [self layoutIfNeeded];
         float desiredWidth = [self.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].width;
@@ -33,9 +32,8 @@
         attributes.frame = frame;
         isWidthCalculated = YES;
     }
+
     return attributes;
-
 }
-
 
 @end

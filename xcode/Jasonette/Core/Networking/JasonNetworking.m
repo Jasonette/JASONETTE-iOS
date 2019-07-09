@@ -16,10 +16,9 @@ static NSDictionary * _headers;
 
 @implementation JasonNetworking
 
-+ (nonnull AFHTTPSessionManager *) manager
++ (nonnull AFHTTPSessionManager *)manager
 {
-    if (!_sessionManager)
-    {
+    if (!_sessionManager) {
         _sessionManager = [AFHTTPSessionManager manager];
     }
 
@@ -27,73 +26,66 @@ static NSDictionary * _headers;
     return [[_sessionManager class] manager];
 }
 
-+ (void) setSessionManager:(AFHTTPSessionManager *)manager
++ (void)setSessionManager:(AFHTTPSessionManager *)manager
 {
-    if (!manager || ![manager respondsToSelector:NSSelectorFromString(@"manager")])
-    {
-        DTLogWarning(@"AFHTTPSessionManager not found");
+    if (!manager || ![manager respondsToSelector:NSSelectorFromString (@"manager")]) {
+        DTLogWarning (@"AFHTTPSessionManager not found");
         manager = nil;
     }
 
     _sessionManager = manager;
 }
 
-+ (nonnull AFJSONResponseSerializer *) serializer
++ (nonnull AFJSONResponseSerializer *)serializer
 {
-    if (!_responseSerializer)
-    {
+    if (!_responseSerializer) {
         _responseSerializer = [AFJSONResponseSerializer serializer];
     }
 
     return [[_responseSerializer class] serializer];
 }
 
-+ (void) setResponseSerializer:(AFJSONResponseSerializer *)serializer
++ (void)setResponseSerializer:(AFJSONResponseSerializer *)serializer
 {
-    if (!serializer || ![serializer respondsToSelector:NSSelectorFromString(@"serializer")])
-    {
-        DTLogWarning(@"AFJSONResponseSerializer not found");
+    if (!serializer || ![serializer respondsToSelector:NSSelectorFromString (@"serializer")]) {
+        DTLogWarning (@"AFJSONResponseSerializer not found");
         serializer = nil;
     }
 
     _responseSerializer = serializer;
 }
 
-+ (nonnull NSArray *) acceptedContentTypes
++ (nonnull NSArray *)acceptedContentTypes
 {
-    if (!_acceptedContentTypes)
-    {
+    if (!_acceptedContentTypes) {
         _acceptedContentTypes = @[];
     }
 
     return _acceptedContentTypes;
 }
 
-+ (void) setAcceptedContentTypes:(nonnull NSArray *)types
++ (void)setAcceptedContentTypes:(nonnull NSArray *)types
 {
-    if (!types || [types count] <= 0)
-    {
-        DTLogWarning(@"Setting Empty Content Types");
+    if (!types || [types count] <= 0) {
+        DTLogWarning (@"Setting Empty Content Types");
     }
 
     _acceptedContentTypes = types;
 }
 
-+ (nonnull NSDictionary *) headers
++ (nonnull NSDictionary *)headers
 {
-    if (!_headers)
-    {
+    if (!_headers) {
         _headers = @{};
     }
 
     return _headers;
 }
 
-+ (void) setHeaders:(nonnull NSDictionary *)headers
++ (void)setHeaders:(nonnull NSDictionary *)headers
 {
-    if (!headers)
-    {
-        DTLogWarning(@"Setting Empty Headers");
+    if (!headers) {
+        DTLogWarning (@"Setting Empty Headers");
     }
 
     _headers = headers;
