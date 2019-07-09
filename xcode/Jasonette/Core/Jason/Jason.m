@@ -2687,6 +2687,7 @@
     tabController = v.tabBarController;
 
     if (!nav) {
+        DTLogDebug (@"No Navbar detected");
         navigationController.navigationBar.hidden = YES;
         return;
     }
@@ -2742,37 +2743,70 @@
             navigationController.navigationBar.backgroundColor = background;
             navigationController.navigationBar.barTintColor = background;
             navigationController.navigationBar.tintColor = color;
-            navigationController.navigationBar.titleTextAttributes = @{ NSForegroundColorAttributeName: color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0] };
+            navigationController.navigationBar.titleTextAttributes = @{
+                    NSForegroundColorAttributeName: color,
+                    NSFontAttributeName: [UIFont
+                                          fontWithName:@"HelveticaNeue-CondensedBold"
+                                                  size:18.0]
+            };
             return;
         }
     }
 
     navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-    navigationController.navigationBar.titleTextAttributes = @{ NSForegroundColorAttributeName: color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:18.0] };
+    navigationController.navigationBar.titleTextAttributes = @{
+            NSForegroundColorAttributeName: color,
+            NSFontAttributeName: [UIFont
+                                  fontWithName:@"HelveticaNeue-CondensedBold"
+                                          size:18.0]
+    };
     navigationController.navigationBar.hidden = NO;
 
     if (nav[@"style"]) {
         NSDictionary * headStyle = nav[@"style"];
 
         if (headStyle[@"background"]) {
-            NSString * bg = headStyle[@"background"];
-            background = [JasonHelper colorwithHexString:bg alpha:1.0];
+            background = [JasonHelper colorwithHexString:headStyle[@"background"] alpha:1.0];
         }
 
         if (headStyle[@"color"]) {
             color = [JasonHelper colorwithHexString:headStyle[@"color"] alpha:1.0];
         }
 
+        navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+
         if (headStyle[@"theme"]) {
             navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
-        } else {
-            navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
         }
+
+#pragma message "Sets the Status Bar"
+
+        if (headStyle[@"bar"]) {
+            NSString * mode = headStyle[@"bar"];
+
+            if ([mode isEqualToString:@"default"] ||
+                [mode isEqualToString:@"dark"] ||
+                [mode isEqualToString:@"black"] ||
+                [mode isEqualToString:@"opaque"]) {
+                DTLogDebug (@"Status Bar Default Color");
+                navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
+            } else if ([mode isEqualToString:@"light"] ||
+                       [mode isEqualToString:@"white"]) {
+                DTLogDebug (@"Status Bar White Color");
+                navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+            } else {
+                // hidden
+                // Note: To hide a status bar needs some special methods.
+                DTLogDebug (@"Status Bar Hidden");
+                navigationController.navigationBar.translucent = YES;
+                [JasonHelper setStatusBarBackgroundColor:[UIColor clearColor]];
+            }
+        }
+
+        navigationController.hidesBarsOnSwipe = NO;
 
         if (headStyle[@"shy"]) {
             navigationController.hidesBarsOnSwipe = YES;
-        } else {
-            navigationController.hidesBarsOnSwipe = NO;
         }
 
         NSString * font_name = @"HelveticaNeue-CondensedBold";
@@ -2786,13 +2820,23 @@
             font_size = headStyle[@"size"];
         }
 
-        navigationController.navigationBar.titleTextAttributes = @{ NSForegroundColorAttributeName: color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]] };
+        navigationController.navigationBar.titleTextAttributes = @{
+                NSForegroundColorAttributeName: color,
+                NSFontAttributeName: [UIFont
+                                      fontWithName:font_name
+                                              size:[font_size integerValue]]
+        };
     } else {
         navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
         navigationController.hidesBarsOnSwipe = NO;
         NSString * font_name = @"HelveticaNeue-CondensedBold";
         NSString * font_size = @"18";
-        navigationController.navigationBar.titleTextAttributes = @{ NSForegroundColorAttributeName: color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]] };
+        navigationController.navigationBar.titleTextAttributes = @{
+                NSForegroundColorAttributeName: color,
+                NSFontAttributeName: [UIFont
+                                      fontWithName:font_name
+                                              size:[font_size integerValue]]
+        };
     }
 
     NSDictionary * left_menu = nav[@"left"];
