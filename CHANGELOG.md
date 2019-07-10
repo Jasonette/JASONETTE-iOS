@@ -16,6 +16,8 @@ This version is the current in development.
 
 - Docs on how to implement extensions.
 
+- Added [`uncrustify`](http://uncrustify.sourceforge.net/) config for code style standarization.
+
 ### Changed
 
 - Improved `JasonComponentFactory.h` to take in consideration `Swift` extensions.
@@ -32,6 +34,11 @@ This version is the current in development.
 - Fixed Blank Screen when no `url` is found in `settings.plist`.
 - Fixed Blank Screen if you click a `Tab Item` more than once.
 
+### Updated
+
+- Updated to `AFNetworking` 3.2.1 (was 3.1.0).
+- Updated to `UICKeyChainStore` 2.1.2 (was 2.1.0).
+- Updated to `IQAudioRecorderController` 1.2.3 (was 1.2.0).
 
 ### Removed
 
