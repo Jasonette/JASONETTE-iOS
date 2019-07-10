@@ -9,6 +9,11 @@
             }
         },
         "body": {
+            "header": {
+                "style": {
+                    "theme": true
+                }
+            },
             "style": {
                 "background": "#ffffff",
                 "border": "none"

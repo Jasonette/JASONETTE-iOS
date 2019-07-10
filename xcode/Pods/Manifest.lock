@@ -70,7 +70,7 @@ PODS:
     - OMGHTTPURLRQ/UserAgent
   - TTTAttributedLabel (2.0.0)
   - TWMessageBarManager (1.8.1)
-  - UICKeyChainStore (2.1.0)
+  - UICKeyChainStore (2.1.2)
 
 DEPENDENCIES:
   - AFNetworking
@@ -205,7 +205,7 @@ SPEC CHECKSUMS:
   TDOAuth: f7e356e834295b83c7b5066ee72a30f128c5f722
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
-  UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
+  UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
 
 PODFILE CHECKSUM: dd6dfa0550722a90e555288182c42d0db82c1c81
 
