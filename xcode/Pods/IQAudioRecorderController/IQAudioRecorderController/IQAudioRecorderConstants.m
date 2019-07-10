@@ -1,5 +1,5 @@
 //
-//  IQAudioRecorderConstraints.m
+//  IQAudioRecorderConstants.m
 // https://github.com/hackiftekhar/IQAudioRecorderController
 // Created by Iftekhar Qurashi
 // Copyright (c) 2015-16 Iftekhar Qurashi
@@ -22,5 +22,5 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "IQAudioRecorderConstraints.h"
+#import "IQAudioRecorderConstants.h"
 

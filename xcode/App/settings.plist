@@ -11,7 +11,7 @@
 	<key>launch</key>
 	<string></string>
 	<key>url</key>
-	<string>file://hello.json</string>
+	<string>https://raw.githubusercontent.com/jasonelle/docs/develop/examples/jasonette/apps/web-audio-recorder/index.agent.json</string>
 	<key>debug</key>
 	<false/>
 </dict>
