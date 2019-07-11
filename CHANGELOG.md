@@ -54,6 +54,8 @@ Based on the code by `@seletz`.
 
 ### Removed
 
+- Nothing
+
 ### Notes
 
 This version is a complete overhaul focusing on 
