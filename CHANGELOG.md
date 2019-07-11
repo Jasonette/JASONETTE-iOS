@@ -18,6 +18,17 @@ This version is the current in development.
 
 - Added [`uncrustify`](http://uncrustify.sourceforge.net/) config for code style standarization.
 
+- Added new option in `href` to load a `web` with `reader mode`.
+Based on the code by `@seletz`.
+
+```json
+{
+    "options": {
+        "reader": true
+    }
+}
+```
+
 ### Changed
 
 - Improved `JasonComponentFactory.h` to take in consideration `Swift` extensions.
@@ -33,6 +44,7 @@ This version is the current in development.
 - Fixed Crash when url contained html content in a json expected return.
 - Fixed Blank Screen when no `url` is found in `settings.plist`.
 - Fixed Blank Screen if you click a `Tab Item` more than once.
+- Fixed `WKWebView` orientation change not working. Based on the code by `@ricardojlpinto`.
 
 ### Updated
 
