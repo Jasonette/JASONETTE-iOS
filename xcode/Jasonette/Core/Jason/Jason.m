@@ -3826,16 +3826,37 @@
             ***************************************/
             NSString * encoded_url = [JasonHelper linkify:href[@"url"]];
             NSURL * URL = [NSURL URLWithString:encoded_url];
+            
+            
+            DTLogDebug(@"Opening WebView with URL %@", encoded_url);
+            
             [self unlock];
-            SFSafariViewController * vc = [[SFSafariViewController alloc] initWithURL:URL];
+            SFSafariViewController * vc;
+            
+            /*
+             * If reader mode is passed as an option then use it on the safari controller
+             */
+            if(href[@"options"] && (href[@"options"][@"reader"] ||
+                                    href[@"options"][@"reader_mode"]))
+            {
+                DTLogDebug(@"Reader Mode Activated");
+                vc = [[SFSafariViewController alloc]
+                      initWithURL:URL
+                      entersReaderIfAvailable:YES];
+            } else {
+                vc = [[SFSafariViewController alloc] initWithURL:URL];
+            }
 
             if ([transition isEqualToString:@"modal"]) {
+                DTLogDebug(@"Presenting as modal transition");
                 UINavigationController * newNav = [[UINavigationController alloc]initWithRootViewController:vc];
                 [newNav setNavigationBarHidden:YES animated:NO];
                 [navigationController presentViewController:newNav animated:YES completion:^{ }];
             } else {
+                DTLogDebug(@"Presenting as push transition");
                 [navigationController presentViewController:vc animated:YES completion:^{ }];
             }
+            
         } else if ([view.lowercaseString isEqualToString:@"app"] || [view.lowercaseString isEqualToString:@"external"]) {
             /****************************************************************************
             *
@@ -3843,6 +3864,8 @@
             *
             ****************************************************************************/
             NSString * url = href[@"url"];
+            
+            DTLogDebug(@"Opening External URL %@", url);
 
             if (memory._register && memory._register.count > 0) {
                 NSDictionary * parsed_href = [JasonHelper parse:[JasonMemory client]._register with:href];
@@ -3851,15 +3874,24 @@
 
             if (url) {
                 [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+            } else {
+                DTLogWarning(@"Invalid Url");
             }
 
             [self unlock];
+            
         } else {
+            
             if (!view || (view && [view.lowercaseString isEqualToString:@"jason"])) {
+                
                 // Jason View
                 NSString * viewClass = @"JasonViewController";
-
+                
+                DTLogDebug(@"Opening Jason View with Transition %@", transition);
+                
                 if ([transition isEqualToString:@"replace"]) {
+                    
+                    DTLogDebug(@"Replacing the current view");
                 /****************************************************************************
                 *
                 * Replace the current view
@@ -3883,6 +3915,7 @@
 
                         [self start:@{ @"url": new_url, @"loading": @YES, @"options": new_options }];
                     }
+                    
                 } else if ([transition isEqualToString:@"modal"]) {
                     /****************************************************************************
                     *

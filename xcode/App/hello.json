@@ -86,7 +86,7 @@
                             "text": "Watch the tutorial video",
                             "href": {
                                 "url": "https://www.youtube.com/watch?v=hfevBAAfCMQ",
-                                "view": "Web"
+                                "view": "web"
                             }
                         },
                         {
@@ -101,7 +101,10 @@
                             "text": "View documentation",
                             "href": {
                                 "url": "https://jasonelle.com/docs",
-                                "view": "Web"
+                                "view": "web",
+                                "options": {
+                                    "reader": true
+                                }
                             }
                         }
                     ]
