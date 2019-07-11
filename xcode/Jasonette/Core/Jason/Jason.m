@@ -2431,7 +2431,7 @@
                 }
             }
 
-            NSMutableDictionary * payload = [[NSMutableDictionary alloc] init];
+            NSMutableDictionary * payload = [@{} mutableCopy];
 
             if (bg[@"url"]) {
                 payload[@"url"] = bg[@"url"];

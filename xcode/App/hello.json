@@ -66,12 +66,12 @@
                                 "padding": "10",
                                 "color": "#000000",
                                 "font": "HelveticaNeue",
-                                "size": "12"
+                                "size": "16"
                             },
                             "text": "Check out Live DEMO",
                             "href": {
                                 "url": "https://raw.githubusercontent.com/jasonelle/docs/develop/examples/jasonette/apps/jasonpedia/demo.json",
-                                "fresh": "true"
+                                "fresh": true
                             }
                         },
                         {
@@ -81,7 +81,7 @@
                                 "padding": "10",
                                 "color": "#000000",
                                 "font": "HelveticaNeue",
-                                "size": "12"
+                                "size": "16"
                             },
                             "text": "Watch the tutorial video",
                             "href": {
@@ -96,7 +96,7 @@
                                 "padding": "10",
                                 "color": "#000000",
                                 "font": "HelveticaNeue",
-                                "size": "12"
+                                "size": "16"
                             },
                             "text": "View documentation",
                             "href": {
