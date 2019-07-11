@@ -3778,6 +3778,8 @@
 - (void)onOrientationChange
 {
     DTLogDebug (@"Changed Orientation");
+    
+    // Fix wkwebview orientation change made by @ricardojlpinto  https://github.com/Jasonette/JASONETTE-iOS/pull/358
     JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
     WKWebView * agent = vc.agents[@"$webcontainer"];
 
