@@ -2483,11 +2483,11 @@
             int width = [UIScreen mainScreen].bounds.size.width;
             int x = 0;
             int y = 0;
-
+            
             if (!tabController.tabBar.hidden) {
                 height = height - tabController.tabBar.frame.size.height;
             }
-
+            
             if (vc.composeBarView) {
                 // footer.input exists
                 height = height - vc.composeBarView.frame.size.height;
@@ -2499,18 +2499,25 @@
 #pragma message "iOS 11 safe area borders"
             if(@available(iOS 11, *)) {
                 // Take in consideration safe areas available in iOS 11
-                y = -vc.background.safeAreaInsets.top;
+                y = -vc.view.safeAreaInsets.top;
                 
                 height = [UIScreen mainScreen].bounds.size.height +
-                    vc.background.safeAreaInsets.top +
-                    vc.background.safeAreaInsets.bottom;
+                    vc.view.safeAreaInsets.top +
+                    vc.view.safeAreaInsets.bottom;
                 
                 
-                if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
-                    x = -vc.background.safeAreaInsets.left;
-                    width = [UIScreen mainScreen].bounds.size.width +
-                        vc.background.safeAreaInsets.left +
-                        vc.background.safeAreaInsets.right;
+                x = -vc.view.safeAreaInsets.left;
+                width = [UIScreen mainScreen].bounds.size.width +
+                    vc.view.safeAreaInsets.left +
+                    vc.view.safeAreaInsets.right;
+                
+                if (!tabController.tabBar.hidden) {
+                    height = height - tabController.tabBar.frame.size.height;
+                }
+                
+                if (vc.composeBarView) {
+                    // footer.input exists
+                    height = height - vc.composeBarView.frame.size.height;
                 }
                 
                 rect = CGRectMake(x, y, width, height);
