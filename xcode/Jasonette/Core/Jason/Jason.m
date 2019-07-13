@@ -12,6 +12,7 @@
 #import "JasonLogger.h"
 #import "JasonNetworking.h"
 #import "JasonNSClassFromString.h"
+#import "JasonWKWebView.h"
 
 @interface Jason () {
     UINavigationController * navigationController;
@@ -1933,7 +1934,10 @@
 }
 
 - (NSDictionary *)getEnv {
-    NSMutableDictionary * dict = [[NSMutableDictionary alloc] init];
+    
+    DTLogDebug(@"Getting ENV");
+    
+    NSMutableDictionary * dict = [@{} mutableCopy];
     NSURL * file = [[NSBundle mainBundle] URLForResource:@"Info" withExtension:@"plist"];
     NSDictionary * info_plist = [NSDictionary dictionaryWithContentsOfURL:file];
 
@@ -1946,37 +1950,41 @@
 
     CGRect bounds = [[UIScreen mainScreen] bounds];
     dict[@"device"] = @{
-            @"width": [NSNumber numberWithFloat:bounds.size.width],
-            @"height": [NSNumber numberWithFloat:bounds.size.height],
+            @"width": @(bounds.size.width),
+            @"height": @(bounds.size.height),
             @"os": @{ @"name": @"ios", @"version": [[UIDevice currentDevice] systemVersion] },
             @"language": [[NSLocale preferredLanguages] objectAtIndex:0]
     };
 
     dict[@"view"] = @{
-            @"url": VC.url
+            @"url": self->VC.url
     };
+    
     return dict;
 }
 
-- (NSDictionary *)variables {
-    NSMutableDictionary * data_stub = [[NSMutableDictionary alloc] init];
+- (NSDictionary *) variables {
+    
+    DTLogDebug(@"Getting Variables");
+    
+    NSMutableDictionary * data_stub = [@{} mutableCopy];
 
-    if (VC.data) {
-        for (NSString * key in VC.data) {
+    if (self->VC.data) {
+        for (NSString * key in self->VC.data) {
             if (![key isEqualToString:@"$jason"]) {
                 data_stub[key] = VC.data[key];
             }
         }
     }
 
-    if (VC.form) {
-        data_stub[@"$get"] = VC.form;
+    if (self->VC.form) {
+        data_stub[@"$get"] = self->VC.form;
     } else {
         data_stub[@"$get"] = @{};
     }
 
-    if (VC.options) {
-        data_stub[@"$params"] = VC.options;
+    if (self->VC.options) {
+        data_stub[@"$params"] = self->VC.options;
     } else {
         data_stub[@"$params"] = @{};
     }
@@ -1984,7 +1992,7 @@
     NSArray * keys = [self getKeys];
 
     if (keys && keys.count > 0) {
-        NSMutableDictionary * dict = [NSMutableDictionary dictionary];
+        NSMutableDictionary * dict = [@{} mutableCopy];
 
         for (NSDictionary * kv in keys) {
             NSString * key = kv[@"key"];
@@ -2007,20 +2015,20 @@
     NSDictionary * env = [self getEnv];
     data_stub[@"$env"] = env;
 
-    if (VC.current_cache) {
-        if (VC.current_cache.count > 0) {
-            data_stub[@"$cache"] = VC.current_cache;
+    if (self->VC.current_cache) {
+        if (self->VC.current_cache.count > 0) {
+            data_stub[@"$cache"] = self->VC.current_cache;
         } else {
             data_stub[@"$cache"] = @{};
         }
     } else {
         // Fetch the cache from NSUserDefaults only the first time.
         // After this, VC.current_cache will update only when a $set action is called.
-        NSString * normalized_url = [VC.url lowercaseString];
-        VC.current_cache = [[NSUserDefaults standardUserDefaults] objectForKey:normalized_url];
+        NSString * normalized_url = [self->VC.url lowercaseString];
+        self->VC.current_cache = [[NSUserDefaults standardUserDefaults] objectForKey:normalized_url];
 
-        if (VC.current_cache && VC.current_cache.count > 0) {
-            data_stub[@"$cache"] = VC.current_cache;
+        if (self->VC.current_cache && self->VC.current_cache.count > 0) {
+            data_stub[@"$cache"] = self->VC.current_cache;
         } else {
             data_stub[@"$cache"] = @{};
         }
@@ -3733,7 +3741,7 @@
 
 - (void)onShow
 {
-    NSDictionary * events = [VC valueForKey:@"events"];
+    NSDictionary * events = [self->VC valueForKey:@"events"];
 
     if (events) {
         if (events[@"$show"]) {
@@ -3757,10 +3765,10 @@
 - (void)onLoad:(Boolean)online
 {
     [JasonMemory client].executing = NO;
-    NSDictionary * events = [VC valueForKey:@"events"];
+    NSDictionary * events = [self->VC valueForKey:@"events"];
 
     if (events && events[@"$load"]) {
-        if (!VC.contentLoaded) {
+        if (!self->VC.contentLoaded) {
             DTLogInfo (@"Calling $load event");
             NSDictionary * variables = [self variables];
             DTLogDebug (@"%@", variables);
@@ -3781,7 +3789,7 @@
 - (void)onBackground
 {
     isForeground = NO;
-    NSDictionary * events = [VC valueForKey:@"events"];
+    NSDictionary * events = [self->VC valueForKey:@"events"];
 
     if (events) {
         if (events[@"$background"]) {
@@ -3799,7 +3807,7 @@
 
     // Don't trigger if the view has already come foreground once (because this can be triggered by things like push notification / geolocation alerts)
     if (!isForeground) {
-        NSDictionary * events = [VC valueForKey:@"events"];
+        NSDictionary * events = [self->VC valueForKey:@"events"];
 
         if (events) {
             if (events[@"$foreground"]) {
@@ -3812,96 +3820,128 @@
     isForeground = YES;
 }
 
+#pragma mark Orientation Change
 - (void)onOrientationChange: (NSNotification *) notification {
     
     UIDevice * device = notification.object;
     
     if(!device) {
+        DTLogWarning(@"No device");
         return;
     }
     
     DTLogDebug (@"Changed Orientation to %ld", device.orientation);
 
-    JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
-    WKWebView * agent = vc.agents[@"$webcontainer"];
-
-    int height = [UIScreen mainScreen].bounds.size.height;
-    int width = [UIScreen mainScreen].bounds.size.width;
-    int x = 0;
-    int y = 0;
-    
-    
-    CGRect frame = CGRectMake (x, y, width, height);
-    
-    NSDictionary * events = [VC valueForKey:@"events"];
-    
+    NSDictionary * events = [self->VC valueForKey:@"events"];
     if (events) {
         if (events[@"$orientation"]) {
-            NSDictionary * params = @{
-                                     @"value" : @(device.orientation),
-                                     @"frame" : @{
-                                             @"x": @(frame.origin.x),
-                                             @"y": @(frame.origin.y),
-                                             @"width": @(frame.size.width),
-                                             @"height": @(frame.size.height)
-                                             }
-                                     };
-            
-            DTLogInfo (@"Calling $orientation event with params %@", params);
-            [self call:events[@"$orientation"]
-                  with:params];
+            DTLogInfo (@"Calling $orientation event%@");
+            [self call:events[@"$orientation"]];
         }
     }
     
-    if (agent) {
-        DTLogDebug (@"$webcontainer agent will change its bounds");
-        
-        if (!tabController.tabBar.hidden) {
-            height = height - tabController.tabBar.frame.size.height;
-        }
-        
-        if (vc.composeBarView) {
-            // footer.input exists
-            height = height - vc.composeBarView.frame.size.height;
-        }
-        
-        
-#pragma message "TODO: Test iOS 11 safe area borders on orientation change"
-        if(@available(iOS 11, *)) {
-            // Take in consideration safe areas available in iOS 11
-            y = -vc.view.safeAreaInsets.top;
-            
-            height = [UIScreen mainScreen].bounds.size.height +
-                vc.view.safeAreaInsets.top +
-                vc.view.safeAreaInsets.bottom;
-            
-            if (UIDeviceOrientationIsPortrait(device.orientation)) {
-                DTLogDebug(@"Portrait Orientation");
-            }
-            
-            if (UIDeviceOrientationIsLandscape(device.orientation)) {
-                DTLogDebug(@"Landscape Orientation");
-                x = -vc.view.safeAreaInsets.left;
-                width = [UIScreen mainScreen].bounds.size.width +
-                    vc.view.safeAreaInsets.left +
-                    vc.view.safeAreaInsets.right;
-            }
-            
-            if (!tabController.tabBar.hidden) {
-                height = height - tabController.tabBar.frame.size.height;
-            }
-            
-            if (vc.composeBarView) {
-                // footer.input exists
-                height = height - vc.composeBarView.frame.size.height;
-            }
-            
-            frame = CGRectMake(x, y, width, height);
-        }
-        
-        DTLogDebug(@"Applying Frame %@", NSStringFromCGRect(frame));
-        agent.frame = frame;
-    }
+    // Retrigger render in order to layout new constraints
+    [self call:@{@"type": @"$render"}];
+
+//    int height = [UIScreen mainScreen].bounds.size.height;
+//    int width = [UIScreen mainScreen].bounds.size.width;
+//    int x = 0;
+//    int y = 0;
+//
+//
+//    CGRect frame = CGRectMake (x, y, width, height);
+//
+//
+//    JasonViewController * controller = (JasonViewController *)[[Jason client] getVC];
+//    WKWebView * agent = controller.agents[@"$webcontainer"];
+//
+//    if (agent) {
+//
+//        DTLogDebug (@"$webcontainer agent will change its bounds. frame: %@ | screen: %@",
+//                    NSStringFromCGRect(agent.frame),
+//                    NSStringFromCGRect([UIScreen mainScreen].bounds));
+//
+//        if(@available(iOS 11, *))
+//        {
+//            UIEdgeInsets insets = controller.view.safeAreaInsets;
+//
+//            DTLogDebug(@"Safe Area: top %1.1f | bottom %1.1f | left %1.1f | right %1.1f",
+//                        insets.top,
+//                        insets.bottom,
+//                        insets.left,
+//                        insets.right);
+//
+//            switch (device.orientation) {
+//                case UIDeviceOrientationFaceDown:
+//                    DTLogDebug(@"Facing Down");
+//                case UIDeviceOrientationFaceUp:
+//                    DTLogDebug(@"Facing Up");
+//                case UIDeviceOrientationPortraitUpsideDown:
+//                    DTLogDebug(@"Facing UpsideDown");
+//                case UIDeviceOrientationPortrait:
+//                    DTLogDebug(@"Facing Portrait");
+//                    break;
+//                case UIDeviceOrientationLandscapeLeft:
+//                    DTLogDebug(@"Facing Landscape Left");
+//                case UIDeviceOrientationLandscapeRight:
+//                    DTLogDebug(@"Facing Landscape Right");
+//                    DTLogDebug(@"Facing Landscape");
+//                    break;
+//                default:
+//                    DTLogDebug(@"Unknown");
+//                    break;
+//            }
+//        }
+//
+//        agent.frame = frame;
+//        [agent setNeedsLayout];
+//        [agent setNeedsDisplay];
+    
+//        if (!tabController.tabBar.hidden) {
+//            height = height - tabController.tabBar.frame.size.height;
+//        }
+//
+//        if (vc.composeBarView) {
+//            // footer.input exists
+//            height = height - vc.composeBarView.frame.size.height;
+//        }
+//
+//
+//#pragma message "TODO: Test iOS 11 safe area borders on orientation change"
+//        if(@available(iOS 11, *)) {
+//            // Take in consideration safe areas available in iOS 11
+//            y = -agent.superview.safeAreaInsets.top;
+//
+//            height = [UIScreen mainScreen].bounds.size.height +
+//                agent.superview.safeAreaInsets.top +
+//                agent.superview.safeAreaInsets.bottom;
+//
+//            if (UIDeviceOrientationIsPortrait(device.orientation)) {
+//                DTLogDebug(@"Portrait Orientation");
+//            }
+//
+//            if (UIDeviceOrientationIsLandscape(device.orientation)) {
+//                DTLogDebug(@"Landscape Orientation");
+//                x = -vc.view.safeAreaInsets.left;
+//                width = [UIScreen mainScreen].bounds.size.width +
+//                    agent.superview.safeAreaInsets.left +
+//                    agent.superview.safeAreaInsets.right;
+//            }
+//
+//            if (!tabController.tabBar.hidden) {
+//                height = height - tabController.tabBar.frame.size.height;
+//            }
+//
+//            if (vc.composeBarView) {
+//                // footer.input exists
+//                height = height - vc.composeBarView.frame.size.height;
+//            }
+//
+//            frame = CGRectMake(x, y, width, height);
+//        }
+//        DTLogDebug(@"Frame Before %@, After %@", NSStringFromCGRect(agent.frame), NSStringFromCGRect(frame));
+//        agent.frame = frame;
+//    }
     
 }
 

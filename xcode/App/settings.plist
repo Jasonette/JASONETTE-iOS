@@ -11,7 +11,7 @@
 	<key>launch</key>
 	<string></string>
 	<key>url</key>
-	<string>file://hello.json</string>
+	<string>file://webview.json</string>
 	<key>debug</key>
 	<false/>
 </dict>

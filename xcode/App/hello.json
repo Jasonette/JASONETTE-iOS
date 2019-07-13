@@ -24,8 +24,8 @@
                         {
                             "type": "vertical",
                             "style": {
-                                "padding": "30",
-                                "spacing": "20",
+                                "padding": 30,
+                                "spacing": 20,
                                 "align": "center"
                             },
                             "components": [
@@ -35,7 +35,7 @@
                                     "style": {
                                         "align": "center",
                                         "font": "Courier-Bold",
-                                        "size": "18"
+                                        "size": 26
                                     }
                                 },
                                 {
@@ -44,8 +44,8 @@
                                     "style": {
                                         "align": "center",
                                         "font": "Courier",
-                                        "padding": "30",
-                                        "size": "14"
+                                        "padding": 30,
+                                        "size": 20
                                     }
                                 },
                                 {
@@ -54,7 +54,7 @@
                                     "style": {
                                         "align": "center",
                                         "font": "HelveticaNeue-Bold",
-                                        "size": "50"
+                                        "size": 50
                                     }
                                 }
                             ]
@@ -63,25 +63,25 @@
                             "type": "label",
                             "style": {
                                 "align": "right",
-                                "padding": "10",
+                                "padding": 10,
                                 "color": "#000000",
                                 "font": "HelveticaNeue",
-                                "size": "12"
+                                "size": 20
                             },
                             "text": "Check out Live DEMO",
                             "href": {
                                 "url": "https://raw.githubusercontent.com/jasonelle/docs/develop/examples/jasonette/apps/jasonpedia/demo.json",
-                                "fresh": "true"
+                                "fresh": true
                             }
                         },
                         {
                             "type": "label",
                             "style": {
                                 "align": "right",
-                                "padding": "10",
+                                "padding": 10,
                                 "color": "#000000",
                                 "font": "HelveticaNeue",
-                                "size": "12"
+                                "size": 20
                             },
                             "text": "Watch the tutorial video",
                             "href": {
@@ -93,10 +93,10 @@
                             "type": "label",
                             "style": {
                                 "align": "right",
-                                "padding": "10",
+                                "padding": 10,
                                 "color": "#000000",
                                 "font": "HelveticaNeue",
-                                "size": "12"
+                                "size": 20
                             },
                             "text": "View documentation",
                             "href": {

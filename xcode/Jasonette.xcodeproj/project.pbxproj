@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5EE85B6C1DA45F8F0049EACE /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EE85B6B1DA45F8F0049EACE /* MapKit.framework */; };
+		EF05C12122DA32D100602800 /* JasonWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF05C12022DA32D100602800 /* JasonWKWebView.m */; };
 		EF07303A22D28B2400973DE1 /* settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = EF072F5F22D28B2400973DE1 /* settings.plist */; };
 		EF07303B22D28B2400973DE1 /* webview.json in Resources */ = {isa = PBXBuildFile; fileRef = EF072F6022D28B2400973DE1 /* webview.json */; };
 		EF07303C22D28B2400973DE1 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EF072F6222D28B2400973DE1 /* Media.xcassets */; };
@@ -105,6 +106,8 @@
 		5EE85B6B1DA45F8F0049EACE /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		5EE85B7A1DA595A20049EACE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
+		EF05C11F22DA32D100602800 /* JasonWKWebView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonWKWebView.h; sourceTree = "<group>"; };
+		EF05C12022DA32D100602800 /* JasonWKWebView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonWKWebView.m; sourceTree = "<group>"; };
 		EF072F5F22D28B2400973DE1 /* settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = settings.plist; sourceTree = "<group>"; };
 		EF072F6022D28B2400973DE1 /* webview.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = webview.json; sourceTree = "<group>"; };
 		EF072F6222D28B2400973DE1 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
@@ -310,6 +313,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		EF05C11E22DA32B200602800 /* WKWebView */ = {
+			isa = PBXGroup;
+			children = (
+				EF05C11F22DA32D100602800 /* JasonWKWebView.h */,
+				EF05C12022DA32D100602800 /* JasonWKWebView.m */,
+			);
+			path = WKWebView;
+			sourceTree = "<group>";
+		};
 		EF072F5E22D28B2400973DE1 /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -506,6 +518,7 @@
 		EF07A11122D6186100D0D3FF /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				EF05C11E22DA32B200602800 /* WKWebView */,
 				EF07A11222D6186100D0D3FF /* JasonViewController.m */,
 				EF07A11322D6186100D0D3FF /* JasonViewController.h */,
 				EF07A11422D6186100D0D3FF /* Badge */,
@@ -1281,6 +1294,7 @@
 				EF07A1F022D6186100D0D3FF /* JasonConvertAction.m in Sources */,
 				EF07A20622D6186100D0D3FF /* JasonAgentService.m in Sources */,
 				EF07A1DF22D6186100D0D3FF /* JasonImageComponent.m in Sources */,
+				EF05C12122DA32D100602800 /* JasonWKWebView.m in Sources */,
 				EF07A1F522D6186100D0D3FF /* JasonOauthAction.m in Sources */,
 				EF07A20422D6186100D0D3FF /* JasonWebsocketService.m in Sources */,
 				EF07A1F422D6186100D0D3FF /* JasonCacheAction.m in Sources */,
