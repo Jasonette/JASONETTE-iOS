@@ -117,23 +117,23 @@
 
     // Inject agent.js into agent context
     NSString * identifier = webView.payload[@"identifier"];
-    DTLogDebug(@"Injecting agent.js into context %@", identifier);
+    DTLogDebug (@"Injecting agent.js into context %@", identifier);
     NSString * raw = [JasonHelper read_local_file:@"file://agent.js"];
-    
+
     NSString * interface = [NSString
                             stringWithFormat:@"$agent.interface = window.webkit.messageHandlers[\"%@\"];\n",
                             identifier];
-    
+
     NSString * summon = [raw stringByAppendingString:interface];
-    
+
     webView.payload[@"state"] = @"rendered";
-    
+
     [webView evaluateJavaScript:summon
               completionHandler:^(id _Nullable res, NSError * _Nullable error) {
                   DTLogInfo (@"Injected $agent into context");
 
                   if (error) {
-                      DTLogWarning (@"%@", error);
+                  DTLogWarning (@"%@", error);
                   }
               }];
 
@@ -191,14 +191,14 @@
                     // if it's a trigger, must figure out whether it resolves to type: "$default"
                     resolved = [[Jason client]
                                 filloutTemplate:event
-                                withData:data_stub];
+                                       withData:data_stub];
                 } else {
                     resolved = event;
                 }
 
                 action = [[Jason client]
                           filloutTemplate:resolved
-                          withData:data_stub];
+                                 withData:data_stub];
             }
 
             if (action[@"type"] && [action[@"type"] isEqualToString:@"$default"]) {
@@ -209,14 +209,13 @@
                 // normal navigation
                 // Need to handle JASON action
                     if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
-                        
                         decisionHandler (WKNavigationActionPolicyCancel);
 
                         NSMutableDictionary * event = [action mutableCopy];
                         NSString * identifier = webView.payload[@"identifier"];
-                        
-                        DTLogDebug(@"Detected Link Activated in $agent %@", identifier);
-                        
+
+                        DTLogDebug (@"Detected Link Activated in $agent %@", identifier);
+
                         if (action[@"trigger"] || action[@"type"]) {
                             event[@"$id"] = identifier;
                             [[Jason client] call:event];
@@ -254,9 +253,8 @@
 **********************************************/
 
 - (void)refresh:(WKWebView *)agent withOptions:(NSDictionary *)options {
-    
-    DTLogDebug(@"Refreshing agent with options %@", options);
-    
+    DTLogDebug (@"Refreshing agent with options %@", options);
+
     NSString * text = options[@"text"];
     NSString * url = options[@"url"];
     NSDictionary * action = options[@"action"];
@@ -271,46 +269,48 @@
             // contains "url" attribute
             if ([url containsString:@"file://"]) {
             // File URL
-                DTLogDebug(@"Loading with Local File %@", url);
+                DTLogDebug (@"Loading with Local File %@", url);
                 NSString * path = [JasonHelper get_local_path:url];
                 NSURL * u = [NSURL fileURLWithPath:path isDirectory:NO];
                 [agent loadFileURL:u allowingReadAccessToURL:u];
             } else {
             // Remote URL
-                DTLogDebug(@"Loading Remote URL %@", url);
+                DTLogDebug (@"Loading Remote URL %@", url);
                 NSURL * nsurl = [NSURL URLWithString:url];
                 NSURLRequest * nsrequest = [NSURLRequest requestWithURL:nsurl];
                 [agent loadRequest:nsrequest];
             }
         } else if (text) {
             // contains "text" attribute
-            DTLogDebug(@"Loading text attribute");
+            DTLogDebug (@"Loading text attribute");
             [agent loadHTMLString:text baseURL:nil];
         } else {
             // neither "url" nor "text" => Just empty agent
-            DTLogDebug(@"Neither 'url' or 'text' attribute detected.");
+            DTLogDebug (@"Neither 'url' or 'text' attribute detected.");
             isempty = YES;
         }
     }
 
     agent.payload[@"state"] = @"loaded";
+
     if (isempty) {
         agent.payload[@"state"] = @"empty";
     }
 
     agent.userInteractionEnabled = NO;
+
     if (action) {
         agent.userInteractionEnabled = YES;
     }
 }
 
 - (void)refresh:(NSDictionary *)options {
-    
     if (options[@"id"]) {
         JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
         NSString * identifier = options[@"id"];
 
-        DTLogDebug(@"Refreshing %@", identifier);
+        DTLogDebug (@"Refreshing %@", identifier);
+
         // 1. Initialize
         if (vc.agents && vc.agents[identifier]) {
         // Already existing agent, juse reuse the old one
@@ -323,26 +323,25 @@
             [self refresh:agent withOptions:new_options];
             [[Jason client] success];
         } else {
-            DTLogWarning(@"An agent with id %@ doesn't exist.", identifier);
+            DTLogWarning (@"An agent with id %@ doesn't exist.", identifier);
             [[Jason client] error:@{ @"message": @"An agent with the ID doesn't exist" }];
         }
     } else {
-        DTLogWarning(@"'id' property needed to refresh");
+        DTLogWarning (@"'id' property needed to refresh");
         [[Jason client] error:@{ @"message": @"Please support an ID to refresh" }];
     }
 }
 
 - (void)clear:(NSString *)identifier forVC:(JasonViewController *)vc {
-    
     if (vc.agents && vc.agents[identifier]) {
         WKWebView * agent = vc.agents[identifier];
-        
+
         @try {
             [agent removeObserver:self
                        forKeyPath:NSStringFromSelector (@selector(estimatedProgress))];
         } @catch (id exception) {
         }
-        
+
         agent.payload[@"lifecycle"] = @"dead";
         [agent loadRequest:[NSURLRequest
                             requestWithURL:[NSURL
@@ -356,19 +355,18 @@
         [self clear:options[@"id"] forVC:vc];
         [[Jason client] success];
     } else {
-        DTLogDebug(@"'id' property needed to clear");
+        DTLogDebug (@"'id' property needed to clear");
         [[Jason client] error:@{ @"message": @"Please support an ID to clear" }];
     }
 }
 
 - (WKWebView *)setup:(NSDictionary *)options withId:(NSString *)identifier {
-    
     NSString * text = options[@"text"];
     NSString * url = options[@"url"];
     NSDictionary * action = options[@"action"];
 
     // Initialize
-    DTLogDebug(@"Initializing WKWebView agent with identifier %@", identifier);
+    DTLogDebug (@"Initializing WKWebView agent with identifier %@", identifier);
     WKWebViewConfiguration * config = [[WKWebViewConfiguration alloc] init];
     WKUserContentController * controller = [[WKUserContentController alloc] init];
 
@@ -384,11 +382,11 @@
     // 1. Initialize
     if (vc.agents && vc.agents[identifier]) {
         // Already existing agent, juse reuse the old one
-        DTLogDebug(@"Existing Agent %@", identifier);
+        DTLogDebug (@"Existing Agent %@", identifier);
         agent = vc.agents[identifier];
     } else {
         // New Agent
-        DTLogDebug(@"New Agent");
+        DTLogDebug (@"New Agent");
         agent = [[WKWebView alloc]
                  initWithFrame:CGRectMake (0, 0, 0, 0)
                  configuration:config];
@@ -427,8 +425,8 @@
     agent.payload[@"url"] = url;
     agent.payload[@"text"] = text;
 
-    [self refresh:agent
-      withOptions:options];
+    [self   refresh:agent
+        withOptions:options];
 
     vc.agents[identifier] = agent;
 

@@ -99,8 +99,8 @@
     self.focusField = nil;
 
     self.automaticallyAdjustsScrollViewInsets = YES;
-    
-    
+
+
     self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"finishRefreshing" object:nil];
@@ -285,7 +285,7 @@
 {
     [super viewWillAppear:animated];
 
-    DTLogDebug(@"View Will Appear");
+    DTLogDebug (@"View Will Appear");
     hasError = NO;
     self.playing = [[NSMutableArray alloc] init];
     [self.tableView deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow animated:YES];
@@ -300,7 +300,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    DTLogDebug(@"View will Disappear");
+    DTLogDebug (@"View will Disappear");
     [[Jason client] detach:self];
 }
 

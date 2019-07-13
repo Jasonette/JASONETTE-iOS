@@ -12,7 +12,6 @@
 #import "JasonLogger.h"
 #import "JasonNetworking.h"
 #import "JasonNSClassFromString.h"
-#import "JasonWKWebView.h"
 
 @interface Jason () {
     UINavigationController * navigationController;
@@ -83,7 +82,7 @@
         [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
         [[NSNotificationCenter defaultCenter]
          addObserver:self
-         selector:@selector(onOrientationChange:)
+            selector:@selector(onOrientationChange:)
                 name:UIDeviceOrientationDidChangeNotification
               object:[UIDevice currentDevice]];
 
@@ -1934,9 +1933,8 @@
 }
 
 - (NSDictionary *)getEnv {
-    
-    DTLogDebug(@"Getting ENV");
-    
+    DTLogDebug (@"Getting ENV");
+
     NSMutableDictionary * dict = [@{} mutableCopy];
     NSURL * file = [[NSBundle mainBundle] URLForResource:@"Info" withExtension:@"plist"];
     NSDictionary * info_plist = [NSDictionary dictionaryWithContentsOfURL:file];
@@ -1959,14 +1957,13 @@
     dict[@"view"] = @{
             @"url": self->VC.url
     };
-    
+
     return dict;
 }
 
-- (NSDictionary *) variables {
-    
-    DTLogDebug(@"Getting Variables");
-    
+- (NSDictionary *)variables {
+    DTLogDebug (@"Getting Variables");
+
     NSMutableDictionary * data_stub = [@{} mutableCopy];
 
     if (self->VC.data) {
@@ -2352,7 +2349,7 @@
             } else if (rendered_page[@"background"]) {
                 if ([rendered_page[@"background"] isKindOfClass:[NSDictionary class]]) {
             // Advanced background
-                    DTLogDebug(@"Detected Advanced Background");
+                    DTLogDebug (@"Detected Advanced Background");
                     [self drawAdvancedBackground:rendered_page[@"background"]];
                 } else {
                     [self drawBackground:rendered_page[@"background"]];
@@ -2407,19 +2404,17 @@
 }
 
 - (void)drawAdvancedBackground:(NSDictionary *)bg forVC:(JasonViewController *)vc {
-    
     NSString * type = bg[@"type"];
 
     if ([vc.background.payload[@"background"] isEqual:bg]) {
         return;
     }
-    
-    DTLogDebug(@"Drawing Advanced Background %@", type);
+
+    DTLogDebug (@"Drawing Advanced Background %@", type);
 
     if (type) {
         if ([type isEqualToString:@"camera"]) {
-            
-            DTLogDebug(@"Drawing camera");
+            DTLogDebug (@"Drawing camera");
             NSDictionary * options = bg[@"options"];
 
             if (vc.background) {
@@ -2431,10 +2426,9 @@
             vc.background.payload = [@{ @"background": bg } mutableCopy];
             avPreviewLayer = nil;
             [self buildCamera:options forVC:vc];
-            
         } else if ([type isEqualToString:@"html"]) {
-            
-            DTLogDebug(@"Drawing html");
+            DTLogDebug (@"Drawing html");
+
             if (self.avCaptureSession) {
                 [self.avCaptureSession stopRunning];
                 self.avCaptureSession = nil;
@@ -2467,9 +2461,10 @@
             if (bg[@"action"]) {
                 payload[@"action"] = bg[@"action"];
             }
-            
-            DTLogDebug(@"Loading Background with Payload %@", payload);
 
+            DTLogDebug (@"Loading Background with Payload %@", payload);
+
+#pragma message "JasonAgentService Setup"
             JasonAgentService * agent = self.services[@"JasonAgentService"];
             vc.background = [agent setup:payload withId:payload[@"id"]];
 
@@ -2483,46 +2478,43 @@
             int width = [UIScreen mainScreen].bounds.size.width;
             int x = 0;
             int y = 0;
-            
+
             if (!tabController.tabBar.hidden) {
                 height = height - tabController.tabBar.frame.size.height;
             }
-            
+
             if (vc.composeBarView) {
                 // footer.input exists
                 height = height - vc.composeBarView.frame.size.height;
             }
-            
-            
+
             CGRect rect = CGRectMake (x, y, width, height);
-            
-#pragma message "iOS 11 safe area borders"
-            if(@available(iOS 11, *)) {
+
+            if (@available(iOS 11, *)) {
                 // Take in consideration safe areas available in iOS 11
                 y = -vc.view.safeAreaInsets.top;
-                
                 height = [UIScreen mainScreen].bounds.size.height +
                     vc.view.safeAreaInsets.top +
                     vc.view.safeAreaInsets.bottom;
-                
-                
+
+
                 x = -vc.view.safeAreaInsets.left;
                 width = [UIScreen mainScreen].bounds.size.width +
                     vc.view.safeAreaInsets.left +
                     vc.view.safeAreaInsets.right;
-                
+
                 if (!tabController.tabBar.hidden) {
                     height = height - tabController.tabBar.frame.size.height;
                 }
-                
+
                 if (vc.composeBarView) {
                     // footer.input exists
                     height = height - vc.composeBarView.frame.size.height;
                 }
-                
-                rect = CGRectMake(x, y, width, height);
+
+                rect = CGRectMake (x, y, width, height);
             }
-            
+
             vc.background.frame = rect;
 
             UIProgressView * progressView = [vc.background viewWithTag:42];
@@ -2835,7 +2827,7 @@
 #pragma message "Sets the Status Bar"
 
         if (headStyle[@"bar"]) {
-            NSString * mode = headStyle[@"bar"];
+            NSString * mode = [headStyle[@"bar"] lowercaseString];
 
             if ([mode isEqualToString:@"default"] ||
                 [mode isEqualToString:@"dark"] ||
@@ -3586,9 +3578,11 @@
 
             DTLogDebug (@"Tab %ld contains href %@", indexOfTab, href);
 
+#pragma message "TabBar Refresh"
+
             if (VC.tabNeedsRefresh) {
                 DTLogDebug (@"Tab %ld Needs Refresh", indexOfTab);
-                [[Jason client] call:@{ @"type": @"$reload" }];
+                [[Jason client] call:@{ @"type": @"$render" }];
                 return YES;
                 /* This code contains the logic to refresh.
                  * the problem is that refreshing more than one time
@@ -3828,27 +3822,27 @@
 }
 
 #pragma mark Orientation Change
-- (void)onOrientationChange: (NSNotification *) notification {
-    
+- (void)onOrientationChange:(NSNotification *)notification {
     UIDevice * device = notification.object;
-    
-    if(!device) {
-        DTLogWarning(@"No device");
+
+    if (!device) {
+        DTLogWarning (@"No device");
         return;
     }
-    
+
     DTLogDebug (@"Changed Orientation to %ld", device.orientation);
 
     NSDictionary * events = [self->VC valueForKey:@"events"];
+
     if (events) {
         if (events[@"$orientation"]) {
             DTLogInfo (@"Calling $orientation event%@");
             [self call:events[@"$orientation"]];
         }
     }
-    
+
     // Retrigger render in order to layout new constraints
-    [self call:@{@"type": @"$render"}];
+    [self call:@{ @"type": @"$render" }];
 
 //    int height = [UIScreen mainScreen].bounds.size.height;
 //    int width = [UIScreen mainScreen].bounds.size.width;
@@ -3903,7 +3897,7 @@
 //        agent.frame = frame;
 //        [agent setNeedsLayout];
 //        [agent setNeedsDisplay];
-    
+
 //        if (!tabController.tabBar.hidden) {
 //            height = height - tabController.tabBar.frame.size.height;
 //        }
@@ -3949,7 +3943,6 @@
 //        DTLogDebug(@"Frame Before %@, After %@", NSStringFromCGRect(agent.frame), NSStringFromCGRect(frame));
 //        agent.frame = frame;
 //    }
-    
 }
 
 # pragma mark - View Linking
