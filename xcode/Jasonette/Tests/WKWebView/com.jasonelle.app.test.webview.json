@@ -4,27 +4,27 @@
             "title": "{ ˃̵̑ᴥ˂̵̑}",
             "actions": {
                 "$load": {
-                    "type": "$render"
+                    "type": "$util.toast",
+                    "options": {
+                        "text": "OK"
+                    }
                 },
                 "$foreground": {
                     "type": "$reload"
                 }
+            }
         },
-        "templates":{
-            "body": {
-                "background": {
-                    "type":"html",
-                    "text":"<html><head><meta name='viewport' content='width=device-width'></head><body style='background-color:#333ccc;color:white;'><h1>Hello Web View</h1></body></html>",
-                    "style": {
-                        "background": "rgb(122, 122, 122)"
-                    },
-                    "action": {
-                        "type": "$default"
-                    }
+        "body": {
+            "background": {
+                "type": "html",
+                "text": "<html><head><meta name='viewport' content='width=device-width'></head><body style='background-color:#333ccc;color:white;'><h1>Hello Web View</h1></body></html>",
+                "style": {
+                    "background": "rgb(122, 122, 122)"
+                },
+                "action": {
+                    "type": "$default"
                 }
             }
-        }
-        
         }
     }
 }

@@ -2062,13 +2062,14 @@
 # pragma mark - View rendering (high level)
 - (void)reload
 {
+#pragma message "TODO: Create a Soft Reload to Re render the view without network"
     DTLogInfo (@"Reloading View");
 
-    VC.data = nil;
-    VC.form = [@{} mutableCopy];
+    self->VC.data = nil;
+    self->VC.form = [@{} mutableCopy];
 
-    if (VC.url) {
-        [self networkLoading:VC.loading with:nil];
+    if (self->VC.url) {
+        [self networkLoading:self->VC.loading with:nil];
         AFHTTPSessionManager * manager = [JasonNetworking manager];
         NSDictionary * session = [JasonHelper sessionForUrl:VC.url];
 
@@ -2098,8 +2099,8 @@
 
         NSMutableDictionary * parameters = nil;
 
-        if (VC.options[@"data"]) {
-            parameters = [VC.options[@"data"] mutableCopy];
+        if (self->VC.options[@"data"]) {
+            parameters = [self->VC.options[@"data"] mutableCopy];
         } else {
             if (session && session.count > 0 && session[@"body"]) {
                 parameters = [@{} mutableCopy];
@@ -2110,7 +2111,7 @@
             }
         }
 
-        if (VC.fresh) {
+        if (self->VC.fresh) {
             DTLogDebug (@"Ignoring Cache Because `fresh` was enabled");
             [manager.requestSerializer
              setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
@@ -2123,7 +2124,7 @@
             parameters[@"timestamp"] = [NSString stringWithFormat:@"%d", timestamp];
         }
 
-        VC.contentLoaded = NO;
+        self->VC.contentLoaded = NO;
 
         /**************************************************
          * Experimental : Offline handling
@@ -2152,27 +2153,38 @@
                     [responseObject[@"$jason"][@"head"][@"actions"] removeObjectForKey:@"$show"];
                 }
 
-                VC.offline = YES;
+                self->VC.offline = YES;
                 [self drawViewFromJason:responseObject asFinal:NO];
             }
         }
 
-        VC.requires = [@{} mutableCopy];
+        self->VC.requires = [@{} mutableCopy];
 
         /**************************************************
          * Handling data uri
          ***************************************************/
-        if ([VC.url hasPrefix:@"data:application/json"]) {
-        // if data uri, parse it into NSData
-            NSURL * url = [NSURL URLWithString:VC.url];
+        if ([self->VC.url hasPrefix:@"data:application/json"]) {
+            
+            // if data uri, parse it into NSData
+            NSURL * url = [NSURL URLWithString:self->VC.url];
             NSData * jsonData = [NSData dataWithContentsOfURL:url];
             NSError * error;
-            VC.original = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
-            [self drawViewFromJason:VC.original asFinal:YES];
-        } else if ([VC.url hasPrefix:@"file://"]) {
-            [self loadViewByFile:VC.url asFinal:YES];
+            
+            self->VC.original = [NSJSONSerialization
+                                 JSONObjectWithData:jsonData
+                                 options:kNilOptions
+                                 error:&error];
+            
+            if(error) {
+                DTLogWarning(@"Error parsing json. %@ %@", self->VC.url, error);
+            } else {
+                [self drawViewFromJason:self->VC.original asFinal:YES];
+            }
+            
+        } else if ([self->VC.url hasPrefix:@"file://"]) {
+            [self loadViewByFile:self->VC.url asFinal:YES];
         }
-        /**************************************************
+        /************************************r**************
          * Normally urls are not in data-uri.
          ***************************************************/
         else {
@@ -2196,25 +2208,25 @@
 
 #pragma message "Start Request in Reload"
 
-            [manager   GET:VC.url
+            [manager   GET:self->VC.url
                 parameters:parameters
                   progress:^(NSProgress * _Nonnull downloadProgress) { }
                    success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
                        // Ignore if the url is different
                        if (![JasonHelper  isURL:task.originalRequest.URL
-                            equivalentTo      :VC.url]) {
+                            equivalentTo      :self->VC.url]) {
                        return;
                        }
 
-                       VC.original = responseObject;
+                       self->VC.original = responseObject;
 
                        [self include:responseObject
                                          andCompletionHandler:^(id res)
                 {
                     dispatch_async (dispatch_get_main_queue (), ^{
-                                        VC.contentLoaded = NO;
+                                        self->VC.contentLoaded = NO;
 
-                                        VC.original = @{ @"$jason": res[@"$jason"] };
+                                        self->VC.original = @{ @"$jason": res[@"$jason"] };
                                         [self drawViewFromJason:VC.original
                                                         asFinal:YES];
                                     });
@@ -2222,7 +2234,7 @@
                    }
                    failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
             {
-                if (!VC.offline) {
+                if (!self->VC.offline) {
                     DTLogWarning (@"%@", error);
                     [[Jason client] loadViewByFile:@"file://error.json"
                                            asFinal:YES];
@@ -3580,9 +3592,9 @@
 
 #pragma message "TabBar Refresh"
 
-            if (VC.tabNeedsRefresh) {
+            if (self->VC.tabNeedsRefresh) {
                 DTLogDebug (@"Tab %ld Needs Refresh", indexOfTab);
-                [[Jason client] call:@{ @"type": @"$render" }];
+                [[Jason client] call:@{ @"type": @"$reload" }];
                 return YES;
                 /* This code contains the logic to refresh.
                  * the problem is that refreshing more than one time
@@ -3842,107 +3854,7 @@
     }
 
     // Retrigger render in order to layout new constraints
-    [self call:@{ @"type": @"$render" }];
-
-//    int height = [UIScreen mainScreen].bounds.size.height;
-//    int width = [UIScreen mainScreen].bounds.size.width;
-//    int x = 0;
-//    int y = 0;
-//
-//
-//    CGRect frame = CGRectMake (x, y, width, height);
-//
-//
-//    JasonViewController * controller = (JasonViewController *)[[Jason client] getVC];
-//    WKWebView * agent = controller.agents[@"$webcontainer"];
-//
-//    if (agent) {
-//
-//        DTLogDebug (@"$webcontainer agent will change its bounds. frame: %@ | screen: %@",
-//                    NSStringFromCGRect(agent.frame),
-//                    NSStringFromCGRect([UIScreen mainScreen].bounds));
-//
-//        if(@available(iOS 11, *))
-//        {
-//            UIEdgeInsets insets = controller.view.safeAreaInsets;
-//
-//            DTLogDebug(@"Safe Area: top %1.1f | bottom %1.1f | left %1.1f | right %1.1f",
-//                        insets.top,
-//                        insets.bottom,
-//                        insets.left,
-//                        insets.right);
-//
-//            switch (device.orientation) {
-//                case UIDeviceOrientationFaceDown:
-//                    DTLogDebug(@"Facing Down");
-//                case UIDeviceOrientationFaceUp:
-//                    DTLogDebug(@"Facing Up");
-//                case UIDeviceOrientationPortraitUpsideDown:
-//                    DTLogDebug(@"Facing UpsideDown");
-//                case UIDeviceOrientationPortrait:
-//                    DTLogDebug(@"Facing Portrait");
-//                    break;
-//                case UIDeviceOrientationLandscapeLeft:
-//                    DTLogDebug(@"Facing Landscape Left");
-//                case UIDeviceOrientationLandscapeRight:
-//                    DTLogDebug(@"Facing Landscape Right");
-//                    DTLogDebug(@"Facing Landscape");
-//                    break;
-//                default:
-//                    DTLogDebug(@"Unknown");
-//                    break;
-//            }
-//        }
-//
-//        agent.frame = frame;
-//        [agent setNeedsLayout];
-//        [agent setNeedsDisplay];
-
-//        if (!tabController.tabBar.hidden) {
-//            height = height - tabController.tabBar.frame.size.height;
-//        }
-//
-//        if (vc.composeBarView) {
-//            // footer.input exists
-//            height = height - vc.composeBarView.frame.size.height;
-//        }
-//
-//
-//#pragma message "TODO: Test iOS 11 safe area borders on orientation change"
-//        if(@available(iOS 11, *)) {
-//            // Take in consideration safe areas available in iOS 11
-//            y = -agent.superview.safeAreaInsets.top;
-//
-//            height = [UIScreen mainScreen].bounds.size.height +
-//                agent.superview.safeAreaInsets.top +
-//                agent.superview.safeAreaInsets.bottom;
-//
-//            if (UIDeviceOrientationIsPortrait(device.orientation)) {
-//                DTLogDebug(@"Portrait Orientation");
-//            }
-//
-//            if (UIDeviceOrientationIsLandscape(device.orientation)) {
-//                DTLogDebug(@"Landscape Orientation");
-//                x = -vc.view.safeAreaInsets.left;
-//                width = [UIScreen mainScreen].bounds.size.width +
-//                    agent.superview.safeAreaInsets.left +
-//                    agent.superview.safeAreaInsets.right;
-//            }
-//
-//            if (!tabController.tabBar.hidden) {
-//                height = height - tabController.tabBar.frame.size.height;
-//            }
-//
-//            if (vc.composeBarView) {
-//                // footer.input exists
-//                height = height - vc.composeBarView.frame.size.height;
-//            }
-//
-//            frame = CGRectMake(x, y, width, height);
-//        }
-//        DTLogDebug(@"Frame Before %@, After %@", NSStringFromCGRect(agent.frame), NSStringFromCGRect(frame));
-//        agent.frame = frame;
-//    }
+    [self call:@{ @"type": @"$reload" }];
 }
 
 # pragma mark - View Linking
