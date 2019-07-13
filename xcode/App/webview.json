@@ -1,0 +1,24 @@
+{
+    "$jason": {
+        "head": {
+            "title": "{ ˃̵̑ᴥ˂̵̑}",
+            "actions": {
+                "$foreground": {
+                    "type": "$reload"
+                }
+            }
+        },
+        "body": {
+            "background": {
+                "type":"html",
+                "text":"<html><body style='background-color:#333ccc;'></body></html>",
+                "style": {
+                    "background": "rgb(122, 122, 122)"
+                },
+                "action": {
+                    "type": "$default"
+                }
+            }
+        }
+    }
+}

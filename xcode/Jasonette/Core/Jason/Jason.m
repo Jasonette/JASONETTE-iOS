@@ -79,11 +79,12 @@
                 name:UIApplicationDidEnterBackgroundNotification
               object:nil];
 
+        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
         [[NSNotificationCenter defaultCenter]
          addObserver:self
-            selector:@selector(onOrientationChange)
-                name:UIApplicationDidChangeStatusBarOrientationNotification
-              object:nil];
+         selector:@selector(onOrientationChange:)
+                name:UIDeviceOrientationDidChangeNotification
+              object:[UIDevice currentDevice]];
 
         self.searchMode = NO;
         self.services = [@{} mutableCopy];
@@ -2343,6 +2344,7 @@
             } else if (rendered_page[@"background"]) {
                 if ([rendered_page[@"background"] isKindOfClass:[NSDictionary class]]) {
             // Advanced background
+                    DTLogDebug(@"Detected Advanced Background");
                     [self drawAdvancedBackground:rendered_page[@"background"]];
                 } else {
                     [self drawBackground:rendered_page[@"background"]];
@@ -2397,14 +2399,19 @@
 }
 
 - (void)drawAdvancedBackground:(NSDictionary *)bg forVC:(JasonViewController *)vc {
+    
     NSString * type = bg[@"type"];
 
     if ([vc.background.payload[@"background"] isEqual:bg]) {
         return;
     }
+    
+    DTLogDebug(@"Drawing Advanced Background %@", type);
 
     if (type) {
         if ([type isEqualToString:@"camera"]) {
+            
+            DTLogDebug(@"Drawing camera");
             NSDictionary * options = bg[@"options"];
 
             if (vc.background) {
@@ -2416,7 +2423,10 @@
             vc.background.payload = [@{ @"background": bg } mutableCopy];
             avPreviewLayer = nil;
             [self buildCamera:options forVC:vc];
+            
         } else if ([type isEqualToString:@"html"]) {
+            
+            DTLogDebug(@"Drawing html");
             if (self.avCaptureSession) {
                 [self.avCaptureSession stopRunning];
                 self.avCaptureSession = nil;
@@ -2449,6 +2459,8 @@
             if (bg[@"action"]) {
                 payload[@"action"] = bg[@"action"];
             }
+            
+            DTLogDebug(@"Loading Background with Payload %@", payload);
 
             JasonAgentService * agent = self.services[@"JasonAgentService"];
             vc.background = [agent setup:payload withId:payload[@"id"]];
@@ -2458,7 +2470,11 @@
             vc.background.backgroundColor = [UIColor clearColor];
             vc.background.hidden = NO;
 
+
             int height = [UIScreen mainScreen].bounds.size.height;
+            int width = [UIScreen mainScreen].bounds.size.width;
+            int x = 0;
+            int y = 0;
 
             if (!tabController.tabBar.hidden) {
                 height = height - tabController.tabBar.frame.size.height;
@@ -2468,8 +2484,30 @@
                 // footer.input exists
                 height = height - vc.composeBarView.frame.size.height;
             }
-
-            CGRect rect = CGRectMake (0, 0, [UIScreen mainScreen].bounds.size.width, height);
+            
+            
+            CGRect rect = CGRectMake (x, y, width, height);
+            
+#pragma message "iOS 11 safe area borders"
+            if(@available(iOS 11, *)) {
+                // Take in consideration safe areas available in iOS 11
+                y = -vc.background.safeAreaInsets.top;
+                
+                height = [UIScreen mainScreen].bounds.size.height +
+                    vc.background.safeAreaInsets.top +
+                    vc.background.safeAreaInsets.bottom;
+                
+                
+                if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
+                    x = -vc.background.safeAreaInsets.left;
+                    width = [UIScreen mainScreen].bounds.size.width +
+                        vc.background.safeAreaInsets.left +
+                        vc.background.safeAreaInsets.right;
+                }
+                
+                rect = CGRectMake(x, y, width, height);
+            }
+            
             vc.background.frame = rect;
 
             UIProgressView * progressView = [vc.background viewWithTag:42];
@@ -3452,7 +3490,6 @@
                     // check the URLs and update if changed.
                     if ([v.url isEqualToString:url]) {
                     // Do nothing
-#pragma message "TODO: Check if Tabs Refresh on Double Tab"
                         v.tabNeedsRefresh = YES;
                         tabFound = YES;
                     } else {
@@ -3775,19 +3812,97 @@
     isForeground = YES;
 }
 
-- (void)onOrientationChange
-{
-    DTLogDebug (@"Changed Orientation");
+- (void)onOrientationChange: (NSNotification *) notification {
+    
+    UIDevice * device = notification.object;
+    
+    if(!device) {
+        return;
+    }
+    
+    DTLogDebug (@"Changed Orientation to %ld", device.orientation);
 
-    // Fix wkwebview orientation change made by @ricardojlpinto  https://github.com/Jasonette/JASONETTE-iOS/pull/358
     JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
     WKWebView * agent = vc.agents[@"$webcontainer"];
 
-    if (agent) {
-        DTLogDebug (@"$webcontainer agent detected");
-        CGRect bounds = [[UIScreen mainScreen] bounds];
-        agent.frame = bounds;
+    int height = [UIScreen mainScreen].bounds.size.height;
+    int width = [UIScreen mainScreen].bounds.size.width;
+    int x = 0;
+    int y = 0;
+    
+    
+    CGRect frame = CGRectMake (x, y, width, height);
+    
+    NSDictionary * events = [VC valueForKey:@"events"];
+    
+    if (events) {
+        if (events[@"$orientation"]) {
+            NSDictionary * params = @{
+                                     @"value" : @(device.orientation),
+                                     @"frame" : @{
+                                             @"x": @(frame.origin.x),
+                                             @"y": @(frame.origin.y),
+                                             @"width": @(frame.size.width),
+                                             @"height": @(frame.size.height)
+                                             }
+                                     };
+            
+            DTLogInfo (@"Calling $orientation event with params %@", params);
+            [self call:events[@"$orientation"]
+                  with:params];
+        }
     }
+    
+    if (agent) {
+        DTLogDebug (@"$webcontainer agent will change its bounds");
+        
+        if (!tabController.tabBar.hidden) {
+            height = height - tabController.tabBar.frame.size.height;
+        }
+        
+        if (vc.composeBarView) {
+            // footer.input exists
+            height = height - vc.composeBarView.frame.size.height;
+        }
+        
+        
+#pragma message "TODO: Test iOS 11 safe area borders on orientation change"
+        if(@available(iOS 11, *)) {
+            // Take in consideration safe areas available in iOS 11
+            y = -vc.view.safeAreaInsets.top;
+            
+            height = [UIScreen mainScreen].bounds.size.height +
+                vc.view.safeAreaInsets.top +
+                vc.view.safeAreaInsets.bottom;
+            
+            if (UIDeviceOrientationIsPortrait(device.orientation)) {
+                DTLogDebug(@"Portrait Orientation");
+            }
+            
+            if (UIDeviceOrientationIsLandscape(device.orientation)) {
+                DTLogDebug(@"Landscape Orientation");
+                x = -vc.view.safeAreaInsets.left;
+                width = [UIScreen mainScreen].bounds.size.width +
+                    vc.view.safeAreaInsets.left +
+                    vc.view.safeAreaInsets.right;
+            }
+            
+            if (!tabController.tabBar.hidden) {
+                height = height - tabController.tabBar.frame.size.height;
+            }
+            
+            if (vc.composeBarView) {
+                // footer.input exists
+                height = height - vc.composeBarView.frame.size.height;
+            }
+            
+            frame = CGRectMake(x, y, width, height);
+        }
+        
+        DTLogDebug(@"Applying Frame %@", NSStringFromCGRect(frame));
+        agent.frame = frame;
+    }
+    
 }
 
 # pragma mark - View Linking

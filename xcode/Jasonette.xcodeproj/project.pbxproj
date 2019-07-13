@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		5EE85B6C1DA45F8F0049EACE /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EE85B6B1DA45F8F0049EACE /* MapKit.framework */; };
 		EF07303A22D28B2400973DE1 /* settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = EF072F5F22D28B2400973DE1 /* settings.plist */; };
-		EF07303B22D28B2400973DE1 /* hello.json in Resources */ = {isa = PBXBuildFile; fileRef = EF072F6022D28B2400973DE1 /* hello.json */; };
+		EF07303B22D28B2400973DE1 /* webview.json in Resources */ = {isa = PBXBuildFile; fileRef = EF072F6022D28B2400973DE1 /* webview.json */; };
 		EF07303C22D28B2400973DE1 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EF072F6222D28B2400973DE1 /* Media.xcassets */; };
 		EF07303D22D28B2400973DE1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF072F6322D28B2400973DE1 /* LaunchScreen.storyboard */; };
 		EF07303E22D28B2400973DE1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EF072F6722D28B2400973DE1 /* main.m */; };
@@ -94,6 +94,7 @@
 		EF07A20522D6186100D0D3FF /* JasonVisionService.m in Sources */ = {isa = PBXBuildFile; fileRef = EF07A1B222D6186100D0D3FF /* JasonVisionService.m */; };
 		EF07A20622D6186100D0D3FF /* JasonAgentService.m in Sources */ = {isa = PBXBuildFile; fileRef = EF07A1B522D6186100D0D3FF /* JasonAgentService.m */; };
 		EF82979B22D30A71003ED64B /* jr.sample.json in Resources */ = {isa = PBXBuildFile; fileRef = EF82979922D30A71003ED64B /* jr.sample.json */; };
+		EF9781C322D9A0810024FDAE /* hello.json in Resources */ = {isa = PBXBuildFile; fileRef = EF9781C222D9A0810024FDAE /* hello.json */; };
 		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
 /* End PBXBuildFile section */
 
@@ -105,7 +106,7 @@
 		5EE85B7A1DA595A20049EACE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
 		EF072F5F22D28B2400973DE1 /* settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = settings.plist; sourceTree = "<group>"; };
-		EF072F6022D28B2400973DE1 /* hello.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hello.json; sourceTree = "<group>"; };
+		EF072F6022D28B2400973DE1 /* webview.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = webview.json; sourceTree = "<group>"; };
 		EF072F6222D28B2400973DE1 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		EF072F6322D28B2400973DE1 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EF072F6422D28B2400973DE1 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
@@ -253,6 +254,7 @@
 		EF07A1B622D6186100D0D3FF /* JasonAgentService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonAgentService.h; sourceTree = "<group>"; };
 		EF82979222D28D96003ED64B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Jasonette/Info.plist; sourceTree = SOURCE_ROOT; };
 		EF82979922D30A71003ED64B /* jr.sample.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = jr.sample.json; sourceTree = "<group>"; };
+		EF9781C222D9A0810024FDAE /* hello.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hello.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -312,7 +314,8 @@
 			isa = PBXGroup;
 			children = (
 				EF072F5F22D28B2400973DE1 /* settings.plist */,
-				EF072F6022D28B2400973DE1 /* hello.json */,
+				EF072F6022D28B2400973DE1 /* webview.json */,
+				EF9781C222D9A0810024FDAE /* hello.json */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -1112,7 +1115,7 @@
 				EF07A1D622D6186100D0D3FF /* preload.json in Resources */,
 				EF07A1CF22D6186100D0D3FF /* icon-success.png in Resources */,
 				EF07A1C622D6186100D0D3FF /* placeholder@2x.png in Resources */,
-				EF07303B22D28B2400973DE1 /* hello.json in Resources */,
+				EF07303B22D28B2400973DE1 /* webview.json in Resources */,
 				EF07A1D322D6186100D0D3FF /* csv.js in Resources */,
 				EF07A1D022D6186100D0D3FF /* st.js in Resources */,
 				EF07A20022D6186100D0D3FF /* JasonVerticalSectionItem.xib in Resources */,
@@ -1124,6 +1127,7 @@
 				EF07A1D122D6186100D0D3FF /* rss.js in Resources */,
 				EF07A1CC22D6186100D0D3FF /* Next@2x.png in Resources */,
 				EF07A1D422D6186100D0D3FF /* agent.js in Resources */,
+				EF9781C322D9A0810024FDAE /* hello.json in Resources */,
 				EF07A1C722D6186100D0D3FF /* placeholderr@2x.png in Resources */,
 				EF82979B22D30A71003ED64B /* jr.sample.json in Resources */,
 				EF07A1D222D6186100D0D3FF /* xhtml.js in Resources */,
