@@ -66,6 +66,8 @@ that triggers when the orientation changes.
 
 - Updated to `libPhoneNumber-iOS` 0.9.15 (was 0.8.13).
 
+- Updated to `JDStatusBarNotification` 1.6.0 (was 1.5.3).
+
 ### Removed
 
 - Nothing

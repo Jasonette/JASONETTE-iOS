@@ -42,7 +42,7 @@ PODS:
   - INTULocationManager (4.2.0)
   - IQAudioRecorderController (1.2.3):
     - SCSiriWaveformView
-  - JDStatusBarNotification (1.5.3)
+  - JDStatusBarNotification (1.6.0)
   - JSCoreBom (1.1.1)
   - libPhoneNumber-iOS (0.9.15)
   - MBProgressHUD (1.0.0)
@@ -182,7 +182,7 @@ SPEC CHECKSUMS:
   HMSegmentedControl: 83b9686022d2176fb6457d2bdb61e5d6393fed7d
   INTULocationManager: 73f8254b3d05c897c56bb13c190e5b7c648c0998
   IQAudioRecorderController: 69a67c2e0b87bd8746cbb4de175fd7a0bf820009
-  JDStatusBarNotification: 29413865af11c862c17180610b0f46a21118b412
+  JDStatusBarNotification: 21b616e7432284fea6eb0ce9eadc37c8038a5544
   JSCoreBom: 712590b897ecd74d9fa9cb0f16857491411c932b
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
@@ -207,6 +207,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
 
-PODFILE CHECKSUM: d466afd6fb1584614dbe41a16a4aa3c32048a71c
+PODFILE CHECKSUM: dd11dbf584aadffc72f6ca6b07e582cbd4cfd943
 
 COCOAPODS: 1.5.3

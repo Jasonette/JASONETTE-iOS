@@ -2060,9 +2060,19 @@
 }
 
 # pragma mark - View rendering (high level)
+
+
+/**
+ * Redraws the view with the current json
+ */
+- (void)refresh
+{
+    DTLogInfo (@"Redrawing View");
+    [self drawViewFromJason:self->VC.original asFinal:YES];
+}
+
 - (void)reload
 {
-#pragma message "TODO: Create a Soft Reload to Re render the view without network"
     DTLogInfo (@"Reloading View");
 
     self->VC.data = nil;
@@ -3865,7 +3875,7 @@
     }
 
     // Retrigger render in order to layout new constraints
-    [self call:@{ @"type": @"$reload" }];
+    [self refresh];
 }
 
 # pragma mark - View Linking

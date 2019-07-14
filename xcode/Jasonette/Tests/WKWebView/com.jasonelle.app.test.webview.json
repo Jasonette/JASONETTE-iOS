@@ -1,18 +1,7 @@
 {
     "$jason": {
         "head": {
-            "title": "{ ˃̵̑ᴥ˂̵̑}",
-            "actions": {
-                "$load": {
-                    "type": "$util.toast",
-                    "options": {
-                        "text": "OK"
-                    }
-                },
-                "$foreground": {
-                    "type": "$reload"
-                }
-            }
+            "title": "{ ˃̵̑ᴥ˂̵̑}"
         },
         "body": {
             "background": {

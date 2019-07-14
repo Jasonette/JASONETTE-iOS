@@ -54,7 +54,7 @@
         text = @"Updated";
     }
 
-    NSString * type_code;
+    NSString * type_code = JDStatusBarStyleDefault;
 
     if ([type isEqualToString:@"dark"]) {
         type_code = JDStatusBarStyleDark;

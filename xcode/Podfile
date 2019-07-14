@@ -33,7 +33,7 @@ target 'Jasonette' do
   pod 'BBBadgeBarButtonItem'
   
   pod 'REMenu'
-  pod 'JDStatusBarNotification'
+  pod 'JDStatusBarNotification' # $util.toast
   pod 'HMSegmentedControl'
   pod "SWFrameButton"
   
