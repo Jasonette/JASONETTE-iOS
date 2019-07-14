@@ -8,6 +8,9 @@
 #import <TDOAuth/TDOAuth.h>
 #import <Accounts/Accounts.h>
 #import <Social/Social.h>
+#import "JasonNetworking.h"
+
+#pragma message "TODO: Update managers to use JasonNetworking"
 
 @implementation JasonOauthAction
 - (void)performSocialFrameworkRequestFor:(ACAccount *)account {
@@ -316,15 +319,18 @@
                 [request setValue:header[key] forHTTPHeaderField:key];
             }
 
-            [[manager dataTaskWithRequest:request
-                        completionHandler:^(NSURLResponse * _Nonnull response, id _Nullable responseObject, NSError * _Nullable error) {
-                            if (!error) {
-                            [[Jason client] success:responseObject];
-                            } else {
-                            [[NSNotificationCenter defaultCenter] removeObserver:self];
-                            [[Jason client] error];
-                            }
-                        }] resume];
+            [[manager dataTaskWithRequest:request uploadProgress:^(NSProgress * _Nonnull uploadProgress) {
+                
+            } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
+                
+            } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                if (!error) {
+                    [[Jason client] success:responseObject];
+                } else {
+                    [[NSNotificationCenter defaultCenter] removeObserver:self];
+                    [[Jason client] error];
+                }
+            }] resume];
         }
     } else {
         /*********************************************************
@@ -686,56 +692,60 @@
                     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
                     manager.requestSerializer = [AFJSONRequestSerializer serializer];
 
-                    NSURLSessionDataTask * task = [manager dataTaskWithRequest:request
-                                                             completionHandler:^(NSURLResponse * _Nonnull response, id _Nullable responseObject, NSError * _Nullable error) {
-                                                                 // Ignore if the url is different
-                                                                 if (![request.URL.absoluteString isEqualToString:response.URL.absoluteString]) {
-                                                                 return;
-                                                                 }
-
-                                                                 if (!error) {
-                                                                 dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-                                                                 NSString * s = [[NSString alloc]        initWithData:responseObject
-                                                                                            encoding:NSUTF8StringEncoding];
-
-                                                                 NSString * urlToParse = [NSString stringWithFormat:@"http://localhost?%@", s];
-                                                                 NSArray * queryItems = [self extractQueryParams:urlToParse];
-                                                                 NSString * oauth_token = [self        valueForKey:@"oauth_token"
-                                                                                   fromQueryItems  :queryItems];
-                                                                 NSString * oauth_token_secret = [self        valueForKey:@"oauth_token_secret"
-                                                                                          fromQueryItems  :queryItems];
-                                                                 NSString * authorize_url;
-
-                                                                 if (oauth_token_secret) {
-                                                                 self.cache = [@{ @"oauth1_three_legged_secret": oauth_token_secret } mutableCopy];
-                                                                 authorize_url = [NSString stringWithFormat:@"%@://%@%@?oauth_token=%@&oauth_token_secret=%@", authorize_options[@"scheme"], authorize_options[@"host"], authorize_options[@"path"], oauth_token, oauth_token_secret];
-                                                                 } else {
-                                                                 self.cache = nil;
-                                                                 authorize_url = [NSString stringWithFormat:@"%@://%@%@?oauth_token=%@", authorize_options[@"scheme"], authorize_options[@"host"], authorize_options[@"path"], oauth_token];
-                                                                 }
-
-                                                                 dispatch_async (dispatch_get_main_queue (), ^{
-                                                                    NSURL * URL = [NSURL URLWithString:authorize_url];
-                                                                    NSString * view = authorize_options[@"view"];
-
-                                                                    if (view && [view isEqualToString:@"app"]) {
-                                                                        // Launch external safari for oauth
-                                                                        [[UIApplication sharedApplication] openURL:URL];
-                                                                    } else {
-                                                                        // By default use SFSafariViewController
-                                                                        SFSafariViewController * vc = [[SFSafariViewController alloc] initWithURL:URL];
-                                                                        vc.delegate = self;
-                                                                        [self.VC presentViewController:vc
-                                                                                              animated:NO
-                                                                                            completion:^{ }];
-                                                                    }
-                                                                 });
-                                                                 });
-                                                                 } else {
-                                                                 [[NSNotificationCenter defaultCenter] removeObserver:self];
-                                                                 [[Jason client] error];
-                                                                 }
-                                                             }];
+                    NSURLSessionDataTask * task = [manager dataTaskWithRequest:request uploadProgress:^(NSProgress * _Nonnull uploadProgress) {
+                        
+                    } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
+                        
+                    } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                        // Ignore if the url is different
+                        if (![request.URL.absoluteString isEqualToString:response.URL.absoluteString]) {
+                            return;
+                        }
+                        
+                        if (!error) {
+                            dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+                                NSString * s = [[NSString alloc]        initWithData:responseObject
+                                                                            encoding:NSUTF8StringEncoding];
+                                
+                                NSString * urlToParse = [NSString stringWithFormat:@"http://localhost?%@", s];
+                                NSArray * queryItems = [self extractQueryParams:urlToParse];
+                                NSString * oauth_token = [self        valueForKey:@"oauth_token"
+                                                                 fromQueryItems  :queryItems];
+                                NSString * oauth_token_secret = [self        valueForKey:@"oauth_token_secret"
+                                                                        fromQueryItems  :queryItems];
+                                NSString * authorize_url;
+                                
+                                if (oauth_token_secret) {
+                                    self.cache = [@{ @"oauth1_three_legged_secret": oauth_token_secret } mutableCopy];
+                                    authorize_url = [NSString stringWithFormat:@"%@://%@%@?oauth_token=%@&oauth_token_secret=%@", authorize_options[@"scheme"], authorize_options[@"host"], authorize_options[@"path"], oauth_token, oauth_token_secret];
+                                } else {
+                                    self.cache = nil;
+                                    authorize_url = [NSString stringWithFormat:@"%@://%@%@?oauth_token=%@", authorize_options[@"scheme"], authorize_options[@"host"], authorize_options[@"path"], oauth_token];
+                                }
+                                
+                                dispatch_async (dispatch_get_main_queue (), ^{
+                                    NSURL * URL = [NSURL URLWithString:authorize_url];
+                                    NSString * view = authorize_options[@"view"];
+                                    
+                                    if (view && [view isEqualToString:@"app"]) {
+                                        // Launch external safari for oauth
+                                        [[UIApplication sharedApplication] openURL:URL];
+                                    } else {
+                                        // By default use SFSafariViewController
+                                        SFSafariViewController * vc = [[SFSafariViewController alloc] initWithURL:URL];
+                                        vc.delegate = self;
+                                        [self.VC presentViewController:vc
+                                                              animated:NO
+                                                            completion:^{ }];
+                                    }
+                                });
+                            });
+                        } else {
+                            [[NSNotificationCenter defaultCenter] removeObserver:self];
+                            [[Jason client] error];
+                        }
+                    }];
+                    
                     [task resume];
                 }
             }
@@ -849,7 +859,7 @@
             *
             ********************************************************************************/
             NSString * client_id = self.options[@"authorize"][@"client_id"];
-            NSString * client_secret = self.options[@"authorize"][@"client_secret"];
+            //NSString * client_secret = self.options[@"authorize"][@"client_secret"];
 
             NSDictionary * authorize_options = self.options[@"authorize"];
 
@@ -976,44 +986,49 @@
                                                      consumerSecret:client_secret
                                                         accessToken:oauth_token
                                                         tokenSecret:oauth1_three_legged_secret];
+                
                 AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
                 manager.responseSerializer = [AFHTTPResponseSerializer serializer];
                 manager.requestSerializer = [AFJSONRequestSerializer serializer];
 
-                NSURLSessionDataTask * task = [manager dataTaskWithRequest:request
-                                                         completionHandler:^(NSURLResponse * _Nonnull response, id _Nullable responseObject, NSError * _Nullable error) {
-                                                             // Ignore if the url is different
-                                                             if (![request.URL.absoluteString isEqualToString:response.URL.absoluteString]) {
-                                                             return;
-                                                             }
-
-                                                             if (!error) {
-                                                             // Temp url just to take advantage of componentsWithURL
-                                                             NSString * s = [[NSString alloc]                            initWithData:responseObject
+                NSURLSessionDataTask * task = [manager dataTaskWithRequest:request uploadProgress:^(NSProgress * _Nonnull uploadProgress) {
+                    
+                } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
+                    
+                } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                    // Ignore if the url is different
+                    if (![request.URL.absoluteString isEqualToString:response.URL.absoluteString]) {
+                        return;
+                    }
+                    
+                    if (!error) {
+                        // Temp url just to take advantage of componentsWithURL
+                        NSString * s = [[NSString alloc]                            initWithData:responseObject
                                                                                         encoding:NSUTF8StringEncoding];
-                                                             NSString * urlToParse = [NSString stringWithFormat:@"http://localhost?%@", s];
-                                                             NSURLComponents * components = [NSURLComponents                            componentsWithURL:[NSURL URLWithString:urlToParse]
-                                                                                             resolvingAgainstBaseURL     :NO];
-                                                             NSArray * queryItems = [components queryItems];
-                                                             NSString * oauth_token = [self                            valueForKey:@"oauth_token"
-                                                                               fromQueryItems  :queryItems];
-                                                             NSString * oauth_token_secret = [self                            valueForKey:@"oauth_token_secret"
-                                                                                      fromQueryItems  :queryItems];
-
-
-                                                             NSString * APP_NAME = [[NSBundle mainBundle] bundleIdentifier];
-
-                                                             UICKeyChainStore * keychain = [UICKeyChainStore keyChainStoreWithService:[NSString stringWithFormat:@"%@", APP_NAME]];
-                                                             [keychain                            setString:oauth_token
+                        NSString * urlToParse = [NSString stringWithFormat:@"http://localhost?%@", s];
+                        NSURLComponents * components = [NSURLComponents                            componentsWithURL:[NSURL URLWithString:urlToParse]
+                                                                                        resolvingAgainstBaseURL     :NO];
+                        NSArray * queryItems = [components queryItems];
+                        NSString * oauth_token = [self                            valueForKey:@"oauth_token"
+                                                                             fromQueryItems  :queryItems];
+                        NSString * oauth_token_secret = [self                            valueForKey:@"oauth_token_secret"
+                                                                                    fromQueryItems  :queryItems];
+                        
+                        
+                        NSString * APP_NAME = [[NSBundle mainBundle] bundleIdentifier];
+                        
+                        UICKeyChainStore * keychain = [UICKeyChainStore keyChainStoreWithService:[NSString stringWithFormat:@"%@", APP_NAME]];
+                        [keychain                            setString:oauth_token
                                                                 forKey:[NSString stringWithFormat:@"%@#token", client_id]];
-                                                             [keychain                            setString:oauth_token_secret
+                        [keychain                            setString:oauth_token_secret
                                                                 forKey:[NSString stringWithFormat:@"%@#secret", client_id]];
-                                                             [[Jason client] success];
-                                                             } else {
-                                                             [[NSNotificationCenter defaultCenter] removeObserver:self];
-                                                             [[Jason client] error];
-                                                             }
-                                                         }];
+                        [[Jason client] success];
+                    } else {
+                        [[NSNotificationCenter defaultCenter] removeObserver:self];
+                        [[Jason client] error];
+                    }
+                }];
+                
                 [task resume];
             }
         }
