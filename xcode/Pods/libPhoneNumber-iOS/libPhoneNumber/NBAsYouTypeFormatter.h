@@ -7,22 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
-
 @class NBAsYouTypeFormatter;
-
 
 @interface NBAsYouTypeFormatter : NSObject
 
-- (id)initWithRegionCode:(NSString *)regionCode;
-- (id)initWithRegionCodeForTest:(NSString *)regionCode;
-- (id)initWithRegionCode:(NSString *)regionCode bundle:(NSBundle *)bundle;
-- (id)initWithRegionCodeForTest:(NSString *)regionCode bundle:(NSBundle *)bundle;
+- (instancetype)initWithRegionCode:(NSString *)regionCode;
+- (instancetype)initWithRegionCode:(NSString *)regionCode bundle:(NSBundle *)bundle;
 
 - (NSString *)inputString:(NSString *)string;
 - (NSString *)inputStringAndRememberPosition:(NSString *)string;
 
-- (NSString *)inputDigit:(NSString*)nextChar;
-- (NSString *)inputDigitAndRememberPosition:(NSString*)nextChar;
+- (NSString *)inputDigit:(NSString *)nextChar;
+- (NSString *)inputDigitAndRememberPosition:(NSString *)nextChar;
 
 - (NSString *)removeLastDigit;
 - (NSString *)removeLastDigitAndRememberPosition;
@@ -31,6 +27,6 @@
 
 - (void)clear;
 
-@property (nonatomic, assign, readonly) BOOL isSuccessfulFormatting;
+@property(nonatomic, assign, readonly) BOOL isSuccessfulFormatting;
 
 @end

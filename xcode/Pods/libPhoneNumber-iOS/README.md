@@ -8,12 +8,23 @@
 
  - NBPhoneNumberUtil
  - NBAsYouTypeFormatter
- - NBTextFiled.swift (Swift 2)
+ - NBTextField.swift (Swift 3)
 
 > ARC only, or add the **"-fobjc-arc"** flag for non-ARC
 
 ## Update Log
 [https://github.com/iziz/libPhoneNumber-iOS/wiki/Update-Log](https://github.com/iziz/libPhoneNumber-iOS/wiki/Update-Log)
+
+
+## Issue
+You can check phone number validation using below link.
+https://rawgit.com/googlei18n/libphonenumber/master/javascript/i18n/phonenumbers/demo-compiled.html
+
+Please report, if the above results are different from this iOS library.
+Otherwise, please create issue to following link below to request additional telephone numbers formatting rule.
+https://github.com/googlei18n/libphonenumber/issues
+
+Metadata in this library was generated from that. so, you should change it first. :)
 
 ## Install 
 
@@ -99,11 +110,11 @@ See sample test code from
 #### with Swift
 ##### Case (1) with Framework
 ```
-import libPhoneNumber
+import libPhoneNumberiOS
 ```
 
 ##### Case (2) with Bridging-Header
-```swift
+```obj-c
 // Manually added
 #import "NBPhoneNumberUtil.h"
 #import "NBPhoneNumber.h"
@@ -135,22 +146,6 @@ override func viewDidLoad() {
     }
     catch let error as NSError {
         print(error.localizedDescription)
-    }
-}
-```
-
-###### 1.x
-```swift
-override func viewDidLoad() {
-    super.viewDidLoad()
-    let phoneUtil = NBPhoneNumberUtil()
-
-    var errorPointer:NSError?
-    var number:NBPhoneNumber? = phoneUtil.parse("01041241282", defaultRegion:"KR", error:&errorPointer)
-    if errorPointer == nil && number != nil {
-       println("number is: \(number)")
-    } else {
-       println("number error: \(errorPointer?.localizedDescription)")
     }
 }
 ```

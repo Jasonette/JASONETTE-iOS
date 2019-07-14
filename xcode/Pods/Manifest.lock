@@ -44,7 +44,7 @@ PODS:
     - SCSiriWaveformView
   - JDStatusBarNotification (1.5.3)
   - JSCoreBom (1.1.1)
-  - libPhoneNumber-iOS (0.8.13)
+  - libPhoneNumber-iOS (0.9.15)
   - MBProgressHUD (1.0.0)
   - NSGIF (1.2)
   - NSHash (1.1.0)
@@ -96,7 +96,7 @@ DEPENDENCIES:
   - PHFComposeBarView
   - REMenu
   - RMDateSelectionViewController
-  - SBJson
+  - SBJson (~> 5.0.0)
   - SDWebImage (from `https://github.com/rs/SDWebImage.git`, tag `3.8.1`)
   - SocketRocket
   - SWFrameButton
@@ -184,7 +184,7 @@ SPEC CHECKSUMS:
   IQAudioRecorderController: 69a67c2e0b87bd8746cbb4de175fd7a0bf820009
   JDStatusBarNotification: 29413865af11c862c17180610b0f46a21118b412
   JSCoreBom: 712590b897ecd74d9fa9cb0f16857491411c932b
-  libPhoneNumber-iOS: 3a37004baf779b4262ab29a31a87d2ae668159d4
+  libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   NSGIF: 73b435330174a9d04db9886a232c605a3e8139b5
   NSHash: 61d598c6d48957c5557f1eef0aeafd6ef5ec5fb7
@@ -207,6 +207,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
 
-PODFILE CHECKSUM: ca020cb0725d5577f9d7fe77b1c014322b74e49e
+PODFILE CHECKSUM: d466afd6fb1584614dbe41a16a4aa3c32048a71c
 
 COCOAPODS: 1.5.3

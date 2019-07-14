@@ -2164,29 +2164,27 @@
          * Handling data uri
          ***************************************************/
         if ([self->VC.url hasPrefix:@"data:application/json"]) {
-            
-            // if data uri, parse it into NSData
+        // if data uri, parse it into NSData
             NSURL * url = [NSURL URLWithString:self->VC.url];
             NSData * jsonData = [NSData dataWithContentsOfURL:url];
             NSError * error;
-            
+
             self->VC.original = [NSJSONSerialization
                                  JSONObjectWithData:jsonData
-                                 options:kNilOptions
-                                 error:&error];
-            
-            if(error) {
-                DTLogWarning(@"Error parsing json. %@ %@", self->VC.url, error);
+                                            options:kNilOptions
+                                              error:&error];
+
+            if (error) {
+                DTLogWarning (@"Error parsing json. %@ %@", self->VC.url, error);
             } else {
                 [self drawViewFromJason:self->VC.original asFinal:YES];
             }
-            
         } else if ([self->VC.url hasPrefix:@"file://"]) {
             [self loadViewByFile:self->VC.url asFinal:YES];
         }
         /************************************r**************
-         * Normally urls are not in data-uri.
-         ***************************************************/
+        * Normally urls are not in data-uri.
+        ***************************************************/
         else {
             AFJSONResponseSerializer * jsonResponseSerializer = [JasonNetworking serializer];
             NSMutableSet * jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
