@@ -3845,9 +3845,23 @@
     NSDictionary * events = [self->VC valueForKey:@"events"];
 
     if (events) {
-        if (events[@"$orientation"]) {
-            DTLogInfo (@"Calling $orientation event%@");
-            [self call:events[@"$orientation"]];
+        if (events[@"$orientation.changed"]) {
+            
+            CGRect frame = [UIScreen mainScreen].bounds;
+            
+            NSDictionary * params = @{
+                                      @"$jason": @{
+                                              @"id": @(device.orientation),
+                                              @"portrait": @(UIDeviceOrientationIsPortrait(device.orientation)),
+                                              @"size": @{
+                                                      @"width" : @(frame.size.width),
+                                                      @"height": @(frame.size.height)
+                                                      }
+                                              }
+                                      };
+            
+            DTLogInfo (@"Calling $orientation.changed event %@", params);
+            [self call:events[@"$orientation.changed"] with:params];
         }
     }
 
