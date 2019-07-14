@@ -11,7 +11,7 @@
 	<key>launch</key>
 	<string></string>
 	<key>url</key>
-	<string>file://com.jasonelle.app.test.webview.json</string>
+	<string>file://hello.json</string>
 	<key>debug</key>
 	<false/>
 </dict>
