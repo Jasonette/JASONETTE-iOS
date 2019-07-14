@@ -62,6 +62,10 @@ that triggers when the orientation changes.
 
 - Updated to `IQAudioRecorderController` 1.2.3 (was 1.2.0).
 
+- Updated to `SBJsonWriter` 5.0.0 (was 4.0.2).
+
+- Updated to `libPhoneNumber-iOS` 0.9.15 (was 0.8.13).
+
 ### Removed
 
 - Nothing
