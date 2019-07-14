@@ -57,7 +57,7 @@ PODS:
   - RMActionController (1.0.5)
   - RMDateSelectionViewController (2.0.3):
     - RMActionController (~> 1.0.5)
-  - SBJson (4.0.2)
+  - SBJson (5.0.0)
   - SCSiriWaveformView (1.1.1)
   - SDWebImage (3.8.1):
     - SDWebImage/Core (= 3.8.1)
@@ -96,7 +96,7 @@ DEPENDENCIES:
   - PHFComposeBarView
   - REMenu
   - RMDateSelectionViewController
-  - SBJson (~> 4.0.2)
+  - SBJson
   - SDWebImage (from `https://github.com/rs/SDWebImage.git`, tag `3.8.1`)
   - SocketRocket
   - SWFrameButton
@@ -195,7 +195,7 @@ SPEC CHECKSUMS:
   REMenu: 30dad195930adf6c5eeb8041e3257aa60bf9fa49
   RMActionController: b83653e7452ed51492094d65dc82151c36443c03
   RMDateSelectionViewController: 354a0f1fe40bac01054528b7a8735f2973bbd813
-  SBJson: 16404e557ff6346b506e9e12f2d83e6782f37f6f
+  SBJson: 73c848dc34be51fda282fab12bda6c426f5ead08
   SCSiriWaveformView: 15b9dd6f94c7536e2032b34a35c6ff74d38c7411
   SDWebImage: 35f9627a3e44b4f292a8a8ce6a531fa488239b91
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
@@ -207,6 +207,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
 
-PODFILE CHECKSUM: dd6dfa0550722a90e555288182c42d0db82c1c81
+PODFILE CHECKSUM: ca020cb0725d5577f9d7fe77b1c014322b74e49e
 
 COCOAPODS: 1.5.3

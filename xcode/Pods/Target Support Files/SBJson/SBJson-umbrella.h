@@ -10,12 +10,12 @@
 #endif
 #endif
 
-#import "SBJson4.h"
-#import "SBJson4Parser.h"
-#import "SBJson4StreamParser.h"
-#import "SBJson4StreamTokeniser.h"
-#import "SBJson4StreamWriter.h"
-#import "SBJson4Writer.h"
+#import "SBJson5.h"
+#import "SBJson5Parser.h"
+#import "SBJson5StreamParser.h"
+#import "SBJson5StreamTokeniser.h"
+#import "SBJson5StreamWriter.h"
+#import "SBJson5Writer.h"
 
 FOUNDATION_EXPORT double SBJsonVersionNumber;
 FOUNDATION_EXPORT const unsigned char SBJsonVersionString[];

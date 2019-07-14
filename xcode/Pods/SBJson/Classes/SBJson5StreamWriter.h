@@ -56,15 +56,15 @@
 
 @end
 
-@class SBJson4StreamWriter;
+@class SBJson5StreamWriter;
 
-@protocol SBJson4StreamWriterDelegate
+@protocol SBJson5StreamWriterDelegate
 
-- (void)writer:(SBJson4StreamWriter *)writer appendBytes:(const void *)bytes length:(NSUInteger)length;
+- (void)writer:(SBJson5StreamWriter *)writer appendBytes:(const void *)bytes length:(NSUInteger)length;
 
 @end
 
-@class SBJson4StreamWriterState;
+@class SBJson5StreamWriterState;
 
 /**
  The Stream Writer class.
@@ -97,52 +97,39 @@
 
  */
 
-@interface SBJson4StreamWriter : NSObject {
+@interface SBJson5StreamWriter : NSObject {
     NSMutableDictionary *cache;
 }
 
-@property (nonatomic, weak) SBJson4StreamWriterState *state; // Internal
+@property (nonatomic, weak) SBJson5StreamWriterState *state; // Internal
 @property (nonatomic, readonly, strong) NSMutableArray *stateStack; // Internal
 
 /**
- delegate to receive JSON output
- Delegate that will receive messages with output.
+ Create a JSON stream writer
+
+ @param delegate Delegate that will receive messages with output.
+
+ @param maxDepth If the input is nested deeper than this the input will be
+ deemed to be malicious and the parser returns nil, signalling an error.
+ ("Nested too deep".) You can turn off this security feature by setting the
+ maxDepth to 0.
+
+ @param humanReadable If YES, produces human-readable output with linebreaks
+ and indentation.
+
+ @param sortKeys Whether or not to sort the dictionary keys in the output.
+ (Useful if you need to compare two structures.)
+
+ @param sortKeysComparator A custom comparator to sort dictionary keys when @p
+ sortKeys is YES. If nil, @selector(compare:) is used for sorting.
+
  */
-@property (nonatomic, weak) id<SBJson4StreamWriterDelegate> delegate;
 
-/**
- The maximum depth.
-
- Defaults to 512. If the input is nested deeper than this the input will be deemed to be
- malicious and the parser returns nil, signalling an error. ("Nested too deep".) You can
- turn off this security feature by setting the maxDepth value to 0.
- */
-@property(nonatomic) NSUInteger maxDepth;
-
-/**
- Whether we are generating human-readable (multi line) JSON.
-
- Set whether or not to generate human-readable JSON. The default is NO, which produces
- JSON without any whitespace between tokens. If set to YES, generates human-readable
- JSON with line breaks after each array value and dictionary key/value pair, indented two
- spaces per nesting level.
- */
-@property(nonatomic) BOOL humanReadable;
-
-/**
- Whether or not to sort the dictionary keys in the output.
-
- If this is set to YES, the dictionary keys in the JSON output will be in sorted order.
- (This is useful if you need to compare two structures, for example.) The default is NO.
- */
-@property(nonatomic) BOOL sortKeys;
-
-/**
- An optional comparator to be used if sortKeys is YES.
-
- If this is nil, sorting will be done via @selector(compare:).
- */
-@property (nonatomic, copy) NSComparator sortKeysComparator;
++ (id)writerWithDelegate:(id<SBJson5StreamWriterDelegate>)delegate
+                maxDepth:(NSUInteger)maxDepth
+           humanReadable:(BOOL)humanReadable
+                sortKeys:(BOOL)sortKeys
+      sortKeysComparator:(NSComparator)sortKeysComparator;
 
 /// Contains the error description after an error has occurred.
 @property (nonatomic, copy) NSString *error;
@@ -203,7 +190,7 @@
 
 @end
 
-@interface SBJson4StreamWriter (Private)
+@interface SBJson5StreamWriter (Private)
 - (BOOL)writeValue:(id)v;
 - (void)appendBytes:(const void *)bytes length:(NSUInteger)length;
 @end

@@ -1,4 +1,4 @@
-platform :ios, '8.0'
+platform :ios, '9.0'
 inhibit_all_warnings!
 use_frameworks!
 
@@ -25,7 +25,7 @@ target 'Jasonette' do
   pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
   pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git", :tag => '3.8.1'
   pod 'SZTextView'
-  pod 'SBJson', '~> 4.0.2'
+  pod 'SBJson' #, '~> 4.0.2'
   pod 'DHSmartScreenshot'
   pod 'NSHash'
   pod 'JSCoreBom', '~> 1.1.1'

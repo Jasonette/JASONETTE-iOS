@@ -31,7 +31,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "SBJson4StreamParser.h"
+#import "SBJson5StreamParser.h"
 
 /**
  Block called when the parser has parsed an item. This could be once
@@ -40,21 +40,13 @@
  @param item contains the parsed item.
  @param stop set to YES if you want the parser to stop
  */
-typedef void (^SBJson4ValueBlock)(id item, BOOL* stop);
+typedef void (^SBJson5ValueBlock)(id item, BOOL* stop);
 
 /**
  Block called if an error occurs.
  @param error the error.
  */
-typedef void (^SBJson4ErrorBlock)(NSError* error);
-
-/**
- Block used to process parsed tokens as they are encountered. You can use this
- to transform strings containing dates into NSDate, for example.
- @param item the parsed token
- @param path the JSON Path of the token
- */
-typedef id (^SBJson4ProcessBlock)(id item, NSString* path);
+typedef void (^SBJson5ErrorBlock)(NSError* error);
 
 
 /**
@@ -67,6 +59,8 @@ typedef id (^SBJson4ProcessBlock)(id item, NSString* path);
 
  Using this class is also useful to parse huge documents on disk
  bit by bit so you don't have to keep them all in memory.
+
+ ## How JSON is mapped
 
  JSON is mapped to Objective-C types in the following way:
 
@@ -89,21 +83,76 @@ typedef id (^SBJson4ProcessBlock)(id item, NSString* path);
  are represented using a `double`. Previous versions of this library used
  an NSDecimalNumber in some cases, but this is no longer the case.
 
- The default behaviour is that your passed-in block is only called once the
- entire input is parsed. If you set supportManyDocuments to YES and your input
- contains multiple (whitespace limited) JSON documents your block will be called
- for each document:
+ ## A word of warning
 
-    SBJson4ValueBlock block = ^(id v, BOOL *stop) {
+ Stream based parsing does mean that you lose some of the correctness
+ verification you would have with a parser that considered the entire input
+ before returning an answer. It is technically possible to have some parts
+ of a document returned *as if they were correct* but then encounter an error
+ in a later part of the document. You should keep this in mind when
+ considering whether it would suit your application.
+
+*/
+@interface SBJson5Parser : NSObject
+
+/**
+ Create a JSON Parser
+
+ This can be used to create a parser that accepts only one document, or one
+ that parses many documents, or both! You can also use this if you need to
+ parse documents with nesting depth deeper than 32.
+
+ @param block Called for each element. Set *stop to `YES` if you have seen
+ enough and would like to skip the rest of the elements.
+
+ @param allowMultiRoot Indicate that you are expecting multiple whitespace-separated
+ JSON documents, similar to what Twitter uses.
+
+ @param unwrapRootArray If set the parser will pretend an root array does not exist
+ and the enumerator block will be called once for each item in it. This option
+ does nothing if the the JSON has an object at its root.
+
+ @param maxDepth The max recursion depth.
+
+ @param eh Called if the parser encounters an error.
+
+ */
++ (id)parserWithBlock:(SBJson5ValueBlock)block
+       allowMultiRoot:(BOOL)allowMultiRoot
+      unwrapRootArray:(BOOL)unwrapRootArray
+             maxDepth:(NSUInteger)maxDepth
+         errorHandler:(SBJson5ErrorBlock)eh;
+
+/**
+ Create a JSON Parser to parse a single document
+
+ @param block Called for each element. Set *stop to `YES` if you have seen
+ enough and would like to skip the rest of the elements.
+
+ @param eh Called if the parser encounters an error.
+
+ */
++ (id)parserWithBlock:(SBJson5ValueBlock)block
+         errorHandler:(SBJson5ErrorBlock)eh;
+
+
+/**
+  Create a JSON Parser that parses multiple consequtive documents
+
+ This is useful for something like Twitter's feed, which gives you one JSON
+ document per line. Here is an example of parsing many consequtive JSON
+ documents, where your block will be called once for each document:
+
+    SBJson5ValueBlock block = ^(id v, BOOL *stop) {
         BOOL isArray = [v isKindOfClass:[NSArray class]];
         NSLog(@"Found: %@", isArray ? @"Array" : @"Object");
     };
 
-    SBJson4ErrorBlock eh = ^(NSError* err) {
+    SBJson5ErrorBlock eh = ^(NSError* err) {
         NSLog(@"OOPS: %@", err);
     };
 
-    id parser = [SBJson4Parser multiRootParserWithBlock:block
+    id parser = [SBJson5Parser multiRootParserWithBlock:block
                                            errorHandler:eh];
 
     // Note that this input contains multiple top-level JSON documents
@@ -118,77 +167,46 @@ typedef id (^SBJson4ProcessBlock)(id item, NSString* path);
  - Found: Array
  - Found: Object
 
- Often you won't have control over the input you're parsing, so can't make use
- of this feature. But, all is not lost: if you are parsing a long array you can
- get the same effect by setting  rootArrayItems to YES:
-
-    id parser = [SBJson4Parser unwrapRootArrayParserWithBlock:block
-                                                 errorHandler:eh];
-
-    // Note that this input contains A SINGLE top-level document
-    id data = [@"[[],{},[],{}]" dataWithEncoding:NSUTF8StringEncoding];
-    [parser parse:data];
-
- @note Stream based parsing does mean that you lose some of the correctness
- verification you would have with a parser that considered the entire input
- before returning an answer. It is technically possible to have some parts
- of a document returned *as if they were correct* but then encounter an error
- in a later part of the document. You should keep this in mind when
- considering whether it would suit your application.
-
-
-*/
-@interface SBJson4Parser : NSObject
-
-/**
- Create a JSON Parser.
-
- This can be used to create a parser that accepts only one document, or one that parses
- many documents any
-
- @param block Called for each element. Set *stop to `YES` if you have seen
- enough and would like to skip the rest of the elements.
-
- @param allowMultiRoot Indicate that you are expecting multiple whitespace-separated
- JSON documents, similar to what Twitter uses.
-
- @param unwrapRootArray If set the parser will pretend an root array does not exist
- and the enumerator block will be called once for each item in it. This option
- does nothing if the the JSON has an object at its root.
-
- @param eh Called if the parser encounters an error.
-
- @see -unwrapRootArrayParserWithBlock:errorHandler:
- @see -multiRootParserWithBlock:errorHandler:
- @see -initWithBlock:processBlock:multiRoot:unwrapRootArray:maxDepth:errorHandler:
-
- */
-+ (id)parserWithBlock:(SBJson4ValueBlock)block
-       allowMultiRoot:(BOOL)allowMultiRoot
-      unwrapRootArray:(BOOL)unwrapRootArray
-         errorHandler:(SBJson4ErrorBlock)eh;
-
-
-/**
- Create a JSON Parser that parses multiple whitespace separated documents.
- This is useful for something like Twitter's feed, which gives you one JSON
- document per line.
-
  @param block Called for each element. Set *stop to `YES` if you have seen
  enough and would like to skip the rest of the elements.
 
  @param eh Called if the parser encounters an error.
 
  @see +unwrapRootArrayParserWithBlock:errorHandler:
- @see +parserWithBlock:allowMultiRoot:unwrapRootArray:errorHandler:
- @see -initWithBlock:processBlock:multiRoot:unwrapRootArray:maxDepth:errorHandler:
+ @see +parserWithBlock:allowMultiRoot:unwrapRootArray:maxDepth:errorHandler:
  */
-+ (id)multiRootParserWithBlock:(SBJson4ValueBlock)block
-                  errorHandler:(SBJson4ErrorBlock)eh;
++ (id)multiRootParserWithBlock:(SBJson5ValueBlock)block
+                  errorHandler:(SBJson5ErrorBlock)eh;
 
 /**
- Create a JSON Parser that parses a huge array and calls for the value block for
- each element in the outermost array.
+ Create a parser that "unwraps" a top-level array.
+
+ Often you won't have control over the input, so can't use a multi-root
+ parser. But, all is not lost: if you are parsing a long array you can get the
+ same effect by unwrapping the root array. Here is an example:
+
+    SBJson5ValueBlock block = ^(id v, BOOL *stop) {
+        BOOL isArray = [v isKindOfClass:[NSArray class]];
+        NSLog(@"Found: %@", isArray ? @"Array" : @"Object");
+    };
+
+    SBJson5ErrorBlock eh = ^(NSError* err) {
+        NSLog(@"OOPS: %@", err);
+    };
+
+    id parser = [SBJson5Parser unwrapRootArrayParserWithBlock:block
+                                                 errorHandler:eh];
+
+    // Note that this input contains A SINGLE top-level document
+    id data = [@"[[],{},[],{}]" dataWithEncoding:NSUTF8StringEncoding];
+    [parser parse:data];
+
+ The above example will print:
+
+ - Found: Array
+ - Found: Object
+ - Found: Array
+ - Found: Object
 
  @param block Called for each element. Set *stop to `YES` if you have seen
  enough and would like to skip the rest of the elements.
@@ -196,53 +214,25 @@ typedef id (^SBJson4ProcessBlock)(id item, NSString* path);
  @param eh Called if the parser encounters an error.
 
  @see +multiRootParserWithBlock:errorHandler:
- @see +parserWithBlock:allowMultiRoot:unwrapRootArray:errorHandler:
- @see -initWithBlock:processBlock:multiRoot:unwrapRootArray:maxDepth:errorHandler:
+ @see +parserWithBlock:allowMultiRoot:unwrapRootArray:maxDepth:errorHandler:
  */
-+ (id)unwrapRootArrayParserWithBlock:(SBJson4ValueBlock)block
-                        errorHandler:(SBJson4ErrorBlock)eh;
++ (id)unwrapRootArrayParserWithBlock:(SBJson5ValueBlock)block
+                        errorHandler:(SBJson5ErrorBlock)eh;
 
 /**
- Create a JSON Parser.
+ Feed data to parser
 
- @param block Called for each element. Set *stop to `YES` if you have seen
- enough and would like to skip the rest of the elements.
-
- @param processBlock A block that allows you to process individual values before being
- returned.
-
- @param multiRoot Indicate that you are expecting multiple whitespace-separated
- JSON documents, similar to what Twitter uses.
-
- @param unwrapRootArray If set the parser will pretend an root array does not exist
- and the enumerator block will be called once for each item in it. This option
- does nothing if the the JSON has an object at its root.
-
- @param maxDepth The max recursion depth of the parser. Defaults to 32.
-
- @param eh Called if the parser encounters an error.
-
- */
-- (id)initWithBlock:(SBJson4ValueBlock)block
-       processBlock:(SBJson4ProcessBlock)processBlock
-          multiRoot:(BOOL)multiRoot
-    unwrapRootArray:(BOOL)unwrapRootArray
-           maxDepth:(NSUInteger)maxDepth
-       errorHandler:(SBJson4ErrorBlock)eh;
-
-/**
- Parse some JSON
-
- The JSON is assumed to be UTF8 encoded. This can be a full JSON document, or a part of one.
+ The JSON is assumed to be UTF8 encoded. This can be a full JSON document, or
+ a part of one.
 
  @param data An NSData object containing the next chunk of JSON
 
  @return
- - SBJson4ParserComplete if a full document was found
- - SBJson4ParserWaitingForData if a partial document was found and more data is required to complete it
- - SBJson4ParserError if an error occurred.
+ - SBJson5ParserComplete if a full document was found
+ - SBJson5ParserWaitingForData if a partial document was found and more data is required to complete it
+ - SBJson5ParserError if an error occurred.
 
  */
-- (SBJson4ParserStatus)parse:(NSData*)data;
+- (SBJson5ParserStatus)parse:(NSData*)data;
 
 @end

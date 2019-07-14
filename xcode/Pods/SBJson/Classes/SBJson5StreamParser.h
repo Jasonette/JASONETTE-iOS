@@ -32,23 +32,23 @@
 
 #import <Foundation/Foundation.h>
 
-@class SBJson4StreamParser;
-@class SBJson4StreamParserState;
+@class SBJson5StreamParser;
+@class SBJson5StreamParserState;
 
 typedef enum {
-    SBJson4ParserComplete,
-    SBJson4ParserStopped,
-    SBJson4ParserWaitingForData,
-    SBJson4ParserError,
-} SBJson4ParserStatus;
+    SBJson5ParserComplete,
+    SBJson5ParserStopped,
+    SBJson5ParserWaitingForData,
+    SBJson5ParserError,
+} SBJson5ParserStatus;
 
 
 /**
  Delegate for interacting directly with the low-level parser
 
- You will most likely find it much more convenient to use the SBJson4Parser instead.
+ You will most likely find it much more convenient to use the SBJson5Parser instead.
  */
-@protocol SBJson4StreamParserDelegate < NSObject >
+@protocol SBJson5StreamParserDelegate < NSObject >
 
 /// Called when object start is found
 - (void)parserFoundObjectStart;
@@ -90,24 +90,23 @@ typedef enum {
 /**
  Low-level Stream parser
 
- You most likely want to use the SBJson4Parser instead, but if you
+ You most likely want to use the SBJson5Parser instead, but if you
  really need low-level access to tokens one-by-one you can use this class.
  */
-@interface SBJson4StreamParser : NSObject
+@interface SBJson5StreamParser : NSObject
 
-@property (nonatomic, weak) SBJson4StreamParserState *state; // Private
-@property (nonatomic, readonly, strong) NSMutableArray *stateStack; // Private
+@property (nonatomic, weak) SBJson5StreamParserState *state; // Private
+@property (readonly) id<SBJson5StreamParserDelegate> delegate; // Private
 
 /**
- Delegate to receive messages
+ Create a streaming parser.
 
- The object set here receives a series of messages as the parser breaks down the JSON stream
- into valid tokens.
-
- Usually this should be an instance of SBJson4Parser, but you can
- substitute your own implementation of the SBJson4StreamParserDelegate protocol if you need to.
- */
-@property (nonatomic, weak) id<SBJson4StreamParserDelegate> delegate;
+ @param delegate Receives a series of messages as the parser breaks down
+ the JSON stream into valid tokens. Usually this would be an instance of
+ SBJson5Parser, but you can substitute your own implementation of the
+ SBJson5StreamParserDelegate protocol if you need to.
+*/
++ (id)parserWithDelegate:(id<SBJson5StreamParserDelegate>)delegate;
 
 /**
  Parse some JSON
@@ -117,12 +116,12 @@ typedef enum {
  @param data An NSData object containing the next chunk of JSON
 
  @return
- - SBJson4ParserComplete if a full document was found
- - SBJson4ParserWaitingForData if a partial document was found and more data is required to complete it
- - SBJson4ParserError if an error occurred.
+ - SBJson5ParserComplete if a full document was found
+ - SBJson5ParserWaitingForData if a partial document was found and more data is required to complete it
+ - SBJson5ParserError if an error occurred.
 
  */
-- (SBJson4ParserStatus)parse:(NSData*)data;
+- (SBJson5ParserStatus)parse:(NSData*)data;
 
 /**
  Call this to cause parsing to stop.

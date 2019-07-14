@@ -31,25 +31,60 @@
 #error "This source file must be compiled with ARC enabled!"
 #endif
 
-#import "SBJson4Writer.h"
-#import "SBJson4StreamWriter.h"
+#import "SBJson5Writer.h"
+#import "SBJson5StreamWriter.h"
 
 
-@interface SBJson4Writer () < SBJson4StreamWriterDelegate >
+@interface SBJson5Writer () < SBJson5StreamWriterDelegate >
 @property (nonatomic, copy) NSString *error;
 @property (nonatomic, strong) NSMutableData *acc;
 @end
 
-@implementation SBJson4Writer
+@implementation SBJson5Writer {
+    NSUInteger _maxDepth;
+    BOOL _sortKeys;
+    NSComparator _sortKeysComparator;
+    BOOL _humanReadable;
+}
 
 - (id)init {
+    return [self initWithMaxDepth:32
+                    humanReadable:NO
+                         sortKeys:NO
+               sortKeysComparator:nil];
+}
+
+- (id)initWithMaxDepth:(NSUInteger)maxDepth
+         humanReadable:(BOOL)humanReadable
+              sortKeys:(BOOL)sortKeys
+    sortKeysComparator:(NSComparator)sortKeysComparator {
     self = [super init];
     if (self) {
-        self.maxDepth = 32u;
+        _maxDepth = maxDepth;
+        _humanReadable = humanReadable;
+        _sortKeys = sortKeys;
+        _sortKeysComparator = sortKeysComparator;
     }
     return self;
 }
 
++ (id)writerWithMaxDepth:(NSUInteger)maxDepth
+           humanReadable:(BOOL)humanReadable
+                sortKeys:(BOOL)sortKeys {
+    return [[self alloc] initWithMaxDepth:maxDepth
+                            humanReadable:humanReadable
+                                 sortKeys:sortKeys
+                       sortKeysComparator:nil];
+}
+
++ (id)writerWithMaxDepth:(NSUInteger)maxDepth
+           humanReadable:(BOOL)humanReadable
+      sortKeysComparator:(NSComparator)keyComparator {
+    return [[self alloc] initWithMaxDepth:maxDepth
+                            humanReadable:humanReadable
+                                 sortKeys:YES
+                       sortKeysComparator:keyComparator];
+}
 
 - (NSString*)stringWithObject:(id)value {
 	NSData *data = [self dataWithObject:value];
@@ -63,37 +98,22 @@
 
     self.acc = [[NSMutableData alloc] initWithCapacity:8096u];
 
-    SBJson4StreamWriter *streamWriter = [[SBJson4StreamWriter alloc] init];
-	streamWriter.sortKeys = self.sortKeys;
-	streamWriter.maxDepth = self.maxDepth;
-	streamWriter.sortKeysComparator = self.sortKeysComparator;
-	streamWriter.humanReadable = self.humanReadable;
-    streamWriter.delegate = self;
+    SBJson5StreamWriter *streamWriter = [SBJson5StreamWriter writerWithDelegate:self
+                                                                       maxDepth:_maxDepth
+                                                                  humanReadable:_humanReadable
+                                                                       sortKeys:_sortKeys
+                                                             sortKeysComparator:_sortKeysComparator];
 
-	BOOL ok = NO;
-	if ([object isKindOfClass:[NSDictionary class]])
-		ok = [streamWriter writeObject:object];
-
-	else if ([object isKindOfClass:[NSArray class]])
-		ok = [streamWriter writeArray:object];
-
-	else if ([object respondsToSelector:@selector(proxyForJson)])
-		return [self dataWithObject:[object proxyForJson]];
-	else {
-		self.error = @"Not valid type for JSON";
-		return nil;
-	}
-
-	if (ok)
+	if ([streamWriter writeValue:object])
 		return self.acc;
 
 	self.error = streamWriter.error;
 	return nil;
 }
 
-#pragma mark SBJson4StreamWriterDelegate
+#pragma mark SBJson5StreamWriterDelegate
 
-- (void)writer:(SBJson4StreamWriter *)writer appendBytes:(const void *)bytes length:(NSUInteger)length {
+- (void)writer:(SBJson5StreamWriter *)writer appendBytes:(const void *)bytes length:(NSUInteger)length {
     [self.acc appendBytes:bytes length:length];
 }
 

@@ -34,8 +34,8 @@
 #error "This source file must be compiled with ARC enabled!"
 #endif
 
-#import "SBJson4StreamWriter.h"
-#import "SBJson4StreamWriterState.h"
+#import "SBJson5StreamWriter.h"
+#import "SBJson5StreamWriterState.h"
 
 static NSNumber *kTrue;
 static NSNumber *kFalse;
@@ -43,7 +43,12 @@ static NSNumber *kPositiveInfinity;
 static NSNumber *kNegativeInfinity;
 
 
-@implementation SBJson4StreamWriter
+@implementation SBJson5StreamWriter {
+    BOOL _sortKeys, _humanReadable;
+    NSUInteger _maxDepth;
+    __weak id<SBJson5StreamWriterDelegate> _delegate;
+    NSComparator _sortKeysComparator;
+}
 
 + (void)initialize {
     kPositiveInfinity = [NSNumber numberWithDouble:+HUGE_VAL];
@@ -55,11 +60,35 @@ static NSNumber *kNegativeInfinity;
 #pragma mark Housekeeping
 
 - (id)init {
+    @throw @"Not Implemented";
+}
+
++ (id)writerWithDelegate:(id<SBJson5StreamWriterDelegate>)delegate
+                maxDepth:(NSUInteger)maxDepth
+           humanReadable:(BOOL)humanReadable
+                sortKeys:(BOOL)sortKeys
+      sortKeysComparator:(NSComparator)sortKeysComparator {
+    return [[self alloc] initWithDelegate:delegate
+                                 maxDepth:maxDepth
+                            humanReadable:humanReadable
+                                 sortKeys:sortKeys
+                       sortKeysComparator:sortKeysComparator];
+}
+
+- (id)initWithDelegate:(id<SBJson5StreamWriterDelegate>)delegate
+              maxDepth:(NSUInteger)maxDepth
+         humanReadable:(BOOL)humanReadable
+              sortKeys:(BOOL)sortKeys
+    sortKeysComparator:(NSComparator)sortKeysComparator {
 	self = [super init];
 	if (self) {
-		_maxDepth = 32u;
-        _stateStack = [[NSMutableArray alloc] initWithCapacity:_maxDepth];
-        _state = [SBJson4StreamWriterStateStart sharedInstance];
+        _delegate = delegate;
+		_maxDepth = maxDepth;
+        _sortKeys = sortKeys;
+        _humanReadable = humanReadable;
+        _sortKeysComparator = sortKeysComparator;
+        _stateStack = [[NSMutableArray alloc] initWithCapacity:maxDepth];
+        _state = [SBJson5StreamWriterStateStart sharedInstance];
         cache = [[NSMutableDictionary alloc] initWithCapacity:32];
     }
 	return self;
@@ -118,7 +147,7 @@ static NSNumber *kNegativeInfinity;
 	if (_humanReadable && _stateStack.count) [_state appendWhitespace:self];
 
     [_stateStack addObject:_state];
-    self.state = [SBJson4StreamWriterStateObjectStart sharedInstance];
+    self.state = [SBJson5StreamWriterStateObjectStart sharedInstance];
 
 	if (_maxDepth && _stateStack.count > _maxDepth) {
 		self.error = @"Nested too deep";
@@ -132,7 +161,7 @@ static NSNumber *kNegativeInfinity;
 - (BOOL)writeObjectClose {
 	if ([_state isInvalidState:self]) return NO;
 
-    SBJson4StreamWriterState *prev = _state;
+    SBJson5StreamWriterState *prev = _state;
 
     self.state = [_stateStack lastObject];
     [_stateStack removeLastObject];
@@ -151,7 +180,7 @@ static NSNumber *kNegativeInfinity;
 	if (_humanReadable && _stateStack.count) [_state appendWhitespace:self];
 
     [_stateStack addObject:_state];
-	self.state = [SBJson4StreamWriterStateArrayStart sharedInstance];
+	self.state = [SBJson5StreamWriterStateArrayStart sharedInstance];
 
 	if (_maxDepth && _stateStack.count > _maxDepth) {
 		self.error = @"Nested too deep";
@@ -166,7 +195,7 @@ static NSNumber *kNegativeInfinity;
 	if ([_state isInvalidState:self]) return NO;
 	if ([_state expectingKey:self]) return NO;
 
-    SBJson4StreamWriterState *prev = _state;
+    SBJson5StreamWriterState *prev = _state;
 
     self.state = [_stateStack lastObject];
     [_stateStack removeLastObject];
@@ -212,8 +241,7 @@ static NSNumber *kNegativeInfinity;
 		return [self writeArray:o];
 
 	} else if ([o isKindOfClass:[NSString class]]) {
-		[self writeString:o];
-		return YES;
+		return [self writeString:o];
 
 	} else if ([o isKindOfClass:[NSNumber class]]) {
 		return [self writeNumber:o];
@@ -223,7 +251,6 @@ static NSNumber *kNegativeInfinity;
 
 	} else if ([o respondsToSelector:@selector(proxyForJson)]) {
 		return [self writeValue:[o proxyForJson]];
-
 	}
 
 	self.error = [NSString stringWithFormat:@"JSON serialisation not supported for %@", [o class]];

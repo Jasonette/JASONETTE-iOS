@@ -375,10 +375,13 @@
      */
 
 #pragma message "TODO: Update SBJson4Writer Lib"
-    SBJson4Writer * writer = [[SBJson4Writer alloc] init];
+    SBJson5Writer * writer = [SBJson5Writer
+                              writerWithMaxDepth:0
+                              humanReadable:NO
+                              sortKeys:YES];
 //    writer.humanReadable = YES;
-    writer.humanReadable = NO;
-    writer.sortKeys = YES;
+//    writer.humanReadable = NO;
+//    writer.sortKeys = YES;
     @try {
         NSString * ret = [writer stringWithObject:value];
 
