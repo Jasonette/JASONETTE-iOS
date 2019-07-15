@@ -12,6 +12,7 @@
 #import "JasonLogger.h"
 #import "JasonNetworking.h"
 #import "JasonNSClassFromString.h"
+#import "JasonConstraintsViewController.h"
 
 @interface Jason () {
     UINavigationController * navigationController;
@@ -2494,6 +2495,7 @@
             vc.background.hidden = NO;
 
 
+#pragma message "Agent Webview frame"
             int height = [UIScreen mainScreen].bounds.size.height;
             int width = [UIScreen mainScreen].bounds.size.width;
             int x = 0;
@@ -3873,9 +3875,71 @@
             [self call:events[@"$orientation.changed"] with:params];
         }
     }
-
-    // Retrigger render in order to layout new constraints
-    [self refresh];
+    
+    if(self->VC.background)
+    {
+        
+        JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
+        
+        WKWebView * agent = vc.agents[@"$webcontainer"];
+        
+        if(agent) {
+//            CGRect rect = [JasonConstraintsViewController fullScreenBounds];
+            
+            int height = [UIScreen mainScreen].bounds.size.height;
+            int width = [UIScreen mainScreen].bounds.size.width;
+            int x = 0;
+            int y = 0;
+            
+            if (!tabController.tabBar.hidden) {
+                height = height - tabController.tabBar.frame.size.height;
+            }
+            
+            if (vc.composeBarView) {
+                // footer.input exists
+                height = height - vc.composeBarView.frame.size.height;
+            }
+            
+            CGRect rect = CGRectMake (x, y, width, height);
+            
+            if (@available(iOS 11, *)) {
+                // Take in consideration safe areas available in iOS 11
+                y = -vc.view.safeAreaInsets.top;
+                height = [UIScreen mainScreen].bounds.size.height +
+                vc.view.safeAreaInsets.top +
+                vc.view.safeAreaInsets.bottom;
+                
+                
+                x = -vc.view.safeAreaInsets.left;
+                width = [UIScreen mainScreen].bounds.size.width +
+                vc.view.safeAreaInsets.left +
+                vc.view.safeAreaInsets.right;
+                
+                if (!tabController.tabBar.hidden) {
+                    height = height - tabController.tabBar.frame.size.height;
+                }
+                
+                if (vc.composeBarView) {
+                    // footer.input exists
+                    height = height - vc.composeBarView.frame.size.height;
+                }
+                
+                rect = CGRectMake (x, y, width, height);
+            }
+            
+            self->VC.background.frame = rect;
+            [self->VC.view setNeedsDisplay];
+            
+            DTLogDebug(@"Changing $webcontainer frame to %@", NSStringFromCGRect(rect));
+//            agent.frame = rect;
+//            [agent removeFromSuperview];
+//            self->VC.background = nil;
+//            self->VC.background = agent;
+//            [self->VC.view addSubview:self->VC.background];
+        }
+        
+    }
+    //[self refresh];
 }
 
 # pragma mark - View Linking
