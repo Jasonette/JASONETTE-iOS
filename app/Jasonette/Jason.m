@@ -3951,12 +3951,12 @@
         }
     }
     @catch(NSException *e){
-#ifdef DEBUG
+#if DEBUG
         NSLog(@"ERROR.. %@", e);
         NSLog(@"JasonStack : %@", [JasonMemory client]._stack);
         NSLog(@"Register : %@", [JasonHelper stringify:[JasonMemory client]._register]);
-#endif
         [self call:@{@"type": @"$util.banner", @"options": @{@"title": @"Error", @"description": @"Something went wrong. Please try again"}}];
+#endif
         [self finish];
     }
 }
