@@ -652,7 +652,7 @@
   
   if (length == 0) return data;
   
-#if DEBUG
+#ifdef DEBUG
   int warningsCounter = 10;
 #endif
   
@@ -894,7 +894,7 @@
     
     if (invalidByte)
     {
-#if DEBUG
+#ifdef DEBUG
       if (warningsCounter)
       {
         warningsCounter--;

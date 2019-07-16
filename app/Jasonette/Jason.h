@@ -21,7 +21,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "JasonAgentService.h"
 #import <MBProgressHUD/MBProgressHUD.h>
-#if DEBUG
+#ifdef DEBUG
 #include <FLEX/FLEX.h>
 #endif
 

@@ -115,7 +115,7 @@
         launch = [JasonHelper read_local_json:launch_url];
     }
     // FLEX DEBUGGER
-#if DEBUG
+#ifdef DEBUG
     if(plist[@"debug"] && [plist[@"debug"] boolValue]){
         [[FLEXManager sharedManager] showExplorer];
     }
@@ -3951,7 +3951,7 @@
         }
     }
     @catch(NSException *e){
-#if DEBUG
+#ifdef DEBUG
         NSLog(@"ERROR.. %@", e);
         NSLog(@"JasonStack : %@", [JasonMemory client]._stack);
         NSLog(@"Register : %@", [JasonHelper stringify:[JasonMemory client]._register]);
