@@ -77,6 +77,14 @@ that triggers when the orientation changes.
 This version is a complete overhaul focusing on 
 modularization of the code and update of the libraries, improving the quality of the framework, maintaining the same json api.
 
+### People
+
+Huge thanks to the following persons that helped in this release:
+
+- [Adán Miranda](https://github.com/takakeiji): Helped with some guidance over iOS code.
+
+- [Devs Chile](https://devschile.cl): Chilean commmunity of developers.
+
 ## [1.0](https://github.com/jasonelle/jasonelle/releases/tag/v1.0)
 
 First version of the *Jasonette* Mobile Framework.
