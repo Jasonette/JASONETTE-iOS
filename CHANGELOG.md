@@ -34,6 +34,8 @@ that triggers when the orientation changes.
 
 ### Changed
 
+- Bumped to minimum iOS version `9.0`.
+
 - Improved `JasonComponentFactory.h` to take in consideration `Swift` extensions.
 
 - Establish `AppDelegate.h` as main *App Delegate* instead of `JasonAppDelegate.h`. The later will serve as a wrapper.
