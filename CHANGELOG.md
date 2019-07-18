@@ -70,6 +70,10 @@ that triggers when the orientation changes.
 
 - Updated to `JDStatusBarNotification` 1.6.0 (was 1.5.3).
 
+- Updated to `APAddressBook` 0.3.2 (was 0.2.3).
+
+- Updated to `MBProgressHUD` 1.1.0 (was 1.0.0).
+
 ### Removed
 
 - Nothing
