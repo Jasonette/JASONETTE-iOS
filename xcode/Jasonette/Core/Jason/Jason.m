@@ -2068,8 +2068,15 @@
  */
 - (void)refresh
 {
-    DTLogInfo (@"Redrawing View");
-    [self drawViewFromJason:self->VC.original asFinal:YES];
+    
+    NSDictionary * json = [self->VC.original mutableCopy];
+    json[@"$jason"][@"body"][@"background"][@"com.jasonelle.state:stop-reloading"] = @YES;
+    
+    DTLogInfo (@"Redrawing View %@", json);
+    
+    [self
+     drawViewFromJason:json
+     asFinal:YES];
 }
 
 - (void)reload
@@ -2431,7 +2438,7 @@
         return;
     }
 
-    DTLogDebug (@"Drawing Advanced Background %@", type);
+    DTLogDebug (@"Drawing Advanced Background %@", bg);
 
     if (type) {
         if ([type isEqualToString:@"camera"]) {
@@ -2482,11 +2489,16 @@
             if (bg[@"action"]) {
                 payload[@"action"] = bg[@"action"];
             }
+            
+            if(bg[@"com.jasonelle.state:stop-reloading"]) {
+                payload[@"com.jasonelle.state:stop-reloading"] = @YES;
+            }
 
             DTLogDebug (@"Loading Background with Payload %@", payload);
 
 #pragma message "JasonAgentService Setup"
             JasonAgentService * agent = self.services[@"JasonAgentService"];
+            
             vc.background = [agent setup:payload withId:payload[@"id"]];
 
             // Need to make the background transparent so that it doesn't flash white when first loading
@@ -3878,68 +3890,14 @@
     
     if(self->VC.background)
     {
-        
         JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
-        
+
         WKWebView * agent = vc.agents[@"$webcontainer"];
-        
+
         if(agent) {
-//            CGRect rect = [JasonConstraintsViewController fullScreenBounds];
-            
-            int height = [UIScreen mainScreen].bounds.size.height;
-            int width = [UIScreen mainScreen].bounds.size.width;
-            int x = 0;
-            int y = 0;
-            
-            if (!tabController.tabBar.hidden) {
-                height = height - tabController.tabBar.frame.size.height;
-            }
-            
-            if (vc.composeBarView) {
-                // footer.input exists
-                height = height - vc.composeBarView.frame.size.height;
-            }
-            
-            CGRect rect = CGRectMake (x, y, width, height);
-            
-            if (@available(iOS 11, *)) {
-                // Take in consideration safe areas available in iOS 11
-                y = -vc.view.safeAreaInsets.top;
-                height = [UIScreen mainScreen].bounds.size.height +
-                vc.view.safeAreaInsets.top +
-                vc.view.safeAreaInsets.bottom;
-                
-                
-                x = -vc.view.safeAreaInsets.left;
-                width = [UIScreen mainScreen].bounds.size.width +
-                vc.view.safeAreaInsets.left +
-                vc.view.safeAreaInsets.right;
-                
-                if (!tabController.tabBar.hidden) {
-                    height = height - tabController.tabBar.frame.size.height;
-                }
-                
-                if (vc.composeBarView) {
-                    // footer.input exists
-                    height = height - vc.composeBarView.frame.size.height;
-                }
-                
-                rect = CGRectMake (x, y, width, height);
-            }
-            
-            self->VC.background.frame = rect;
-            [self->VC.view setNeedsDisplay];
-            
-            DTLogDebug(@"Changing $webcontainer frame to %@", NSStringFromCGRect(rect));
-//            agent.frame = rect;
-//            [agent removeFromSuperview];
-//            self->VC.background = nil;
-//            self->VC.background = agent;
-//            [self->VC.view addSubview:self->VC.background];
+            [self refresh];
         }
-        
     }
-    //[self refresh];
 }
 
 # pragma mark - View Linking

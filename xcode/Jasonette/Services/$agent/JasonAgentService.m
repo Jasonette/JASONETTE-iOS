@@ -253,13 +253,19 @@
 **********************************************/
 
 - (void)refresh:(WKWebView *)agent withOptions:(NSDictionary *)options {
-    DTLogDebug (@"Refreshing agent with options %@", options);
+    DTLogDebug (@"Refreshing agent with options %@ and payload %@", options, agent.payload);
 
     NSString * text = options[@"text"];
     NSString * url = options[@"url"];
     NSDictionary * action = options[@"action"];
 
     BOOL isempty = NO;
+    
+    BOOL shouldReload = YES;
+    if(options[@"com.jasonelle.state:stop-reloading"])
+    {
+        shouldReload = NO;
+    }
 
     // 2. Fill in the container with HTML or JS
     // Only when the agent is empty.
@@ -272,18 +278,24 @@
                 DTLogDebug (@"Loading with Local File %@", url);
                 NSString * path = [JasonHelper get_local_path:url];
                 NSURL * u = [NSURL fileURLWithPath:path isDirectory:NO];
-                [agent loadFileURL:u allowingReadAccessToURL:u];
+                if(shouldReload){
+                    [agent loadFileURL:u allowingReadAccessToURL:u];
+                }
             } else {
             // Remote URL
                 DTLogDebug (@"Loading Remote URL %@", url);
                 NSURL * nsurl = [NSURL URLWithString:url];
                 NSURLRequest * nsrequest = [NSURLRequest requestWithURL:nsurl];
-                [agent loadRequest:nsrequest];
+                if(shouldReload){
+                    [agent loadRequest:nsrequest];
+                }
             }
         } else if (text) {
             // contains "text" attribute
             DTLogDebug (@"Loading text attribute");
-            [agent loadHTMLString:text baseURL:nil];
+            if(shouldReload){
+                [agent loadHTMLString:text baseURL:nil];
+            }
         } else {
             // neither "url" nor "text" => Just empty agent
             DTLogDebug (@"Neither 'url' or 'text' attribute detected.");
@@ -302,6 +314,9 @@
     if (action) {
         agent.userInteractionEnabled = YES;
     }
+    
+    JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
+    [vc.view setNeedsDisplay];
 }
 
 - (void)refresh:(NSDictionary *)options {
@@ -366,7 +381,7 @@
     NSDictionary * action = options[@"action"];
 
     // Initialize
-    DTLogDebug (@"Initializing WKWebView agent with identifier %@", identifier);
+    DTLogDebug (@"Initializing WKWebView agent with identifier %@ options %@", identifier, options);
     WKWebViewConfiguration * config = [[WKWebViewConfiguration alloc] init];
     WKUserContentController * controller = [[WKUserContentController alloc] init];
 
@@ -388,7 +403,7 @@
         // New Agent
         DTLogDebug (@"New Agent");
         agent = [[WKWebView alloc]
-                 initWithFrame:CGRectMake (0, 0, 0, 0)
+                 initWithFrame:CGRectZero
                  configuration:config];
         agent.navigationDelegate = self;
 
@@ -399,6 +414,10 @@
                    context:NULL];
 
         agent.hidden = YES;
+        
+        agent.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        agent.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
     }
 
     // Setup Payload
