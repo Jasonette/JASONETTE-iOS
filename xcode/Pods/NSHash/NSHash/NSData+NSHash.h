@@ -48,4 +48,14 @@
  */
 - (nonnull NSString*) SHA256String;
 
+/**
+ Creates a SHA512 hash of the current NSData object as NSData representation.
+ */
+- (nonnull NSData*) SHA512;
+
+/**
+ Creates a SHA512 hash of the current NSData object as hex NSString representation.
+ */
+- (nonnull NSString*) SHA512String;
+
 @end

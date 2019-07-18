@@ -9,7 +9,7 @@
 @implementation NSGIF
 
 // Declare constants
-#define fileName     @"NSGIF.gif"
+#define fileName     @"NSGIF"
 #define timeInterval @(600)
 #define tolerance    @(0.01)
 
@@ -25,7 +25,7 @@ typedef NS_ENUM(NSInteger, GIFSize) {
 
 + (void)optimalGIFfromURL:(NSURL*)videoURL loopCount:(int)loopCount completion:(void(^)(NSURL *GifURL))completionBlock {
 
-    int delayTime = 0.2;
+    float delayTime = 0.02f;
     
     // Create properties dictionaries
     NSDictionary *fileProperties = [self filePropertiesWithLoopCount:loopCount];
@@ -81,7 +81,7 @@ typedef NS_ENUM(NSInteger, GIFSize) {
 
 }
 
-+ (void)createGIFfromURL:(NSURL*)videoURL withFrameCount:(int)frameCount delayTime:(int)delayTime loopCount:(int)loopCount completion:(void(^)(NSURL *GifURL))completionBlock {
++ (void)createGIFfromURL:(NSURL*)videoURL withFrameCount:(int)frameCount delayTime:(float)delayTime loopCount:(int)loopCount completion:(void(^)(NSURL *GifURL))completionBlock {
     
     // Convert the video at the given URL to a GIF, and return the GIF's URL if it was created.
     // The frames are spaced evenly over the video, and each has the same duration.
@@ -130,13 +130,15 @@ typedef NS_ENUM(NSInteger, GIFSize) {
 #pragma mark - Base methods
 
 + (NSURL *)createGIFforTimePoints:(NSArray *)timePoints fromURL:(NSURL *)url fileProperties:(NSDictionary *)fileProperties frameProperties:(NSDictionary *)frameProperties frameCount:(int)frameCount gifSize:(GIFSize)gifSize{
-    
-    NSString *temporaryFile = [NSTemporaryDirectory() stringByAppendingString:fileName];
+	
+	NSString *timeEncodedFileName = [NSString stringWithFormat:@"%@-%lu.gif", fileName, (unsigned long)([[NSDate date] timeIntervalSince1970]*10.0)];
+    NSString *temporaryFile = [NSTemporaryDirectory() stringByAppendingString:timeEncodedFileName];
     NSURL *fileURL = [NSURL fileURLWithPath:temporaryFile];
-    CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)fileURL, kUTTypeGIF , frameCount, NULL);
-    
     if (fileURL == nil)
         return nil;
+
+    CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)fileURL, kUTTypeGIF , frameCount, NULL);
+    CGImageDestinationSetProperties(destination, (CFDictionaryRef)fileProperties);
 
     AVURLAsset *asset = [AVURLAsset URLAssetWithURL:url options:nil];
     AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
@@ -147,12 +149,12 @@ typedef NS_ENUM(NSInteger, GIFSize) {
     generator.requestedTimeToleranceAfter = tol;
     
     NSError *error = nil;
-   CGImageRef previousImageRefCopy = nil;
+    CGImageRef previousImageRefCopy = nil;
     for (NSValue *time in timePoints) {
         CGImageRef imageRef;
         
         #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-            imageRef = (float)gifSize/10 != 1 ? ImageWithScale([generator copyCGImageAtTime:[time CMTimeValue] actualTime:nil error:&error], (float)gifSize/10) : [generator copyCGImageAtTime:[time CMTimeValue] actualTime:nil error:&error];
+            imageRef = (float)gifSize/10 != 1 ? createImageWithScale([generator copyCGImageAtTime:[time CMTimeValue] actualTime:nil error:&error], (float)gifSize/10) : [generator copyCGImageAtTime:[time CMTimeValue] actualTime:nil error:&error];
         #elif TARGET_OS_MAC
             imageRef = [generator copyCGImageAtTime:[time CMTimeValue] actualTime:nil error:&error];
         #endif
@@ -174,10 +176,12 @@ typedef NS_ENUM(NSInteger, GIFSize) {
     }
     CGImageRelease(previousImageRefCopy);
     
-    CGImageDestinationSetProperties(destination, (CFDictionaryRef)fileProperties);
     // Finalize the GIF
     if (!CGImageDestinationFinalize(destination)) {
         NSLog(@"Failed to finalize GIF destination: %@", error);
+        if (destination != nil) {
+            CFRelease(destination);
+        }
         return nil;
     }
     CFRelease(destination);
@@ -187,7 +191,7 @@ typedef NS_ENUM(NSInteger, GIFSize) {
 
 #pragma mark - Helpers
 
-CGImageRef ImageWithScale(CGImageRef imageRef, float scale) {
+CGImageRef createImageWithScale(CGImageRef imageRef, float scale) {
     
     #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
     CGSize newSize = CGSizeMake(CGImageGetWidth(imageRef)*scale, CGImageGetHeight(imageRef)*scale);
@@ -207,6 +211,8 @@ CGImageRef ImageWithScale(CGImageRef imageRef, float scale) {
     // Draw into the context; this scales the image
     CGContextDrawImage(context, newRect, imageRef);
     
+    //Release old image
+    CFRelease(imageRef);
     // Get the resized image from the context and a UIImage
     imageRef = CGBitmapContextCreateImage(context);
     
@@ -224,7 +230,7 @@ CGImageRef ImageWithScale(CGImageRef imageRef, float scale) {
              };
 }
 
-+ (NSDictionary *)framePropertiesWithDelayTime:(int)delayTime {
++ (NSDictionary *)framePropertiesWithDelayTime:(float)delayTime {
 
     return @{(NSString *)kCGImagePropertyGIFDictionary:
                 @{(NSString *)kCGImagePropertyGIFDelayTime: @(delayTime)},

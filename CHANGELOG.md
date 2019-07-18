@@ -74,6 +74,14 @@ that triggers when the orientation changes.
 
 - Updated to `MBProgressHUD` 1.1.0 (was 1.0.0).
 
+- Updated to `NSGIF` 1.2.4 (was 1.2).
+
+- Updated to `NSHash` 1.2.0 (was 1.1.0).
+
+- Updated to `DTCoreText` 1.6.22 (was 1.6.17).
+
+- Updated to `DTFoundation` 1.7.13 (was 1.7.10).
+
 ### Removed
 
 - Nothing
@@ -88,6 +96,10 @@ modularization of the code and update of the libraries, improving the quality of
 Huge thanks to the following persons that helped in this release:
 
 - [Adán Miranda](https://github.com/takakeiji): Helped with some guidance over iOS code.
+
+- `BSG`: Detected layout error in WKWebViews in iOS >= 11.
+
+- `John Mark`: Wrote a great tutorial in Bubble.is forums.
 
 - [Devs Chile](https://devschile.cl): Chilean commmunity of developers.
 

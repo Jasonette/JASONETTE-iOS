@@ -15,4 +15,9 @@
 	return 0;
 }
 
++ (BOOL)shouldDrawOnMainThread
+{
+    return YES;
+}
+
 @end

@@ -161,10 +161,16 @@ static NSCache *imageCache = nil;
 		{
 			contentURL = [NSURL URLWithString:src];
 			
-			if(!contentURL)
+			if (!contentURL)
 			{
-				src = [src stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+				src = [src stringByAddingHTMLEntities];
 				contentURL = [NSURL URLWithString:src relativeToURL:baseURL];
+			}
+			
+			if (!contentURL)
+			{
+				src = [src stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+				contentURL = [NSURL URLWithString:src];
 			}
 			
 			if (![contentURL scheme])
@@ -336,9 +342,7 @@ static NSCache *imageCache = nil;
 
 - (void)drawInRect:(CGRect)rect context:(CGContextRef)context
 {
-#if TARGET_OS_IPHONE
 	[self.image drawInRect:rect];
-#endif
 }
 
 #pragma mark - DTTextAttachmentHTMLEncoding
@@ -435,7 +439,7 @@ static NSCache *imageCache = nil;
 	
 	for (__strong NSString *oneKey in [tmpAttributes allKeys])
 	{
-		oneKey = [oneKey stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+		oneKey = [oneKey stringByAddingHTMLEntities];
 		NSString *value = [[tmpAttributes objectForKey:oneKey] stringByAddingHTMLEntities];
 		[retString appendFormat:@" %@=\"%@\"", oneKey, value];
 	}

@@ -177,7 +177,7 @@ NSDictionary *_classesForNames = nil;
 		[tmpDict setObject:_anchorName forKey:DTAnchorAttribute];
 	}
 	
-	// add strikout if applicable
+	// add strikeout if applicable
 	if (_strikeOut)
 	{
 #if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
@@ -386,9 +386,12 @@ NSDictionary *_classesForNames = nil;
 	
 	[_attributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
 		
+		// Ignore attributes on global ignore list
 		if ([attributesToIgnore containsObject:key]) return;
+		// Ignore Apple-converted-space helper CSS class
+		if ([@"class" isEqualToString:key] && [@"Apple-converted-space" isEqualToString:value]) return;
 
-		if (_CSSClassNamesToIgnoreForCustomAttributes && [key isEqualToString:@"class"])
+		if (self.CSSClassNamesToIgnoreForCustomAttributes && [key isEqualToString:@"class"])
 		{
 			NSMutableArray *classNamesToKeep = [NSMutableArray array];
 			
@@ -407,7 +410,7 @@ NSDictionary *_classesForNames = nil;
 			
 			for (NSString *oneClassName in components)
 			{
-				if (![_CSSClassNamesToIgnoreForCustomAttributes containsObject:oneClassName])
+				if (![self.CSSClassNamesToIgnoreForCustomAttributes containsObject:oneClassName])
 				{
 					[classNamesToKeep addObject:oneClassName];
 				}
@@ -1063,19 +1066,35 @@ NSDictionary *_classesForNames = nil;
 	{
 		if ([alignment isEqualToString:@"left"])
 		{
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+			self.paragraphStyle.alignment = kCTTextAlignmentLeft;
+#else
 			self.paragraphStyle.alignment = kCTLeftTextAlignment;
+#endif
 		}
 		else if ([alignment isEqualToString:@"right"])
 		{
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+			self.paragraphStyle.alignment = kCTTextAlignmentRight;
+#else
 			self.paragraphStyle.alignment = kCTRightTextAlignment;
+#endif
 		}
 		else if ([alignment isEqualToString:@"center"])
 		{
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+			self.paragraphStyle.alignment = kCTTextAlignmentCenter;
+#else
 			self.paragraphStyle.alignment = kCTCenterTextAlignment;
+#endif
 		}
 		else if ([alignment isEqualToString:@"justify"])
 		{
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+			self.paragraphStyle.alignment = kCTTextAlignmentJustified;
+#else
 			self.paragraphStyle.alignment = kCTJustifiedTextAlignment;
+#endif
 		}
 		else if ([alignment isEqualToString:@"inherit"])
 		{
@@ -1137,7 +1156,7 @@ NSDictionary *_classesForNames = nil;
 		}
 	}
 	
-	// if there is a text attachment we transfer the aligment we got
+	// if there is a text attachment we transfer the alignment we got
 	_textAttachment.verticalAlignment = _textAttachmentAlignment;
 	
 	id shadow = [styles objectForKey:@"text-shadow"];
@@ -1312,6 +1331,12 @@ NSDictionary *_classesForNames = nil;
 		_backgroundCornerRadius = 0.0f;
 	}
 	
+	NSString *textIndentStr = [styles objectForKey:@"text-indent"];
+	if (textIndentStr && [textIndentStr isCSSLengthValue])
+	{
+		_pTextIndent = [textIndentStr pixelSizeOfCSSMeasureRelativeToCurrentTextSize:_currentTextSize textScale:_textScale];
+	}
+	
 	BOOL needsTextBlock = (_backgroundColor!=nil || _backgroundStrokeColor!=nil || _backgroundCornerRadius > 0 || _backgroundStrokeWidth > 0);
 	
 	BOOL hasMargins = NO;
@@ -1364,7 +1389,7 @@ NSDictionary *_classesForNames = nil;
 		if (hasMargins)
 		{
 			self.paragraphStyle.paragraphSpacing = _margins.bottom;
-			
+			self.paragraphStyle.paragraphSpacingBefore = _margins.top;
 			// we increase the inherited values for the time being
 			self.paragraphStyle.headIndent += _margins.left;
 			self.paragraphStyle.firstLineHeadIndent = self.paragraphStyle.headIndent;
@@ -1711,6 +1736,7 @@ NSDictionary *_classesForNames = nil;
 @synthesize backgroundStrokeWidth = _backgroundStrokeWidth;
 @synthesize backgroundCornerRadius = _backgroundCornerRadius;
 @synthesize letterSpacing = _letterSpacing;
+@synthesize pTextIndent = _pTextIndent;
 
 @end
 

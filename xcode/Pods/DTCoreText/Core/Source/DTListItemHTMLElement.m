@@ -139,11 +139,20 @@
 		
 		// first tab is to right-align bullet, numbering against
 		CGFloat tabOffset = paragraphStyle.headIndent - (CGFloat)5.0; // TODO: change with font size
+		
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+		[paragraphStyle addTabStopAtPosition:tabOffset alignment:kCTTextAlignmentRight];
+#else
 		[paragraphStyle addTabStopAtPosition:tabOffset alignment:kCTRightTextAlignment];
+#endif
 	}
 	
 	// second tab is for the beginning of first line after bullet
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+	[paragraphStyle addTabStopAtPosition:paragraphStyle.headIndent alignment:kCTTextAlignmentLeft];
+#else
 	[paragraphStyle addTabStopAtPosition:paragraphStyle.headIndent alignment:kCTLeftTextAlignment];
+#endif
 	
 	NSMutableDictionary *newAttributes = [NSMutableDictionary dictionary];
 	
@@ -244,6 +253,11 @@
 		}
 	}
 	
+	if (!prefix)
+	{
+		return nil;
+	}
+	
 	NSMutableAttributedString *tmpStr = [[NSMutableAttributedString alloc] initWithString:prefix attributes:newAttributes];
 	
 	if (image)
@@ -296,7 +310,7 @@
 	// append child elements
 	NSAttributedString *childrenString = [super attributedString];
 
-	// apend list prefix
+	// append list prefix
 	NSAttributedString *listPrefix = [self _listPrefix];
 	
 	if (listPrefix)

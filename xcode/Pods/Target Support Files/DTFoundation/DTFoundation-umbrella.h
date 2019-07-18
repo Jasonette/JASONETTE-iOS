@@ -41,6 +41,7 @@
 #import "NSURL+DTAppLinks.h"
 #import "UIApplication+DTNetworkActivity.h"
 #import "UIImage+DTFoundation.h"
+#import "UIScreen+DTFoundation.h"
 #import "UIView+DTFoundation.h"
 #import "UIWebView+DTFoundation.h"
 

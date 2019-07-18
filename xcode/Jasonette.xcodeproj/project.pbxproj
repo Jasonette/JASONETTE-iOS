@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5EE85B6C1DA45F8F0049EACE /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EE85B6B1DA45F8F0049EACE /* MapKit.framework */; };
-		ED2ECBF9B49A98F0C5B4AD52 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
+		ACDAE25BCC06F4D2B1364277 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDE1A3D4D97BE5A73CB39B96 /* Pods_Jasonette.framework */; };
 		EF07303A22D28B2400973DE1 /* settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = EF072F5F22D28B2400973DE1 /* settings.plist */; };
 		EF07303B22D28B2400973DE1 /* com.jasonelle.app.test.webview.json in Resources */ = {isa = PBXBuildFile; fileRef = EF072F6022D28B2400973DE1 /* com.jasonelle.app.test.webview.json */; };
 		EF07303C22D28B2400973DE1 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EF072F6222D28B2400973DE1 /* Media.xcassets */; };
@@ -102,10 +102,10 @@
 
 /* Begin PBXFileReference section */
 		1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.release.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.release.xcconfig"; sourceTree = "<group>"; };
-		2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Jasonette.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E3176591D1E400C00D87778 /* Jasonette.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jasonette.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EE85B6B1DA45F8F0049EACE /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		5EE85B7A1DA595A20049EACE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		BDE1A3D4D97BE5A73CB39B96 /* Pods_Jasonette.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Jasonette.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
 		EF072F5F22D28B2400973DE1 /* settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = settings.plist; sourceTree = "<group>"; };
 		EF072F6022D28B2400973DE1 /* com.jasonelle.app.test.webview.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = com.jasonelle.app.test.webview.json; sourceTree = "<group>"; };
@@ -268,7 +268,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EE85B6C1DA45F8F0049EACE /* MapKit.framework in Frameworks */,
-				ED2ECBF9B49A98F0C5B4AD52 /* Pods_Jasonette.framework in Frameworks */,
+				ACDAE25BCC06F4D2B1364277 /* Pods_Jasonette.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,7 +310,7 @@
 			children = (
 				5EE85B7A1DA595A20049EACE /* UIKit.framework */,
 				5EE85B6B1DA45F8F0049EACE /* MapKit.framework */,
-				2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */,
+				BDE1A3D4D97BE5A73CB39B96 /* Pods_Jasonette.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -764,7 +764,7 @@
 				EF07A15A22D6186100D0D3FF /* JasonGeoAction.m */,
 				EF07A15B22D6186100D0D3FF /* JasonGeoAction.h */,
 			);
-			path = $geo;
+			path = "$geo";
 			sourceTree = "<group>";
 		};
 		EF07A15C22D6186100D0D3FF /* $global */ = {
@@ -773,7 +773,7 @@
 				EF07A15D22D6186100D0D3FF /* JasonGlobalAction.h */,
 				EF07A15E22D6186100D0D3FF /* JasonGlobalAction.m */,
 			);
-			path = $global;
+			path = "$global";
 			sourceTree = "<group>";
 		};
 		EF07A15F22D6186100D0D3FF /* $audio */ = {
@@ -782,7 +782,7 @@
 				EF07A16022D6186100D0D3FF /* JasonAudioAction.h */,
 				EF07A16122D6186100D0D3FF /* JasonAudioAction.m */,
 			);
-			path = $audio;
+			path = "$audio";
 			sourceTree = "<group>";
 		};
 		EF07A16222D6186100D0D3FF /* $network */ = {
@@ -791,7 +791,7 @@
 				EF07A16322D6186100D0D3FF /* JasonNetworkAction.h */,
 				EF07A16422D6186100D0D3FF /* JasonNetworkAction.m */,
 			);
-			path = $network;
+			path = "$network";
 			sourceTree = "<group>";
 		};
 		EF07A16522D6186100D0D3FF /* $push */ = {
@@ -800,7 +800,7 @@
 				EF07A16622D6186100D0D3FF /* JasonPushAction.h */,
 				EF07A16722D6186100D0D3FF /* JasonPushAction.m */,
 			);
-			path = $push;
+			path = "$push";
 			sourceTree = "<group>";
 		};
 		EF07A16822D6186100D0D3FF /* $websocket */ = {
@@ -809,7 +809,7 @@
 				EF07A16922D6186100D0D3FF /* JasonWebsocketAction.m */,
 				EF07A16A22D6186100D0D3FF /* JasonWebsocketAction.h */,
 			);
-			path = $websocket;
+			path = "$websocket";
 			sourceTree = "<group>";
 		};
 		EF07A16B22D6186100D0D3FF /* $media */ = {
@@ -819,7 +819,7 @@
 				EF07A16F22D6186100D0D3FF /* JasonMediaAction.h */,
 				EF07A17022D6186100D0D3FF /* JasonMediaAction.m */,
 			);
-			path = $media;
+			path = "$media";
 			sourceTree = "<group>";
 		};
 		EF07A16C22D6186100D0D3FF /* Picker */ = {
@@ -837,7 +837,7 @@
 				EF07A17222D6186100D0D3FF /* JasonUtilAction.h */,
 				EF07A17322D6186100D0D3FF /* JasonUtilAction.m */,
 			);
-			path = $util;
+			path = "$util";
 			sourceTree = "<group>";
 		};
 		EF07A17422D6186100D0D3FF /* $return */ = {
@@ -846,7 +846,7 @@
 				EF07A17522D6186100D0D3FF /* JasonReturnAction.m */,
 				EF07A17622D6186100D0D3FF /* JasonReturnAction.h */,
 			);
-			path = $return;
+			path = "$return";
 			sourceTree = "<group>";
 		};
 		EF07A17722D6186100D0D3FF /* $convert */ = {
@@ -855,7 +855,7 @@
 				EF07A17822D6186100D0D3FF /* JasonConvertAction.m */,
 				EF07A17922D6186100D0D3FF /* JasonConvertAction.h */,
 			);
-			path = $convert;
+			path = "$convert";
 			sourceTree = "<group>";
 		};
 		EF07A17A22D6186100D0D3FF /* $session */ = {
@@ -864,7 +864,7 @@
 				EF07A17B22D6186100D0D3FF /* JasonSessionAction.m */,
 				EF07A17C22D6186100D0D3FF /* JasonSessionAction.h */,
 			);
-			path = $session;
+			path = "$session";
 			sourceTree = "<group>";
 		};
 		EF07A17D22D6186100D0D3FF /* $script */ = {
@@ -873,7 +873,7 @@
 				EF07A17E22D6186100D0D3FF /* JasonScriptAction.m */,
 				EF07A17F22D6186100D0D3FF /* JasonScriptAction.h */,
 			);
-			path = $script;
+			path = "$script";
 			sourceTree = "<group>";
 		};
 		EF07A18022D6186100D0D3FF /* $vision */ = {
@@ -882,7 +882,7 @@
 				EF07A18122D6186100D0D3FF /* JasonVisionAction.h */,
 				EF07A18222D6186100D0D3FF /* JasonVisionAction.m */,
 			);
-			path = $vision;
+			path = "$vision";
 			sourceTree = "<group>";
 		};
 		EF07A18322D6186100D0D3FF /* $cache */ = {
@@ -891,7 +891,7 @@
 				EF07A18422D6186100D0D3FF /* JasonCacheAction.m */,
 				EF07A18522D6186100D0D3FF /* JasonCacheAction.h */,
 			);
-			path = $cache;
+			path = "$cache";
 			sourceTree = "<group>";
 		};
 		EF07A18622D6186100D0D3FF /* $oauth */ = {
@@ -900,7 +900,7 @@
 				EF07A18722D6186100D0D3FF /* JasonOauthAction.h */,
 				EF07A18822D6186100D0D3FF /* JasonOauthAction.m */,
 			);
-			path = $oauth;
+			path = "$oauth";
 			sourceTree = "<group>";
 		};
 		EF07A18922D6186100D0D3FF /* $notification */ = {
@@ -909,7 +909,7 @@
 				EF07A18A22D6186100D0D3FF /* JasonNotificationAction.h */,
 				EF07A18B22D6186100D0D3FF /* JasonNotificationAction.m */,
 			);
-			path = $notification;
+			path = "$notification";
 			sourceTree = "<group>";
 		};
 		EF07A18C22D6186100D0D3FF /* $timer */ = {
@@ -918,7 +918,7 @@
 				EF07A18D22D6186100D0D3FF /* JasonTimerAction.m */,
 				EF07A18E22D6186100D0D3FF /* JasonTimerAction.h */,
 			);
-			path = $timer;
+			path = "$timer";
 			sourceTree = "<group>";
 		};
 		EF07A18F22D6186100D0D3FF /* $log */ = {
@@ -927,7 +927,7 @@
 				EF07A19022D6186100D0D3FF /* JasonLogAction.m */,
 				EF07A19122D6186100D0D3FF /* JasonLogAction.h */,
 			);
-			path = $log;
+			path = "$log";
 			sourceTree = "<group>";
 		};
 		EF07A19222D6186100D0D3FF /* $agent */ = {
@@ -936,7 +936,7 @@
 				EF07A19322D6186100D0D3FF /* JasonAgentAction.h */,
 				EF07A19422D6186100D0D3FF /* JasonAgentAction.m */,
 			);
-			path = $agent;
+			path = "$agent";
 			sourceTree = "<group>";
 		};
 		EF07A19522D6186100D0D3FF /* Views */ = {
@@ -1024,7 +1024,7 @@
 				EF07A1AC22D6186100D0D3FF /* JasonPushService.h */,
 				EF07A1AD22D6186100D0D3FF /* JasonPushService.m */,
 			);
-			path = $push;
+			path = "$push";
 			sourceTree = "<group>";
 		};
 		EF07A1AE22D6186100D0D3FF /* $websocket */ = {
@@ -1033,7 +1033,7 @@
 				EF07A1AF22D6186100D0D3FF /* JasonWebsocketService.h */,
 				EF07A1B022D6186100D0D3FF /* JasonWebsocketService.m */,
 			);
-			path = $websocket;
+			path = "$websocket";
 			sourceTree = "<group>";
 		};
 		EF07A1B122D6186100D0D3FF /* $vision */ = {
@@ -1042,7 +1042,7 @@
 				EF07A1B222D6186100D0D3FF /* JasonVisionService.m */,
 				EF07A1B322D6186100D0D3FF /* JasonVisionService.h */,
 			);
-			path = $vision;
+			path = "$vision";
 			sourceTree = "<group>";
 		};
 		EF07A1B422D6186100D0D3FF /* $agent */ = {
@@ -1051,7 +1051,7 @@
 				EF07A1B522D6186100D0D3FF /* JasonAgentService.m */,
 				EF07A1B622D6186100D0D3FF /* JasonAgentService.h */,
 			);
-			path = $agent;
+			path = "$agent";
 			sourceTree = "<group>";
 		};
 		EF67392222DCAC6B0057EDD9 /* Constraints */ = {
@@ -1083,7 +1083,7 @@
 				5E3176551D1E400C00D87778 /* Sources */,
 				5E3176561D1E400C00D87778 /* Frameworks */,
 				5E3176571D1E400C00D87778 /* Resources */,
-				63FB79939C3EFA5C13310B2B /* [CP] Embed Pods Frameworks */,
+				730C0CB152BB7DA792FDB1F5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1194,10 +1194,12 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		63FB79939C3EFA5C13310B2B /* [CP] Embed Pods Frameworks */ = {
+		730C0CB152BB7DA792FDB1F5 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			inputFileListPaths = (
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette-frameworks.sh",
@@ -1242,6 +1244,8 @@
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFOAuth2Manager.framework",

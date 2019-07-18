@@ -15,9 +15,6 @@
 #import "NSString+HTML.h"
 
 
-// external symbols generated via custom build rule and xxd
-extern unsigned char default_css[];
-extern unsigned int default_css_len;
 
 
 @implementation DTCSSStylesheet
@@ -41,9 +38,16 @@ extern unsigned int default_css_len;
 	{
 		if (!defaultDTCSSStylesheet)
 		{
-			// get the data from the external symbol
-			NSData *data = [NSData dataWithBytes:default_css length:default_css_len];
-			NSString *cssString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+			NSBundle *bundle = [NSBundle bundleForClass:self];
+			NSString *path = [bundle pathForResource:@"default" ofType:@"css"];
+			// Cocoapods uses a separate Resources bundle to include default.css
+			if (!path)
+			{
+				NSString *resourcesBundlePath = [bundle pathForResource:@"Resources" ofType:@"bundle"];
+				NSBundle *resourcesBundle = [NSBundle bundleWithPath:resourcesBundlePath];
+				path = [resourcesBundle pathForResource:@"default" ofType:@"css"];
+			}
+			NSString *cssString = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
 			
 			defaultDTCSSStylesheet = [[DTCSSStylesheet alloc] initWithStyleBlock:cssString];
 		}
@@ -99,7 +103,7 @@ extern unsigned int default_css_len;
 	// list-style shorthand
 	NSString *shortHand = [[styles objectForKey:@"list-style"] lowercaseString];
 	
-	if (shortHand)
+	if (shortHand && [shortHand isKindOfClass:[NSString class]])
 	{
 		[styles removeObjectForKey:@"list-style"];
 		
@@ -166,7 +170,7 @@ extern unsigned int default_css_len;
 	// font shorthand, see http://www.w3.org/TR/CSS21/fonts.html#font-shorthand
 	shortHand = [styles objectForKey:@"font"];
 	
-	if (shortHand)
+	if (shortHand && [shortHand isKindOfClass:[NSString class]])
 	{
 		NSString *fontStyle = @"normal";
 		NSArray *validFontStyles = [NSArray arrayWithObjects:@"italic", @"oblique", nil];
@@ -277,7 +281,7 @@ extern unsigned int default_css_len;
 	
 	shortHand = [styles objectForKey:@"margin"];
 	
-	if (shortHand)
+	if (shortHand && [shortHand isKindOfClass:[NSString class]])
 	{
 		NSArray *parts = [shortHand componentsSeparatedByString:@" "];
 		
@@ -345,7 +349,7 @@ extern unsigned int default_css_len;
 	
 	shortHand = [styles objectForKey:@"padding"];
 	
-	if (shortHand)
+	if (shortHand && [shortHand isKindOfClass:[NSString class]])
 	{
 		NSArray *parts = [shortHand componentsSeparatedByString:@" "];
 		
@@ -413,7 +417,7 @@ extern unsigned int default_css_len;
 
 	shortHand = [styles objectForKey:@"background"];
 
-	if (shortHand)
+	if (shortHand && [shortHand isKindOfClass:[NSString class]])
 	{
 		// ignore most tokens except background-color
 		
@@ -547,7 +551,9 @@ extern unsigned int default_css_len;
 
 - (void)parseStyleBlock:(NSString*)css
 {
-	NSUInteger braceLevel = 0, braceMarker = 0;
+	NSUInteger braceMarker = 0;
+	
+	NSInteger braceLevel = 0;
 	
 	NSString* selector;
 	
@@ -636,8 +642,12 @@ extern unsigned int default_css_len;
 				
 				braceMarker = i + 1;
 			}
+			// Skip unpaired closing brace
+			else if (braceLevel < 1) {
+				braceMarker += 1;	
+			}
 			
-			braceLevel = MAX(braceLevel-1, 0ul);
+			braceLevel = MAX(braceLevel-1, 0);
 		}
 	}
 }
@@ -703,18 +713,18 @@ extern unsigned int default_css_len;
     // Get based on class(es)
 	NSString *classString = [element.attributes objectForKey:@"class"];
 	NSArray *classes = [classString componentsSeparatedByString:@" "];
-	
+		
 	// Cascaded selectors with more than one part are sorted by specificity
 	NSMutableArray *matchingCascadingSelectors = [self matchingComplexCascadingSelectorsForElement:element];
 	[matchingCascadingSelectors sortUsingComparator:^NSComparisonResult(NSString *selector1, NSString *selector2)
 	 {
-		 NSInteger weightForSelector1 = [[_orderedSelectorWeights objectForKey:selector1] integerValue];
-		 NSInteger weightForSelector2 = [[_orderedSelectorWeights objectForKey:selector2] integerValue];
+		 NSInteger weightForSelector1 = [[self->_orderedSelectorWeights objectForKey:selector1] integerValue];
+		 NSInteger weightForSelector2 = [[self->_orderedSelectorWeights objectForKey:selector2] integerValue];
 		 
 		 if (weightForSelector1 == weightForSelector2)
 		 {
-			 weightForSelector1 += [_orderedSelectors indexOfObject:selector1];
-			 weightForSelector2 += [_orderedSelectors indexOfObject:selector2];
+			 weightForSelector1 += [self->_orderedSelectors indexOfObject:selector1];
+			 weightForSelector2 += [self->_orderedSelectors indexOfObject:selector2];
 		 }
 		 
 		 if (weightForSelector1 > weightForSelector2)
@@ -825,9 +835,13 @@ extern unsigned int default_css_len;
 	
 	for (NSString *selector in _orderedSelectors)
 	{
+		// We only process the selector if our selector has more than 1 part to it (e.g. ".foo" would be skipped and ".foo .bar" would not)
+	        if (![selector rangeOfString:@" "].length) {
+        	    continue;
+	        }
+	        
 		NSArray *selectorParts = [selector componentsSeparatedByString:@" "];
 		
-		// We only process the selector if our selector has more than 1 part to it (e.g. ".foo" would be skipped and ".foo .bar" would not)
 		if (selectorParts.count < 2)
 		{
 			continue;
