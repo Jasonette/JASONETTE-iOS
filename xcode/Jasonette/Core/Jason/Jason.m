@@ -3886,18 +3886,7 @@
             DTLogInfo (@"Calling $orientation.changed event %@", params);
             [self call:events[@"$orientation.changed"] with:params];
         }
-    }
-    
-    if(self->VC.background)
-    {
-        JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
-
-        WKWebView * agent = vc.agents[@"$webcontainer"];
-
-        if(agent) {
-            [self refresh];
-        }
-    }
+    }    
 }
 
 # pragma mark - View Linking
