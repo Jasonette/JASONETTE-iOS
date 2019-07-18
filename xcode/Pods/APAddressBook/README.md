@@ -19,6 +19,12 @@ Add `APAddressBook` pod to [Podfile](http://guides.cocoapods.org/syntax/podfile.
 pod 'APAddressBook'
 ```
 
+**Warning for iOS 10.0 and after**
+
+To protect user privacy, an iOS app linked on or after iOS 10.0, and which accesses the user’s contacts, must statically declare the intent to do so. Include the `NSContactsUsageDescription` key in your app’s `Info.plist` file and provide a purpose string for this key. If your app attempts to access the user’s contacts without a corresponding purpose string, your app exits.
+
+From [here](https://developer.apple.com/library/prerelease/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html).
+
 **Load contacts**
 ```objective-c
 APAddressBook *addressBook = [[APAddressBook alloc] init];
@@ -58,6 +64,7 @@ Available fields:
 * APContactFieldRelatedPersons - array of *related persons*
 * APContactFieldLinkedRecordIDs - array of contact *linked records IDs*
 * APContactFieldSource - contact *source ID* and *source name*
+* APContactFieldDates - contact *dates* with *localized and original labels*
 * APContactFieldRecordDate - contact record *creation date* and *modification date*
 * APContactFieldDefault - contact *name and phones* without *labels*
 * APContactFieldAll - all contact fields described above
@@ -165,7 +172,7 @@ Import `APAddressBook-Bridging.h` to application's objective-c bridging file.
 See example application in `Example/Swift` directory.
 ```Swift
 self.addressBook.loadContacts(
-    { (contacts: [APContact]?, error: NSError?) in
+    { (contacts: [APContact]?, error: Error?) in
         if let uwrappedContacts = contacts {
             // do something with contacts
         }

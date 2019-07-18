@@ -11,51 +11,33 @@
 #import "APTypes.h"
 
 @class APContact;
-typedef BOOL(^APFilterContactsBlock)(APContact * _Nonnull contact);
-typedef void(^APLoadContactsBlock)(NSArray <APContact *> * _Nullable contacts, NSError * _Nullable error);
-typedef void(^APLoadContactBlock)(APContact * _Nullable contact);
-typedef void(^APLoadPhotoBlock)(UIImage * _Nullable photo);
-typedef void(^APRequestAccessBlock)(BOOL granted, NSError * _Nullable error);
 
 @interface APAddressBook : NSObject
 
 @property (nonatomic, assign) APContactField fieldsMask;
-@property (nullable, nonatomic, copy) APFilterContactsBlock filterBlock;
+@property (nullable, nonatomic, copy) BOOL(^filterBlock)(APContact * _Nonnull contact);
 @property (nullable, nonatomic, strong) NSArray <NSSortDescriptor *> *sortDescriptors;
 
 + (APAddressBookAccess)access;
-- (void)loadContacts:(nonnull APLoadContactsBlock)completionBlock;
+- (void)loadContacts:(nonnull void (^)(NSArray <APContact *> * _Nullable contacts, NSError * _Nullable error))completionBlock;
 - (void)loadContactsOnQueue:(nonnull dispatch_queue_t)queue
-                 completion:(nonnull APLoadContactsBlock)completionBlock;
+                 completion:(nonnull void (^)(NSArray <APContact *> * _Nullable contacts, NSError * _Nullable error))completionBlock;
 - (void)loadContactByRecordID:(nonnull NSNumber *)recordID
-                   completion:(nonnull APLoadContactBlock)completion;
+                   completion:(nonnull void (^)(APContact * _Nullable contact))completion;
 - (void)loadContactByRecordID:(nonnull NSNumber *)recordID
                       onQueue:(nonnull dispatch_queue_t)queue
-                   completion:(nonnull APLoadContactBlock)completion;
+                   completion:(nonnull void (^)(APContact * _Nullable contact))completion;
 - (void)loadPhotoByRecordID:(nonnull NSNumber *)recordID
-                 completion:(nonnull APLoadPhotoBlock)completion;
+                 completion:(nonnull void (^)(UIImage * _Nullable photo))completion;
 - (void)loadPhotoByRecordID:(nonnull NSNumber *)recordID
                     onQueue:(nonnull dispatch_queue_t)queue
-                 completion:(nonnull APLoadPhotoBlock)completion;
-- (void)startObserveChangesWithCallback:(nonnull void (^)())callback;
+                 completion:(nonnull void (^)(UIImage * _Nullable photo))completion;
+- (void)startObserveChangesWithCallback:(nonnull void (^)(void))callback;
 - (void)startObserveChangesOnQueue:(nonnull dispatch_queue_t)queue
-                          callback:(nonnull void (^)())callback;
+                          callback:(nonnull void (^)(void))callback;
 - (void)stopObserveChanges;
-- (void)requestAccess:(nonnull APRequestAccessBlock)completionBlock;
+- (void)requestAccess:(nonnull void (^)(BOOL granted, NSError * _Nullable error))completionBlock;
 - (void)requestAccessOnQueue:(nonnull dispatch_queue_t)queue
-                  completion:(nonnull APRequestAccessBlock)completionBlock;
-
-@end
-
-
-@interface APAddressBook (Deprecated)
-
-+ (void)requestAccess:(nonnull APRequestAccessBlock)completionBlock
-AP_DEPRECATED("instance method requestAccess:");
-+ (void)requestAccessOnQueue:(nonnull dispatch_queue_t)queue
-        completion:(nonnull APRequestAccessBlock)completionBlock
-AP_DEPRECATED("instance method requestAccessOnQueue:completion:");
-- (nullable APContact *)getContactByRecordID:(nonnull NSNumber *)recordID
-AP_DEPRECATED("loadContactByRecordID:completion:");
+                  completion:(nonnull void (^)(BOOL granted, NSError * _Nullable error))completionBlock;
 
 @end

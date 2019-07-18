@@ -17,9 +17,9 @@ PODS:
   - AFOAuth2Manager (3.0.0):
     - AFNetworking/NSURLSession (~> 3.0)
   - AHKActionSheet (0.5.4)
-  - APAddressBook (0.2.3):
-    - APAddressBook/Core (= 0.2.3)
-  - APAddressBook/Core (0.2.3)
+  - APAddressBook (0.3.2):
+    - APAddressBook/Core (= 0.3.2)
+  - APAddressBook/Core (0.3.2)
   - BBBadgeBarButtonItem (1.2)
   - CYRTextView (0.4.0)
   - DAKeyboardControl (2.4.0)
@@ -45,7 +45,7 @@ PODS:
   - JDStatusBarNotification (1.6.0)
   - JSCoreBom (1.1.1)
   - libPhoneNumber-iOS (0.9.15)
-  - MBProgressHUD (1.0.0)
+  - MBProgressHUD (1.1.0)
   - NSGIF (1.2)
   - NSHash (1.1.0)
   - OMGHTTPURLRQ/UserAgent (3.1.2)
@@ -170,7 +170,7 @@ SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   AFOAuth2Manager: 0566da1be64883e339813d411229fdc9a84dab7c
   AHKActionSheet: f0b312b5c689f72924d231c39dae140ecd5c1d46
-  APAddressBook: 2a91bf05999548bea210ec9d1a68073f4dc8bfce
+  APAddressBook: e68ecaf95f2c323b625ae585a0d25fe505291286
   BBBadgeBarButtonItem: c2fbca0bff18e21b70defc9438a8a5048008e7ca
   CYRTextView: 1c1a4d708eee54ecad66b8ad42dbfe73083bdfce
   DAKeyboardControl: 9d9bca22a5cc3c1d3cc61e24fbd208c3e84a3d2d
@@ -185,7 +185,7 @@ SPEC CHECKSUMS:
   JDStatusBarNotification: 21b616e7432284fea6eb0ce9eadc37c8038a5544
   JSCoreBom: 712590b897ecd74d9fa9cb0f16857491411c932b
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
-  MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
+  MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   NSGIF: 73b435330174a9d04db9886a232c605a3e8139b5
   NSHash: 61d598c6d48957c5557f1eef0aeafd6ef5ec5fb7
   OMGHTTPURLRQ: 38316b56d88125c600bcdb16df8329147da2b0ee
@@ -207,6 +207,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
 
-PODFILE CHECKSUM: dd11dbf584aadffc72f6ca6b07e582cbd4cfd943
+PODFILE CHECKSUM: cc9d5915131bb1914673ec7a2df3c02b502352fc
 
 COCOAPODS: 1.5.3

@@ -28,7 +28,13 @@ target 'Jasonette' do
   pod 'TWMessageBarManager'
   
   pod 'SWTableViewCell', :git => "https://github.com/gliechtenstein/SWTableViewCell.git"
+
+  # TODO: Remove this dependency
+  # change it to Contacts native api
+  # https://github.com/Alterplay/APAddressBook/issues/138
   pod 'APAddressBook'
+  
+  
   pod 'TTTAttributedLabel'
   pod 'BBBadgeBarButtonItem'
   
