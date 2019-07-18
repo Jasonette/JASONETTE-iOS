@@ -12,7 +12,6 @@
 #import "JasonLogger.h"
 #import "JasonNetworking.h"
 #import "JasonNSClassFromString.h"
-#import "JasonConstraintsViewController.h"
 
 @interface Jason () {
     UINavigationController * navigationController;
@@ -2068,15 +2067,15 @@
  */
 - (void)refresh
 {
-    
     NSDictionary * json = [self->VC.original mutableCopy];
+
     json[@"$jason"][@"body"][@"background"][@"com.jasonelle.state:stop-reloading"] = @YES;
-    
+
     DTLogInfo (@"Redrawing View %@", json);
-    
+
     [self
      drawViewFromJason:json
-     asFinal:YES];
+               asFinal:YES];
 }
 
 - (void)reload
@@ -2489,8 +2488,8 @@
             if (bg[@"action"]) {
                 payload[@"action"] = bg[@"action"];
             }
-            
-            if(bg[@"com.jasonelle.state:stop-reloading"]) {
+
+            if (bg[@"com.jasonelle.state:stop-reloading"]) {
                 payload[@"com.jasonelle.state:stop-reloading"] = @YES;
             }
 
@@ -2498,7 +2497,7 @@
 
 #pragma message "JasonAgentService Setup"
             JasonAgentService * agent = self.services[@"JasonAgentService"];
-            
+
             vc.background = [agent setup:payload withId:payload[@"id"]];
 
             // Need to make the background transparent so that it doesn't flash white when first loading
@@ -3886,7 +3885,7 @@
             DTLogInfo (@"Calling $orientation.changed event %@", params);
             [self call:events[@"$orientation.changed"] with:params];
         }
-    }    
+    }
 }
 
 # pragma mark - View Linking

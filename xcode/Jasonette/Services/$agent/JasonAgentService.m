@@ -260,10 +260,10 @@
     NSDictionary * action = options[@"action"];
 
     BOOL isempty = NO;
-    
+
     BOOL shouldReload = YES;
-    if(options[@"com.jasonelle.state:stop-reloading"])
-    {
+
+    if (options[@"com.jasonelle.state:stop-reloading"]) {
         shouldReload = NO;
     }
 
@@ -278,22 +278,25 @@
                 DTLogDebug (@"Loading with Local File %@", url);
                 NSString * path = [JasonHelper get_local_path:url];
                 NSURL * u = [NSURL fileURLWithPath:path isDirectory:NO];
-                if(shouldReload){
+
+                if (shouldReload) {
                     [agent loadFileURL:u allowingReadAccessToURL:u];
                 }
             } else {
-            // Remote URL
+                // Remote URL
                 DTLogDebug (@"Loading Remote URL %@", url);
                 NSURL * nsurl = [NSURL URLWithString:url];
                 NSURLRequest * nsrequest = [NSURLRequest requestWithURL:nsurl];
-                if(shouldReload){
+
+                if (shouldReload) {
                     [agent loadRequest:nsrequest];
                 }
             }
         } else if (text) {
             // contains "text" attribute
             DTLogDebug (@"Loading text attribute");
-            if(shouldReload){
+
+            if (shouldReload) {
                 [agent loadHTMLString:text baseURL:nil];
             }
         } else {
@@ -314,7 +317,7 @@
     if (action) {
         agent.userInteractionEnabled = YES;
     }
-    
+
     JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
     [vc.view setNeedsDisplay];
 }
@@ -414,9 +417,9 @@
                    context:NULL];
 
         agent.hidden = YES;
-        
+
         agent.translatesAutoresizingMaskIntoConstraints = NO;
-        
+
         agent.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
     }
 
