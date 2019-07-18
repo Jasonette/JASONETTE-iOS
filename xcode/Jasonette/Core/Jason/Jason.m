@@ -2523,30 +2523,30 @@
 
             CGRect rect = CGRectMake (x, y, width, height);
 
-            if (@available(iOS 11, *)) {
-                // Take in consideration safe areas available in iOS 11
-                y = -vc.view.safeAreaInsets.top;
-                height = [UIScreen mainScreen].bounds.size.height +
-                    vc.view.safeAreaInsets.top +
-                    vc.view.safeAreaInsets.bottom;
-
-
-                x = -vc.view.safeAreaInsets.left;
-                width = [UIScreen mainScreen].bounds.size.width +
-                    vc.view.safeAreaInsets.left +
-                    vc.view.safeAreaInsets.right;
-
-                if (!tabController.tabBar.hidden) {
-                    height = height - tabController.tabBar.frame.size.height;
-                }
-
-                if (vc.composeBarView) {
-                    // footer.input exists
-                    height = height - vc.composeBarView.frame.size.height;
-                }
-
-                rect = CGRectMake (x, y, width, height);
-            }
+//            if (@available(iOS 11, *)) {
+//                // Take in consideration safe areas available in iOS 11
+//                y = -vc.view.safeAreaInsets.top;
+//                height = [UIScreen mainScreen].bounds.size.height +
+//                    vc.view.safeAreaInsets.top +
+//                    vc.view.safeAreaInsets.bottom;
+//
+//
+//                x = -vc.view.safeAreaInsets.left;
+//                width = [UIScreen mainScreen].bounds.size.width +
+//                    vc.view.safeAreaInsets.left +
+//                    vc.view.safeAreaInsets.right;
+//
+//                if (!tabController.tabBar.hidden) {
+//                    height = height - tabController.tabBar.frame.size.height;
+//                }
+//
+//                if (vc.composeBarView) {
+//                    // footer.input exists
+//                    height = height - vc.composeBarView.frame.size.height;
+//                }
+//
+//                rect = CGRectMake (x, y, width, height);
+//            }
 
             vc.background.frame = rect;
 

@@ -86,7 +86,7 @@
         NSDictionary * m = message.body[@"response"];
         NSDictionary * source = message.webView.payload[@"$source"];
         
-        DTLogDebug(@"Got Response %@", message.body[@"response"]));
+        DTLogDebug(@"Got Response %@", message.body[@"response"]);
 
         // $source exists => the original request was from an agent
         if (source) {
