@@ -56,6 +56,8 @@
         if (m[@"data"]) {
             event[@"options"] = m[@"data"];
         }
+        
+        DTLogDebug(@"Triggering %@", event);
 
         [[Jason client] call:event];
         // 2. Make an agent request
@@ -73,6 +75,9 @@
                     @"id": identifier,
                     @"nonce": m[@"nonce"]
             };
+            
+            DTLogDebug(@"Requesting %@", event);
+            
             [self request:event];
         }
 
@@ -80,6 +85,8 @@
     } else if (message.body[@"response"]) {
         NSDictionary * m = message.body[@"response"];
         NSDictionary * source = message.webView.payload[@"$source"];
+        
+        DTLogDebug(@"Got Response %@", message.body[@"response"]));
 
         // $source exists => the original request was from an agent
         if (source) {
@@ -105,6 +112,8 @@
 
         // 4. Tell Jasonette to make an href transition to another view
     } else if (message.body[@"href"]) {
+        
+        DTLogDebug(@"Loading Href %@", message.body[@"href"][@"data"]);
         [[Jason client] go:message.body[@"href"][@"data"]];
     }
 }
