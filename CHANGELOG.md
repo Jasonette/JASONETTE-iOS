@@ -56,6 +56,8 @@ that triggers when the orientation changes.
 
 - Fixed `WKWebView` orientation change not working. Based on the code by `@ricardojlpinto`.
 
+- Fixed Crash when using`$vision` on simulator.
+
 ### Updated
 
 - Updated to `AFNetworking` 3.2.1 (was 3.1.0).

@@ -2586,17 +2586,19 @@
 }
 
 - (void)buildCamera:(NSDictionary *)options forVC:(JasonViewController *)vc {
+    
+    DTLogDebug(@"Building Camera");
+    
+    
     NSError * error = nil;
     // Find back/front camera
     // based on options
     NSArray * devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
     AVCaptureDevice * device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    AVCaptureDevicePosition position;
+    AVCaptureDevicePosition position = AVCaptureDevicePositionFront;
 
     if (options[@"device"] && [options[@"device"] isEqualToString:@"back"]) {
         position = AVCaptureDevicePositionBack;
-    } else {
-        position = AVCaptureDevicePositionFront;
     }
 
     for (AVCaptureDevice * d in devices) {
@@ -2610,9 +2612,27 @@
 
     // Add input to the session
     AVCaptureDeviceInput * input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+    
+    if(error) {
+        DTLogWarning(@"$vision: %@", error);
+    }
+    
+    if(![self.avCaptureSession canAddInput:input]) {
+        DTLogWarning(@"$vision: No camera found. Are you using a simulator?");
+        DTLogDebug(@"Loading error.json");
+        [self loadViewByFile:@"error.json" asFinal:YES];
+        return;
+    }
+    
     [self.avCaptureSession addInput:input];
 
     AVCaptureMetadataOutput * output = [[AVCaptureMetadataOutput alloc] init];
+    
+    if(![self.avCaptureSession canAddOutput:output]){
+        DTLogWarning(@"$vision: Can't add output");
+        return;
+    }
+    
     [self.avCaptureSession addOutput:output];
 
     // Listen for different types of barcode detection
