@@ -2620,7 +2620,14 @@
     if(![self.avCaptureSession canAddInput:input]) {
         DTLogWarning(@"$vision: No camera found. Are you using a simulator?");
         DTLogDebug(@"Loading error.json");
+        
         [self loadViewByFile:@"error.json" asFinal:YES];
+
+        [self call:@{@"type": @"$util.alert",
+                     @"options": @{
+                             @"description": @"No camera found."
+                             }
+                     }];
         return;
     }
     
@@ -3980,7 +3987,9 @@
             *
             ****************************************************************************/
             NSString * url = href[@"url"];
-
+            
+#pragma message "$href action"
+            
             DTLogDebug (@"Opening External URL %@", url);
 
             if (memory._register && memory._register.count > 0) {
@@ -3989,6 +3998,16 @@
             }
 
             if (url) {
+                if([url hasPrefix:@"tel:"] || [url hasPrefix:@"sms:"] || [url hasPrefix:@"mailto:"]) {
+                    #if TARGET_IPHONE_SIMULATOR
+                    DTLogWarning(@"Calling tel:, sms: or mailto: urls in simulator do not work. Test them in a device.");
+                    [self call:@{@"type": @"$util.alert",
+                                 @"options": @{
+                                         @"description": @"This action should be tested in a real device"
+                                         }
+                                 }];
+                    #endif
+                }
                 [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
             } else {
                 DTLogWarning (@"Invalid Url");
