@@ -5,35 +5,39 @@ use_frameworks!
 target 'Jasonette' do
 
   # System
-  pod 'UICKeyChainStore'
+  pod 'UICKeyChainStore', :git => 'https://github.com/jasonelle/ios-pod-uickeychainstore.git'
   pod 'libPhoneNumber-iOS'
   pod 'DTCoreText'
   pod 'JSCoreBom', '~> 1.1.1'
   pod 'SBJson', '~> 5.0.0'
   pod 'FLEX', '~> 2.0', :configurations => ['Debug']
-
+  pod 'NSHash'
+  
+  ## TODO: Remove this dependency
+  ## change it to Contacts native api
+  ## https://github.com/Alterplay/APAddressBook/issues/138
+  pod 'APAddressBook', :git => 'https://github.com/jasonelle/ios-pod-apaddressbook.git'
+  
   # Networking
   pod 'SocketRocket'
-  pod 'AFNetworking'
+  pod 'AFNetworking', :git => 'https://github.com/jasonelle/ios-pod-afnetworking.git'
   pod 'TDOAuth'
-  pod "AFOAuth2Manager"
-
+  pod 'AFOAuth2Manager'
+  
+  ## TODO: Update to latest version
+  pod 'SDWebImage', :git => 'https://github.com/jasonelle/ios-pod-sdwebimage.git', :tag => '3.8.1'
+  
   # Audio
   pod 'IQAudioRecorderController'
-  pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
+  pod 'FreeStreamer', :git => 'https://github.com/jasonelle/ios-pod-freestreamer.git'
   
   # Views
   pod 'MBProgressHUD', '~> 1.0'
   
   pod 'TWMessageBarManager'
   
-  pod 'SWTableViewCell', :git => "https://github.com/gliechtenstein/SWTableViewCell.git"
+  pod 'SWTableViewCell', :git => 'https://github.com/jasonelle/ios-pod-swtableviewcell.git'
 
-  # TODO: Remove this dependency
-  # change it to Contacts native api
-  # https://github.com/Alterplay/APAddressBook/issues/138
-  pod 'APAddressBook'
-  
   
   pod 'TTTAttributedLabel'
   pod 'BBBadgeBarButtonItem'
@@ -41,26 +45,22 @@ target 'Jasonette' do
   pod 'REMenu'
   pod 'JDStatusBarNotification' # $util.toast
   pod 'HMSegmentedControl'
-  pod "SWFrameButton"
+  pod 'SWFrameButton'
   
-  pod "NSGIF", "~> 1.0"
+  pod 'NSGIF', '~> 1.0'
   pod 'INTULocationManager'
-  pod "AHKActionSheet"
+  pod 'AHKActionSheet'
   
-  pod "CYRTextView"
+  pod 'CYRTextView'
   
-  pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git", :tag => '3.8.1'
   pod 'SZTextView'
   
   pod 'DHSmartScreenshot'
-  pod 'NSHash'
   
-  pod "RMDateSelectionViewController"
+  pod 'RMDateSelectionViewController'
   
   pod 'PHFComposeBarView'
   pod 'DAKeyboardControl'
-  
-  #pod 'GoogleMobileAds', '~> 7.8'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|

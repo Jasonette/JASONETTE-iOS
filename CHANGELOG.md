@@ -84,6 +84,8 @@ that triggers when the orientation changes.
 
 - Updated to `DTFoundation` 1.7.13 (was 1.7.10).
 
+- Updated to `FreeStreamer` 4.0.0 (was 3.5.7).
+
 ### Removed
 
 - Nothing
