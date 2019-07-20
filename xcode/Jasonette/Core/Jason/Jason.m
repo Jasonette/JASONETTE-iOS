@@ -3998,9 +3998,16 @@
             }
 
             if (url) {
-                if([url hasPrefix:@"tel:"] || [url hasPrefix:@"sms:"] || [url hasPrefix:@"mailto:"]) {
+                // See https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007899
+                BOOL systemSchemes = ([url hasPrefix:@"tel:"] ||
+                                      [url hasPrefix:@"sms:"] ||
+                                      [url hasPrefix:@"mailto:"] ||
+                                      [url hasPrefix:@"facetime:"] ||
+                                      [url hasPrefix:@"facetime-audio:"]);
+                
+                if(systemSchemes) {
                     #if TARGET_IPHONE_SIMULATOR
-                    DTLogWarning(@"Calling tel:, sms: or mailto: urls in simulator do not work. Test them in a device.");
+                    DTLogWarning(@"Calling tel:, sms:, mailto:, facetime:, facetime-audio: urls in simulator do not work. Test them in a device.");
                     [self call:@{@"type": @"$util.alert",
                                  @"options": @{
                                          @"description": @"This action should be tested in a real device"
@@ -4008,7 +4015,26 @@
                                  }];
                     #endif
                 }
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+                
+                // Secure the url as per apple guidelines
+                // in https://developer.apple.com/documentation/uikit/inter-process_communication/allowing_apps_and_websites_to_link_to_your_content/defining_a_custom_url_scheme_for_your_app
+                
+                NSMutableCharacterSet * chars = [[NSCharacterSet URLHostAllowedCharacterSet] mutableCopy];
+                [chars formUnionWithCharacterSet:[NSCharacterSet URLPathAllowedCharacterSet]];
+                [chars formUnionWithCharacterSet:[NSCharacterSet URLQueryAllowedCharacterSet]];
+                [chars formUnionWithCharacterSet:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+                [chars formUnionWithCharacterSet:[NSCharacterSet URLUserAllowedCharacterSet]];
+                [chars formUnionWithCharacterSet:[NSCharacterSet URLPasswordAllowedCharacterSet]];
+                
+                NSString * encodedUrl = [[url stringByRemovingPercentEncoding]
+                                         stringByAddingPercentEncodingWithAllowedCharacters:chars];
+                
+                NSURL * destination = [NSURL URLWithString:encodedUrl];
+                
+                DTLogDebug(@"openURL: %@", encodedUrl);
+                
+                [[UIApplication sharedApplication] openURL:destination];
+                
             } else {
                 DTLogWarning (@"Invalid Url");
             }
