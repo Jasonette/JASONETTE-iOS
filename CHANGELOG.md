@@ -90,6 +90,8 @@ that triggers when the orientation changes.
 
 - Updated to `OMGHTTPURLRQ` 3.2.4 (was 3.1.2).
 
+- Updated to `FLEX 3.0.0` (was 2.4.0).
+
 ### Removed
 
 - Nothing
