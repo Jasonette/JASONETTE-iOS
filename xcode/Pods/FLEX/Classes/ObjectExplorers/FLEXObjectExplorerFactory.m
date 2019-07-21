@@ -17,6 +17,7 @@
 #import "FLEXImageExplorerViewController.h"
 #import "FLEXClassExplorerViewController.h"
 #import "FLEXLayerExplorerViewController.h"
+#import "FLEXColorExplorerViewController.h"
 #import <objc/runtime.h>
 
 @implementation FLEXObjectExplorerFactory
@@ -28,7 +29,7 @@
         return nil;
     }
     
-    static NSDictionary *explorerSubclassesForObjectTypeStrings = nil;
+    static NSDictionary<NSString *, Class> *explorerSubclassesForObjectTypeStrings = nil;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         explorerSubclassesForObjectTypeStrings = @{NSStringFromClass([NSArray class])          : [FLEXArrayExplorerViewController class],
@@ -38,7 +39,9 @@
                                                    NSStringFromClass([UIViewController class]) : [FLEXViewControllerExplorerViewController class],
                                                    NSStringFromClass([UIView class])           : [FLEXViewExplorerViewController class],
                                                    NSStringFromClass([UIImage class])          : [FLEXImageExplorerViewController class],
-                                                   NSStringFromClass([CALayer class])          : [FLEXLayerExplorerViewController class]};
+                                                   NSStringFromClass([CALayer class])          : [FLEXLayerExplorerViewController class],
+                                                   NSStringFromClass([UIColor class])          : [FLEXColorExplorerViewController class]
+                                                   };
     });
     
     Class explorerClass = nil;

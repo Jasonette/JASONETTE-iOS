@@ -37,7 +37,13 @@ In the iOS simulator, you can use keyboard shortcuts to activate FLEX. `f` will 
 Short version:
 
 ```objc
+// Objective-C
 [[FLEXManager sharedManager] showExplorer];
+```
+
+```swift
+// Swift
+FLEXManager.shared().showExplorer()
 ```
 
 More complete version:
@@ -114,18 +120,61 @@ The code injection is left as an exercise for the reader. :innocent:
 
 
 ## Installation
-FLEX is available on [CocoaPods](http://cocoapods.org/?q=FLEX). Simply add the following line to your podfile:
+
+FLEX requires an app that targets iOS 7 or higher.
+
+### CocoaPods
+
+FLEX is available on [CocoaPods](https://cocoapods.org/pods/FLEX). Simply add the following line to your podfile:
 
 ```ruby
 pod 'FLEX', '~> 2.0', :configurations => ['Debug']
 ```
 
-Alternatively, you can manually add the files in `Classes/` to your Xcode project. FLEX requires iOS 7 or higher.
+### Carthage
+
+Add the following to your Cartfile:
+
+```
+github "flipboard/FLEX" ~> 2.0
+```
+
+### Manual
+
+Manually add the files in `Classes/` to your Xcode project.
 
 
 ## Excluding FLEX from Release (App Store) Builds
-*Note: CocoaPods handles this automatically if you only specify the Debug configuration for FLEX in your Podfile.*
-FLEX makes it easy to explore the internals of your app, so it is not something you should expose to your users. Fortunately, it is easy to exclude FLEX files from Release builds. In Xcode, navigate to the "Build Settings" tab of your project. Click the plus and select `Add User-Defined Setting`.
+
+FLEX makes it easy to explore the internals of your app, so it is not something you should expose to your users. Fortunately, it is easy to exclude FLEX files from Release builds. The strategies differ depending on how you integrated FLEX in your project, and are described below.
+
+At the places in your code where you integrate FLEX, do a `#if DEBUG` check to ensure the tool is only accessible in your `Debug` builds and to avoid errors in your `Release` builds. For more help with integrating FLEX, see the example project.
+
+### FLEX added with CocoaPods
+
+CocoaPods automatically excludes FLEX from release builds if you only specify the Debug configuration for FLEX in your Podfile.
+
+### FLEX added with Carthage
+
+If you are using Carthage, only including the `FLEX.framework` in debug builds is easy:
+
+1. Do NOT add `FLEX.framework` to the embedded binaries of your target, as it would otherwise be included in all builds (therefore also in release ones).
+1. Instead, add `$(PROJECT_DIR)/Carthage/Build/iOS` to your target _Framework Search Paths_ (this setting might already be present if you already included other frameworks with Carthage). This makes it possible to import the FLEX framework from your source files. It does not harm if this setting is added for all configurations, but it should at least be added for the debug one. 
+1. Add a _Run Script Phase_ to your target (inserting it after the existing `Link Binary with Libraries` phase, for example), and which will embed `FLEX.framework` in debug builds only:
+
+	```shell
+	if [ "$CONFIGURATION" == "Debug" ]; then
+	  /usr/local/bin/carthage copy-frameworks
+	fi
+	```
+	
+	Finally, add `$(SRCROOT)/Carthage/Build/iOS/FLEX.framework` as input file of this script phase.
+	
+<p align="center"><img src="README-images/flex-exclusion-carthage.jpg"/></p>
+
+### FLEX files added manually to a project
+
+In Xcode, navigate to the "Build Settings" tab of your project. Click the plus and select `Add User-Defined Setting`.
 
 ![Add User-Defined Setting](http://engineering.flipboard.com/assets/flex/flex-readme-exclude-1.png)
 
@@ -133,10 +182,8 @@ Name the setting `EXCLUDED_SOURCE_FILE_NAMES`. For your `Release` configuration,
 
 ![EXCLUDED_SOURCE_FILE_NAMES](http://engineering.flipboard.com/assets/flex/flex-readme-exclude-2.png)
 
-At the places in your code where you integrate FLEX, do a `#if DEBUG` check to ensure the tool is only accessible in your `Debug` builds and to avoid errors in your `Release` builds. For more help with integrating FLEX, see the example project.
-
-
 ## Additional Notes
+
 - When setting fields of type `id` or values in `NSUserDefaults`, FLEX attempts to parse the input string as `JSON`. This allows you to use a combination of strings, numbers, arrays, and dictionaries. If you want to set a string value, it must be wrapped in quotes. For ivars or properties that are explicitly typed as `NSStrings`, quotes are not required.
 - You may want to disable the exception breakpoint while using FLEX. Certain functions that FLEX uses throw exceptions when they get input they can't handle (i.e. `NSGetSizeAndAlignment()`). FLEX catches these to avoid crashing, but your breakpoint will get hit if it is active.
 

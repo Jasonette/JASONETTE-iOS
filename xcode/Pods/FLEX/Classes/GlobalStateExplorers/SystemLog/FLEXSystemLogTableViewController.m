@@ -1,6 +1,6 @@
 //
 //  FLEXSystemLogTableViewController.m
-//  UICatalog
+//  FLEX
 //
 //  Created by Ryan Olson on 1/19/15.
 //  Copyright (c) 2015 f. All rights reserved.
@@ -8,16 +8,16 @@
 
 #import "FLEXSystemLogTableViewController.h"
 #import "FLEXUtility.h"
-#import "FLEXSystemLogMessage.h"
+#import "FLEXASLLogController.h"
+#import "FLEXOSLogController.h"
 #import "FLEXSystemLogTableViewCell.h"
-#import <asl.h>
 
 @interface FLEXSystemLogTableViewController () <UISearchResultsUpdating, UISearchControllerDelegate>
 
 @property (nonatomic, strong) UISearchController *searchController;
-@property (nonatomic, copy) NSArray *logMessages;
-@property (nonatomic, copy) NSArray *filteredLogMessages;
-@property (nonatomic, strong) NSTimer *logUpdateTimer;
+@property (nonatomic, readonly) id<FLEXLogController> logController;
+@property (nonatomic, readonly) NSMutableArray<FLEXSystemLogMessage *> *logMessages;
+@property (nonatomic, copy) NSArray<FLEXSystemLogMessage *> *filteredLogMessages;
 
 @end
 
@@ -27,57 +27,56 @@
 {
     [super viewDidLoad];
 
+    id logHandler = ^(NSArray<FLEXSystemLogMessage *> *newMessages) {
+        self.title = @"System Log";
+
+        [self.logMessages addObjectsFromArray:newMessages];
+
+        // "Follow" the log as new messages stream in if we were previously near the bottom.
+        BOOL wasNearBottom = self.tableView.contentOffset.y >= self.tableView.contentSize.height - self.tableView.frame.size.height - 100.0;
+        [self.tableView reloadData];
+        if (wasNearBottom) {
+            [self scrollToLastRow];
+        }
+    };
+
+    _logMessages = [NSMutableArray array];
+    if ([NSProcessInfo processInfo].operatingSystemVersion.majorVersion <= 9) {
+        _logController = [FLEXASLLogController withUpdateHandler:logHandler];
+    } else {
+        _logController = [FLEXOSLogController withUpdateHandler:logHandler];
+    }
+
     [self.tableView registerClass:[FLEXSystemLogTableViewCell class] forCellReuseIdentifier:kFLEXSystemLogTableViewCellIdentifier];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.title = @"Loading...";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" ⬇︎ " style:UIBarButtonItemStylePlain target:self action:@selector(scrollToLastRow)];
-
+    
+    UIBarButtonItem *scrollDown = [[UIBarButtonItem alloc] initWithTitle:@" ⬇︎ "
+                                                                   style:UIBarButtonItemStylePlain
+                                                                  target:self
+                                                                  action:@selector(scrollToLastRow)];
+    UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithTitle:@"Settings"
+                                                                 style:UIBarButtonItemStylePlain
+                                                                target:self
+                                                                action:@selector(showLogSettings)];
+    if (FLEXOSLogAvailable()) {
+        self.navigationItem.rightBarButtonItems = @[scrollDown, settings];
+    } else {
+        self.navigationItem.rightBarButtonItem = scrollDown;
+    }
+    
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     self.searchController.delegate = self;
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.tableView.tableHeaderView = self.searchController.searchBar;
-
-    [self updateLogMessages];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
 
-    NSTimeInterval updateInterval = 1.0;
-
-#if TARGET_IPHONE_SIMULATOR
-    // Querrying the ASL is much slower in the simulator. We need a longer polling interval to keep things repsonsive.
-    updateInterval = 5.0;
-#endif
-
-    self.logUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:updateInterval target:self selector:@selector(updateLogMessages) userInfo:nil repeats:YES];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-
-    [self.logUpdateTimer invalidate];
-}
-
-- (void)updateLogMessages
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSArray *logMessages = [[self class] allLogMessagesForCurrentProcess];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.title = @"System Log";
-            self.logMessages = logMessages;
-
-            // "Follow" the log as new messages stream in if we were previously near the bottom.
-            BOOL wasNearBottom = self.tableView.contentOffset.y >= self.tableView.contentSize.height - self.tableView.frame.size.height - 100.0;
-            [self.tableView reloadData];
-            if (wasNearBottom) {
-                [self scrollToLastRow];
-            }
-        });
-    });
+    [self.logController startMonitoring];
 }
 
 - (void)scrollToLastRow
@@ -89,6 +88,27 @@
     }
 }
 
+- (void)showLogSettings
+{
+    FLEXOSLogController *logController = (FLEXOSLogController *)self.logController;
+    BOOL persistent = [[NSUserDefaults standardUserDefaults] boolForKey:kFLEXiOSPersistentOSLogKey];
+    NSString *toggle = persistent ? @"Disable" : @"Enable";
+    NSString *title = [@"Persistent logging: " stringByAppendingString:persistent ? @"ON" : @"OFF"];
+    NSString *body = @"In iOS 10 and up, ASL is gone. The OS Log API is much more limited. "
+    "To get as close to the old behavior as possible, logs must be collected manually at launch and stored.\n\n"
+    "Turn this feature on only when you need it.";
+    
+    UIAlertController *settings = [UIAlertController alertControllerWithTitle:title message:body preferredStyle:UIAlertControllerStyleAlert];
+    [settings addAction:[UIAlertAction actionWithTitle:toggle style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [[NSUserDefaults standardUserDefaults] setBool:!persistent forKey:kFLEXiOSPersistentOSLogKey];
+        logController.persistent = !persistent;
+        [logController.messages addObjectsFromArray:self.logMessages];
+    }]];
+    [settings addAction:[UIAlertAction actionWithTitle:@"Dismiss" style:UIAlertActionStyleCancel handler:nil]];
+    
+    [self presentViewController:settings animated:YES completion:nil];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -98,7 +118,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.searchController.isActive ? [self.filteredLogMessages count] : [self.logMessages count];
+    return self.searchController.isActive ? self.filteredLogMessages.count : self.logMessages.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath 
@@ -137,9 +157,8 @@
 - (void)tableView:(UITableView *)tableView performAction:(SEL)action forRowAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender
 {
     if (action == @selector(copy:)) {
-        FLEXSystemLogMessage *logMessage = [self logMessageAtIndexPath:indexPath];
-        NSString *stringToCopy = [FLEXSystemLogTableViewCell displayedTextForLogMessage:logMessage] ?: @"";
-        [[UIPasteboard generalPasteboard] setString:stringToCopy];
+        // We usually only want to copy the log message itself, not any metadata associated with it.
+        [UIPasteboard generalPasteboard].string = [self logMessageAtIndexPath:indexPath].messageText;
     }
 }
 
@@ -154,7 +173,7 @@
 {
     NSString *searchString = searchController.searchBar.text;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSArray *filteredLogMessages = [self.logMessages filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(FLEXSystemLogMessage *logMessage, NSDictionary *bindings) {
+        NSArray<FLEXSystemLogMessage *> *filteredLogMessages = [self.logMessages filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(FLEXSystemLogMessage *logMessage, NSDictionary<NSString *, id> *bindings) {
             NSString *displayedText = [FLEXSystemLogTableViewCell displayedTextForLogMessage:logMessage];
             return [displayedText rangeOfString:searchString options:NSCaseInsensitiveSearch].length > 0;
         }]];
@@ -165,28 +184,6 @@
             }
         });
     });
-}
-
-#pragma mark - Log Message Fetching
-
-+ (NSArray *)allLogMessagesForCurrentProcess
-{
-    asl_object_t query = asl_new(ASL_TYPE_QUERY);
-
-    // Filter for messages from the current process. Note that this appears to happen by default on device, but is required in the simulator.
-    NSString *pidString = [NSString stringWithFormat:@"%d", [[NSProcessInfo processInfo] processIdentifier]];
-    asl_set_query(query, ASL_KEY_PID, [pidString UTF8String], ASL_QUERY_OP_EQUAL);
-
-    aslresponse response = asl_search(NULL, query);
-    aslmsg aslMessage = NULL;
-
-    NSMutableArray *logMessages = [NSMutableArray array];
-    while ((aslMessage = asl_next(response))) {
-        [logMessages addObject:[FLEXSystemLogMessage logMessageFromASLMessage:aslMessage]];
-    }
-    asl_release(response);
-
-    return logMessages;
 }
 
 @end

@@ -25,9 +25,43 @@ extern NSString *const kFLEXUtilityAttributeWeak;
 extern NSString *const kFLEXUtilityAttributeGarbageCollectable;
 extern NSString *const kFLEXUtilityAttributeOldStyleTypeEncoding;
 
+typedef NS_ENUM(char, FLEXTypeEncoding)
+{
+    FLEXTypeEncodingUnknown          = '?',
+    FLEXTypeEncodingChar             = 'c',
+    FLEXTypeEncodingInt              = 'i',
+    FLEXTypeEncodingShort            = 's',
+    FLEXTypeEncodingLong             = 'l',
+    FLEXTypeEncodingLongLong         = 'q',
+    FLEXTypeEncodingUnsignedChar     = 'C',
+    FLEXTypeEncodingUnsignedInt      = 'I',
+    FLEXTypeEncodingUnsignedShort    = 'S',
+    FLEXTypeEncodingUnsignedLong     = 'L',
+    FLEXTypeEncodingUnsignedLongLong = 'Q',
+    FLEXTypeEncodingFloat            = 'f',
+    FLEXTypeEncodingDouble           = 'd',
+    FLEXTypeEncodingCBool            = 'B',
+    FLEXTypeEncodingVoid             = 'v',
+    FLEXTypeEncodingCString          = '*',
+    FLEXTypeEncodingObjcObject       = '@',
+    FLEXTypeEncodingObjcClass        = '#',
+    FLEXTypeEncodingSelector         = ':',
+    FLEXTypeEncodingArray            = '[',
+    FLEXTypeEncodingStruct           = '{',
+    FLEXTypeEncodingUnion            = '(',
+    FLEXTypeEncodingBitField         = 'b',
+    FLEXTypeEncodingPointer          = '^',
+    FLEXTypeEncodingConst            = 'r'
+};
+
 #define FLEXEncodeClass(class) ("@\"" #class "\"")
 
 @interface FLEXRuntimeUtility : NSObject
+
+// General Helpers
++ (BOOL)pointerIsValidObjcObject:(const void *)pointer;
+/// Unwraps raw pointers to objects stored in NSValue, and re-boxes C strings into NSStrings.
++ (id)potentiallyUnwrapBoxedPointer:(id)returnedObjectOrNil type:(const FLEXTypeEncoding *)returnType;
 
 // Property Helpers
 + (NSString *)prettyNameForProperty:(objc_property_t)property;
@@ -37,7 +71,7 @@ extern NSString *const kFLEXUtilityAttributeOldStyleTypeEncoding;
 + (NSString *)fullDescriptionForProperty:(objc_property_t)property;
 + (id)valueForProperty:(objc_property_t)property onObject:(id)object;
 + (NSString *)descriptionForIvarOrPropertyValue:(id)value;
-+ (void)tryAddPropertyWithName:(const char *)name attributes:(NSDictionary *)attributePairs toClass:(__unsafe_unretained Class)theClass;
++ (void)tryAddPropertyWithName:(const char *)name attributes:(NSDictionary<NSString *, NSString *> *)attributePairs toClass:(__unsafe_unretained Class)theClass;
 
 // Ivar Helpers
 + (NSString *)prettyNameForIvar:(Ivar)ivar;
@@ -47,6 +81,7 @@ extern NSString *const kFLEXUtilityAttributeOldStyleTypeEncoding;
 // Method Helpers
 + (NSString *)prettyNameForMethod:(Method)method isClassMethod:(BOOL)isClassMethod;
 + (NSArray *)prettyArgumentComponentsForMethod:(Method)method;
++ (FLEXTypeEncoding *)returnTypeForMethod:(Method)method;
 
 // Method Calling/Field Editing
 + (id)performSelector:(SEL)selector onObject:(id)object withArguments:(NSArray *)arguments error:(NSError * __autoreleasing *)error;

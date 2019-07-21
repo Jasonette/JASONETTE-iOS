@@ -22,8 +22,7 @@ typedef struct {
 
 static void range_callback(task_t task, void *context, unsigned type, vm_range_t *ranges, unsigned rangeCount)
 {
-    flex_object_enumeration_block_t block = (__bridge flex_object_enumeration_block_t)context;
-    if (!block) {
+    if (!context) {
         return;
     }
     
@@ -40,7 +39,7 @@ static void range_callback(task_t task, void *context, unsigned type, vm_range_t
 #endif
         // If the class pointer matches one in our set of class pointers from the runtime, then we should have an object.
         if (CFSetContainsValue(registeredClasses, (__bridge const void *)(tryClass))) {
-            block((__bridge id)tryObject, tryClass);
+            (*(flex_object_enumeration_block_t __unsafe_unretained *)context)((__bridge id)tryObject, tryClass);
         }
     }
 }
@@ -71,9 +70,53 @@ static kern_return_t reader(__unused task_t remote_task, vm_address_t remote_add
     if (result == KERN_SUCCESS) {
         for (unsigned int i = 0; i < zoneCount; i++) {
             malloc_zone_t *zone = (malloc_zone_t *)zones[i];
-            if (zone->introspect && zone->introspect->enumerator) {
-                zone->introspect->enumerator(TASK_NULL, (__bridge void *)block, MALLOC_PTR_IN_USE_RANGE_TYPE, (vm_address_t)zone, reader, &range_callback);
+            malloc_introspection_t *introspection = zone->introspect;
+            NSString *zoneName = @(zone->zone_name);
+
+            // We only need to look at the default malloc zone.
+            // This may explain why some zone functions are
+            // sometimes invalid; perhaps not all zones support them?
+            if (![zoneName isEqualToString:@"DefaultMallocZone"] || !introspection) {
+                continue;
             }
+
+            void (*lock_zone)(malloc_zone_t *zone)   = introspection->force_lock;
+            void (*unlock_zone)(malloc_zone_t *zone) = introspection->force_unlock;
+
+            // Callback has to unlock the zone so we freely allocate memory inside the given block
+            flex_object_enumeration_block_t callback = ^(__unsafe_unretained id object, __unsafe_unretained Class actualClass) {
+                unlock_zone(zone);
+                block(object, actualClass);
+                lock_zone(zone);
+            };
+
+            // The largest realistic memory address varies by platform.
+            // Only 48 bits are used by 64 bit machines while
+            // 32 bit machines use all bits.
+            //
+            // __LP64__ is defined as 1 for both arm64 and x86_64
+            // via: clang -dM -arch [arm64|x86_64] -E -x c /dev/null | grep LP
+#if __LP64__
+            static uintptr_t MAX_REALISTIC_ADDRESS = 0x0000FFFFFFFFFFFF;
+            BOOL lockZoneValid = lock_zone != nil && (uintptr_t)lock_zone < MAX_REALISTIC_ADDRESS;
+            BOOL unlockZoneValid = unlock_zone != nil && (uintptr_t)unlock_zone < MAX_REALISTIC_ADDRESS;
+#else
+            BOOL lockZoneValid = lock_zone != nil;
+            BOOL unlockZoneValid = unlock_zone != nil;
+#endif
+
+            // There is little documentation on when and why
+            // any of these function pointers might be NULL
+            // or garbage, so we resort to checking for NULL
+            // and impossible memory addresses at least
+            if (introspection->enumerator && lockZoneValid && unlockZoneValid) {
+                lock_zone(zone);
+                introspection->enumerator(TASK_NULL, (void *)&callback, MALLOC_PTR_IN_USE_RANGE_TYPE, (vm_address_t)zone, reader, &range_callback);
+                unlock_zone(zone);
+            }
+
+            // Only one zone to enumerate
+            break;
         }
     }
 }

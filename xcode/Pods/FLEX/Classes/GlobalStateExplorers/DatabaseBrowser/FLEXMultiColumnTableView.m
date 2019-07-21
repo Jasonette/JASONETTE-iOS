@@ -19,7 +19,7 @@
 @property (nonatomic, strong) UITableView  *contentTableView;
 @property (nonatomic, strong) UIView       *leftHeader;
 
-@property (nonatomic, strong) NSDictionary *sortStatusDict;
+@property (nonatomic, strong) NSDictionary<NSString *, NSNumber *> *sortStatusDict;
 @property (nonatomic, strong) NSArray *rowData;
 @end
 
@@ -51,6 +51,13 @@ static const CGFloat kColumnMargin = 1;
     CGFloat height = self.frame.size.height;
     CGFloat topheaderHeight = [self topHeaderHeight];
     CGFloat leftHeaderWidth = [self leftHeaderWidth];
+    CGFloat topInsets = 0.f;
+
+#if FLEX_AT_LEAST_IOS11_SDK
+    if (@available (iOS 11.0, *)) {
+        topInsets = self.safeAreaInsets.top;
+    }
+#endif
     
     CGFloat contentWidth = 0.0;
     NSInteger rowsCount = [self numberOfColumns];
@@ -58,13 +65,13 @@ static const CGFloat kColumnMargin = 1;
         contentWidth += [self contentWidthForColumn:i];
     }
     
-    self.leftTableView.frame           = CGRectMake(0, topheaderHeight, leftHeaderWidth, height - topheaderHeight);
-    self.headerScrollView.frame        = CGRectMake(leftHeaderWidth, 0, width - leftHeaderWidth, topheaderHeight);
+    self.leftTableView.frame           = CGRectMake(0, topheaderHeight + topInsets, leftHeaderWidth, height - topheaderHeight - topInsets);
+    self.headerScrollView.frame        = CGRectMake(leftHeaderWidth, topInsets, width - leftHeaderWidth, topheaderHeight);
     self.headerScrollView.contentSize  = CGSizeMake( self.contentTableView.frame.size.width, self.headerScrollView.frame.size.height);
-    self.contentTableView.frame        = CGRectMake(0, 0, contentWidth + [self numberOfColumns] * [self columnMargin] , height - topheaderHeight);
-    self.contentScrollView.frame       = CGRectMake(leftHeaderWidth, topheaderHeight, width - leftHeaderWidth, height - topheaderHeight);
+    self.contentTableView.frame        = CGRectMake(0, 0, contentWidth + [self numberOfColumns] * [self columnMargin] , height - topheaderHeight - topInsets);
+    self.contentScrollView.frame       = CGRectMake(leftHeaderWidth, topheaderHeight + topInsets, width - leftHeaderWidth, height - topheaderHeight - topInsets);
     self.contentScrollView.contentSize = self.contentTableView.frame.size;
-    self.leftHeader.frame              = CGRectMake(0, 0, [self leftHeaderWidth], [self topHeaderHeight]);
+    self.leftHeader.frame              = CGRectMake(0, topInsets, [self leftHeaderWidth], [self topHeaderHeight]);
 }
 
 
@@ -135,7 +142,7 @@ static const CGFloat kColumnMargin = 1;
 
 - (void)loadHeaderData
 {
-    NSArray *subviews = self.headerScrollView.subviews;
+    NSArray<UIView *> *subviews = self.headerScrollView.subviews;
     
     for (UIView *subview in subviews) {
         [subview removeFromSuperview];

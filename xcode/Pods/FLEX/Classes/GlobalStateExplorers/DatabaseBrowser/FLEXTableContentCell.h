@@ -1,6 +1,6 @@
 //
 //  FLEXTableContentCell.h
-//  UICatalog
+//  FLEX
 //
 //  Created by Peng Tao on 15/11/24.
 //  Copyright © 2015年 f. All rights reserved.
@@ -18,9 +18,9 @@
 
 @interface FLEXTableContentCell : UITableViewCell
 
-@property (nonatomic, strong)NSArray *labels;
+@property (nonatomic, strong) NSArray<UILabel *> *labels;
 
-@property (nonatomic, weak) id<FLEXTableContentCellDelegate>delegate;
+@property (nonatomic, weak) id<FLEXTableContentCellDelegate> delegate;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView columnNumber:(NSInteger)number;
 

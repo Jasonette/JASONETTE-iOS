@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "FLEXRuntimeUtility.h"
+#import "FLEXObjcInternal.h"
 
 // See https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW6
 NSString *const kFLEXUtilityAttributeTypeEncoding = @"T";
@@ -36,6 +37,57 @@ const unsigned int kFLEXNumberOfImplicitArgs = 2;
 @implementation FLEXRuntimeUtility
 
 
+#pragma mark - General Helpers (Public)
+
++ (BOOL)pointerIsValidObjcObject:(const void *)pointer
+{
+    return FLEXPointerIsValidObjcObject(pointer);
+}
+
++ (id)potentiallyUnwrapBoxedPointer:(id)returnedObjectOrNil type:(const FLEXTypeEncoding *)returnType
+{
+    if (!returnedObjectOrNil) {
+        return nil;
+    }
+    
+    NSInteger i = 0;
+    if (returnType[i] == FLEXTypeEncodingConst) {
+        i++;
+    }
+    
+    BOOL returnsObjectOrClass = returnType[i] == FLEXTypeEncodingObjcObject ||
+                                returnType[i] == FLEXTypeEncodingObjcClass;
+    BOOL returnsVoidPointer   = returnType[i] == FLEXTypeEncodingPointer &&
+                                returnType[i+1] == FLEXTypeEncodingVoid;
+    BOOL returnsCString       = returnType[i] == FLEXTypeEncodingCString;
+    
+    // If we got back an NSValue and the return type is not an object,
+    // we check to see if the pointer is of a valid object. If not,
+    // we just display the NSValue.
+    if (!returnsObjectOrClass) {
+        // Can only be NSValue since return type is not an object,
+        // so we bail if this doesn't add up
+        if (![returnedObjectOrNil isKindOfClass:[NSValue class]]) {
+            return returnedObjectOrNil;
+        }
+        
+        NSValue *value = (NSValue *)returnedObjectOrNil;
+        
+        if (returnsCString) {
+            // Wrap char * in NSString
+            const char *string = (const char *)value.pointerValue;
+            returnedObjectOrNil = [NSString stringWithCString:string encoding:NSUTF8StringEncoding];
+        } else if (returnsVoidPointer) {
+            // Cast valid objects disguised as void * to id
+            if ([FLEXRuntimeUtility pointerIsValidObjcObject:value.pointerValue]) {
+                returnedObjectOrNil = (__bridge id)value.pointerValue;
+            }
+        }
+    }
+    
+    return returnedObjectOrNil;
+}
+
 #pragma mark - Property Helpers (Public)
 
 + (NSString *)prettyNameForProperty:(objc_property_t)property
@@ -48,7 +100,7 @@ const unsigned int kFLEXNumberOfImplicitArgs = 2;
 
 + (NSString *)typeEncodingForProperty:(objc_property_t)property
 {
-    NSDictionary *attributesDictionary = [self attributesDictionaryForProperty:property];
+    NSDictionary<NSString *, NSString *> *attributesDictionary = [self attributesDictionaryForProperty:property];
     return attributesDictionary[kFLEXUtilityAttributeTypeEncoding];
 }
 
@@ -73,8 +125,8 @@ const unsigned int kFLEXNumberOfImplicitArgs = 2;
 
 + (NSString *)fullDescriptionForProperty:(objc_property_t)property
 {
-    NSDictionary *attributesDictionary = [self attributesDictionaryForProperty:property];
-    NSMutableArray *attributesStrings = [NSMutableArray array];
+    NSDictionary<NSString *, NSString *> *attributesDictionary = [self attributesDictionaryForProperty:property];
+    NSMutableArray<NSString *> *attributesStrings = [NSMutableArray array];
     
     // Atomicity
     if (attributesDictionary[kFLEXUtilityAttributeNonAtomic]) {
@@ -155,10 +207,14 @@ const unsigned int kFLEXNumberOfImplicitArgs = 2;
         }
     }
     
-    if (!description) {
-        // Single line display - replace newlines and tabs with spaces.
-        description = [[value description] stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
-        description = [description stringByReplacingOccurrencesOfString:@"\t" withString:@" "];
+    @try {
+        if (!description) {
+            // Single line display - replace newlines and tabs with spaces.
+            description = [[value description] stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+            description = [description stringByReplacingOccurrencesOfString:@"\t" withString:@" "];
+        }
+    } @catch (NSException *e) {
+        description = [@"Thrown: " stringByAppendingString:e.reason ?: @"(nil exception reason)"];
     }
     
     if (!description) {
@@ -168,7 +224,7 @@ const unsigned int kFLEXNumberOfImplicitArgs = 2;
     return description;
 }
 
-+ (void)tryAddPropertyWithName:(const char *)name attributes:(NSDictionary *)attributePairs toClass:(__unsafe_unretained Class)theClass
++ (void)tryAddPropertyWithName:(const char *)name attributes:(NSDictionary<NSString *, NSString *> *)attributePairs toClass:(__unsafe_unretained Class)theClass
 {
     objc_property_t property = class_getProperty(theClass, name);
     if (!property) {
@@ -262,7 +318,7 @@ const unsigned int kFLEXNumberOfImplicitArgs = 2;
     NSString *readableReturnType = [self readableTypeForEncoding:@(returnType)];
     free(returnType);
     NSString *prettyName = [NSString stringWithFormat:@"%@ (%@)", methodTypeString, readableReturnType];
-    NSArray *components = [self prettyArgumentComponentsForMethod:method];
+    NSArray<NSString *> *components = [self prettyArgumentComponentsForMethod:method];
     if ([components count] > 0) {
         prettyName = [prettyName stringByAppendingString:[components componentsJoinedByString:@" "]];
     } else {
@@ -272,23 +328,36 @@ const unsigned int kFLEXNumberOfImplicitArgs = 2;
     return prettyName;
 }
 
-+ (NSArray *)prettyArgumentComponentsForMethod:(Method)method
++ (NSArray<NSString *> *)prettyArgumentComponentsForMethod:(Method)method
 {
-    NSMutableArray *components = [NSMutableArray array];
+    NSMutableArray<NSString *> *components = [NSMutableArray array];
     
     NSString *selectorName = NSStringFromSelector(method_getName(method));
-    NSArray *selectorComponents = [selectorName componentsSeparatedByString:@":"];
-    unsigned int numberOfArguments = method_getNumberOfArguments(method);
+    NSMutableArray<NSString *> *selectorComponents = [[selectorName componentsSeparatedByString:@":"] mutableCopy];
     
-    for (unsigned int argIndex = kFLEXNumberOfImplicitArgs; argIndex < numberOfArguments; argIndex++) {
-        char *argType = method_copyArgumentType(method, argIndex);
-        NSString *readableArgType = [self readableTypeForEncoding:@(argType)];
+    // this is a workaround cause method_getNumberOfArguments() returns wrong number for some methods
+    if (selectorComponents.count == 1) {
+        return @[];
+    }
+    
+    if ([selectorComponents.lastObject isEqualToString:@""]) {
+        [selectorComponents removeLastObject];
+    }
+    
+    for (unsigned int argIndex = 0; argIndex < selectorComponents.count; argIndex++) {
+        char *argType = method_copyArgumentType(method, argIndex + kFLEXNumberOfImplicitArgs);
+        NSString *readableArgType = (argType != NULL) ? [self readableTypeForEncoding:@(argType)] : nil;
         free(argType);
-        NSString *prettyComponent = [NSString stringWithFormat:@"%@:(%@) ", [selectorComponents objectAtIndex:argIndex - kFLEXNumberOfImplicitArgs], readableArgType];
+        NSString *prettyComponent = [NSString stringWithFormat:@"%@:(%@) ", [selectorComponents objectAtIndex:argIndex], readableArgType];
         [components addObject:prettyComponent];
     }
     
     return components;
+}
+
++ (FLEXTypeEncoding *)returnTypeForMethod:(Method)method
+{
+    return (FLEXTypeEncoding *)method_copyReturnType(method);
 }
 
 
@@ -299,7 +368,7 @@ const unsigned int kFLEXNumberOfImplicitArgs = 2;
     // Bail if the object won't respond to this selector.
     if (![object respondsToSelector:selector]) {
         if (error) {
-            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"%@ does not respond to the selector %@", object, NSStringFromSelector(selector)]};
+            NSDictionary<NSString *, id> *userInfo = @{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"%@ does not respond to the selector %@", object, NSStringFromSelector(selector)]};
             *error = [NSError errorWithDomain:FLEXRuntimeUtilityErrorDomain code:FLEXRuntimeUtilityErrorCodeDoesNotRecognizeSelector userInfo:userInfo];
         }
         return nil;
@@ -335,58 +404,70 @@ const unsigned int kFLEXNumberOfImplicitArgs = 2;
                 // Ensure that the type encoding on the NSValue matches the type encoding of the argument in the method signature
                 if (strcmp([argumentValue objCType], typeEncodingCString) != 0) {
                     if (error) {
-                        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Type encoding mismatch for agrument at index %lu. Value type: %s; Method argument type: %s.", (unsigned long)argumentsArrayIndex, [argumentValue objCType], typeEncodingCString]};
+                        NSDictionary<NSString *, id> *userInfo = @{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Type encoding mismatch for agrument at index %lu. Value type: %s; Method argument type: %s.", (unsigned long)argumentsArrayIndex, [argumentValue objCType], typeEncodingCString]};
                         *error = [NSError errorWithDomain:FLEXRuntimeUtilityErrorDomain code:FLEXRuntimeUtilityErrorCodeArgumentTypeMismatch userInfo:userInfo];
                     }
                     return nil;
                 }
                 
-                NSUInteger bufferSize = 0;
                 @try {
+                    NSUInteger bufferSize = 0;
+                    
                     // NSGetSizeAndAlignment barfs on type encoding for bitfields.
                     NSGetSizeAndAlignment(typeEncodingCString, &bufferSize, NULL);
+                    
+                    if (bufferSize > 0) {
+                        void *buffer = calloc(bufferSize, 1);
+                        [argumentValue getValue:buffer];
+                        [invocation setArgument:buffer atIndex:argumentIndex];
+                        free(buffer);
+                    }
                 } @catch (NSException *exception) { }
-                
-                if (bufferSize > 0) {
-                    void *buffer = calloc(bufferSize, 1);
-                    [argumentValue getValue:buffer];
-                    [invocation setArgument:buffer atIndex:argumentIndex];
-                    free(buffer);
-                }
             }
         }
     }
     
     // Try to invoke the invocation but guard against an exception being thrown.
-    BOOL successfullyInvoked = NO;
+    id returnObject = nil;
     @try {
         // Some methods are not fit to be called...
         // Looking at you -[UIResponder(UITextInputAdditions) _caretRect]
         [invocation invoke];
-        successfullyInvoked = YES;
-    } @catch (NSException *exception) {
-        // Bummer...
-        if (error) {
-            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Exception thrown while performing selector %@ on object %@", NSStringFromSelector(selector), object]};
-            *error = [NSError errorWithDomain:FLEXRuntimeUtilityErrorDomain code:FLEXRuntimeUtilityErrorCodeInvocationFailed userInfo:userInfo];
-        }
-    }
-    
-    // Retreive the return value and box if necessary.
-    id returnObject = nil;
-    if (successfullyInvoked) {
+        
+        // Retreive the return value and box if necessary.
         const char *returnType = [methodSignature methodReturnType];
+        
         if (returnType[0] == @encode(id)[0] || returnType[0] == @encode(Class)[0]) {
+            // Return value is an object.
             __unsafe_unretained id objectReturnedFromMethod = nil;
             [invocation getReturnValue:&objectReturnedFromMethod];
             returnObject = objectReturnedFromMethod;
         } else if (returnType[0] != @encode(void)[0]) {
+            // Will use arbitrary buffer for return value and box it.
             void *returnValue = malloc([methodSignature methodReturnLength]);
+            
             if (returnValue) {
                 [invocation getReturnValue:returnValue];
                 returnObject = [self valueForPrimitivePointer:returnValue objCType:returnType];
                 free(returnValue);
             }
+        }
+    } @catch (NSException *exception) {
+        // Bummer...
+        if (error) {
+            // "… on <class>" / "… on instance of <class>"
+            NSString *class = NSStringFromClass([object class]);
+            NSString *calledOn = object == [object class] ? class : [@"an instance of " stringByAppendingString:class];
+            
+            NSString *message = [NSString stringWithFormat:@"Exception '%@' thrown while performing selector '%@' on %@.\nReason:\n\n%@",
+                                 exception.name,
+                                 NSStringFromSelector(selector),
+                                 calledOn,
+                                 exception.reason];
+            
+            *error = [NSError errorWithDomain:FLEXRuntimeUtilityErrorDomain
+                                         code:FLEXRuntimeUtilityErrorCodeInvocationFailed
+                                     userInfo:@{ NSLocalizedDescriptionKey : message }];
         }
     }
     
@@ -550,12 +631,12 @@ const unsigned int kFLEXNumberOfImplicitArgs = 2;
 
 #pragma mark - Internal Helpers
 
-+ (NSDictionary *)attributesDictionaryForProperty:(objc_property_t)property
++ (NSDictionary<NSString *, NSString *> *)attributesDictionaryForProperty:(objc_property_t)property
 {
     NSString *attributes = @(property_getAttributes(property));
     // Thanks to MAObjcRuntime for inspiration here.
-    NSArray *attributePairs = [attributes componentsSeparatedByString:@","];
-    NSMutableDictionary *attributesDictionary = [NSMutableDictionary dictionaryWithCapacity:[attributePairs count]];
+    NSArray<NSString *> *attributePairs = [attributes componentsSeparatedByString:@","];
+    NSMutableDictionary<NSString *, NSString *> *attributesDictionary = [NSMutableDictionary dictionaryWithCapacity:[attributePairs count]];
     for (NSString *attributePair in attributePairs) {
         [attributesDictionary setObject:[attributePair substringFromIndex:1] forKey:[attributePair substringToIndex:1]];
     }

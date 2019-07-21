@@ -43,7 +43,7 @@
 
 #pragma mark - Display Defaults
 
-+ (NSDictionary *)titleAttributes
++ (NSDictionary<NSString *, id> *)titleAttributes
 {
     return @{NSFontAttributeName : [FLEXUtility defaultFontOfSize:12.0]};
 }
@@ -70,7 +70,7 @@
 
 + (UIColor *)defaultBackgroundColor
 {
-    return [UIColor colorWithWhite:1.0 alpha:0.95];
+    return [UIColor clearColor];
 }
 
 + (CGFloat)topMargin

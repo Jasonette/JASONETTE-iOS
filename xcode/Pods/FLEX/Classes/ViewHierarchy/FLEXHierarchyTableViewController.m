@@ -11,17 +11,18 @@
 #import "FLEXHierarchyTableViewCell.h"
 #import "FLEXObjectExplorerViewController.h"
 #import "FLEXObjectExplorerFactory.h"
+#import "FLEXResources.h"
 
 static const NSInteger kFLEXHierarchyScopeViewsAtTapIndex = 0;
 static const NSInteger kFLEXHierarchyScopeFullHierarchyIndex = 1;
 
 @interface FLEXHierarchyTableViewController () <UISearchBarDelegate>
 
-@property (nonatomic, strong) NSArray *allViews;
-@property (nonatomic, strong) NSDictionary *depthsForViews;
-@property (nonatomic, strong) NSArray *viewsAtTap;
+@property (nonatomic, strong) NSArray<UIView *> *allViews;
+@property (nonatomic, strong) NSDictionary<NSValue *, NSNumber *> *depthsForViews;
+@property (nonatomic, strong) NSArray<UIView *> *viewsAtTap;
 @property (nonatomic, strong) UIView *selectedView;
-@property (nonatomic, strong) NSArray *displayedViews;
+@property (nonatomic, strong) NSArray<UIView *> *displayedViews;
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 
@@ -29,7 +30,7 @@ static const NSInteger kFLEXHierarchyScopeFullHierarchyIndex = 1;
 
 @implementation FLEXHierarchyTableViewController
 
-- (id)initWithViews:(NSArray *)allViews viewsAtTap:(NSArray *)viewsAtTap selectedView:(UIView *)selectedView depths:(NSDictionary *)depthsForViews
+- (instancetype)initWithViews:(NSArray<UIView *> *)allViews viewsAtTap:(NSArray<UIView *> *)viewsAtTap selectedView:(UIView *)selectedView depths:(NSDictionary<NSValue *, NSNumber *> *)depthsForViews
 {
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
@@ -92,7 +93,7 @@ static const NSInteger kFLEXHierarchyScopeFullHierarchyIndex = 1;
 
 - (void)updateDisplayedViews
 {
-    NSArray *candidateViews = nil;
+    NSArray<UIView *> *candidateViews = nil;
     if ([self showScopeBar]) {
         if (self.searchBar.selectedScopeButtonIndex == kFLEXHierarchyScopeViewsAtTapIndex) {
             candidateViews = self.viewsAtTap;
@@ -104,7 +105,7 @@ static const NSInteger kFLEXHierarchyScopeFullHierarchyIndex = 1;
     }
     
     if ([self.searchBar.text length] > 0) {
-        self.displayedViews = [candidateViews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UIView *candidateView, NSDictionary *bindings) {
+        self.displayedViews = [candidateViews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UIView *candidateView, NSDictionary<NSString *, id> *bindings) {
             NSString *title = [FLEXUtility descriptionForView:candidateView includingFrame:NO];
             NSString *candidateViewPointerAddress = [NSString stringWithFormat:@"%p", candidateView];
             BOOL matchedViewPointerAddress = [candidateViewPointerAddress rangeOfString:self.searchBar.text options:NSCaseInsensitiveSearch].location != NSNotFound;
@@ -178,6 +179,20 @@ static const NSInteger kFLEXHierarchyScopeFullHierarchyIndex = 1;
     } else {
         cell.textLabel.textColor = [UIColor blackColor];
         cell.detailTextLabel.textColor = [UIColor blackColor];
+    }
+    
+    // Use a pattern-based colour to simplify application of the checker pattern.
+    static UIColor *checkerPatternColour = nil;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        checkerPatternColour = [UIColor colorWithPatternImage:[FLEXResources checkerPattern]];
+    });
+    
+    UIColor *viewColour = view.backgroundColor;
+    if (!viewColour || [viewColour isEqual:[UIColor clearColor]]) {
+        cell.viewBackgroundColorView.backgroundColor = checkerPatternColour;
+    } else {
+        cell.viewBackgroundColorView.backgroundColor = viewColour;
     }
     
     return cell;

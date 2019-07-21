@@ -57,12 +57,12 @@
 
 - (NSString *)description
 {
-    NSDictionary *keyMappings = @{ UIKeyInputUpArrow : @"↑",
-                                   UIKeyInputDownArrow : @"↓",
-                                   UIKeyInputLeftArrow : @"←",
-                                   UIKeyInputRightArrow : @"→",
-                                   UIKeyInputEscape : @"␛",
-                                   @" " : @"␠"};
+    NSDictionary<NSString *, NSString *> *keyMappings = @{ UIKeyInputUpArrow : @"↑",
+                                                           UIKeyInputDownArrow : @"↓",
+                                                           UIKeyInputLeftArrow : @"←",
+                                                           UIKeyInputRightArrow : @"→",
+                                                           UIKeyInputEscape : @"␛",
+                                                           @" " : @"␠"};
     
     NSString *prettyKey = nil;
     if (self.key && keyMappings[self.key]) {
@@ -113,7 +113,7 @@
 
 @interface FLEXKeyboardShortcutManager ()
 
-@property (nonatomic, strong) NSMutableDictionary *actionsForKeyInputs;
+@property (nonatomic, strong) NSMutableDictionary<FLEXKeyInput *, dispatch_block_t> *actionsForKeyInputs;
 
 @property (nonatomic, assign, getter=isPressingShift) BOOL pressingShift;
 @property (nonatomic, assign, getter=isPressingCommand) BOOL pressingCommand;
@@ -165,10 +165,14 @@
                     pressureLevel++;
                 }
                 if (pressureLevel > 0) {
-                    for (UITouch *touch in [event allTouches]) {
-                        double adjustedPressureLevel = pressureLevel * 20 * touch.maximumPossibleForce;
-                        [touch setValue:@(adjustedPressureLevel) forKey:@"_pressure"];
+#if FLEX_AT_LEAST_IOS11_SDK
+                    if (@available(iOS 9.0, *)) {
+                        for (UITouch *touch in [event allTouches]) {
+                            double adjustedPressureLevel = pressureLevel * 20 * touch.maximumPossibleForce;
+                            [touch setValue:@(adjustedPressureLevel) forKey:@"_pressure"];
+                        }
                     }
+#endif
                 }
             }
             
@@ -260,7 +264,7 @@ static const long kFLEXCommandKeyCode = 0xe3;
             dispatch_block_t actionBlock = self.actionsForKeyInputs[exactMatch];
             
             if (!actionBlock) {
-                FLEXKeyInput *shiftMatch = [FLEXKeyInput keyInputForKey:modifiedInput flags:flags&(!UIKeyModifierShift)];
+                FLEXKeyInput *shiftMatch = [FLEXKeyInput keyInputForKey:modifiedInput flags:flags&(~UIKeyModifierShift)];
                 actionBlock = self.actionsForKeyInputs[shiftMatch];
             }
             
@@ -292,7 +296,7 @@ static const long kFLEXCommandKeyCode = 0xe3;
 - (NSString *)keyboardShortcutsDescription
 {
     NSMutableString *description = [NSMutableString string];
-    NSArray *keyInputs = [[self.actionsForKeyInputs allKeys] sortedArrayUsingComparator:^NSComparisonResult(FLEXKeyInput *_Nonnull input1, FLEXKeyInput *_Nonnull input2) {
+    NSArray<FLEXKeyInput *> *keyInputs = [[self.actionsForKeyInputs allKeys] sortedArrayUsingComparator:^NSComparisonResult(FLEXKeyInput *_Nonnull input1, FLEXKeyInput *_Nonnull input2) {
         return [input1.key caseInsensitiveCompare:input2.key];
     }];
     for (FLEXKeyInput *keyInput in keyInputs) {

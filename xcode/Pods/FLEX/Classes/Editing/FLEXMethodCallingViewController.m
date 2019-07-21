@@ -17,6 +17,7 @@
 @interface FLEXMethodCallingViewController ()
 
 @property (nonatomic, assign) Method method;
+@property (nonatomic, assign) FLEXTypeEncoding *returnType;
 
 @end
 
@@ -27,7 +28,8 @@
     self = [super initWithTarget:target];
     if (self) {
         self.method = method;
-        self.title = [self isClassMethod] ? @"Class Method" : @"Method";
+        self.returnType = [FLEXRuntimeUtility returnTypeForMethod:method];
+        self.title = [self isClassMethod] ? @"Class Method" : @"Method";;
     }
     return self;
 }
@@ -36,10 +38,14 @@
 {
     [super viewDidLoad];
     
-    self.fieldEditorView.fieldDescription = [FLEXRuntimeUtility prettyNameForMethod:self.method isClassMethod:[self isClassMethod]];
+    NSString *returnType = @((const char *)self.returnType);
+    NSString *methodDescription = [FLEXRuntimeUtility prettyNameForMethod:self.method isClassMethod:[self isClassMethod]];
+    NSString *format = @"Signature:\n%@\n\nReturn Type:\n%@";
+    NSString *info = [NSString stringWithFormat:format, methodDescription, returnType];
+    self.fieldEditorView.fieldDescription = info;
     
-    NSArray *methodComponents = [FLEXRuntimeUtility prettyArgumentComponentsForMethod:self.method];
-    NSMutableArray *argumentInputViews = [NSMutableArray array];
+    NSArray<NSString *> *methodComponents = [FLEXRuntimeUtility prettyArgumentComponentsForMethod:self.method];
+    NSMutableArray<FLEXArgumentInputView *> *argumentInputViews = [NSMutableArray array];
     unsigned int argumentIndex = kFLEXNumberOfImplicitArgs;
     for (NSString *methodComponent in methodComponents) {
         char *argumentTypeEncoding = method_copyArgumentType(self.method, argumentIndex);
@@ -52,6 +58,12 @@
         argumentIndex++;
     }
     self.fieldEditorView.argumentInputViews = argumentInputViews;
+}
+
+- (void)dealloc
+{
+    free(self.returnType);
+    self.returnType = NULL;
 }
 
 - (BOOL)isClassMethod
@@ -88,12 +100,11 @@
         [alert show];
     } else if (returnedObject) {
         // For non-nil (or void) return types, push an explorer view controller to display the returned object
+        returnedObject = [FLEXRuntimeUtility potentiallyUnwrapBoxedPointer:returnedObject type:self.returnType];
         FLEXObjectExplorerViewController *explorerViewController = [FLEXObjectExplorerFactory explorerViewControllerForObject:returnedObject];
         [self.navigationController pushViewController:explorerViewController animated:YES];
     } else {
-        // If we didn't get a returned object but the method call succeeded,
-        // pop this view controller off the stack to indicate that the call went through.
-        [self.navigationController popViewControllerAnimated:YES];
+        [self exploreObjectOrPopViewController:returnedObject];
     }
 }
 

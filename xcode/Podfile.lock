@@ -41,7 +41,7 @@ PODS:
     - DTFoundation/Core
   - DTFoundation/UIKit (1.7.13):
     - DTFoundation/Core
-  - FLEX (2.4.0)
+  - FLEX (3.0.0)
   - FreeStreamer (4.0.0):
     - Reachability (~> 3.0)
   - HMSegmentedControl (1.5.2)
@@ -94,7 +94,7 @@ DEPENDENCIES:
   - DAKeyboardControl
   - DHSmartScreenshot
   - DTCoreText
-  - FLEX (~> 2.0)
+  - FLEX (from `https://github.com/jasonelle/ios-pod-flex.git`, tag `3.0.0`)
   - FreeStreamer (from `https://github.com/jasonelle/ios-pod-freestreamer.git`, branch `jasonelle`)
   - HMSegmentedControl
   - INTULocationManager
@@ -131,7 +131,6 @@ SPEC REPOS:
     - DHSmartScreenshot
     - DTCoreText
     - DTFoundation
-    - FLEX
     - HMSegmentedControl
     - INTULocationManager
     - IQAudioRecorderController
@@ -156,6 +155,9 @@ EXTERNAL SOURCES:
   APAddressBook:
     :branch: jasonelle
     :git: https://github.com/jasonelle/ios-pod-apaddressbook.git
+  FLEX:
+    :git: https://github.com/jasonelle/ios-pod-flex.git
+    :tag: 3.0.0
   FreeStreamer:
     :branch: jasonelle
     :git: https://github.com/jasonelle/ios-pod-freestreamer.git
@@ -200,6 +202,9 @@ CHECKOUT OPTIONS:
   APAddressBook:
     :commit: 77888b7c4939550f84fed887945fbd22892a76c2
     :git: https://github.com/jasonelle/ios-pod-apaddressbook.git
+  FLEX:
+    :git: https://github.com/jasonelle/ios-pod-flex.git
+    :tag: 3.0.0
   FreeStreamer:
     :commit: 810f241e40f2f06ccf01b9022164ab896a72b12e
     :git: https://github.com/jasonelle/ios-pod-freestreamer.git
@@ -248,7 +253,7 @@ SPEC CHECKSUMS:
   DHSmartScreenshot: ee749048bd7126c4826748f98df3a4adc6ad6c78
   DTCoreText: ad5135357a0e792f735970ed67d3ecda8b602d3d
   DTFoundation: f03be9fd786f11e505bb8fc44e2a3732bf0917df
-  FLEX: bd1a39e55b56bb413b6f1b34b3c10a0dc44ef079
+  FLEX: d66c759bce0f6ebbbf472c742380874d846f2883
   FreeStreamer: 7e9c976045701ac2f7e9c14c17245203c37bf2ea
   HMSegmentedControl: 83b9686022d2176fb6457d2bdb61e5d6393fed7d
   INTULocationManager: 73f8254b3d05c897c56bb13c190e5b7c648c0998
@@ -278,6 +283,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
 
-PODFILE CHECKSUM: 56e8f9f2e28493f13de667b84ccbb32a15bd29f2
+PODFILE CHECKSUM: d5b35ade7a643518ba7db94a573e6989623202c3
 
 COCOAPODS: 1.5.3

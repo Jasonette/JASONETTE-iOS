@@ -1,6 +1,6 @@
 //
 //  FLEXTableContentCell.m
-//  UICatalog
+//  FLEX
 //
 //  Created by Peng Tao on 15/11/24.
 //  Copyright © 2015年 f. All rights reserved.
@@ -21,7 +21,7 @@
     FLEXTableContentCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     if (!cell) {
         cell = [[FLEXTableContentCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-        NSMutableArray *labels = [NSMutableArray array];
+        NSMutableArray<UILabel *> *labels = [NSMutableArray array];
         for (int i = 0; i < number ; i++) {
             UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
             label.backgroundColor = [UIColor whiteColor];
