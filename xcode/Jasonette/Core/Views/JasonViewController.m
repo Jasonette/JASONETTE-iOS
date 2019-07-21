@@ -1078,7 +1078,7 @@
                                 NSString * url = body[key];
 
                                 if (![url containsString:@"{{"] && ![url containsString:@"}}"]) {
-                                    download_image_counter++;
+                                    self->download_image_counter++;
                                     SDWebImageManager * manager = [SDWebImageManager sharedManager];
                                     NSDictionary * session = [JasonHelper sessionForUrl:url];
 
@@ -1098,7 +1098,7 @@
                                                                           options:0
                                                                          progress:^(NSInteger receivedSize, NSInteger expectedSize) { }
                                                                         completed:^(UIImage * i, NSData * data, NSError * error, BOOL finished) {
-                                                                            download_image_counter--;
+                                                                            self->download_image_counter--;
 
                                                                             if (!error) {
                                                                             JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
@@ -1108,14 +1108,14 @@
                                                                             dispatch_async (dispatch_get_main_queue (), ^{
                                                                             NSArray * indexPathArray = weakSelf.tableView.indexPathsForVisibleRows;
                                                                             NSMutableSet * visibleIndexPaths = [[NSMutableSet alloc] initWithArray:indexPathArray];
-                                                                            [visibleIndexPaths intersectSet:(NSSet *)indexPathsForImage[url]];
+                                                                                [visibleIndexPaths intersectSet:(NSSet *)self->indexPathsForImage[url]];
 
                                                                             if (visibleIndexPaths.count > 0) {
                                                                             [weakSelf.tableView reloadData];
                                                                             }
 
-                                                                            if (!top_aligned) {
-                                                                            if (download_image_counter == 0) {
+                                                                                if (!self->top_aligned) {
+                                                                                    if (self->download_image_counter == 0) {
                                                                             [weakSelf scrollToBottom];
                                                                             }
                                                                             }
@@ -1135,7 +1135,7 @@
 {
     dispatch_async (dispatch_get_main_queue (), ^{
         DTLogDebug (@"Refresh Control End Refreshing");
-        [refreshControl performSelector:@selector(endRefreshing) withObject:nil afterDelay:0.0];
+        [self->refreshControl performSelector:@selector(endRefreshing) withObject:nil afterDelay:0.0];
     });
 }
 
@@ -1180,7 +1180,7 @@
             [self setupAds:body];
             #endif
 
-            if (default_bottom_padding == 0) {
+            if (self->default_bottom_padding == 0) {
                 CGFloat bottom_padding = 0.0;
 
                 if (body[@"footer"] && body[@"footer"][@"tabs"]) {
@@ -1191,14 +1191,14 @@
                     bottom_padding += self.composeBarView.frame.size.height;
                 }
 
-                default_bottom_padding = bottom_padding;
+                self->default_bottom_padding = bottom_padding;
                 self.tableView.contentInset = UIEdgeInsetsMake (self.tableView.contentInset.top,
                                                                 self.tableView.contentInset.left,
                                                                 self.tableView.contentInset.bottom + bottom_padding,
                                                                 self.tableView.contentInset.right);
             }
 
-            original_bottom_inset = self.tableView.contentInset.bottom;
+            self->original_bottom_inset = self.tableView.contentInset.bottom;
             DTLogDebug (@"Done Reloading");
         });
     } @catch (NSException * e) {
@@ -1718,15 +1718,15 @@
                     } else {
                         dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
                             SDWebImageManager * manager = [SDWebImageManager sharedManager];
-                            [manager downloadImageWithURL:[NSURL URLWithString:chat_input[@"left"][@"image"]]
+                            [manager downloadImageWithURL:[NSURL URLWithString:self->chat_input[@"left"][@"image"]]
                                                   options:0
                                                  progress:^(NSInteger receivedSize, NSInteger expectedSize) {
                                                     // progression tracking code
                                                  }
                                                 completed:^(UIImage * image, NSError * error, SDImageCacheType cacheType, BOOL finished, NSURL * imageURL) {
                                                     // colorize
-                                                    if (chat_input[@"left"][@"style"] && chat_input[@"left"][@"style"][@"color"]) {
-                                                    UIColor * newColor = [JasonHelper colorwithHexString:chat_input[@"left"][@"style"][@"color"]
+                                                    if (self->chat_input[@"left"][@"style"] && self->chat_input[@"left"][@"style"][@"color"]) {
+                                                        UIColor * newColor = [JasonHelper colorwithHexString:self->chat_input[@"left"][@"style"][@"color"]
                                                                                    alpha:1.0];
                                                     image = [JasonHelper colorize:image
                                                              into:newColor];

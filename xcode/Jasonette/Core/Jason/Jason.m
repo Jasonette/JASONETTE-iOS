@@ -157,8 +157,8 @@
             DTLogError (@"Missing $jason property in \n%@\n\n", res);
         }
 
-        VC.original = @{ @"$jason": result };
-        [self drawViewFromJason:VC.original
+        self->VC.original = @{ @"$jason": result };
+        [self drawViewFromJason:self->VC.original
                         asFinal:final];
     }];
 }
@@ -421,8 +421,8 @@
     if (turnon) {
         [JDStatusBarNotification addStyleNamed:@"SBStyle1"
                                        prepare:^JDStatusBarStyle *(JDStatusBarStyle * style) {
-            style.barColor = navigationController.navigationBar.backgroundColor;
-            style.textColor = navigationController.navigationBar.tintColor;
+                                           style.barColor = self->navigationController.navigationBar.backgroundColor;
+                                           style.textColor = self->navigationController.navigationBar.tintColor;
             style.animationType = JDStatusBarAnimationTypeFade;
             return style;
         }];
@@ -443,11 +443,11 @@
 - (void)networkLoading:(BOOL)turnon with:(NSDictionary *)options; {
     dispatch_async (dispatch_get_main_queue (), ^{
         if (turnon && (options == nil || (options != nil && options[@"loading"] && [options[@"loading"] boolValue]))) {
-            MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:VC.view animated:true];
+            MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:self->VC.view animated:true];
             hud.animationType = MBProgressHUDAnimationFade;
             hud.userInteractionEnabled = NO;
         } else if (!turnon) {
-            [MBProgressHUD hideHUDForView:VC.view animated:true];
+            [MBProgressHUD hideHUDForView:self->VC.view animated:true];
         }
     });
 }
@@ -620,7 +620,7 @@
                                                                 image:nil
                                                      highlightedImage:nil
                                                                action:^(REMenuItem * item) {
-                                                                   [menu_component close];
+                                                                   [self->menu_component close];
 
                                                                    if (item_action) {
                                                                    [memory set_stack:item_action];
@@ -1279,13 +1279,13 @@
                       progress:^(NSProgress * _Nonnull downloadProgress) { }
                        success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject)
                 {
-                    VC.requires[url] = responseObject;
+                    self->VC.requires[url] = responseObject;
                     dispatch_group_leave (requireGroup);
                 }
                        failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
                 {
                     DTLogWarning (@"Error Fetching JSON From Url %@ %@", url, error);
-                    VC.requires[url] = @{};
+                    self->VC.requires[url] = @{};
                     dispatch_group_leave (requireGroup);
                 }];
             }
@@ -1447,7 +1447,7 @@
         // require could take a long time to finish, so we make sure at this point
         // we are looking at the same URL we began with
         [self success:dict withOriginalUrl:origin_url];
-        [MBProgressHUD hideHUDForView:VC.view animated:true];
+        [MBProgressHUD hideHUDForView:self->VC.view animated:true];
     });
 }
 
@@ -1844,8 +1844,8 @@
     VC.rendered = nil;
 
     dispatch_async (dispatch_get_main_queue (), ^{
-        [VC viewDidLoad];
-        [VC viewWillAppear:NO];
+        [self->VC viewDidLoad];
+        [self->VC viewWillAppear:NO];
     });
 }
 
@@ -2242,7 +2242,7 @@
                                         self->VC.contentLoaded = NO;
 
                                         self->VC.original = @{ @"$jason": res[@"$jason"] };
-                                        [self drawViewFromJason:VC.original
+                        [self drawViewFromJason:self->VC.original
                                                         asFinal:YES];
                                     });
                        }];
@@ -2426,7 +2426,7 @@
 
 - (void)drawAdvancedBackground:(NSDictionary *)bg {
     dispatch_async (dispatch_get_main_queue (), ^{
-        [self drawAdvancedBackground:bg forVC:VC];
+        [self drawAdvancedBackground:bg forVC:self->VC];
     });
 }
 
@@ -2663,7 +2663,7 @@
 
 - (void)drawBackground:(NSString *)bg {
     dispatch_async (dispatch_get_main_queue (), ^{
-        [self drawBackground:bg forVC:VC];
+        [self drawBackground:bg forVC:self->VC];
     });
 }
 
@@ -3393,17 +3393,17 @@
             // If the tabs are empty AND the view hasn't been rendered yet, then wait until it finishes rendering
 
             if (!t && !v.rendered) {
-                if (previous_footer && previous_footer[@"tabs"]) {
+                if (self->previous_footer && self->previous_footer[@"tabs"]) {
                     // don't touch yet until the view finalizes
                 } else {
-                    tabController.tabBar.hidden = YES;
+                    self->tabController.tabBar.hidden = YES;
                 }
 
                 return;
             }
         }
 
-        if (previous_footer && previous_footer[@"tabs"]) {
+        if (self->previous_footer && self->previous_footer[@"tabs"]) {
             // if previous footer tab was not null, we diff the tabs to determine whether to re-render
             if (v.old_footer && v.old_footer[@"tabs"] && [[v.old_footer[@"tabs"] description] isEqualToString:[t description]]) {
                 return;
@@ -3418,18 +3418,18 @@
 
         v.old_footer[@"tabs"] = t;
 
-        if (!previous_footer) {
-            previous_footer = [[NSMutableDictionary alloc] init];
+        if (!self->previous_footer) {
+            self->previous_footer = [[NSMutableDictionary alloc] init];
         }
 
-        previous_footer[@"tabs"] = t;
+        self->previous_footer[@"tabs"] = t;
 
         if (!t || [t isKindOfClass:[NSNull class]]) {
-            tabController.tabBar.hidden = YES;
-            tabController.viewControllers = @[navigationController]; // remove all tab bar items if there's no "items"
+            self->tabController.tabBar.hidden = YES;
+            self->tabController.viewControllers = @[self->navigationController]; // remove all tab bar items if there's no "items"
             return;
         } else {
-            tabController.tabBar.hidden = NO;
+            self->tabController.tabBar.hidden = NO;
         }
 
         NSArray * tabs = t[@"items"];
@@ -3438,7 +3438,7 @@
         if (style) {
             if (style[@"color"]) {
                 UIColor * c = [JasonHelper colorwithHexString:style[@"color"] alpha:1.0];
-                [tabController.tabBar setTintColor:c];
+                [self->tabController.tabBar setTintColor:c];
                 [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName: c }
                                                          forState:UIControlStateSelected];
             }
@@ -3451,11 +3451,11 @@
             }
 
             if (style[@"background"]) {
-                [tabController.tabBar setClipsToBounds:YES];
-                tabController.tabBar.shadowImage = [[UIImage alloc] init];
-                tabController.tabBar.translucent = NO;
-                tabController.tabBar.backgroundColor = [JasonHelper colorwithHexString:style[@"background"] alpha:1.0];
-                [tabController.tabBar setBarTintColor:[JasonHelper colorwithHexString:style[@"background"] alpha:1.0]];
+                [self->tabController.tabBar setClipsToBounds:YES];
+                self->tabController.tabBar.shadowImage = [[UIImage alloc] init];
+                self->tabController.tabBar.translucent = NO;
+                self->tabController.tabBar.backgroundColor = [JasonHelper colorwithHexString:style[@"background"] alpha:1.0];
+                [self->tabController.tabBar setBarTintColor:[JasonHelper colorwithHexString:style[@"background"] alpha:1.0]];
             }
 
             [[UITabBar appearance] setTranslucent:NO];
@@ -3477,7 +3477,7 @@
             // that was initialized with
             // In this case, initialize all tabs
             // Start from index 1 because the first one should already be instantiated via modal href
-            if (tabController.viewControllers.count != maxTabCount) {
+            if (self->tabController.viewControllers.count != maxTabCount) {
                 firstTime = YES;
                 tabs_array = [[NSMutableArray alloc] init];
             } else {
@@ -3489,18 +3489,18 @@
             // because when we transition from view A with 5 tabs to view B with no tab, Jasonette gets rid of all the navigation controllers
             // so when we come back from view B, the tab bar that contains view A will only have one item, and it will say the index is 0, which is incorrect.
             // To avoid this situation, we need to be more precise and decide on the index based on the view's URL instead.
-            NSUInteger indexOfTab = [tabController.viewControllers indexOfObject:navigationController];
-            tabNeedsRefresh = YES;
+            NSUInteger indexOfTab = [self->tabController.viewControllers indexOfObject:self->navigationController];
+            self->tabNeedsRefresh = YES;
 
             for (int i = 0; i < maxTabCount; i++) {
                 NSDictionary * tab = tabs[i];
 
-                if (tab[@"url"] && [VC.url isEqualToString:tab[@"url"]]) {
+                if (tab[@"url"] && [self->VC.url isEqualToString:tab[@"url"]]) {
                     indexOfTab = i;
-                    tabNeedsRefresh = NO;
-                } else if (tab[@"href"] && tab[@"href"][@"url"] && [VC.url isEqualToString:tab[@"href"][@"url"]]) {
+                    self->tabNeedsRefresh = NO;
+                } else if (tab[@"href"] && tab[@"href"][@"url"] && [self->VC.url isEqualToString:tab[@"href"][@"url"]]) {
                     indexOfTab = i;
-                    tabNeedsRefresh = NO;
+                    self->tabNeedsRefresh = NO;
                 }
             }
 
@@ -3535,15 +3535,15 @@
                     // no need to create a new VC, etc. because it's already been instantiated
                         tabFound = YES;
                     // if the tab URL is same as the currently visible VC's url
-                        VC.tabNeedsRefresh = YES;
-                        [tabs_array addObject:navigationController];
+                        self->VC.tabNeedsRefresh = YES;
+                        [tabs_array addObject:self->navigationController];
                     } else {
                     // for all other tabs, create a new VC and instantiate them, and add them to the tabs array
                         JasonViewController * vc = [[JasonViewController alloc] init];
                         vc.url = url;
 
-                        if (tabNeedsRefresh) {
-                            vc.tabNeedsRefresh = tabNeedsRefresh;
+                        if (self->tabNeedsRefresh) {
+                            vc.tabNeedsRefresh = self->tabNeedsRefresh;
                         }
 
                         vc.options = [self filloutTemplate:options withData:[self variables]];
@@ -3560,13 +3560,13 @@
                         v.tabNeedsRefresh = YES;
                         tabFound = YES;
                     } else {
-                        UINavigationController * nav = tabController.viewControllers[i];
+                        UINavigationController * nav = self->tabController.viewControllers[i];
                         JasonViewController * vc = [[nav viewControllers] firstObject];
 
                         vc.url = url;
 
-                        if (tabNeedsRefresh) {
-                            vc.tabNeedsRefresh = tabNeedsRefresh;
+                        if (self->tabNeedsRefresh) {
+                            vc.tabNeedsRefresh = self->tabNeedsRefresh;
                         }
 
                         vc.options = [self filloutTemplate:options withData:[self variables]];
@@ -3577,17 +3577,17 @@
             }
 
             if (firstTime) {
-                tabController.viewControllers = tabs_array;
+                self->tabController.viewControllers = tabs_array;
             }
 
             for (int i = 0; i < maxTabCount; i++) {
                 NSDictionary * tab = tabs[i];
-                [self setTabBarItem:[tabController.tabBar.items objectAtIndex:i] withTab:tab];
+                [self setTabBarItem:[self->tabController.tabBar.items objectAtIndex:i] withTab:tab];
             }
 
-            tabController.tabBar.hidden = NO;
+            self->tabController.tabBar.hidden = NO;
         } else {
-            tabController.tabBar.hidden = YES;
+            self->tabController.tabBar.hidden = YES;
         }
     });
 }
@@ -3925,9 +3925,9 @@
     *******************************/
     dispatch_async (dispatch_get_main_queue (), ^{
         // Dismiss searchbar before transitioning.
-        if (VC.searchController) {
-            if (VC.searchController.isActive) {
-                [VC.searchController setActive:NO];
+        if (self->VC.searchController) {
+            if (self->VC.searchController.isActive) {
+                [self->VC.searchController setActive:NO];
             }
         }
 
@@ -3936,7 +3936,7 @@
         NSString * fresh = href[@"fresh"];
         JasonMemory * memory = [JasonMemory client];
         memory.executing = NO;
-        queue = [@[] mutableCopy];
+        self->queue = [@[] mutableCopy];
 
         if ([transition isEqualToString:@"root"]) {
             [self start:nil];
@@ -3975,10 +3975,10 @@
                 DTLogDebug (@"Presenting as modal transition");
                 UINavigationController * newNav = [[UINavigationController alloc]initWithRootViewController:vc];
                 [newNav setNavigationBarHidden:YES animated:NO];
-                [navigationController presentViewController:newNav animated:YES completion:^{ }];
+                [self->navigationController presentViewController:newNav animated:YES completion:^{ }];
             } else {
                 DTLogDebug (@"Presenting as push transition");
-                [navigationController presentViewController:vc animated:YES completion:^{ }];
+                [self->navigationController presentViewController:vc animated:YES completion:^{ }];
             }
         } else if ([view.lowercaseString isEqualToString:@"app"] || [view.lowercaseString isEqualToString:@"external"]) {
             /****************************************************************************
@@ -4166,8 +4166,8 @@
 
                     vc.extendedLayoutIncludesOpaqueBars = YES;
 
-                    if (tabController.tabBar.hidden) {
-                        tabController.tabBar.hidden = YES;
+                    if (self->tabController.tabBar.hidden) {
+                        self->tabController.tabBar.hidden = YES;
                     } else {
                         if ([transition isEqualToString:@"fullscreen"]) {
                             vc.hidesBottomBarWhenPushed = YES;
@@ -4176,7 +4176,7 @@
                         }
                     }
 
-                    [navigationController pushViewController:vc animated:YES];
+                    [self->navigationController pushViewController:vc animated:YES];
                 }
             } else {
                 /****************************************************************************
@@ -4308,7 +4308,7 @@
                     }
 
                     [self unlock];
-                    [navigationController presentViewController:nav
+                    [self->navigationController presentViewController:nav
                                                        animated:YES
                                                      completion:^{
                                                      }];
@@ -4323,7 +4323,7 @@
                     }
 
                     [self unlock];
-                    [navigationController pushViewController:vc animated:YES];
+                    [self->navigationController pushViewController:vc animated:YES];
                 }
             }
         }
@@ -4763,16 +4763,16 @@
 
         if (![[VC.rendered description] containsString:@"{{"] && ![[self.options description] containsString:@"}}"]) {
             dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                NSString * normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
+                NSString * normalized_url = [JasonHelper normalized_url:self->VC.url forOptions:self->VC.options];
                 normalized_url = [normalized_url stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
                 NSArray * paths = NSSearchPathForDirectoriesInDomains (NSDocumentDirectory, NSUserDomainMask, YES);
                 NSString * documentsDirectory = [paths objectAtIndex:0];
                 NSString * path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
 
-                NSMutableDictionary * to_store = [VC.original mutableCopy];
+                NSMutableDictionary * to_store = [self->VC.original mutableCopy];
 
                 if (to_store[@"$jason"]) {
-                    to_store[@"$jason"][@"body"] = VC.rendered;
+                    to_store[@"$jason"][@"body"] = self->VC.rendered;
                 }
 
                 NSData * data = [NSKeyedArchiver archivedDataWithRootObject:to_store];
