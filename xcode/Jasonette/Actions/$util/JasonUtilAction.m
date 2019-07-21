@@ -5,9 +5,14 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonUtilAction.h"
+#import "JasonLogger.h"
 
 @implementation JasonUtilAction
+
 - (void)banner {
+    
+    DTLogInfo(@"Open $util.banner");
+    
     NSString * title = [self.options[@"title"] description];
     NSString * description = [self.options[@"description"] description];
     NSString * type = self.options[@"type"];
@@ -43,6 +48,9 @@
 }
 
 - (void)toast {
+    
+    DTLogInfo(@"Open $util.toast");
+    
     NSString * type = self.options[@"type"];
     NSString * text = [self.options[@"text"] description];
 
@@ -77,6 +85,11 @@
 }
 
 - (void)alert {
+    
+#pragma message "TODO: Add button configuration"
+    
+    DTLogInfo(@"Open $util.alert");
+    
     [[Jason client] loading:NO];
     NSString * title = [self.options[@"title"] description];
     NSString * description = [self.options[@"description"] description];
@@ -85,8 +98,8 @@
 
     // 2. Add Input field
     NSArray * form = self.options[@"form"];
-    NSMutableDictionary * form_inputs = [[NSMutableDictionary alloc] init];
-    NSMutableDictionary * textFields = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary * form_inputs = [@{} mutableCopy];
+    NSMutableDictionary * textFields = [@{} mutableCopy];
 
     if (form && form.count > 0) {
         for (int i = 0; i < form.count; i++) {
@@ -127,32 +140,60 @@
         }
     }
 
+    NSString * okButton = @"OK";
+    NSString * cancelButton = @"Cancel";
+    BOOL cancelButtonEnabled = YES;
+    
+    if(self.options) {
+        if(self.options[@"buttons"])
+        {
+            if(self.options[@"buttons"][@"ok"])
+            {
+                okButton = [self.options[@"buttons"][@"ok"][@"title"] stringValue];
+            }
+            
+            if(self.options[@"buttons"][@"cancel"])
+            {
+                cancelButton = [self.options[@"buttons"][@"cancel"][@"title"] stringValue];
+                if(self.options[@"buttons"][@"cancel"][@"enabled"])
+                {
+                    cancelButtonEnabled = [self.options[@"buttons"][@"cancel"][@"enabled"] boolValue];
+                }
+            }
+        }
+    }
+    
     // 3. Add buttons
-    UIAlertAction * ok = [UIAlertAction actionWithTitle:@"OK"
+    UIAlertAction * ok = [UIAlertAction actionWithTitle:okButton
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
                                                     // Handle callback actions
+                                                    DTLogWarning(@"Alert OK");
                                                     if (form && form.count > 0) {
-                                                    for (NSString * input_name in textFields) {
-                                                    UITextField * textField = (UITextField *)textFields[input_name];
-                                                    [form_inputs               setObject:textField.text
-                                                    forKey:input_name];
-                                                    }
-
-                                                    [[Jason client] success:form_inputs];
+                                                        for (NSString * input_name in textFields) {
+                                                            UITextField * textField = (UITextField *)textFields[input_name];
+                                                            [form_inputs setObject:textField.text forKey:input_name];
+                                                        }
+                                                        DTLogDebug(@"Sending Form Inputs %@", form_inputs);
+                                                        [[Jason client] success:form_inputs];
                                                     } else {
-                                                    [[Jason client] success];
+                                                        [[Jason client] success];
                                                     }
                                                 }];
-    UIAlertAction * cancel = [UIAlertAction actionWithTitle:@"Cancel"
-                                                      style:UIAlertActionStyleDefault
+    
+    UIAlertAction * cancel = [UIAlertAction actionWithTitle:cancelButton
+                                                      style:UIAlertActionStyleCancel
                                                     handler:^(UIAlertAction * action) {
+                                                        DTLogWarning(@"Alert Cancel");
                                                         [[Jason client] error];
-                                                        [alert                           dismissViewControllerAnimated:YES
-                                                            completion:nil];
+                                                        [alert dismissViewControllerAnimated:YES completion:nil];
                                                     }];
+    
+    if(cancelButtonEnabled) {
+        [alert addAction:cancel];
+    }
+    
     [alert addAction:ok];
-    [alert addAction:cancel];
 
     dispatch_async (dispatch_get_main_queue (), ^{
         [self.VC.navigationController presentViewController:alert animated:YES completion:nil];
@@ -160,6 +201,9 @@
 }
 
 - (void)share {
+    
+    DTLogInfo(@"Open $util.share");
+    
     NSArray * items = self.options[@"items"];
     NSMutableArray * share_items = [[NSMutableArray alloc] init];
     __block NSInteger counter = items.count;
@@ -252,6 +296,9 @@
 }
 
 - (void)clipboard {
+    
+    DTLogInfo(@"Open $util.clipboard");
+    
     NSArray * items = self.options[@"items"];
 
     if (items && items.count > 0) {
@@ -288,6 +335,9 @@
 }
 
 - (void)openShareWith:(NSArray *)items {
+    
+    DTLogInfo(@"Open $util.share");
+    
     UIActivityViewController * controller = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
 
     // Exclude all activities except AirDrop.
@@ -311,6 +361,9 @@
 }
 
 - (void)picker {
+    
+    DTLogInfo(@"Open $util.picker");
+    
     NSString * title = [self.options[@"title"] description];
     NSArray * items = self.options[@"items"];
     UIAlertController * alert = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -342,6 +395,9 @@
 }
 
 - (void)datepicker {
+    
+    DTLogInfo(@"Open $util.datepicker");
+    
     RMActionControllerStyle style = RMActionControllerStyleWhite;
     NSString * title = @"Select";
     NSString * description = @"";
@@ -380,7 +436,11 @@
     [self.VC.tabBarController presentViewController:dateSelectionController animated:YES completion:nil];
 }
 
+#pragma message "TODO: Update with the new Contacts API"
 - (void)addressbook {
+    
+    DTLogInfo(@"Open $util.addressbook");
+    
     APAddressBook * addressbook = [[APAddressBook alloc] init];
 
     addressbook.fieldsMask = APContactFieldName | APContactFieldEmailsWithLabels | APContactFieldPhonesWithLabels;
@@ -399,11 +459,13 @@
             [addressbook requestAccess:^(BOOL granted, NSError * error)
             {
                 if (error) {
+                    DTLogWarning(@"%@", error);
                     [[Jason client] error];
                 } else {
                     if (granted) {
                         [self fetchAddressbook:addressbook];
                     } else {
+                        DTLogWarning(@"%@", error);
                         [[Jason client] error];
                     }
                 }
@@ -413,12 +475,14 @@
 
         case APAddressBookAccessGranted: {
             // Access granted
+            DTLogDebug(@"Access Granted");
             [self fetchAddressbook:addressbook];
             break;
         }
 
         case APAddressBookAccessDenied: {
             // Access denied or restricted by privacy settings
+            DTLogDebug(@"Access Denied");
             [[Jason client] error];
             break;
         }
@@ -426,7 +490,11 @@
 }
 
 - (void)fetchAddressbook:(APAddressBook *)addressbook {
+    
+    DTLogDebug(@"Fetching Contacts");
+    
     [[Jason client] loading:YES];
+    
     dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         [addressbook loadContacts:^(NSArray <APContact *> * contacts, NSError * error)
         {
@@ -439,9 +507,11 @@
                                                                             forKeys:@[@"name", @"phone", @"email"]]];
                           }];
 
+                DTLogDebug(@"Contacts %@", result);
                 [[Jason client] success:result];
             } else {
                 // show error
+                DTLogDebug(@"%@", error);
                 [[Jason client] error];
             }
         }];
