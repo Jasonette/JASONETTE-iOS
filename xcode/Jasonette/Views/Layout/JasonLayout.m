@@ -10,6 +10,11 @@
 @implementation JasonLayout
 static NSMutableDictionary * _stylesheet = nil;
 
++ (NSDictionary *)build:(NSDictionary *)item atIndexPath:(NSIndexPath *)indexPath withForm:(NSDictionary *)form
+{
+    // Do nothing
+    return item;
+}
 
 /**
  * create a layout if it doesn't exist.

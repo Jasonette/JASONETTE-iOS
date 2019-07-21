@@ -4758,7 +4758,7 @@
     // Experimental: Store cache content for offline
     DTLogInfo (@"Loading View From Cache");
 
-    if (VC.original && VC.rendered && VC.original[@"$jason"][@"head"][@"offline"]) {
+    if (self->VC.original && self->VC.rendered && self->VC.original[@"$jason"][@"head"][@"offline"]) {
         DTLogInfo (@"Offline Mode Activated");
 
         if (![[VC.rendered description] containsString:@"{{"] && ![[self.options description] containsString:@"}}"]) {
@@ -4783,7 +4783,7 @@
     }
 
     // if not offline, delete the file associated with the url
-    NSString * normalized_url = [JasonHelper normalized_url:VC.url forOptions:VC.options];
+    NSString * normalized_url = [JasonHelper normalized_url:self->VC.url forOptions:self->VC.options];
     normalized_url = [normalized_url stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
     NSArray * paths = NSSearchPathForDirectoriesInDomains (NSDocumentDirectory, NSUserDomainMask, YES);
     NSString * documentsDirectory = [paths objectAtIndex:0];
