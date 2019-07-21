@@ -42,19 +42,25 @@ PODS:
   - DTFoundation/UIKit (1.7.13):
     - DTFoundation/Core
   - FLEX (2.4.0)
-  - FreeStreamer (3.5.7):
+  - FreeStreamer (4.0.0):
     - Reachability (~> 3.0)
   - HMSegmentedControl (1.5.2)
   - INTULocationManager (4.2.0)
   - IQAudioRecorderController (1.2.3):
     - SCSiriWaveformView
   - JDStatusBarNotification (1.6.0)
-  - JSCoreBom (1.1.1)
+  - JSCoreBom (1.1.2)
   - libPhoneNumber-iOS (0.9.15)
   - MBProgressHUD (1.1.0)
   - NSGIF (1.2.4)
   - NSHash (1.2.0)
-  - OMGHTTPURLRQ/UserAgent (3.1.2)
+  - OMGHTTPURLRQ (3.2.4):
+    - OMGHTTPURLRQ/RQ (= 3.2.4)
+  - OMGHTTPURLRQ/FormURLEncode (3.2.4)
+  - OMGHTTPURLRQ/RQ (3.2.4):
+    - OMGHTTPURLRQ/FormURLEncode
+    - OMGHTTPURLRQ/UserAgent
+  - OMGHTTPURLRQ/UserAgent (3.2.4)
   - PHFComposeBarView (2.0.2):
     - PHFDelegateChain (~> 1.0)
   - PHFDelegateChain (1.0.1)
@@ -79,46 +85,46 @@ PODS:
   - UICKeyChainStore (2.1.2)
 
 DEPENDENCIES:
-  - AFNetworking
+  - AFNetworking (from `https://github.com/jasonelle/ios-pod-afnetworking.git`, branch `jasonelle`)
   - AFOAuth2Manager
   - AHKActionSheet
-  - APAddressBook
+  - APAddressBook (from `https://github.com/jasonelle/ios-pod-apaddressbook.git`, branch `jasonelle`)
   - BBBadgeBarButtonItem
   - CYRTextView
   - DAKeyboardControl
   - DHSmartScreenshot
   - DTCoreText
   - FLEX (~> 2.0)
-  - FreeStreamer (from `https://github.com/muhku/FreeStreamer.git`)
+  - FreeStreamer (from `https://github.com/jasonelle/ios-pod-freestreamer.git`, branch `jasonelle`)
   - HMSegmentedControl
   - INTULocationManager
   - IQAudioRecorderController
   - JDStatusBarNotification
-  - JSCoreBom (~> 1.1.1)
-  - libPhoneNumber-iOS
+  - JSCoreBom (from `https://github.com/jasonelle/ios-pod-jscorebom.git`, branch `jasonelle`)
+  - libPhoneNumber-iOS (from `https://github.com/jasonelle/ios-pod-libphonenumber.git`, branch `jasonelle`)
   - MBProgressHUD (~> 1.0)
   - NSGIF (~> 1.0)
-  - NSHash
+  - NSHash (from `https://github.com/jasonelle/ios-pod-nshash.git`, branch `jasonelle`)
+  - OMGHTTPURLRQ (from `https://github.com/jasonelle/ios-pod-omghttpurlrq.git`, branch `jasonelle`)
   - PHFComposeBarView
+  - Reachability (from `https://github.com/jasonelle/ios-pod-reachability.git`, branch `jasonelle`)
   - REMenu
   - RMDateSelectionViewController
-  - SBJson (~> 5.0.0)
-  - SDWebImage (from `https://github.com/rs/SDWebImage.git`, tag `3.8.1`)
-  - SocketRocket
+  - SBJson (from `https://github.com/jasonelle/ios-pod-sbjson.git`, branch `jasonelle`)
+  - SDWebImage (from `https://github.com/jasonelle/ios-pod-sdwebimage.git`, tag `3.8.1`)
+  - SocketRocket (from `https://github.com/jasonelle/ios-pod-socketrocket.git`, branch `jasonelle`)
   - SWFrameButton
-  - SWTableViewCell (from `https://github.com/gliechtenstein/SWTableViewCell.git`)
+  - SWTableViewCell (from `https://github.com/jasonelle/ios-pod-swtableviewcell.git`, branch `jasonelle`)
   - SZTextView
   - TDOAuth
-  - TTTAttributedLabel
+  - TTTAttributedLabel (from `https://github.com/jasonelle/ios-pod-tttattributedlabel.git`, branch `jasonelle`)
   - TWMessageBarManager
-  - UICKeyChainStore
+  - UICKeyChainStore (from `https://github.com/jasonelle/ios-pod-uickeychainstore.git`, branch `jasonelle`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
-    - AFNetworking
     - AFOAuth2Manager
     - AHKActionSheet
-    - APAddressBook
     - BBBadgeBarButtonItem
     - CYRTextView
     - DAKeyboardControl
@@ -130,50 +136,109 @@ SPEC REPOS:
     - INTULocationManager
     - IQAudioRecorderController
     - JDStatusBarNotification
-    - JSCoreBom
-    - libPhoneNumber-iOS
     - MBProgressHUD
     - NSGIF
-    - NSHash
-    - OMGHTTPURLRQ
     - PHFComposeBarView
     - PHFDelegateChain
-    - Reachability
     - REMenu
     - RMActionController
     - RMDateSelectionViewController
-    - SBJson
     - SCSiriWaveformView
-    - SocketRocket
     - SWFrameButton
     - SZTextView
     - TDOAuth
-    - TTTAttributedLabel
     - TWMessageBarManager
-    - UICKeyChainStore
 
 EXTERNAL SOURCES:
+  AFNetworking:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-afnetworking.git
+  APAddressBook:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-apaddressbook.git
   FreeStreamer:
-    :git: https://github.com/muhku/FreeStreamer.git
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-freestreamer.git
+  JSCoreBom:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-jscorebom.git
+  libPhoneNumber-iOS:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-libphonenumber.git
+  NSHash:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-nshash.git
+  OMGHTTPURLRQ:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-omghttpurlrq.git
+  Reachability:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-reachability.git
+  SBJson:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-sbjson.git
   SDWebImage:
-    :git: https://github.com/rs/SDWebImage.git
+    :git: https://github.com/jasonelle/ios-pod-sdwebimage.git
     :tag: 3.8.1
+  SocketRocket:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-socketrocket.git
   SWTableViewCell:
-    :git: https://github.com/gliechtenstein/SWTableViewCell.git
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-swtableviewcell.git
+  TTTAttributedLabel:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-tttattributedlabel.git
+  UICKeyChainStore:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-uickeychainstore.git
 
 CHECKOUT OPTIONS:
+  AFNetworking:
+    :commit: 236b072311a460d47c40a32d4c05d87795b91acd
+    :git: https://github.com/jasonelle/ios-pod-afnetworking.git
+  APAddressBook:
+    :commit: 77888b7c4939550f84fed887945fbd22892a76c2
+    :git: https://github.com/jasonelle/ios-pod-apaddressbook.git
   FreeStreamer:
-    :commit: 18e1b610169a91d2f46299fdc68d9e84c8209e10
-    :git: https://github.com/muhku/FreeStreamer.git
+    :commit: 810f241e40f2f06ccf01b9022164ab896a72b12e
+    :git: https://github.com/jasonelle/ios-pod-freestreamer.git
+  JSCoreBom:
+    :commit: 5c2143b133248f475c30f1661a83a227c07fe138
+    :git: https://github.com/jasonelle/ios-pod-jscorebom.git
+  libPhoneNumber-iOS:
+    :commit: e50f018bc64e0f44be26c9cdf4f07ebb2a0e44a5
+    :git: https://github.com/jasonelle/ios-pod-libphonenumber.git
+  NSHash:
+    :commit: 348fc5e152e8d9483190d3fbcbd9729581a085be
+    :git: https://github.com/jasonelle/ios-pod-nshash.git
+  OMGHTTPURLRQ:
+    :commit: e0e74c5bd23fd0ab3413e44ce9144534b5614160
+    :git: https://github.com/jasonelle/ios-pod-omghttpurlrq.git
+  Reachability:
+    :commit: 788111ebf98e86368cd03da17f884015d2fc1543
+    :git: https://github.com/jasonelle/ios-pod-reachability.git
+  SBJson:
+    :commit: e57e413b76840f2d3ac6e9dce255493a558e45d4
+    :git: https://github.com/jasonelle/ios-pod-sbjson.git
   SDWebImage:
-    :git: https://github.com/rs/SDWebImage.git
+    :git: https://github.com/jasonelle/ios-pod-sdwebimage.git
     :tag: 3.8.1
+  SocketRocket:
+    :commit: 07b348eb13dc978c3ca84e80975b147667184b5d
+    :git: https://github.com/jasonelle/ios-pod-socketrocket.git
   SWTableViewCell:
     :commit: 1c8845e25f520c959391bd79dc6cf271e0cf9a44
-    :git: https://github.com/gliechtenstein/SWTableViewCell.git
+    :git: https://github.com/jasonelle/ios-pod-swtableviewcell.git
+  TTTAttributedLabel:
+    :commit: b0f1f93d5d4368a7aaf52e848013a1b40b00dc3c
+    :git: https://github.com/jasonelle/ios-pod-tttattributedlabel.git
+  UICKeyChainStore:
+    :commit: 23cd5901c8dd1b6fcc5226df2231c5bd89674bf0
+    :git: https://github.com/jasonelle/ios-pod-uickeychainstore.git
 
 SPEC CHECKSUMS:
-  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  AFNetworking: ef6403a1383e5a6fa4ca961d7d524b1898ce0a84
   AFOAuth2Manager: 0566da1be64883e339813d411229fdc9a84dab7c
   AHKActionSheet: f0b312b5c689f72924d231c39dae140ecd5c1d46
   APAddressBook: e68ecaf95f2c323b625ae585a0d25fe505291286
@@ -184,27 +249,27 @@ SPEC CHECKSUMS:
   DTCoreText: ad5135357a0e792f735970ed67d3ecda8b602d3d
   DTFoundation: f03be9fd786f11e505bb8fc44e2a3732bf0917df
   FLEX: bd1a39e55b56bb413b6f1b34b3c10a0dc44ef079
-  FreeStreamer: c11b83e4e4010c00d1e1549a37d6719e98252c45
+  FreeStreamer: 7e9c976045701ac2f7e9c14c17245203c37bf2ea
   HMSegmentedControl: 83b9686022d2176fb6457d2bdb61e5d6393fed7d
   INTULocationManager: 73f8254b3d05c897c56bb13c190e5b7c648c0998
   IQAudioRecorderController: 69a67c2e0b87bd8746cbb4de175fd7a0bf820009
   JDStatusBarNotification: 21b616e7432284fea6eb0ce9eadc37c8038a5544
-  JSCoreBom: 712590b897ecd74d9fa9cb0f16857491411c932b
+  JSCoreBom: 787dc056d5b933617a1772ca10fb8437fed0d790
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   NSGIF: 442808fd1667ebac3d09046c3f6d4bdd6720cded
   NSHash: 036c03781d372c288d332b512b203e7bb832e46e
-  OMGHTTPURLRQ: 38316b56d88125c600bcdb16df8329147da2b0ee
+  OMGHTTPURLRQ: 9ac96bdf5c90a33f75836630729ea1adc312a9ed
   PHFComposeBarView: 758c73ce54be681df97223bc61543dd8828ae0d3
   PHFDelegateChain: 491f9cd8a3fb8761f390ff05f74a0e168d48d285
-  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  Reachability: a1dac0017d14de3504a13723b00f2b21f1130aea
   REMenu: 30dad195930adf6c5eeb8041e3257aa60bf9fa49
   RMActionController: b83653e7452ed51492094d65dc82151c36443c03
   RMDateSelectionViewController: 354a0f1fe40bac01054528b7a8735f2973bbd813
-  SBJson: 73c848dc34be51fda282fab12bda6c426f5ead08
+  SBJson: 72547475887af34b161b2b9dce8c20415d8b6c68
   SCSiriWaveformView: 15b9dd6f94c7536e2032b34a35c6ff74d38c7411
   SDWebImage: 35f9627a3e44b4f292a8a8ce6a531fa488239b91
-  SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
+  SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SWFrameButton: cd3cc4a8961e8975f4800c0f6d1d3c54c213eb87
   SWTableViewCell: 2a94aadc9d47b2b611fa064566bf57948b95b579
   SZTextView: 3a81174dce0710a9ab069bc73a813e6df53b9c82
@@ -213,6 +278,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
 
-PODFILE CHECKSUM: cc9d5915131bb1914673ec7a2df3c02b502352fc
+PODFILE CHECKSUM: 56e8f9f2e28493f13de667b84ccbb32a15bd29f2
 
 COCOAPODS: 1.5.3

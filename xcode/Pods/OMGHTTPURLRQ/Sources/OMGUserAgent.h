@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 #endif
 
-NSString *OMGUserAgent();
+NSString *OMGUserAgent(void);
 
 #if __has_feature(nullability) && defined(NS_ASSUME_NONNULL_END)
 NS_ASSUME_NONNULL_END

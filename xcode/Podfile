@@ -1,45 +1,47 @@
 platform :ios, '9.0'
-inhibit_all_warnings!
+#inhibit_all_warnings!
 use_frameworks!
 
 target 'Jasonette' do
 
   # System
-  pod 'UICKeyChainStore', :git => 'https://github.com/jasonelle/ios-pod-uickeychainstore.git'
-  pod 'libPhoneNumber-iOS'
+  pod 'UICKeyChainStore', :git => 'https://github.com/jasonelle/ios-pod-uickeychainstore.git', :branch => 'jasonelle'
+  pod 'libPhoneNumber-iOS', :git => 'https://github.com/jasonelle/ios-pod-libphonenumber.git', :branch => 'jasonelle'
   pod 'DTCoreText'
-  pod 'JSCoreBom', '~> 1.1.1'
-  pod 'SBJson', '~> 5.0.0'
+  pod 'JSCoreBom', :git => 'https://github.com/jasonelle/ios-pod-jscorebom.git', :branch => 'jasonelle'
+  pod 'SBJson', :git => 'https://github.com/jasonelle/ios-pod-sbjson.git', :branch => 'jasonelle'
   pod 'FLEX', '~> 2.0', :configurations => ['Debug']
-  pod 'NSHash'
+  pod 'NSHash', :git => 'https://github.com/jasonelle/ios-pod-nshash.git', :branch => 'jasonelle'
   
   ## TODO: Remove this dependency
   ## change it to Contacts native api
   ## https://github.com/Alterplay/APAddressBook/issues/138
-  pod 'APAddressBook', :git => 'https://github.com/jasonelle/ios-pod-apaddressbook.git'
+  pod 'APAddressBook', :git => 'https://github.com/jasonelle/ios-pod-apaddressbook.git', :branch => 'jasonelle'
   
   # Networking
-  pod 'SocketRocket'
-  pod 'AFNetworking', :git => 'https://github.com/jasonelle/ios-pod-afnetworking.git'
+  pod 'OMGHTTPURLRQ', :git => 'https://github.com/jasonelle/ios-pod-omghttpurlrq.git', :branch => 'jasonelle'
+  pod 'Reachability', :git => 'https://github.com/jasonelle/ios-pod-reachability.git', :branch => 'jasonelle'
+  pod 'SocketRocket', :git => 'https://github.com/jasonelle/ios-pod-socketrocket.git', :branch => 'jasonelle'
+  pod 'AFNetworking', :git => 'https://github.com/jasonelle/ios-pod-afnetworking.git', :branch => 'jasonelle'
   pod 'TDOAuth'
   pod 'AFOAuth2Manager'
-  
+
   ## TODO: Update to latest version
-  pod 'SDWebImage', :git => 'https://github.com/jasonelle/ios-pod-sdwebimage.git', :tag => '3.8.1'
+  pod 'SDWebImage', :git => 'https://github.com/jasonelle/ios-pod-sdwebimage.git', :tag => '3.8.1', :inhibit_warnings => true
   
   # Audio
   pod 'IQAudioRecorderController'
-  pod 'FreeStreamer', :git => 'https://github.com/jasonelle/ios-pod-freestreamer.git'
+  pod 'FreeStreamer', :git => 'https://github.com/jasonelle/ios-pod-freestreamer.git', :branch => 'jasonelle'
   
   # Views
   pod 'MBProgressHUD', '~> 1.0'
   
   pod 'TWMessageBarManager'
   
-  pod 'SWTableViewCell', :git => 'https://github.com/jasonelle/ios-pod-swtableviewcell.git'
+  pod 'SWTableViewCell', :git => 'https://github.com/jasonelle/ios-pod-swtableviewcell.git', :branch => 'jasonelle'
 
   
-  pod 'TTTAttributedLabel'
+  pod 'TTTAttributedLabel', :git => 'https://github.com/jasonelle/ios-pod-tttattributedlabel.git', :branch => 'jasonelle'
   pod 'BBBadgeBarButtonItem'
   
   pod 'REMenu'

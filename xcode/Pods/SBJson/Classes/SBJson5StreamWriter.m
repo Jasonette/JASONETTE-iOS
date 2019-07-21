@@ -363,7 +363,7 @@ static const char *strForChar(int c) {
 
 	const char *objcType = [number objCType];
 	char num[128];
-	size_t len;
+	int len;
 
 	switch (objcType[0]) {
 		case 'c': case 'i': case 's': case 'l': case 'q':
@@ -377,7 +377,11 @@ static const char *strForChar(int c) {
 			break;
         }
 	}
-	[_delegate writer:self appendBytes:num length: len];
+
+    // It is always safe to cast `len` to NSUInteger here, because
+    // snprintf above guarantees its range is in the range 0 to 128
+    // (the length of the `num` buffer).
+	[_delegate writer:self appendBytes:num length: (NSUInteger)len];
 	[_state transitionState:self];
 	return YES;
 }

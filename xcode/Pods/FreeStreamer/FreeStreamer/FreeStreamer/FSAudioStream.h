@@ -1,6 +1,6 @@
 /*
  * This file is part of the FreeStreamer project,
- * (C)Copyright 2011-2016 Matias Muhonen <mmu@iki.fi> 穆马帝
+ * (C)Copyright 2011-2018 Matias Muhonen <mmu@iki.fi> 穆马帝
  * See the file ''LICENSE'' for using the code.
  *
  * https://github.com/muhku/FreeStreamer
@@ -12,17 +12,17 @@
 /**
  * The major version of the current release.
  */
-#define FREESTREAMER_VERSION_MAJOR          3
+#define FREESTREAMER_VERSION_MAJOR          4
 
 /**
  * The minor version of the current release.
  */
-#define FREESTREAMER_VERSION_MINOR          5
+#define FREESTREAMER_VERSION_MINOR          0
 
 /**
  * The reversion of the current release
  */
-#define FREESTREAMER_VERSION_REVISION       7
+#define FREESTREAMER_VERSION_REVISION       0
 
 /**
  * Follow this notification for the audio stream state changes.
@@ -319,7 +319,7 @@ typedef struct {
 
 @end
 
-NSString*             freeStreamerReleaseVersion();
+NSString*             freeStreamerReleaseVersion(void);
 
 /**
  * FSAudioStream is a class for streaming audio files from an URL.
@@ -477,6 +477,13 @@ NSString*             freeStreamerReleaseVersion();
  */
 @property (nonatomic,readonly) UInt64 contentLength;
 /**
+ * The number of bytes of audio data. Notice that this may differ
+ * from the number of bytes the server returns for the content length!
+ * For instance audio file meta data is excluded from the count.
+ * Effectively you can use this property for seeking calculations.
+ */
+@property (nonatomic,readonly) UInt64 audioDataByteCount;
+/**
  * This property has the current playback position, if the stream is non-continuous.
  * The current playback position cannot be determined for continuous streams.
  */
@@ -546,7 +553,7 @@ NSString*             freeStreamerReleaseVersion();
  * Called upon completion of the stream. Note that for continuous
  * streams this is never called.
  */
-@property (copy) void (^onCompletion)();
+@property (copy) void (^onCompletion)(void);
 /**
  * Called upon a state change.
  */

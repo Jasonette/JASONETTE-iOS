@@ -224,7 +224,7 @@
 
             case 0xE0 ... 0xEF: {
                 // Expecting 2 continuation bytes
-                long cp = bytes[index] & 0x0F;
+                unsigned long cp = bytes[index] & 0x0F;
                 index++;
                 for (NSUInteger i = 0; i < 2; i++) {
                     if (![self haveOneMoreByte]) return sbjson5_token_eof;
@@ -247,7 +247,7 @@
 
             case 0xF0 ... 0xF4: {
                 // Expecting 3 continuation bytes
-                long cp = bytes[index] & 0x07;
+                unsigned long cp = bytes[index] & 0x07;
                 index++;
                 for (NSUInteger i = 0; i < 3; i++) {
                     if (![self haveOneMoreByte]) return sbjson5_token_eof;
@@ -275,7 +275,7 @@
     }
 }
 
-- (BOOL)isInvalidCodePoint:(long)cp {
+- (BOOL)isInvalidCodePoint:(unsigned long)cp {
     if (cp > 0x10FFFF || SBStringIsSurrogateLowCharacter(cp) || SBStringIsSurrogateHighCharacter(cp)) {
         [self setError:[NSString stringWithFormat:@"Illegal Unicode code point [0x%lX]", cp]];
         return YES;

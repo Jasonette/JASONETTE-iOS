@@ -88,12 +88,12 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 #pragma mark - Class Constructor Methods
 
-+(Reachability*)reachabilityWithHostName:(NSString*)hostname
++(instancetype)reachabilityWithHostName:(NSString*)hostname
 {
     return [Reachability reachabilityWithHostname:hostname];
 }
 
-+(Reachability*)reachabilityWithHostname:(NSString*)hostname
++(instancetype)reachabilityWithHostname:(NSString*)hostname
 {
     SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithName(NULL, [hostname UTF8String]);
     if (ref) 
@@ -106,7 +106,7 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     return nil;
 }
 
-+(Reachability *)reachabilityWithAddress:(void *)hostAddress
++(instancetype)reachabilityWithAddress:(void *)hostAddress
 {
     SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr*)hostAddress);
     if (ref) 
@@ -119,8 +119,8 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     return nil;
 }
 
-+(Reachability *)reachabilityForInternetConnection 
-{   
++(instancetype)reachabilityForInternetConnection
+{
     struct sockaddr_in zeroAddress;
     bzero(&zeroAddress, sizeof(zeroAddress));
     zeroAddress.sin_len = sizeof(zeroAddress);
@@ -129,7 +129,7 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     return [self reachabilityWithAddress:&zeroAddress];
 }
 
-+(Reachability*)reachabilityForLocalWiFi
++(instancetype)reachabilityForLocalWiFi
 {
     struct sockaddr_in localWifiAddress;
     bzero(&localWifiAddress, sizeof(localWifiAddress));
@@ -141,10 +141,43 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     return [self reachabilityWithAddress:&localWifiAddress];
 }
 
++(instancetype)reachabilityWithURL:(NSURL*)url
+{
+    id reachability;
+
+    NSString *host = url.host;
+    BOOL isIpAddress = [self isIpAddress:host];
+
+    if (isIpAddress)
+    {
+        NSNumber *port = url.port ?: [url.scheme isEqualToString:@"https"] ? @(443) : @(80);
+
+        struct sockaddr_in address;
+        address.sin_len = sizeof(address);
+        address.sin_family = AF_INET;
+        address.sin_port = htons([port intValue]);
+        address.sin_addr.s_addr = inet_addr([host UTF8String]);
+
+        reachability = [self reachabilityWithAddress:&address];
+    }
+    else
+    {
+        reachability = [self reachabilityWithHostname:host];
+    }
+
+    return reachability;
+}
+
++(BOOL)isIpAddress:(NSString*)host
+{
+    struct in_addr pin;
+    return 1 == inet_aton([host UTF8String], &pin);
+}
+
 
 // Initialization methods
 
--(Reachability *)initWithReachabilityRef:(SCNetworkReachabilityRef)ref 
+-(instancetype)initWithReachabilityRef:(SCNetworkReachabilityRef)ref
 {
     self = [super init];
     if (self != nil) 
@@ -172,7 +205,8 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     }
 
 	self.reachableBlock          = nil;
-	self.unreachableBlock        = nil;
+    self.unreachableBlock        = nil;
+    self.reachabilityBlock       = nil;
     self.reachabilitySerialQueue = nil;
 }
 
@@ -448,6 +482,11 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
         {
             self.unreachableBlock(self);
         }
+    }
+    
+    if(self.reachabilityBlock)
+    {
+        self.reachabilityBlock(self, flags);
     }
     
     // this makes sure the change notification happens on the MAIN THREAD
