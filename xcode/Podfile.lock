@@ -21,7 +21,7 @@ PODS:
     - APAddressBook/Core (= 0.3.2)
   - APAddressBook/Core (0.3.2)
   - BBBadgeBarButtonItem (1.2)
-  - CYRTextView (0.4.0)
+  - CYRTextView (0.4.1)
   - DAKeyboardControl (2.4.0)
   - DHSmartScreenshot (1.3.1)
   - DTCoreText (1.6.22):
@@ -44,7 +44,7 @@ PODS:
   - FLEX (3.0.0)
   - FreeStreamer (4.0.0):
     - Reachability (~> 3.0)
-  - HMSegmentedControl (1.5.2)
+  - HMSegmentedControl (1.5.5)
   - INTULocationManager (4.2.0)
   - IQAudioRecorderController (1.2.3):
     - SCSiriWaveformView
@@ -90,7 +90,7 @@ DEPENDENCIES:
   - AHKActionSheet
   - APAddressBook (from `https://github.com/jasonelle/ios-pod-apaddressbook.git`, branch `jasonelle`)
   - BBBadgeBarButtonItem
-  - CYRTextView
+  - CYRTextView (from `https://github.com/jasonelle/ios-pod-cyrtextview.git`, branch `jasonelle`)
   - DAKeyboardControl
   - DHSmartScreenshot
   - DTCoreText
@@ -108,7 +108,7 @@ DEPENDENCIES:
   - OMGHTTPURLRQ (from `https://github.com/jasonelle/ios-pod-omghttpurlrq.git`, branch `jasonelle`)
   - PHFComposeBarView
   - Reachability (from `https://github.com/jasonelle/ios-pod-reachability.git`, branch `jasonelle`)
-  - REMenu
+  - REMenu (from `https://github.com/jasonelle/ios-pod-remenu.git`, branch `jasonelle`)
   - RMDateSelectionViewController
   - SBJson (from `https://github.com/jasonelle/ios-pod-sbjson.git`, branch `jasonelle`)
   - SDWebImage (from `https://github.com/jasonelle/ios-pod-sdwebimage.git`, tag `3.8.1`)
@@ -118,7 +118,7 @@ DEPENDENCIES:
   - SZTextView
   - TDOAuth
   - TTTAttributedLabel (from `https://github.com/jasonelle/ios-pod-tttattributedlabel.git`, branch `jasonelle`)
-  - TWMessageBarManager
+  - TWMessageBarManager (from `https://github.com/jasonelle/ios-pod-twmessagebarmanager.git`, branch `jasonelle`)
   - UICKeyChainStore (from `https://github.com/jasonelle/ios-pod-uickeychainstore.git`, branch `jasonelle`)
 
 SPEC REPOS:
@@ -126,7 +126,6 @@ SPEC REPOS:
     - AFOAuth2Manager
     - AHKActionSheet
     - BBBadgeBarButtonItem
-    - CYRTextView
     - DAKeyboardControl
     - DHSmartScreenshot
     - DTCoreText
@@ -139,14 +138,12 @@ SPEC REPOS:
     - NSGIF
     - PHFComposeBarView
     - PHFDelegateChain
-    - REMenu
     - RMActionController
     - RMDateSelectionViewController
     - SCSiriWaveformView
     - SWFrameButton
     - SZTextView
     - TDOAuth
-    - TWMessageBarManager
 
 EXTERNAL SOURCES:
   AFNetworking:
@@ -155,6 +152,9 @@ EXTERNAL SOURCES:
   APAddressBook:
     :branch: jasonelle
     :git: https://github.com/jasonelle/ios-pod-apaddressbook.git
+  CYRTextView:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-cyrtextview.git
   FLEX:
     :git: https://github.com/jasonelle/ios-pod-flex.git
     :tag: 3.0.0
@@ -176,6 +176,9 @@ EXTERNAL SOURCES:
   Reachability:
     :branch: jasonelle
     :git: https://github.com/jasonelle/ios-pod-reachability.git
+  REMenu:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-remenu.git
   SBJson:
     :branch: jasonelle
     :git: https://github.com/jasonelle/ios-pod-sbjson.git
@@ -191,6 +194,9 @@ EXTERNAL SOURCES:
   TTTAttributedLabel:
     :branch: jasonelle
     :git: https://github.com/jasonelle/ios-pod-tttattributedlabel.git
+  TWMessageBarManager:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-twmessagebarmanager.git
   UICKeyChainStore:
     :branch: jasonelle
     :git: https://github.com/jasonelle/ios-pod-uickeychainstore.git
@@ -202,6 +208,9 @@ CHECKOUT OPTIONS:
   APAddressBook:
     :commit: 77888b7c4939550f84fed887945fbd22892a76c2
     :git: https://github.com/jasonelle/ios-pod-apaddressbook.git
+  CYRTextView:
+    :commit: 684ba5707637cf2a15952fa8922f6fa944b164e2
+    :git: https://github.com/jasonelle/ios-pod-cyrtextview.git
   FLEX:
     :git: https://github.com/jasonelle/ios-pod-flex.git
     :tag: 3.0.0
@@ -223,6 +232,9 @@ CHECKOUT OPTIONS:
   Reachability:
     :commit: 788111ebf98e86368cd03da17f884015d2fc1543
     :git: https://github.com/jasonelle/ios-pod-reachability.git
+  REMenu:
+    :commit: 865872902b5ad0674cf2ecd191617d10a4dd075d
+    :git: https://github.com/jasonelle/ios-pod-remenu.git
   SBJson:
     :commit: e57e413b76840f2d3ac6e9dce255493a558e45d4
     :git: https://github.com/jasonelle/ios-pod-sbjson.git
@@ -238,6 +250,9 @@ CHECKOUT OPTIONS:
   TTTAttributedLabel:
     :commit: b0f1f93d5d4368a7aaf52e848013a1b40b00dc3c
     :git: https://github.com/jasonelle/ios-pod-tttattributedlabel.git
+  TWMessageBarManager:
+    :commit: e707b00e78ee980b1c9536406d78a154283935bf
+    :git: https://github.com/jasonelle/ios-pod-twmessagebarmanager.git
   UICKeyChainStore:
     :commit: 23cd5901c8dd1b6fcc5226df2231c5bd89674bf0
     :git: https://github.com/jasonelle/ios-pod-uickeychainstore.git
@@ -248,14 +263,14 @@ SPEC CHECKSUMS:
   AHKActionSheet: f0b312b5c689f72924d231c39dae140ecd5c1d46
   APAddressBook: e68ecaf95f2c323b625ae585a0d25fe505291286
   BBBadgeBarButtonItem: c2fbca0bff18e21b70defc9438a8a5048008e7ca
-  CYRTextView: 1c1a4d708eee54ecad66b8ad42dbfe73083bdfce
+  CYRTextView: 39e84d19c9cdf3e69554745c22b8833c6b3c9d36
   DAKeyboardControl: 9d9bca22a5cc3c1d3cc61e24fbd208c3e84a3d2d
   DHSmartScreenshot: ee749048bd7126c4826748f98df3a4adc6ad6c78
   DTCoreText: ad5135357a0e792f735970ed67d3ecda8b602d3d
   DTFoundation: f03be9fd786f11e505bb8fc44e2a3732bf0917df
   FLEX: d66c759bce0f6ebbbf472c742380874d846f2883
   FreeStreamer: 7e9c976045701ac2f7e9c14c17245203c37bf2ea
-  HMSegmentedControl: 83b9686022d2176fb6457d2bdb61e5d6393fed7d
+  HMSegmentedControl: f514c6dad47aa3065e0ed2e8046b73efc71221b9
   INTULocationManager: 73f8254b3d05c897c56bb13c190e5b7c648c0998
   IQAudioRecorderController: 69a67c2e0b87bd8746cbb4de175fd7a0bf820009
   JDStatusBarNotification: 21b616e7432284fea6eb0ce9eadc37c8038a5544
@@ -283,6 +298,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
 
-PODFILE CHECKSUM: d5b35ade7a643518ba7db94a573e6989623202c3
+PODFILE CHECKSUM: e3aac36656637545da548e9d919944e5c3f0eff7
 
 COCOAPODS: 1.5.3

@@ -92,6 +92,10 @@ that triggers when the orientation changes.
 
 - Updated to `FLEX 3.0.0` (was 2.4.0).
 
+- Updated to `CYRTextView` 0.4.1 (was 0.4.0).
+
+- Updated to `HMSegmentedControl` 1.5.5 (was 1.5.2).
+
 ### Removed
 
 - Nothing

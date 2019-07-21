@@ -36,7 +36,7 @@ target 'Jasonette' do
   # Views
   pod 'MBProgressHUD', '~> 1.0'
   
-  pod 'TWMessageBarManager'
+  pod 'TWMessageBarManager', :git => 'https://github.com/jasonelle/ios-pod-twmessagebarmanager.git', :branch => 'jasonelle'
   
   pod 'SWTableViewCell', :git => 'https://github.com/jasonelle/ios-pod-swtableviewcell.git', :branch => 'jasonelle'
 
@@ -44,16 +44,16 @@ target 'Jasonette' do
   pod 'TTTAttributedLabel', :git => 'https://github.com/jasonelle/ios-pod-tttattributedlabel.git', :branch => 'jasonelle'
   pod 'BBBadgeBarButtonItem'
   
-  pod 'REMenu'
+  pod 'REMenu', :git => 'https://github.com/jasonelle/ios-pod-remenu.git', :branch => 'jasonelle'
   pod 'JDStatusBarNotification' # $util.toast
-  pod 'HMSegmentedControl'
+  pod 'HMSegmentedControl', :git => 'https://github.com/jasonelle/ios-pod-hmsegmentedcontrol.git', :branch => 'jasonelle'
   pod 'SWFrameButton'
   
   pod 'NSGIF', '~> 1.0'
   pod 'INTULocationManager'
   pod 'AHKActionSheet'
   
-  pod 'CYRTextView'
+  pod 'CYRTextView', :git => 'https://github.com/jasonelle/ios-pod-cyrtextview.git', :branch => 'jasonelle'
   
   pod 'SZTextView'
   
@@ -63,6 +63,8 @@ target 'Jasonette' do
   
   pod 'PHFComposeBarView'
   pod 'DAKeyboardControl'
+
+  #pod 'GoogleMobileAds', '~> 7.8'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|

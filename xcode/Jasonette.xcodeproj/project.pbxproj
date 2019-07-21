@@ -758,7 +758,7 @@
 				EF07A15A22D6186100D0D3FF /* JasonGeoAction.m */,
 				EF07A15B22D6186100D0D3FF /* JasonGeoAction.h */,
 			);
-			path = $geo;
+			path = "$geo";
 			sourceTree = "<group>";
 		};
 		EF07A15C22D6186100D0D3FF /* $global */ = {
@@ -767,7 +767,7 @@
 				EF07A15D22D6186100D0D3FF /* JasonGlobalAction.h */,
 				EF07A15E22D6186100D0D3FF /* JasonGlobalAction.m */,
 			);
-			path = $global;
+			path = "$global";
 			sourceTree = "<group>";
 		};
 		EF07A15F22D6186100D0D3FF /* $audio */ = {
@@ -776,7 +776,7 @@
 				EF07A16022D6186100D0D3FF /* JasonAudioAction.h */,
 				EF07A16122D6186100D0D3FF /* JasonAudioAction.m */,
 			);
-			path = $audio;
+			path = "$audio";
 			sourceTree = "<group>";
 		};
 		EF07A16222D6186100D0D3FF /* $network */ = {
@@ -785,7 +785,7 @@
 				EF07A16322D6186100D0D3FF /* JasonNetworkAction.h */,
 				EF07A16422D6186100D0D3FF /* JasonNetworkAction.m */,
 			);
-			path = $network;
+			path = "$network";
 			sourceTree = "<group>";
 		};
 		EF07A16522D6186100D0D3FF /* $push */ = {
@@ -794,7 +794,7 @@
 				EF07A16622D6186100D0D3FF /* JasonPushAction.h */,
 				EF07A16722D6186100D0D3FF /* JasonPushAction.m */,
 			);
-			path = $push;
+			path = "$push";
 			sourceTree = "<group>";
 		};
 		EF07A16822D6186100D0D3FF /* $websocket */ = {
@@ -803,7 +803,7 @@
 				EF07A16922D6186100D0D3FF /* JasonWebsocketAction.m */,
 				EF07A16A22D6186100D0D3FF /* JasonWebsocketAction.h */,
 			);
-			path = $websocket;
+			path = "$websocket";
 			sourceTree = "<group>";
 		};
 		EF07A16B22D6186100D0D3FF /* $media */ = {
@@ -813,7 +813,7 @@
 				EF07A16F22D6186100D0D3FF /* JasonMediaAction.h */,
 				EF07A17022D6186100D0D3FF /* JasonMediaAction.m */,
 			);
-			path = $media;
+			path = "$media";
 			sourceTree = "<group>";
 		};
 		EF07A16C22D6186100D0D3FF /* Picker */ = {
@@ -831,7 +831,7 @@
 				EF07A17222D6186100D0D3FF /* JasonUtilAction.h */,
 				EF07A17322D6186100D0D3FF /* JasonUtilAction.m */,
 			);
-			path = $util;
+			path = "$util";
 			sourceTree = "<group>";
 		};
 		EF07A17422D6186100D0D3FF /* $return */ = {
@@ -840,7 +840,7 @@
 				EF07A17522D6186100D0D3FF /* JasonReturnAction.m */,
 				EF07A17622D6186100D0D3FF /* JasonReturnAction.h */,
 			);
-			path = $return;
+			path = "$return";
 			sourceTree = "<group>";
 		};
 		EF07A17722D6186100D0D3FF /* $convert */ = {
@@ -849,7 +849,7 @@
 				EF07A17822D6186100D0D3FF /* JasonConvertAction.m */,
 				EF07A17922D6186100D0D3FF /* JasonConvertAction.h */,
 			);
-			path = $convert;
+			path = "$convert";
 			sourceTree = "<group>";
 		};
 		EF07A17A22D6186100D0D3FF /* $session */ = {
@@ -858,7 +858,7 @@
 				EF07A17B22D6186100D0D3FF /* JasonSessionAction.m */,
 				EF07A17C22D6186100D0D3FF /* JasonSessionAction.h */,
 			);
-			path = $session;
+			path = "$session";
 			sourceTree = "<group>";
 		};
 		EF07A17D22D6186100D0D3FF /* $script */ = {
@@ -867,7 +867,7 @@
 				EF07A17E22D6186100D0D3FF /* JasonScriptAction.m */,
 				EF07A17F22D6186100D0D3FF /* JasonScriptAction.h */,
 			);
-			path = $script;
+			path = "$script";
 			sourceTree = "<group>";
 		};
 		EF07A18022D6186100D0D3FF /* $vision */ = {
@@ -876,7 +876,7 @@
 				EF07A18122D6186100D0D3FF /* JasonVisionAction.h */,
 				EF07A18222D6186100D0D3FF /* JasonVisionAction.m */,
 			);
-			path = $vision;
+			path = "$vision";
 			sourceTree = "<group>";
 		};
 		EF07A18322D6186100D0D3FF /* $cache */ = {
@@ -885,7 +885,7 @@
 				EF07A18422D6186100D0D3FF /* JasonCacheAction.m */,
 				EF07A18522D6186100D0D3FF /* JasonCacheAction.h */,
 			);
-			path = $cache;
+			path = "$cache";
 			sourceTree = "<group>";
 		};
 		EF07A18622D6186100D0D3FF /* $oauth */ = {
@@ -894,7 +894,7 @@
 				EF07A18722D6186100D0D3FF /* JasonOauthAction.h */,
 				EF07A18822D6186100D0D3FF /* JasonOauthAction.m */,
 			);
-			path = $oauth;
+			path = "$oauth";
 			sourceTree = "<group>";
 		};
 		EF07A18922D6186100D0D3FF /* $notification */ = {
@@ -903,7 +903,7 @@
 				EF07A18A22D6186100D0D3FF /* JasonNotificationAction.h */,
 				EF07A18B22D6186100D0D3FF /* JasonNotificationAction.m */,
 			);
-			path = $notification;
+			path = "$notification";
 			sourceTree = "<group>";
 		};
 		EF07A18C22D6186100D0D3FF /* $timer */ = {
@@ -912,7 +912,7 @@
 				EF07A18D22D6186100D0D3FF /* JasonTimerAction.m */,
 				EF07A18E22D6186100D0D3FF /* JasonTimerAction.h */,
 			);
-			path = $timer;
+			path = "$timer";
 			sourceTree = "<group>";
 		};
 		EF07A18F22D6186100D0D3FF /* $log */ = {
@@ -921,7 +921,7 @@
 				EF07A19022D6186100D0D3FF /* JasonLogAction.m */,
 				EF07A19122D6186100D0D3FF /* JasonLogAction.h */,
 			);
-			path = $log;
+			path = "$log";
 			sourceTree = "<group>";
 		};
 		EF07A19222D6186100D0D3FF /* $agent */ = {
@@ -930,7 +930,7 @@
 				EF07A19322D6186100D0D3FF /* JasonAgentAction.h */,
 				EF07A19422D6186100D0D3FF /* JasonAgentAction.m */,
 			);
-			path = $agent;
+			path = "$agent";
 			sourceTree = "<group>";
 		};
 		EF07A19522D6186100D0D3FF /* Views */ = {
@@ -1018,7 +1018,7 @@
 				EF07A1AC22D6186100D0D3FF /* JasonPushService.h */,
 				EF07A1AD22D6186100D0D3FF /* JasonPushService.m */,
 			);
-			path = $push;
+			path = "$push";
 			sourceTree = "<group>";
 		};
 		EF07A1AE22D6186100D0D3FF /* $websocket */ = {
@@ -1027,7 +1027,7 @@
 				EF07A1AF22D6186100D0D3FF /* JasonWebsocketService.h */,
 				EF07A1B022D6186100D0D3FF /* JasonWebsocketService.m */,
 			);
-			path = $websocket;
+			path = "$websocket";
 			sourceTree = "<group>";
 		};
 		EF07A1B122D6186100D0D3FF /* $vision */ = {
@@ -1036,7 +1036,7 @@
 				EF07A1B222D6186100D0D3FF /* JasonVisionService.m */,
 				EF07A1B322D6186100D0D3FF /* JasonVisionService.h */,
 			);
-			path = $vision;
+			path = "$vision";
 			sourceTree = "<group>";
 		};
 		EF07A1B422D6186100D0D3FF /* $agent */ = {
@@ -1045,7 +1045,7 @@
 				EF07A1B522D6186100D0D3FF /* JasonAgentService.m */,
 				EF07A1B622D6186100D0D3FF /* JasonAgentService.h */,
 			);
-			path = $agent;
+			path = "$agent";
 			sourceTree = "<group>";
 		};
 		EF82979822D30A71003ED64B /* Extensions */ = {
@@ -1191,7 +1191,6 @@
 				"${BUILT_PRODUCTS_DIR}/AHKActionSheet/AHKActionSheet.framework",
 				"${BUILT_PRODUCTS_DIR}/APAddressBook/APAddressBook.framework",
 				"${BUILT_PRODUCTS_DIR}/BBBadgeBarButtonItem/BBBadgeBarButtonItem.framework",
-				"${BUILT_PRODUCTS_DIR}/CYRTextView/CYRTextView.framework",
 				"${BUILT_PRODUCTS_DIR}/DAKeyboardControl/DAKeyboardControl.framework",
 				"${BUILT_PRODUCTS_DIR}/DHSmartScreenshot/DHSmartScreenshot.framework",
 				"${BUILT_PRODUCTS_DIR}/DTCoreText/DTCoreText.framework",
@@ -1235,7 +1234,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AHKActionSheet.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/APAddressBook.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BBBadgeBarButtonItem.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CYRTextView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DAKeyboardControl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DHSmartScreenshot.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DTCoreText.framework",

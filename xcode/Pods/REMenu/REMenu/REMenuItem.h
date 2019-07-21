@@ -49,6 +49,7 @@
 @property (strong, readwrite, nonatomic) UIColor *subtitleHighlightedTextShadowColor;
 @property (assign, readwrite, nonatomic) CGSize subtitleHighlightedTextShadowOffset;
 @property (assign, readwrite, nonatomic) NSTextAlignment subtitleTextAlignment;
+@property (strong, readwrite, nonatomic) UIColor *imageBackgroundColor;
 
 @property (copy, readwrite, nonatomic) NSString *title;
 @property (copy, readwrite, nonatomic) NSString *subtitle;
@@ -61,6 +62,8 @@
 
 - (id)initWithTitle:(NSString *)title image:(UIImage *)image highlightedImage:(UIImage *)highlightedImage action:(void (^)(REMenuItem *item))action;
 - (id)initWithTitle:(NSString *)title subtitle:(NSString *)subtitle image:(UIImage *)image highlightedImage:(UIImage *)highlightedImage action:(void (^)(REMenuItem *item))action;
+- (id)initWithTitle:(NSString *)title image:(UIImage *)image backgroundColor:(UIColor *)bgColor highlightedImage:(UIImage *)highlightedImage action:(void (^)(REMenuItem *item))action;
+- (id)initWithTitle:(NSString *)title subtitle:(NSString *)subtitle image:(UIImage *)image backgroundColor:(UIColor *)bgColor highlightedImage:(UIImage *)highlightedImage action:(void (^)(REMenuItem *item))action;
 - (id)initWithCustomView:(UIView *)customView action:(void (^)(REMenuItem *item))action;
 - (id)initWithCustomView:(UIView *)customView;
 - (void)setNeedsLayout;
