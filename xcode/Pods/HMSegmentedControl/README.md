@@ -1,6 +1,7 @@
 HMSegmentedControl
 ===
 
+[![CocoaPods](https://img.shields.io/cocoapods/dt/HMSegmentedControl.svg?maxAge=2592000)](https://cocoapods.org/pods/HMSegmentedControl)
 [![Pod Version](http://img.shields.io/cocoapods/v/HMSegmentedControl.svg?style=flat)](http://cocoadocs.org/docsets/HMSegmentedControl)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![Pod Platform](http://img.shields.io/cocoapods/p/HMSegmentedControl.svg?style=flat)](http://cocoadocs.org/docsets/HMSegmentedControl)

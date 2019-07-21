@@ -74,7 +74,7 @@
 		// close the file descriptor when the dispatch source is cancelled
 		dispatch_source_set_cancel_handler(_source, ^{
 			
-			close(_fileDescriptor);
+			close(self->_fileDescriptor);
 		});
 		
 		// at this point the dispatch source is paused, so start watching

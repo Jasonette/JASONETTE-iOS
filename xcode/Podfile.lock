@@ -35,11 +35,57 @@ PODS:
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
     - DTFoundation/UIKit (~> 1.7.5)
+  - DTFoundation (1.7.13):
+    - DTFoundation/AppKit (= 1.7.13)
+    - DTFoundation/Core (= 1.7.13)
+    - DTFoundation/Debug (= 1.7.13)
+    - DTFoundation/DTAnimatedGIF (= 1.7.13)
+    - DTFoundation/DTASN1 (= 1.7.13)
+    - DTFoundation/DTAsyncFileDeleter (= 1.7.13)
+    - DTFoundation/DTAWS (= 1.7.13)
+    - DTFoundation/DTHTMLParser (= 1.7.13)
+    - DTFoundation/DTProgressHUD (= 1.7.13)
+    - DTFoundation/DTReachability (= 1.7.13)
+    - DTFoundation/DTScripting (= 1.7.13)
+    - DTFoundation/DTSidePanel (= 1.7.13)
+    - DTFoundation/DTSQLite (= 1.7.13)
+    - DTFoundation/DTUTI (= 1.7.13)
+    - DTFoundation/DTZipArchive (= 1.7.13)
+    - DTFoundation/Runtime (= 1.7.13)
+    - DTFoundation/UIKit (= 1.7.13)
+    - DTFoundation/UIKit_BlocksAdditions (= 1.7.13)
   - DTFoundation/Core (1.7.13)
+  - DTFoundation/Debug (1.7.13):
+    - DTFoundation/Core
+    - DTFoundation/Runtime
   - DTFoundation/DTAnimatedGIF (1.7.13)
+  - DTFoundation/DTASN1 (1.7.13):
+    - DTFoundation/Core
+  - DTFoundation/DTAsyncFileDeleter (1.7.13):
+    - DTFoundation/Core
+  - DTFoundation/DTAWS (1.7.13):
+    - DTFoundation/Core
   - DTFoundation/DTHTMLParser (1.7.13):
     - DTFoundation/Core
+  - DTFoundation/DTProgressHUD (1.7.13):
+    - DTFoundation/Core
+    - DTFoundation/UIKit
+  - DTFoundation/DTReachability (1.7.13):
+    - DTFoundation/Core
+  - DTFoundation/DTScripting (1.7.13):
+    - DTFoundation/Core
+  - DTFoundation/DTSidePanel (1.7.13):
+    - DTFoundation/UIKit
+  - DTFoundation/DTSQLite (1.7.13):
+    - DTFoundation/Core
+  - DTFoundation/DTUTI (1.7.13)
+  - DTFoundation/DTZipArchive (1.7.13):
+    - DTFoundation/DTZipArchive/Minizip (= 1.7.13)
+  - DTFoundation/DTZipArchive/Minizip (1.7.13)
+  - DTFoundation/Runtime (1.7.13)
   - DTFoundation/UIKit (1.7.13):
+    - DTFoundation/Core
+  - DTFoundation/UIKit_BlocksAdditions (1.7.13):
     - DTFoundation/Core
   - FLEX (3.0.0)
   - FreeStreamer (4.0.0):
@@ -93,10 +139,11 @@ DEPENDENCIES:
   - CYRTextView (from `https://github.com/jasonelle/ios-pod-cyrtextview.git`, branch `jasonelle`)
   - DAKeyboardControl
   - DHSmartScreenshot
-  - DTCoreText
+  - DTCoreText (from `https://github.com/jasonelle/ios-pod-dtcoretext.git`, branch `jasonelle`)
+  - DTFoundation (from `https://github.com/jasonelle/ios-pod-dtfoundation.git`, branch `jasonelle`)
   - FLEX (from `https://github.com/jasonelle/ios-pod-flex.git`, tag `3.0.0`)
   - FreeStreamer (from `https://github.com/jasonelle/ios-pod-freestreamer.git`, branch `jasonelle`)
-  - HMSegmentedControl
+  - HMSegmentedControl (from `https://github.com/jasonelle/ios-pod-hmsegmentedcontrol.git`, branch `jasonelle`)
   - INTULocationManager
   - IQAudioRecorderController
   - JDStatusBarNotification
@@ -128,9 +175,6 @@ SPEC REPOS:
     - BBBadgeBarButtonItem
     - DAKeyboardControl
     - DHSmartScreenshot
-    - DTCoreText
-    - DTFoundation
-    - HMSegmentedControl
     - INTULocationManager
     - IQAudioRecorderController
     - JDStatusBarNotification
@@ -155,12 +199,21 @@ EXTERNAL SOURCES:
   CYRTextView:
     :branch: jasonelle
     :git: https://github.com/jasonelle/ios-pod-cyrtextview.git
+  DTCoreText:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-dtcoretext.git
+  DTFoundation:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-dtfoundation.git
   FLEX:
     :git: https://github.com/jasonelle/ios-pod-flex.git
     :tag: 3.0.0
   FreeStreamer:
     :branch: jasonelle
     :git: https://github.com/jasonelle/ios-pod-freestreamer.git
+  HMSegmentedControl:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-hmsegmentedcontrol.git
   JSCoreBom:
     :branch: jasonelle
     :git: https://github.com/jasonelle/ios-pod-jscorebom.git
@@ -211,12 +264,21 @@ CHECKOUT OPTIONS:
   CYRTextView:
     :commit: 684ba5707637cf2a15952fa8922f6fa944b164e2
     :git: https://github.com/jasonelle/ios-pod-cyrtextview.git
+  DTCoreText:
+    :commit: 7746c601985b06bade170a8f5f4bcafbb6f0a9c8
+    :git: https://github.com/jasonelle/ios-pod-dtcoretext.git
+  DTFoundation:
+    :commit: 3bc4a160c34ebb06666bde46dae3c8ff6e1dbacd
+    :git: https://github.com/jasonelle/ios-pod-dtfoundation.git
   FLEX:
     :git: https://github.com/jasonelle/ios-pod-flex.git
     :tag: 3.0.0
   FreeStreamer:
     :commit: 810f241e40f2f06ccf01b9022164ab896a72b12e
     :git: https://github.com/jasonelle/ios-pod-freestreamer.git
+  HMSegmentedControl:
+    :commit: ade9a52141a7ba47f02cef9d785cf7384ec334a6
+    :git: https://github.com/jasonelle/ios-pod-hmsegmentedcontrol.git
   JSCoreBom:
     :commit: 5c2143b133248f475c30f1661a83a227c07fe138
     :git: https://github.com/jasonelle/ios-pod-jscorebom.git
@@ -267,7 +329,7 @@ SPEC CHECKSUMS:
   DAKeyboardControl: 9d9bca22a5cc3c1d3cc61e24fbd208c3e84a3d2d
   DHSmartScreenshot: ee749048bd7126c4826748f98df3a4adc6ad6c78
   DTCoreText: ad5135357a0e792f735970ed67d3ecda8b602d3d
-  DTFoundation: f03be9fd786f11e505bb8fc44e2a3732bf0917df
+  DTFoundation: a983006d895798a41f025e804eef9dc5edd6f194
   FLEX: d66c759bce0f6ebbbf472c742380874d846f2883
   FreeStreamer: 7e9c976045701ac2f7e9c14c17245203c37bf2ea
   HMSegmentedControl: f514c6dad47aa3065e0ed2e8046b73efc71221b9
@@ -298,6 +360,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
 
-PODFILE CHECKSUM: e3aac36656637545da548e9d919944e5c3f0eff7
+PODFILE CHECKSUM: 25048b95e2a1350f336eb0e85ed8836f8d597173
 
 COCOAPODS: 1.5.3
