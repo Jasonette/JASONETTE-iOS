@@ -222,6 +222,17 @@ static NSArray * _services;
     }
 }
 
++ (BOOL) application:(UIApplication *)app
+             openURL:(NSURL *)url
+             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+    return [JasonAppDelegate
+            application:app
+            openURL:url
+            sourceApplication:nil
+            annotation:nil];
+}
+
 + (BOOL)  application:(UIApplication *)application
               openURL:(NSURL *)url
     sourceApplication:(NSString *)sourceApplication

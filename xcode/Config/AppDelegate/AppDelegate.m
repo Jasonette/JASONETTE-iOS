@@ -51,16 +51,15 @@
     return YES;
 }
 
-- (BOOL) application: (UIApplication *) application
-            openURL: (NSURL *) url
-  sourceApplication: (NSString *) sourceApplication
-         annotation: (id) annotation
+- (BOOL) application:(UIApplication *)app
+             openURL:(NSURL *)url
+             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
     return [JasonAppDelegate
-     application:application
-     openURL:url
-     sourceApplication:sourceApplication
-     annotation:annotation];
+            application:app
+            openURL:url
+            sourceApplication:nil
+            annotation:nil];
 }
 
 - (void) applicationDidBecomeActive: (UIApplication *) application
