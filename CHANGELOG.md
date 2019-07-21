@@ -86,6 +86,10 @@ that triggers when the orientation changes.
 
 - Updated to `FreeStreamer` 4.0.0 (was 3.5.7).
 
+- Updated to `JSCoreBom` 1.1.2 (was 1.1.1).
+
+- Updated to `OMGHTTPURLRQ` 3.2.4 (was 3.1.2).
+
 ### Removed
 
 - Nothing
