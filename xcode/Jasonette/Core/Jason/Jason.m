@@ -2569,13 +2569,22 @@
             [progressView setFrame:CGRectMake (0, vc.background.frame.origin.y + navHeight + 20, vc.background.frame.size.width, progressView.frame.size.height)];
             [progressView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
 
+#pragma message "Webview Styles"
+            
             if (bg[@"style"]) {
                 if (bg[@"style"][@"background"]) {
                     vc.background.backgroundColor = [JasonHelper colorwithHexString:bg[@"style"][@"background"] alpha:1.0];
                 }
 
                 if (bg[@"style"][@"progress"]) {
+                    
                     progressView.tintColor = [JasonHelper colorwithHexString:bg[@"style"][@"progress"] alpha:1.0];
+                    NSString * color = [bg[@"style"][@"progress"] lowercaseString];
+                    
+                    if([color isEqualToString:@"clear"] || [color isEqualToString:@"transparent"]) {
+                        progressView.tintColor = [UIColor clearColor];
+                        progressView.backgroundColor = [UIColor clearColor];
+                    }
                 }
             }
         }
