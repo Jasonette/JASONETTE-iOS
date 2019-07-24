@@ -118,7 +118,25 @@
 
 + (UIColor *)colorwithHexString:(NSString *)hexStr alpha:(CGFloat)alpha
 {
+    NSString * colorName = [hexStr lowercaseString];
+    
+    // Most common colors
+    if([colorName isEqualToString:@"clear"] || [colorName isEqualToString:@"transparent"]) {
+        return [UIColor clearColor];
+    }
+    
+    if([colorName isEqualToString:@"white"])
+    {
+        return [UIColor whiteColor];
+    }
+    
+    if([colorName isEqualToString:@"black"])
+    {
+        return [UIColor blackColor];
+    }
+
     if ([hexStr localizedCaseInsensitiveContainsString:@"rgb("]) {
+        
         NSScanner * scanner = [NSScanner scannerWithString:hexStr];
         NSString * junk, * red, * green, * blue;
         [scanner scanUpToCharactersFromSet:[NSCharacterSet decimalDigitCharacterSet] intoString:&junk];
@@ -129,7 +147,9 @@
         [scanner scanUpToCharactersFromSet:[NSCharacterSet punctuationCharacterSet] intoString:&blue];
         UIColor * color = [UIColor colorWithRed:red.intValue / 255.0 green:green.intValue / 255.0 blue:blue.intValue / 255.0 alpha:1.0];
         return color;
+        
     } else if ([hexStr localizedCaseInsensitiveContainsString:@"rgba("]) {
+        
         NSScanner * scanner = [NSScanner scannerWithString:hexStr];
         NSString * junk, * red, * green, * blue, * opacity;
         [scanner scanUpToCharactersFromSet:[NSCharacterSet decimalDigitCharacterSet] intoString:&junk];
@@ -142,7 +162,8 @@
         [scanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@")"] intoString:&opacity];
         UIColor * color = [UIColor colorWithRed:red.intValue / 255.0 green:green.intValue / 255.0 blue:blue.intValue / 255.0 alpha:opacity.floatValue];
         return color;
-    } else {
+        
+    } else if([colorName hasPrefix:@"#"]){
         // -----------------------------------------
         // Convert hex string to an integer
         // -----------------------------------------
@@ -165,6 +186,33 @@
 
         return color;
     }
+    
+    // Less common colors
+    NSDictionary * colors = @{
+                               @"red"   : [UIColor redColor],
+                               @"green" : [UIColor greenColor],
+                               @"yellow": [UIColor yellowColor],
+                               @"blue"  : [UIColor blueColor],
+                               @"magenta": [UIColor magentaColor],
+                               @"gray" : [UIColor grayColor],
+                               @"orange": [UIColor orangeColor]
+                               };
+    
+    UIColor * color = colors[colorName];
+    
+    if(!color){
+        
+        if(@available(iOS 11, *)){
+            color = [UIColor colorNamed:hexStr];
+        }
+        
+        if(!color) {
+            color = [UIColor clearColor];
+        }
+        
+    }
+    
+    return color;
 }
 
 + (NSObject *)cleanNull:(NSObject *)obj type:(NSString *)type {

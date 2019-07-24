@@ -2577,14 +2577,7 @@
                 }
 
                 if (bg[@"style"][@"progress"]) {
-                    
                     progressView.tintColor = [JasonHelper colorwithHexString:bg[@"style"][@"progress"] alpha:1.0];
-                    NSString * color = [bg[@"style"][@"progress"] lowercaseString];
-                    
-                    if([color isEqualToString:@"clear"] || [color isEqualToString:@"transparent"]) {
-                        progressView.tintColor = [UIColor clearColor];
-                        progressView.backgroundColor = [UIColor clearColor];
-                    }
                 }
             }
         }
