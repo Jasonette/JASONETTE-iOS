@@ -5,6 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonUtilAction.h"
+#import "SDWebImageDownloader.h"
 
 @implementation JasonUtilAction
 - (void)banner{
@@ -166,12 +167,11 @@
                     NSString *url = item[@"url"];
                     NSString *file_url = item[@"file_url"];
                     if(url){
-                        SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                        [manager downloadImageWithURL:[NSURL URLWithString:url]
+                        SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
+                        [downloader downloadImageWithURL:[NSURL URLWithString:url]
                                               options:0
-                                             progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                             }
-                                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                             progress:nil
+                                            completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
                                                 if (image) {
                                                     [share_items addObject:image];
                                                 }

@@ -2,17 +2,17 @@
  * This file is part of the SDWebImage package.
  * (c) Olivier Poitrey <rs@dailymotion.com>
  *
- * Created by james <https://github.com/mystcolor> on 9/28/11.
- *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-#import <Foundation/Foundation.h>
 #import "SDWebImageCompat.h"
 
-@interface UIImage (ForceDecode)
+@interface UIColor (HexString)
 
-+ (UIImage *)decodedImageWithImage:(UIImage *)image;
+/**
+ Convenience way to get hex string from color. The output should always be 32-bit RGBA hex string like `#00000000`.
+ */
+@property (nonatomic, copy, readonly, nonnull) NSString *sd_hexString;
 
 @end

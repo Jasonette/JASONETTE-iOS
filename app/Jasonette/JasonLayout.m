@@ -176,8 +176,11 @@ static NSMutableDictionary *_stylesheet = nil;
                             } else {
                                 aspectRatioMult = (((UIImageView *)component).image.size.height / ((UIImageView *)component).image.size.width);
                             }
-                            
-                            
+
+                            // isNaN check because sometimes this was coming in NaN and breaking everything
+                            if (aspectRatioMult != aspectRatioMult) {
+                                aspectRatioMult = 1.0;
+                            }
                             // The order is important
                             // Step 1. Add constraint
                             NSLayoutConstraint *new_constraint;

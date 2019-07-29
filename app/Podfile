@@ -24,7 +24,8 @@ target 'Finalsite' do
   pod "AFOAuth2Manager"
   pod "CYRTextView"
   pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
-  pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git", :tag => '3.8.1'
+  # pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git", :tag => '3.8.1'
+  pod 'SDWebImage', '~> 5.0'
   pod 'SZTextView'
   pod 'SBJson', '~> 4.0.2'
   pod 'DHSmartScreenshot'

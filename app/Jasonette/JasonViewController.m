@@ -5,6 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonViewController.h"
+#import "SDWebImageDownloader.h"
 
 @interface JasonViewController ()
 {
@@ -1028,19 +1029,21 @@
                                 NSString *url = body[key];
                                 if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
                                     self->download_image_counter++;
-                                    SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                                    SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
                                     NSDictionary *session = [JasonHelper sessionForUrl:url];
                                     if(session && session.count > 0 && session[@"header"]){
+
                                         for(NSString *key in session[@"header"]){
-                                            [manager.imageDownloader setValue:session[@"header"][key] forHTTPHeaderField:key];
+                                            [downloader setValue:session[@"header"][key] forHTTPHeaderField:key];
                                         }
                                     }
                                     if(body[@"header"] && [body[@"header"] count] > 0){
                                         for(NSString *key in body[@"header"]){
-                                            [manager.imageDownloader setValue:body[@"header"][key] forHTTPHeaderField:key];
+                                            [downloader setValue:body[@"header"][key] forHTTPHeaderField:key];
                                         }
                                     }
-                                    [manager.imageDownloader downloadImageWithURL:[NSURL URLWithString:url] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) { } completed:^(UIImage *i, NSData *data, NSError *error, BOOL finished) {
+
+                                    [downloader downloadImageWithURL:[NSURL URLWithString:url] options:0 progress:nil completed:^(UIImage *i, NSData *data, NSError *error, BOOL finished) {
                                         self->download_image_counter--;
                                         if(!error){
                                             JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
@@ -1491,25 +1494,21 @@
                         [self.composeBarView setUtilityButtonImage:resizedImage];
                     } else {
                         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-                            SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                            [manager downloadImageWithURL:[NSURL URLWithString:self->chat_input[@"left"][@"image"]]
-                                                  options:0
-                                                 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                                     // progression tracking code
-                                                 }
-                                                completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                                    
-                                                    // colorize
-                                                    if(self->chat_input[@"left"][@"style"] && self->chat_input[@"left"][@"style"][@"color"]){
-                                                        UIColor *newColor = [JasonHelper colorwithHexString:self->chat_input[@"left"][@"style"][@"color"] alpha:1.0];
-                                                        image = [JasonHelper colorize:image into:newColor];
-                                                    }
-                                                    
-                                                    UIImage *resizedImage = [JasonHelper scaleImage:image ToSize:CGSizeMake(30,30)];
-                                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                                        [self.composeBarView setUtilityButtonImage:resizedImage];
-                                                    });
-                                                }
+                            SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
+                            [downloader downloadImageWithURL:[NSURL URLWithString:self->chat_input[@"left"][@"image"]] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL *url) {
+                                    // progression tracking code
+                                } completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
+                                    // colorize
+                                    if(self->chat_input[@"left"][@"style"] && self->chat_input[@"left"][@"style"][@"color"]){
+                                        UIColor *newColor = [JasonHelper colorwithHexString:self->chat_input[@"left"][@"style"][@"color"] alpha:1.0];
+                                        image = [JasonHelper colorize:image into:newColor];
+                                    }
+
+                                    UIImage *resizedImage = [JasonHelper scaleImage:image ToSize:CGSizeMake(30,30)];
+                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                        [self.composeBarView setUtilityButtonImage:resizedImage];
+                                    });
+                                }
                              ];
                         });
                         

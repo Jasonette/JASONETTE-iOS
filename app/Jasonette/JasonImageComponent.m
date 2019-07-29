@@ -7,6 +7,7 @@
 #import "JasonImageComponent.h"
 #import "NSData+ImageContentType.h"
 #import "UIImage+GIF.h"
+#import "SDWebImage.h"
 
 @implementation JasonImageComponent
 + (UIView *)build: (UIImageView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
@@ -18,15 +19,15 @@
         NSString *url = (NSString *) [JasonHelper cleanNull:json[@"url"] type:@"string"];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"setupIndexPathsForImage" object:nil userInfo:@{@"url": url, @"indexPath": options[@"indexPath"]}];
     }
-    UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
+    UIImage *placeholder_image = [UIImage imageNamed:@"placeholder"];
     NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
-    
+
     NSMutableDictionary *style;
     if(json[@"style"]){
         style = [json[@"style"] mutableCopy];
     }
 
-    SDWebImageDownloader *manager = [SDWebImageManager sharedManager].imageDownloader;
+    SDWebImageDownloader *manager = [SDWebImageManager sharedManager].imageLoader;
     NSDictionary *session = [JasonHelper sessionForUrl:url];
     if(session && session.count > 0 && session[@"header"]){
         for(NSString *key in session[@"header"]){
@@ -38,23 +39,24 @@
             [manager setValue:json[@"header"][key] forHTTPHeaderField:key];
         }
     }
-    
+
     if(![url containsString:@"{{"] && ![url containsString:@"}}"]){
-        [component setIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [component setShowActivityIndicatorView:YES];
-        
+
         if([url containsString:@"file://"]){
             NSString *localImageName = [url substringFromIndex:7];
             UIImage *localImage;
-            
+
             // Get data for local file
             NSString *filePath = [[NSBundle mainBundle] pathForResource:localImageName ofType:nil];
             NSData *data = [[NSFileManager defaultManager] contentsAtPath:filePath];
-            
+
             // Check for animated GIF
-            NSString *imageContentType = [NSData sd_contentTypeForImageData:data];
-            if ([imageContentType isEqualToString:@"image/gif"]) {
-                localImage = [UIImage sd_animatedGIFWithData:data];
+            SDImageFormat imageFormat = [NSData sd_imageFormatForImageData:data];
+            if (imageFormat == SDImageFormatGIF) {
+                localImage = [UIImage sd_imageWithGIFData:data];
+                component.animationImages = localImage.images;
+                component.animationDuration = localImage.duration;
+                [component startAnimating];
             } else {
                 localImage = [UIImage imageNamed:localImageName];
             }
@@ -68,23 +70,28 @@
                 [component setImage:localImage];
             }
 
-            
             JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:localImage.size];
         } else{
-            [component sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+            [component sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder_image completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 if(!error){
-                    JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
+                    JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:image.size];
                     if(style[@"color"]){
                         NSString *colorHex = style[@"color"];
-                        UIColor *c = [JasonHelper colorwithHexString:colorHex alpha:1.0];
-                        UIImage *image = [i imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                        [component setTintColor:c];
-                        [component setImage: image];
+                        UIColor *color = [JasonHelper colorwithHexString:colorHex alpha:1.0];
+                        UIImage *templateImage = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                        [component setTintColor:color];
+                        [component setImage: templateImage];
                     }
+                    if (component.image.images && [component.image.images count] > 1) {
+                        component.animationImages = component.image.images;
+                        component.animationDuration = component.image.duration;
+                        [component startAnimating];
+                    }
+                } else {
+                    [component setImage: placeholder_image];
                 }
             }];
         }
-        
     }
     
     // Before applying common styles, Update the style attribute based on the fetched image dimension (different from other components)
@@ -93,7 +100,7 @@
         NSMutableDictionary *style = [json[@"style"] mutableCopy];
         NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
         UIImageView *imageView = (UIImageView *)component;
-        
+
         if(style[@"width"]) {
             [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
             [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
@@ -127,6 +134,7 @@
         if(style[@"height"]){
             [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
             [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+            imageView.clipsToBounds = YES;
             if(style[@"ratio"]){
                 // don't do anything about the width, it will be handled in JasonComponent
             } else {
@@ -155,14 +163,14 @@
             }
         }
         mutable_json[@"style"] = style;
-        
+
         // resize the image with high interpolation for better quality
         if(style[@"height"] && style[@"width"]) {
             NSString *heightStr = style[@"height"];
             NSString *widthStr = style[@"width"];
             CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:heightStr];
             CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
-            
+
             [component setImage: [self resizeImage:component.image newSize:CGSizeMake(width, height)]];
         }
     }

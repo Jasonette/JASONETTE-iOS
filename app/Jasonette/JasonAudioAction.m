@@ -5,6 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonAudioAction.h"
+#import "SDWebImageDownloader.h"
 
 @implementation JasonAudioAction
 - (void)record{
@@ -196,11 +197,11 @@
                     [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
                     [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
                 } else {
-                    SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                    [manager downloadImageWithURL:[NSURL URLWithString:image_url]
+                    SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
+                    [downloader downloadImageWithURL:[NSURL URLWithString:image_url]
                                         options:0
                                         progress:nil
-                                        completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                        completed:^(UIImage *i, NSData *data, NSError *error,  BOOL finished) {
                                             MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithBoundsSize:i.size requestHandler:^UIImage * _Nonnull(CGSize size) {
                                                     UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
                                                     UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext*_Nonnull myContext) {
