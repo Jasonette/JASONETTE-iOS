@@ -58,7 +58,6 @@
     NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
     [NSURLCache setSharedURLCache:URLCache];
     
-    
     // # initialize
     // Run "initialize" for built-in daemon type actions
     NSArray *native_daemon_actions = @[@"JasonPushService", @"JasonVisionService", @"JasonWebsocketService", @"JasonAgentService"];
@@ -68,6 +67,11 @@
     // Run "initialize" method for all extensions
     [self init_extensions: launchOptions];
     
+    // Appending custom string on user agent so we can identify when we're using a webview embedded in the app
+    UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+    NSString *agent = [NSString stringWithFormat:@"%@ Finalsite-App/%@ Safari", [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:agent, @"UserAgent", nil];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
     
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey]){
         // launched with url. so wait until openURL is called.

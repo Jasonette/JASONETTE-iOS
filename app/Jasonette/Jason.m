@@ -160,9 +160,6 @@
     tab.tabBar.hidden = YES;
     [tab setDelegate:self];
 
-    // create loading wheel
-    [self showLoadingOverlay];
-
     app.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     app.window.rootViewController = tab;
 
@@ -924,10 +921,7 @@
         }
         
         if(rendered_page){
-            if(rendered_page[@"nav"]) {
-                // Deprecated
-                [self setupHeader:rendered_page[@"nav"]];
-            } else if(rendered_page[@"header"]) {
+            if(rendered_page[@"header"]) {
                 [self setupHeader:rendered_page[@"header"]];
             } else {
                 [self setupHeader:nil];
@@ -935,9 +929,6 @@
             
             if(rendered_page[@"footer"]){
                 [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
-            } else if(rendered_page[@"tabs"]){
-                // Deprecated
-                [self setupTabBar:rendered_page[@"tabs"]];
             } else {
                 [self setupTabBar:nil];
             }
@@ -1764,8 +1755,11 @@
             [fileManager removeItemAtPath:filePath error:&error];
         }
     }
+    
+    // reset the tabs to be just the home one, this should trigger a refresh of the tabs when we hit the root url
+    self->tabController.viewControllers = @[self->tabController.viewControllers[0]];
 
-    [self start:nil];
+    [self go:@{@"url": ROOT_URL, @"transition": @"replace"}];
 }
 
 # pragma mark - View rendering (high level)
@@ -3932,7 +3926,8 @@
                 
                 
                 // If the stack doesn't include any action to take after success, just finish
-                if(!memory._stack[@"success"] && !memory._stack[@"error"]){
+                // also don't finish if it's a lambda/trigger because they're typically a relay to another action
+                if(![type isEqualToString:@"$lambda"] && !memory._stack[@"success"] && !memory._stack[@"error"]){
                     // VC.contentLoaded is NO if the action is $reload (until it returns)
                     if(VC.contentLoaded) [self finish];
                 }
