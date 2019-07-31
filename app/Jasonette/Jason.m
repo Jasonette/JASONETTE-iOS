@@ -10,9 +10,10 @@
 #import "NSData+ImageContentType.h"
 #import "UIImage+GIF.h"
 #import "Finalsite-Swift.h"
+
 @interface Jason(){
     UINavigationController *navigationController;
-    UITabBarController *tabController;
+    JasonTabBarController *tabController;
     REMenu *menu_component;
     JasonViewController *VC;
     NSString *title;
@@ -1756,10 +1757,8 @@
         }
     }
     
-    // reset the tabs to be just the home one, this should trigger a refresh of the tabs when we hit the root url
-    self->tabController.viewControllers = @[self->tabController.viewControllers[0]];
-
-    [self go:@{@"url": ROOT_URL, @"transition": @"replace"}];
+    [self->tabController reset];
+    [self go:@{@"url": self->ROOT_URL, @"transition": @"replace"}];
 }
 
 # pragma mark - View rendering (high level)
@@ -1934,11 +1933,7 @@
         rendered_page = nil;
         
         if(body){
-            if(body[@"nav"]) {
-                // Deprecated
-                [self setupHeader:body[@"nav"]];
-            } else if(body[@"header"]) {
-                // Use this
+            if(body[@"header"]) {
                 [self setupHeader:body[@"header"]];
             } else {
                 [self setupHeader:nil];
@@ -1947,9 +1942,6 @@
             if(body[@"footer"] && body[@"footer"][@"tabs"]){
                 // Use this
                 [self setupTabBar:body[@"footer"][@"tabs"]];
-            } else {
-                // Deprecated
-                [self setupTabBar:body[@"tabs"]];
             }
             
             // By default, "body" is the markup that will be rendered
@@ -2015,10 +2007,7 @@
             }
             
             if(final){
-                if(rendered_page[@"nav"]) {
-                    // Deprecated
-                    [self setupHeader:rendered_page[@"nav"]];
-                } else if(rendered_page[@"header"]) {
+                if(rendered_page[@"header"]) {
                     // Use thi
                     [self setupHeader:rendered_page[@"header"]];
                 } else {
@@ -2027,9 +2016,6 @@
                 if(rendered_page[@"footer"] && rendered_page[@"footer"][@"tabs"]){
                     // Use this
                     [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
-                } else {
-                    // Deprecated
-                    [self setupTabBar:rendered_page[@"tabs"]];
                 }
             }
             
