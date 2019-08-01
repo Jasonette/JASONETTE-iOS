@@ -11,10 +11,9 @@
 
 @implementation JasonImageComponent
 + (UIView *)build: (UIImageView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
-    if(!component){
-        UIImage *placeholder = [UIImage imageNamed:@"placeholder"];
-        component = [[UIImageView alloc] initWithImage:placeholder];
-    }
+    UIImage *placeholder = [UIImage imageNamed:@"placeholder"];
+    component = [[UIImageView alloc] initWithImage:placeholder];
+
     if(options && options[@"indexPath"]){
         NSString *url = (NSString *) [JasonHelper cleanNull:json[@"url"] type:@"string"];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"setupIndexPathsForImage" object:nil userInfo:@{@"url": url, @"indexPath": options[@"indexPath"]}];
@@ -165,12 +164,11 @@
         mutable_json[@"style"] = style;
 
         // resize the image with high interpolation for better quality
-        if(style[@"height"] && style[@"width"]) {
+        if(style[@"height"] && style[@"width"] && !style[@"center_crop"]) {
             NSString *heightStr = style[@"height"];
             NSString *widthStr = style[@"width"];
             CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:heightStr];
             CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
-
             [component setImage: [self resizeImage:component.image newSize:CGSizeMake(width, height)]];
         }
     }

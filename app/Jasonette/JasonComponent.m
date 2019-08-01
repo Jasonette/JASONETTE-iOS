@@ -140,7 +140,7 @@
         } else {
             component.layer.cornerRadius = 0;
         }
-        
+
         // border width
         if(style[@"border_width"]){
             CGFloat borderWidth = [style[@"border_width"] floatValue];
@@ -290,6 +290,15 @@
             if(json[@"text"]){
                 [el setValue:[json[@"text"] description] forKey:@"text"];
             }
+        }
+
+        if (style[@"center_crop"]) {
+            [el setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+            [el setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+            el.contentMode = UIViewContentModeScaleAspectFill;
+            el.clipsToBounds = YES;
+            [el setNeedsLayout];
+            [el layoutIfNeeded];
         }
     }
 }

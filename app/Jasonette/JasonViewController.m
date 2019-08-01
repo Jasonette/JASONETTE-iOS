@@ -1105,9 +1105,9 @@
     @try{
         dispatch_async(dispatch_get_main_queue(), ^{
 
-            [self setupHeader: body];
+            [self setupHeader:body];
             [self setupLayers:body];
-            [self setupFooter: body];
+            [self setupFooter:body];
             [self setupSections:body];
             #ifdef ADS
             [self setupAds:body];
