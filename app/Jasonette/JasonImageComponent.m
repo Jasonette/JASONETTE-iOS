@@ -11,8 +11,10 @@
 
 @implementation JasonImageComponent
 + (UIView *)build: (UIImageView *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
-    UIImage *placeholder = [UIImage imageNamed:@"placeholder"];
-    component = [[UIImageView alloc] initWithImage:placeholder];
+    if (!component) {
+        UIImage *placeholder = [UIImage imageNamed:@"placeholder"];
+        component = [[UIImageView alloc] initWithImage:placeholder];
+    }
 
     if(options && options[@"indexPath"]){
         NSString *url = (NSString *) [JasonHelper cleanNull:json[@"url"] type:@"string"];
@@ -98,7 +100,6 @@
     if(json[@"style"]){
         NSMutableDictionary *style = [json[@"style"] mutableCopy];
         NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
-        UIImageView *imageView = (UIImageView *)component;
 
         if(style[@"width"]) {
             [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
@@ -115,14 +116,14 @@
                             if(size.width > 0 && size.height > 0){
                                 aspectRatioMult = (size.height / size.width);
                             } else {
-                                aspectRatioMult = (imageView.image.size.height / imageView.image.size.width);
+                                aspectRatioMult = (component.image.size.height / component.image.size.width);
                             }
                         }
                         @catch (NSException *e){
-                            aspectRatioMult = (imageView.image.size.height / imageView.image.size.width);
+                            aspectRatioMult = (component.image.size.height / component.image.size.width);
                         }
                     } else {
-                        aspectRatioMult = (imageView.image.size.height / imageView.image.size.width);
+                        aspectRatioMult = (component.image.size.height / component.image.size.width);
                     }
                     NSString *widthStr = style[@"width"];
                     CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
@@ -133,7 +134,7 @@
         if(style[@"height"]){
             [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
             [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
-            imageView.clipsToBounds = YES;
+            component.clipsToBounds = YES;
             if(style[@"ratio"]){
                 // don't do anything about the width, it will be handled in JasonComponent
             } else {
@@ -146,14 +147,14 @@
                             if(size.width > 0 && size.height > 0){
                                 aspectRatioMult = (size.width / size.height);
                             } else {
-                                aspectRatioMult = (imageView.image.size.width / imageView.image.size.height);
+                                aspectRatioMult = (component.image.size.width / component.image.size.height);
                             }
                         }
                         @catch (NSException *e){
-                            aspectRatioMult = (imageView.image.size.width / imageView.image.size.height);
+                            aspectRatioMult = (component.image.size.width / component.image.size.height);
                         }
                     } else {
-                        aspectRatioMult = (imageView.image.size.width / imageView.image.size.height);
+                        aspectRatioMult = (component.image.size.width / component.image.size.height);
                     }
                     NSString *heightStr = style[@"height"];
                     CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:heightStr];

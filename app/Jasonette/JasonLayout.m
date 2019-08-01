@@ -144,8 +144,8 @@ static NSMutableDictionary *_stylesheet = nil;
                 UIView *component = [JasonComponentFactory build:el withJSON: child withOptions:options];
                 
                 if([component isKindOfClass:[UIImageView class]]){
-                    
-                    if(child[@"style"] && (child[@"style"][@"width"] || child[@"style"][@"height"])){
+                    NSDictionary *styled_child = [JasonComponentFactory applyStylesheet:child];
+                    if(styled_child[@"style"] && (styled_child[@"style"][@"width"] || styled_child[@"style"][@"height"])){
                         // If the style contains style and either the width or the height,
                         // everything has been taken care of from the component level.
                         // So don't do anything

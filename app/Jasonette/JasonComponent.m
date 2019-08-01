@@ -131,7 +131,7 @@
             [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
             [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
         }
-        
+
         // corner radius
         if(style[@"corner_radius"]){
             CGFloat radius = [style[@"corner_radius"] floatValue];
@@ -157,16 +157,21 @@
             component.layer.borderColor = nil;
         }
         
-        // text styling
+        if (style[@"center_crop"]) {
+            [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+            [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+            component.contentMode = UIViewContentModeScaleAspectFill;
+            component.clipsToBounds = YES;
+        }
     }
+    // text styling
     [self stylize:json text:component];
     
 }
 + (void)stylize:(NSDictionary *)json text:(UIView *)el{
     NSDictionary *style = json[@"style"];
+
     if(style){
-        
-        
         // Alignment
         if(style[@"align"]){
             NSDictionary *alignment_map = @{
@@ -290,15 +295,6 @@
             if(json[@"text"]){
                 [el setValue:[json[@"text"] description] forKey:@"text"];
             }
-        }
-
-        if (style[@"center_crop"]) {
-            [el setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
-            [el setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
-            el.contentMode = UIViewContentModeScaleAspectFill;
-            el.clipsToBounds = YES;
-            [el setNeedsLayout];
-            [el layoutIfNeeded];
         }
     }
 }
