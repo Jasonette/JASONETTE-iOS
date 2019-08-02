@@ -2538,14 +2538,8 @@
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
                     [self setMenuButtonImage:localImage forButton:btn withMenu:left_menu];
                 } else{
-                    SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
-                    [downloader downloadImageWithURL:[NSURL URLWithString:image_src] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL *imageUrl) {
-                    } completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
-                        if (image) {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
-                            });
-                        }
+                    [self downloadImage:image_src withSuccessCallback:^(UIImage *image) {
+                        [self setMenuButtonImage:image forButton:btn withMenu:left_menu];
                     }];
                 }
                 
@@ -2598,14 +2592,8 @@
                     UIImage *localImage = [UIImage imageNamed:[image_src substringFromIndex:7]];
                     [self setMenuButtonImage:localImage forButton:btn withMenu:right_menu];
                 } else{
-                    SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
-                    [downloader downloadImageWithURL:[NSURL URLWithString:image_src] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL *imageURL) {
-                    } completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
-                        if (image) {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [self setMenuButtonImage:image forButton:btn withMenu:right_menu];
-                            });
-                        }
+                    [self downloadImage:image_src withSuccessCallback:^(UIImage *image) {
+                        [self setMenuButtonImage:image forButton:btn withMenu:right_menu];
                     }];
                 }
             } else {
@@ -2644,14 +2632,8 @@
                                 UIImage *localImage = [UIImage imageNamed:[url substringFromIndex:7]];
                                 [self setLogoImage:localImage withStyle:style forVC:v];
                             } else{
-                                SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
-                                [downloader downloadImageWithURL:[NSURL URLWithString:url] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL *imageURL) {
-                                } completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
-                                    if (image) {
-                                        dispatch_async(dispatch_get_main_queue(), ^{
-                                            [self setLogoImage:image withStyle:style forVC:v];
-                                        });
-                                    }
+                                [self downloadImage:url withSuccessCallback:^(UIImage *image) {
+                                    [self setLogoImage:image withStyle:style forVC:v];
                                 }];
                             }
                         }
@@ -3108,14 +3090,14 @@
     VC = navigationController.viewControllers.lastObject;
 }
 - (void)setTabBarItem:(UITabBarItem *)item withTab: (NSDictionary *)tab{
-    NSString *image = tab[@"image"];
+    NSString *imageUrl = tab[@"image"];
 
     if(tab[@"text"]){
         [item setTitle:[tab[@"text"] description]];
     } else {
         [item setTitle:@""];
     }
-    if(image){
+    if(imageUrl){
         if(tab[@"text"]){
             [item setImageInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
             [item setTitlePositionAdjustment:UIOffsetMake(0.0, -2.0)];
@@ -3123,18 +3105,13 @@
             [item setImageInsets:UIEdgeInsetsMake(7.5, 0, -7.5, 0)];
         }
         
-        if([image containsString:@"file://"]){
-            UIImage *i = [UIImage imageNamed:[image substringFromIndex:7]];
+        if([imageUrl containsString:@"file://"]){
+            UIImage *i = [UIImage imageNamed:[imageUrl substringFromIndex:7]];
             [self setTabImage:i withTab:tab andItem:item];
         } else{
-            SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
-            [downloader downloadImageWithURL:[NSURL URLWithString:image] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL *imageURL) {
-            } completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
-                if (image) {
-                    [self setTabImage:image withTab:tab andItem:item];
-                }
+            [self downloadImage:imageUrl withSuccessCallback:^(UIImage *image) {
+                [self setTabImage:image withTab:tab andItem:item];
             }];
-            
         }
         
     } else {
@@ -3950,6 +3927,17 @@
         [self finish];
     }
 }
+- (void)downloadImage:(NSString*) url withSuccessCallback:(void (^)(UIImage*))success{
+    SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
+    [downloader downloadImageWithURL:[NSURL URLWithString:url] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL *imageURL) {
+    } completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
+        if (image) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                success(image);
+            });
+        }
+    }];
+}
 - (void)exception{
     [[JasonMemory client] exception];
     [self exec];
@@ -3987,7 +3975,6 @@
     }
     
 }
-
 
 # pragma mark - Helpers, Delegates & Misc.
 
