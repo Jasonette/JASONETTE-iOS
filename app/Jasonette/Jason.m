@@ -15,7 +15,7 @@
 
 @interface Jason(){
     UINavigationController *navigationController;
-    UITabBarController *tabController;
+    JasonTabBarController *tabController;
     REMenu *menu_component;
     JasonViewController *VC;
     NSString *title;
@@ -162,9 +162,6 @@
     tab.viewControllers = @[nav];
     tab.tabBar.hidden = YES;
     [tab setDelegate:self];
-
-    // create loading wheel
-    [self showLoadingOverlay];
 
     app.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     app.window.rootViewController = tab;
@@ -927,10 +924,7 @@
         }
         
         if(rendered_page){
-            if(rendered_page[@"nav"]) {
-                // Deprecated
-                [self setupHeader:rendered_page[@"nav"]];
-            } else if(rendered_page[@"header"]) {
+            if(rendered_page[@"header"]) {
                 [self setupHeader:rendered_page[@"header"]];
             } else {
                 [self setupHeader:nil];
@@ -938,9 +932,6 @@
             
             if(rendered_page[@"footer"]){
                 [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
-            } else if(rendered_page[@"tabs"]){
-                // Deprecated
-                [self setupTabBar:rendered_page[@"tabs"]];
             } else {
                 [self setupTabBar:nil];
             }
@@ -1767,8 +1758,9 @@
             [fileManager removeItemAtPath:filePath error:&error];
         }
     }
-
-    [self start:nil];
+    
+    [self->tabController reset];
+    [self go:@{@"url": self->ROOT_URL, @"transition": @"replace"}];
 }
 
 # pragma mark - View rendering (high level)
@@ -1943,11 +1935,7 @@
         rendered_page = nil;
         
         if(body){
-            if(body[@"nav"]) {
-                // Deprecated
-                [self setupHeader:body[@"nav"]];
-            } else if(body[@"header"]) {
-                // Use this
+            if(body[@"header"]) {
                 [self setupHeader:body[@"header"]];
             } else {
                 [self setupHeader:nil];
@@ -1956,9 +1944,6 @@
             if(body[@"footer"] && body[@"footer"][@"tabs"]){
                 // Use this
                 [self setupTabBar:body[@"footer"][@"tabs"]];
-            } else {
-                // Deprecated
-                [self setupTabBar:body[@"tabs"]];
             }
             
             // By default, "body" is the markup that will be rendered
@@ -2024,10 +2009,7 @@
             }
             
             if(final){
-                if(rendered_page[@"nav"]) {
-                    // Deprecated
-                    [self setupHeader:rendered_page[@"nav"]];
-                } else if(rendered_page[@"header"]) {
+                if(rendered_page[@"header"]) {
                     // Use thi
                     [self setupHeader:rendered_page[@"header"]];
                 } else {
@@ -2036,9 +2018,6 @@
                 if(rendered_page[@"footer"] && rendered_page[@"footer"][@"tabs"]){
                     // Use this
                     [self setupTabBar:rendered_page[@"footer"][@"tabs"]];
-                } else {
-                    // Deprecated
-                    [self setupTabBar:rendered_page[@"tabs"]];
                 }
             }
             
@@ -3899,7 +3878,8 @@
                 
                 
                 // If the stack doesn't include any action to take after success, just finish
-                if(!memory._stack[@"success"] && !memory._stack[@"error"]){
+                // also don't finish if it's a lambda/trigger because they're typically a relay to another action
+                if(![type isEqualToString:@"$lambda"] && !memory._stack[@"success"] && !memory._stack[@"error"]){
                     // VC.contentLoaded is NO if the action is $reload (until it returns)
                     if(VC.contentLoaded) [self finish];
                 }
