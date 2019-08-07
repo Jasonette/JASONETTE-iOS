@@ -1042,8 +1042,8 @@
                                             [downloader setValue:body[@"header"][key] forHTTPHeaderField:key];
                                         }
                                     }
-
-                                    [downloader downloadImageWithURL:[NSURL URLWithString:url] options:0 progress:nil completed:^(UIImage *i, NSData *data, NSError *error, BOOL finished) {
+                                    SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                                    [manager loadImageWithURL:[NSURL URLWithString:url] options:0 progress:nil completed:^(UIImage *i, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                         self->download_image_counter--;
                                         if(!error){
                                             JasonComponentFactory.imageLoaded[url] = [NSValue valueWithCGSize:i.size];
@@ -1494,10 +1494,10 @@
                         [self.composeBarView setUtilityButtonImage:resizedImage];
                     } else {
                         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-                            SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
-                            [downloader downloadImageWithURL:[NSURL URLWithString:self->chat_input[@"left"][@"image"]] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL *url) {
+                            SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                            [manager loadImageWithURL:[NSURL URLWithString:self->chat_input[@"left"][@"image"]] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL *url) {
                                     // progression tracking code
-                                } completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
+                                } completed:^(UIImage *image, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                     // colorize
                                     if(self->chat_input[@"left"][@"style"] && self->chat_input[@"left"][@"style"][@"color"]){
                                         UIColor *newColor = [JasonHelper colorwithHexString:self->chat_input[@"left"][@"style"][@"color"] alpha:1.0];

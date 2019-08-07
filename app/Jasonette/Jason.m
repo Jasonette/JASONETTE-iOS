@@ -2977,7 +2977,7 @@
                 if(firstTime){
                     // First time loading
                     if(i == indexOfTab){
-                        // for the current tab, simply add the navigationcontrolle to the tabs array
+                        // for the current tab, simply add the navigationcontroller to the tabs array
                         // no need to create a new VC, etc. because it's already been instantiated
                         tabFound = YES;
                         // if the tab URL is same as the currently visible VC's url
@@ -3035,9 +3035,16 @@
         [JasonMemory client].executing = NO;
     }
     
-    
-    if(VC.rendered && VC.rendered[@"footer"] && VC.rendered[@"footer"][@"tabs"] && VC.rendered[@"footer"][@"tabs"][@"items"]){
-        NSArray *tabs = VC.rendered[@"footer"][@"tabs"][@"items"];
+    NSArray *tabs;
+    // If we're not on the home page VC.rendered will not contain the footer, so we check our `previous_footer`
+    // variable that contains the currently displaying tabs that we would have clicked on.
+    if (VC.rendered && VC.rendered[@"footer"] && VC.rendered[@"footer"][@"tabs"] && VC.rendered[@"footer"][@"tabs"][@"items"]) {
+        tabs = VC.rendered[@"footer"][@"tabs"][@"items"];
+    } else if (self->previous_footer && self->previous_footer[@"tabs"] && self->previous_footer[@"tabs"][@"items"]) {
+        tabs = self->previous_footer[@"tabs"][@"items"];
+    }
+
+    if(tabs) {
         NSDictionary *selected_tab = tabs[indexOfTab];
         
         if(selected_tab[@"href"]){
@@ -3908,9 +3915,9 @@
     }
 }
 - (void)downloadImage:(NSString*) url withSuccessCallback:(void (^)(UIImage*))success{
-    SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
-    [downloader downloadImageWithURL:[NSURL URLWithString:url] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL *imageURL) {
-    } completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
+    SDWebImageManager *manager = [SDWebImageManager sharedManager];
+    [manager loadImageWithURL:[NSURL URLWithString:url] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL *imageURL) {
+    } completed:^(UIImage *image, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
         if (image) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 success(image);

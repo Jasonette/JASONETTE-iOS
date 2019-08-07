@@ -167,11 +167,11 @@
                     NSString *url = item[@"url"];
                     NSString *file_url = item[@"file_url"];
                     if(url){
-                        SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
-                        [downloader downloadImageWithURL:[NSURL URLWithString:url]
+                        SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                        [manager loadImageWithURL:[NSURL URLWithString:url]
                                               options:0
                                              progress:nil
-                                            completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
+                                            completed:^(UIImage *image, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                                 if (image) {
                                                     [share_items addObject:image];
                                                 }
