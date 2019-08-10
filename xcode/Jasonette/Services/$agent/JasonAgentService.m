@@ -465,6 +465,7 @@
 }
 
 - (void)inject:(NSDictionary *)options {
+    
     NSString * identifier = options[@"id"];
     JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
     WKWebView * agent = vc.agents[identifier];
@@ -485,6 +486,7 @@
                 [codes addObject:@""];
 
                 if (inject_url) {
+                    
                     if ([inject_url hasPrefix:@"file://"]) {
                         NSString * code = [JasonHelper read_local_file:inject_url];
 
@@ -495,27 +497,29 @@
                         }
 
                         dispatch_group_leave (requireGroup);
+                        
                     } else if ([inject_url hasPrefix:@"http"]) {
+                        
                         AFHTTPSessionManager * manager = [JasonNetworking manager];
                         manager.responseSerializer = [JasonNetworking serializer];
 
                         manager.responseSerializer.acceptableContentTypes = [NSSet
                                                                              setWithObjects:@"text/javascript", @"text/plain", @"application/javascript", nil];
+                        [manager GET:inject_url
+                          parameters:nil
+                             headers:nil
+                            progress:^(NSProgress * _Nonnull downloadProgress) {
+                            // Omit
+                        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                            NSString * code = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
+                            codes[i] = code;
+                            dispatch_group_leave (requireGroup);
+                        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                            DTLogError(@"%@", error);
+                            [errors addObject:@"Failed to fetch script"];
+                            dispatch_group_leave (requireGroup);
+                        }];
 
-                        [manager   GET:inject_url
-                            parameters:nil
-                              progress:^(NSProgress * _Nonnull downloadProgress) {
-                                  // Nothing
-                              }
-                               success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
-                                   NSString * code = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
-                                   codes[i] = code;
-                                   dispatch_group_leave (requireGroup);
-                               }
-                               failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                                   [errors addObject:@"Failed to fetch script"];
-                                   dispatch_group_leave (requireGroup);
-                               }];
                     } else {
                         [errors addObject:@"the injection must load from a file:// or http[s]:// url"];
                         dispatch_group_leave (requireGroup);
