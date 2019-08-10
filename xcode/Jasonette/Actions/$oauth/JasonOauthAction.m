@@ -374,8 +374,9 @@
         }
 
         if ([method isEqualToString:@"get"]) {
-            [manager   GET:path
+            [manager GET:path
                 parameters:parameters
+                   headers:nil
                   progress:^(NSProgress * _Nonnull downloadProgress) {
                       // Nothing
                   }
@@ -419,6 +420,7 @@
         } else if ([method isEqualToString:@"post"]) {
             [manager  POST:path
                 parameters:parameters
+                   headers:nil
                   progress:^(NSProgress * _Nonnull downloadProgress) {
                       // Nothing
                   }
@@ -451,6 +453,7 @@
         } else if ([method isEqualToString:@"put"]) {
             [manager   PUT:path
                 parameters:parameters
+                   headers:nil
                    success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
                        // Ignore if the url is different
                        NSString * originalRequestPath = task.originalRequest.URL.path;
@@ -480,6 +483,7 @@
         } else if ([method isEqualToString:@"head"]) {
             [manager  HEAD:path
                 parameters:parameters
+                   headers:nil
                    success:^(NSURLSessionDataTask * _Nonnull task) {
                        // Ignore if the url is different
                        NSString * originalRequestPath = task.originalRequest.URL.path;
@@ -509,6 +513,7 @@
         } else if ([method isEqualToString:@"delete"]) {
             [manager DELETE:path
                  parameters:parameters
+                    headers:nil
                     success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
                         // Ignore if the url is different
                         NSString * originalRequestPath = task.originalRequest.URL.path;
@@ -829,6 +834,7 @@
 
                     [manager  POST:access_options[@"path"]
                         parameters:parameters
+                           headers:nil
                           progress:^(NSProgress * _Nonnull downloadProgress) {
                               // Nothing
                           }

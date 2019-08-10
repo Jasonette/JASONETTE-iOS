@@ -2,8 +2,9 @@
 //  JasonNetworkAction.h
 //  Jasonette
 //
-//  Copyright © 2016 gliechtenstein. All rights reserved.
-//
+//  Copyright © 2016 gliechtenstein.
+//  Copyright © 2019 Jasonelle Team.
+
 #import "JasonAction.h"
 #import "JasonHelper.h"
 #import "JasonParser.h"

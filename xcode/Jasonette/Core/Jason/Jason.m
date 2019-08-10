@@ -1274,8 +1274,9 @@
 
                 // 6. Start request
 #pragma message "Start Request in Include"
-                [manager   GET:url
+                [manager GET:url
                     parameters:parameters
+                 headers:nil
                       progress:^(NSProgress * _Nonnull downloadProgress) { }
                        success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject)
                 {
@@ -1402,8 +1403,9 @@
 
                 // 5. Start request
 #pragma message "Start Request in Require"
-                [manager   GET:url
+                [manager GET:url
                     parameters:parameters
+                 headers:nil
                       progress:^(NSProgress * _Nonnull downloadProgress) { }
                        success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject)
                 {
@@ -2223,8 +2225,9 @@
 
 #pragma message "Start Request in Reload"
 
-            [manager   GET:self->VC.url
+            [manager GET:self->VC.url
                 parameters:parameters
+                   headers:nil
                   progress:^(NSProgress * _Nonnull downloadProgress) { }
                    success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
                        // Ignore if the url is different

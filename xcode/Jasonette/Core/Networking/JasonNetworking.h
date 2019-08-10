@@ -13,20 +13,54 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface JasonNetworking : NSObject
 
-// Can override the request session manager
+
+/**
+ Custom Session manager
+
+ @return AFHTTPSessionManager
+ */
 + (nonnull AFHTTPSessionManager *)manager;
 + (void)                          setSessionManager:(AFHTTPSessionManager *)manager;
 
-// Can override the response serializer
+
+/**
+ Custom Response Serializer
+
+ @return AFJSONResponseSerializer
+ */
 + (nonnull AFJSONResponseSerializer *)serializer;
 + (void)setResponseSerializer:(AFJSONResponseSerializer *)serializer;
 
-// Can add additional accepted content types
-+ (nonnull NSArray *)                 acceptedContentTypes;
+
+
+/**
+ Retrieves the accepted content types for the response
+
+ @return NSArray of content types
+ */
++ (nonnull NSArray *) acceptedContentTypes;
+
+/**
+ Add additional accepted content types for the response
+ 
+ @return NSArray with content types
+ */
 + (void)setAcceptedContentTypes:(nonnull NSArray<NSString *> *)types;
 
-// Can add additional headers
-+ (nonnull NSDictionary *)            headers;
+
+/**
+ Retrieves the headers for the request
+
+ @return NSDictionary with headers
+ */
++ (nonnull NSDictionary *) headers;
+
+
+/**
+ Set the headers for the request
+
+ @param headers
+ */
 + (void)setHeaders:(nonnull NSDictionary *)headers;
 
 @end
