@@ -24,8 +24,8 @@
     *  }
     *
     ********************/
-    
-    DTLogInfo(@"Called $global.reset");
+
+    DTLogInfo (@"Called $global.reset");
 
     @try {
         NSString * global = @"$global";
@@ -94,10 +94,10 @@
     *
     ********************/
 
-    DTLogInfo(@"Called $global.set with options %@", self.options);
-    
+    DTLogInfo (@"Called $global.set with options %@", self.options);
+
     if ([[self.options description] containsString:@"{{"] && [[self.options description] containsString:@"}}"]) {
-        DTLogDebug(@"Error %@ contains {{}}", [self.options description]);
+        DTLogDebug (@"Error %@ contains {{}}", [self.options description]);
         [[Jason client] error];
         return;
     }
@@ -144,14 +144,14 @@
             [[NSUserDefaults standardUserDefaults] synchronize];
             mutated = [self.options mutableCopy];
         }
-        
-        DTLogDebug(@"Success using $global.set");
-        DTLogDebug(@"$global:", mutated);
+
+        DTLogDebug (@"Success using $global.set");
+        DTLogDebug (@"$global:", mutated);
 
         [Jason client].global = mutated;
         [[Jason client] success:mutated];
     } @catch (NSException * e) {
-        DTLogWarning(@"%@", e);
+        DTLogWarning (@"%@", e);
         [[Jason client] error];
     }
 }

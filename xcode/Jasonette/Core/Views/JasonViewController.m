@@ -1108,14 +1108,14 @@
                                                                             dispatch_async (dispatch_get_main_queue (), ^{
                                                                             NSArray * indexPathArray = weakSelf.tableView.indexPathsForVisibleRows;
                                                                             NSMutableSet * visibleIndexPaths = [[NSMutableSet alloc] initWithArray:indexPathArray];
-                                                                                [visibleIndexPaths intersectSet:(NSSet *)self->indexPathsForImage[url]];
+                                                                            [visibleIndexPaths intersectSet:(NSSet *)self->indexPathsForImage[url]];
 
                                                                             if (visibleIndexPaths.count > 0) {
                                                                             [weakSelf.tableView reloadData];
                                                                             }
 
-                                                                                if (!self->top_aligned) {
-                                                                                    if (self->download_image_counter == 0) {
+                                                                            if (!self->top_aligned) {
+                                                                            if (self->download_image_counter == 0) {
                                                                             [weakSelf scrollToBottom];
                                                                             }
                                                                             }
@@ -1726,7 +1726,7 @@
                                                 completed:^(UIImage * image, NSError * error, SDImageCacheType cacheType, BOOL finished, NSURL * imageURL) {
                                                     // colorize
                                                     if (self->chat_input[@"left"][@"style"] && self->chat_input[@"left"][@"style"][@"color"]) {
-                                                        UIColor * newColor = [JasonHelper colorwithHexString:self->chat_input[@"left"][@"style"][@"color"]
+                                                    UIColor * newColor = [JasonHelper colorwithHexString:self->chat_input[@"left"][@"style"][@"color"]
                                                                                    alpha:1.0];
                                                     image = [JasonHelper colorize:image
                                                              into:newColor];

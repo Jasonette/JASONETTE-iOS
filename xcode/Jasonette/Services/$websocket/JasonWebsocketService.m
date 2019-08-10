@@ -68,7 +68,14 @@
 
 - (void)send:(NSDictionary *)options {
     dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        [self.websocket send:options[@"message"]];
+        NSError * error;
+        NSString * message = options[@"message"];
+        DTLogDebug (@"$websocket.send | %@", message);
+        [self.websocket sendString:message error:&error];
+
+        if (error) {
+            DTLogWarning (@"$websocket.send | Error sending Message | %@", error);
+        }
     });
 }
 

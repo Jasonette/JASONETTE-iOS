@@ -91,7 +91,7 @@ PODS:
   - FreeStreamer (4.0.0):
     - Reachability (~> 3.0)
   - HMSegmentedControl (1.5.5)
-  - INTULocationManager (4.2.0)
+  - INTULocationManager (4.3.2)
   - IQAudioRecorderController (1.2.3):
     - SCSiriWaveformView
   - JDStatusBarNotification (1.6.0)
@@ -333,7 +333,7 @@ SPEC CHECKSUMS:
   FLEX: d66c759bce0f6ebbbf472c742380874d846f2883
   FreeStreamer: 7e9c976045701ac2f7e9c14c17245203c37bf2ea
   HMSegmentedControl: f514c6dad47aa3065e0ed2e8046b73efc71221b9
-  INTULocationManager: 73f8254b3d05c897c56bb13c190e5b7c648c0998
+  INTULocationManager: e5dc524611b0cd582f473bc56cc8c389adb2f338
   IQAudioRecorderController: 69a67c2e0b87bd8746cbb4de175fd7a0bf820009
   JDStatusBarNotification: 21b616e7432284fea6eb0ce9eadc37c8038a5544
   JSCoreBom: 787dc056d5b933617a1772ca10fb8437fed0d790

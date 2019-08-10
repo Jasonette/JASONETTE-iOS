@@ -22,12 +22,11 @@
 }
 
 - (void)saveCookies {
-    
     NSData * cookiesData = [NSKeyedArchiver
                             archivedDataWithRootObject:[[NSHTTPCookieStorage
                                                          sharedHTTPCookieStorage]
                                                         cookies]];
-    
+
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
 
     [defaults setObject:cookiesData forKey:@"sessionCookies"];
@@ -38,7 +37,7 @@
     NSArray * cookies = [NSKeyedUnarchiver
                          unarchiveObjectWithData:[[NSUserDefaults standardUserDefaults]
                                                   objectForKey:@"sessionCookies"]];
-    
+
     NSHTTPCookieStorage * cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 
     for (NSHTTPCookie * cookie in cookies) {
@@ -51,14 +50,14 @@
     __weak typeof(self) weakSelf = self;
 
     NSString * original_url = self.VC.url;
-    
-    if(!self.options) {
-        DTLogWarning(@"$network.request | No options found for screen %@. Skipping.", original_url);
+
+    if (!self.options) {
+        DTLogWarning (@"$network.request | No options found for screen %@. Skipping.", original_url);
         return [[Jason client] error:nil];
     }
-    
-    DTLogDebug(@"$network.request triggered");
-    
+
+    DTLogDebug (@"$network.request triggered");
+
     [[Jason client] networkLoading:YES with:self.options];
     AFHTTPSessionManager * manager = [JasonNetworking manager];
     NSString * url = self.options[@"url"];
@@ -85,62 +84,67 @@
                                                           whitespaceAndNewlineCharacterSet]];
 
     if (!method || ![@[@"get", @"post", @"put", @"patch", @"delete", @"head"] containsObject:method]) {
-        DTLogWarning(@"$network.request | Unknown method '%@'. Using GET", method);
+        DTLogWarning (@"$network.request | Unknown method '%@'. Using GET", method);
         method = @"get";
     }
-    
-    DTLogDebug(@"$network.request | url: %@ | method : %@ | options: %@", url, method, self.options);
+
+    DTLogDebug (@"$network.request | url: %@ | method : %@ | options: %@", url, method, self.options);
 
     if ([method isEqualToString:@"post"]) {
         dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
             [manager.operationQueue cancelAllOperations];
 
 #pragma message "$network.request POST"
-            if(self.options[@"multipart"]) {
-                
-                [manager POST:url parameters:parameters headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-                    
-                } progress:^(NSProgress * _Nonnull uploadProgress) {
-                    
-                } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                    [self done:task
-                           for:url
-                        ofType:dataType
-                          with:responseObject
-                  original_url:original_url];
-                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                    [weakSelf processError:error
-                           withOriginalUrl:original_url];
-                }];
-                
+
+            if (self.options[@"multipart"]) {
+                [manager POST:url
+                                   parameters:parameters
+                                      headers:nil
+                    constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                    }
+                                     progress:^(NSProgress * _Nonnull uploadProgress) {
+                                     }
+                                      success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
+                                          [self done:task
+                                          for:url
+                                          ofType:dataType
+                                          with:responseObject
+                                             original_url:original_url];
+                                      }
+                                      failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                                          [weakSelf processError:error
+                                                withOriginalUrl:original_url];
+                                      }];
+
                 return;
             }
-            
-            [manager POST:url parameters:parameters headers:nil progress:^(NSProgress * _Nonnull uploadProgress) {
-                
-            } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                [self done:task
-                for:url
-                    ofType:dataType
-                    with:responseObject
-                    original_url:original_url];
-            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                [weakSelf processError:error
-                       withOriginalUrl:original_url];
-            }];
-            
+
+            [manager  POST:url
+                parameters:parameters
+                   headers:nil
+                  progress:^(NSProgress * _Nonnull uploadProgress) {
+                  }
+                   success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
+                       [self done:task
+                             for:url
+                          ofType:dataType
+                            with:responseObject
+                          original_url:original_url];
+                   }
+                   failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                       [weakSelf processError:error
+                             withOriginalUrl:original_url];
+                   }];
         });
-        
+
         return;
-        
-    }
-    else if ([method isEqualToString:@"put"]) {
+    } else if ([method isEqualToString:@"put"]) {
         dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
             [manager.operationQueue cancelAllOperations];
 
 #pragma message "$network.request PUT"
 
-            [manager PUT:url
+            [manager   PUT:url
                 parameters:parameters
                    headers:nil
                    success:^(NSURLSessionDataTask * _Nonnull task, id _Nonnull responseObject) {
@@ -156,9 +160,7 @@
                    }];
         });
         return;
-        
-    }
-    else if ([method isEqualToString:@"delete"]) {
+    } else if ([method isEqualToString:@"delete"]) {
         dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
             [manager.operationQueue cancelAllOperations];
 
@@ -179,11 +181,9 @@
                               withOriginalUrl:original_url];
                     }];
         });
-        
+
         return;
-        
-    }
-    else if ([method isEqualToString:@"head"]) {
+    } else if ([method isEqualToString:@"head"]) {
         dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
             [manager.operationQueue cancelAllOperations];
 
@@ -204,11 +204,9 @@
                              withOriginalUrl:original_url];
                    }];
         });
-        
+
         return;
-        
-    }
-    else if ([method isEqualToString:@"patch"]) {
+    } else if ([method isEqualToString:@"patch"]) {
         dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
             [manager.operationQueue cancelAllOperations];
 
@@ -231,35 +229,35 @@
         });
         return;
     }
-    
+
     // GET
     dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         [manager.operationQueue cancelAllOperations];
-        
+
 #pragma message "$network.request GET"
-        
-        [manager GET:url
-          parameters:parameters
-             headers:nil
-            progress:^(NSProgress * _Nonnull downloadProgress) {
-                // Nothing
-            }
-             success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
-                 [self done:task
-                        for:url
-                     ofType:dataType
-                       with:responseObject
-               original_url:original_url];
-             }
-             failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                 [weakSelf processError:error
-                        withOriginalUrl:original_url];
-             }];
+
+        [manager   GET:url
+            parameters:parameters
+               headers:nil
+              progress:^(NSProgress * _Nonnull downloadProgress) {
+                  // Nothing
+              }
+               success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
+                   [self done:task
+                         for:url
+                      ofType:dataType
+                        with:responseObject
+                      original_url:original_url];
+               }
+               failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                   [weakSelf processError:error
+                         withOriginalUrl:original_url];
+               }];
     });
 }
 
 - (void)processError:(NSError *)error withOriginalUrl:(NSString *)original_url {
-    DTLogWarning(@"%@", error);
+    DTLogWarning (@"%@", error);
     [[Jason client] networkLoading:NO with:nil];
     [[Jason client] error:error.userInfo withOriginalUrl:original_url];
 }
@@ -268,20 +266,20 @@
 - (void)upload {
     NSString * original_url = self.VC.url;
 
-    if(!self.options) {
-        DTLogWarning(@"$network.upload | No options found for screen %@. Skipping.", original_url);
+    if (!self.options) {
+        DTLogWarning (@"$network.upload | No options found for screen %@. Skipping.", original_url);
         return [[Jason client] error:nil];
     }
-    
-    DTLogDebug(@"$network.upload triggered");
-    
+
+    DTLogDebug (@"$network.upload triggered");
+
     // Fetch the content type option
     NSString * contentType = self.options[@"Content-Type"];
-    
+
     if (!contentType) {
         contentType = self.options[@"content-type"];
     }
-    
+
     if (!contentType) {
         contentType = self.options[@"content_type"];
     }
@@ -308,7 +306,7 @@
                 Boolean success = [mediaData writeToFile:tmpFile options:0 error:&error];
 
                 if (!success) {
-                    DTLogWarning(@"$network.upload | writeToFile failed with error %@", error);
+                    DTLogWarning (@"$network.upload | writeToFile failed with error %@", error);
                 }
 
                 [weakSelf _uploadData:mediaData ofType:contentType withFilename:upload_filename fromOriginalUrl:original_url];
@@ -402,7 +400,7 @@
                                                              });
                                                              } else {
                                                              dispatch_async (dispatch_get_main_queue (), ^{
-                                                             DTLogWarning(@"error = %@", error);
+                                                             DTLogWarning (@"error = %@", error);
                                                              [self               s3UploadDidFail:error
                                                              withOriginalUrl:original_url];
                                                              });
@@ -418,8 +416,8 @@
 }
 - (void)s3UploadDidFail:(NSError *)error withOriginalUrl:(NSString *)original_url
 {
-    DTLogWarning(@"$network.upload | url: %@ | S3 Upload Did Fail %@", original_url, error);
-    
+    DTLogWarning (@"$network.upload | url: %@ | S3 Upload Did Fail %@", original_url, error);
+
     [[Jason client] loading:NO];
     [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Error"
                                                    description:@"There was an error sending the image. Please try again."
@@ -428,12 +426,12 @@
 }
 
 - (void)s3UploadDidSucceed:(NSString *)upload_filename withOriginalUrl:original_url {
-    DTLogDebug(@"$network.upload succeded | url: %@", original_url);
+    DTLogDebug (@"$network.upload succeded | url: %@", original_url);
     [[Jason client] loading:NO];
     [[Jason client] success:@{
-                              @"filename": upload_filename,
-                              @"file_name": upload_filename
-                              }
+         @"filename": upload_filename,
+         @"file_name": upload_filename
+     }
             withOriginalUrl:original_url];
 }
 
@@ -445,9 +443,9 @@
     if (![JasonHelper isURL:task.originalRequest.URL equivalentTo:url]) {
         return;
     }
-    
-    DTLogDebug(@"$network | Success | url: %@", url);
-    
+
+    DTLogDebug (@"$network | Success | url: %@", url);
+
     dispatch_async (dispatch_get_main_queue (), ^{
         if (!responseObject) {
             [[Jason client] success:@{} withOriginalUrl:original_url];
@@ -479,11 +477,11 @@
         NSURL * urlToCheck = [NSURL URLWithString:url];
 
         if (!urlToCheck) {
-            DTLogWarning(@"Invalid URL for $network call %@", url);
+            DTLogWarning (@"Invalid URL for $network call %@", url);
             return YES;
         }
     } else {
-        DTLogWarning(@"URL not specified for $network call %@", url);
+        DTLogWarning (@"URL not specified for $network call %@", url);
         return YES;
     }
 
@@ -535,18 +533,17 @@
 }
 
 - (void)build_content_type:(AFHTTPSessionManager *)manager {
-    
     // contentType is deprecated. Use content_type
     NSString * contentType = self.options[@"contentType"];
 
     if (!contentType) {
         contentType = self.options[@"Content-Type"];
     }
-    
+
     if (!contentType) {
         contentType = self.options[@"content_type"];
     }
-    
+
     if (!contentType) {
         contentType = self.options[@"content-type"];
     }
@@ -565,19 +562,16 @@
     if (!dataType) {
         dataType = self.options[@"data_type"];
     }
-    
+
     if (!dataType) {
         dataType = self.options[@"data-type"];
     }
 
     if (dataType && [dataType isEqualToString:@"html"]) {
-        
         manager.responseSerializer = [AFHTTPResponseSerializer serializer];
         manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"text/html", @"text/plain", nil];
-        
     } else if (dataType && ([dataType isEqualToString:@"xml"] ||
                             [dataType isEqualToString:@"rss"])) {
-        
         AFHTTPResponseSerializer * serializer = [AFHTTPResponseSerializer serializer];
         NSMutableSet * acceptableContentTypes = [NSMutableSet setWithSet:serializer.acceptableContentTypes];
         [acceptableContentTypes addObject:@"application/rss+xml"];
@@ -590,12 +584,9 @@
         [acceptableContentTypes addObject:@"application/atomsvc+xml"];
         serializer.acceptableContentTypes = acceptableContentTypes;
         manager.responseSerializer = serializer;
-        
     } else if (dataType && [dataType isEqualToString:@"raw"]) {
-        
         manager.responseSerializer = [AFHTTPResponseSerializer serializer];
         manager.responseSerializer.acceptableContentTypes = nil;
-        
     } else {
         JASONResponseSerializer * jsonResponseSerializer = [JASONResponseSerializer serializer];
         NSMutableSet * jsonAcceptableContentTypes = [NSMutableSet setWithSet:jsonResponseSerializer.acceptableContentTypes];
@@ -620,7 +611,7 @@
     NSString * fresh = self.options[@"fresh"];
 
     if (fresh) {
-        DTLogDebug(@"Ignoring Cache as 'fresh' option is enabled");
+        DTLogDebug (@"Ignoring Cache as 'fresh' option is enabled");
         [manager.requestSerializer setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     }
 }

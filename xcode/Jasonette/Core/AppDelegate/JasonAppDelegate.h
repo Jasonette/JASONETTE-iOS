@@ -15,9 +15,9 @@
 + (BOOL)              application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
 
-+ (BOOL) application:(UIApplication *)app
-             openURL:(NSURL *)url
-             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options;
++ (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
 
 // For iOS <= 9
 + (BOOL)  application:(UIApplication *)application

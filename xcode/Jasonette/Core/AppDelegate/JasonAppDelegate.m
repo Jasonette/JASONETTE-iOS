@@ -222,15 +222,15 @@ static NSArray * _services;
     }
 }
 
-+ (BOOL) application:(UIApplication *)app
-             openURL:(NSURL *)url
-             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
++ (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
     return [JasonAppDelegate
             application:app
-            openURL:url
-            sourceApplication:nil
-            annotation:nil];
+                 openURL:url
+       sourceApplication:nil
+              annotation:nil];
 }
 
 + (BOOL)  application:(UIApplication *)application

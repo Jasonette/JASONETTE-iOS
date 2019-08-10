@@ -374,7 +374,7 @@
         }
 
         if ([method isEqualToString:@"get"]) {
-            [manager GET:path
+            [manager   GET:path
                 parameters:parameters
                    headers:nil
                   progress:^(NSProgress * _Nonnull downloadProgress) {

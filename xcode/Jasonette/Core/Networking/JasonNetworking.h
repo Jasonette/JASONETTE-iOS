@@ -15,18 +15,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /**
- Custom Session manager
-
- @return AFHTTPSessionManager
+ * Custom Session manager
+ *
+ * @return AFHTTPSessionManager
  */
 + (nonnull AFHTTPSessionManager *)manager;
 + (void)                          setSessionManager:(AFHTTPSessionManager *)manager;
 
 
 /**
- Custom Response Serializer
-
- @return AFJSONResponseSerializer
+ * Custom Response Serializer
+ *
+ * @return AFJSONResponseSerializer
  */
 + (nonnull AFJSONResponseSerializer *)serializer;
 + (void)setResponseSerializer:(AFJSONResponseSerializer *)serializer;
@@ -34,32 +34,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /**
- Retrieves the accepted content types for the response
-
- @return NSArray of content types
+ * Retrieves the accepted content types for the response
+ *
+ * @return NSArray of content types
  */
-+ (nonnull NSArray *) acceptedContentTypes;
++ (nonnull NSArray *)                 acceptedContentTypes;
 
 /**
- Add additional accepted content types for the response
- 
- @return NSArray with content types
+ * Add additional accepted content types for the response
+ *
+ * @return NSArray with content types
  */
 + (void)setAcceptedContentTypes:(nonnull NSArray<NSString *> *)types;
 
 
 /**
- Retrieves the headers for the request
-
- @return NSDictionary with headers
+ * Retrieves the headers for the request
+ *
+ * @return NSDictionary with headers
  */
-+ (nonnull NSDictionary *) headers;
++ (nonnull NSDictionary *)            headers;
 
 
 /**
- Set the headers for the request
-
- @param headers
+ * Set the headers for the request
+ *
+ * @param headers
  */
 + (void)setHeaders:(nonnull NSDictionary *)headers;
 

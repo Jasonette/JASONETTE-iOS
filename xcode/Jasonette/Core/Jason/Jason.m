@@ -421,8 +421,8 @@
     if (turnon) {
         [JDStatusBarNotification addStyleNamed:@"SBStyle1"
                                        prepare:^JDStatusBarStyle *(JDStatusBarStyle * style) {
-                                           style.barColor = self->navigationController.navigationBar.backgroundColor;
-                                           style.textColor = self->navigationController.navigationBar.tintColor;
+            style.barColor = self->navigationController.navigationBar.backgroundColor;
+            style.textColor = self->navigationController.navigationBar.tintColor;
             style.animationType = JDStatusBarAnimationTypeFade;
             return style;
         }];
@@ -1274,9 +1274,9 @@
 
                 // 6. Start request
 #pragma message "Start Request in Include"
-                [manager GET:url
+                [manager   GET:url
                     parameters:parameters
-                 headers:nil
+                       headers:nil
                       progress:^(NSProgress * _Nonnull downloadProgress) { }
                        success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject)
                 {
@@ -1403,9 +1403,9 @@
 
                 // 5. Start request
 #pragma message "Start Request in Require"
-                [manager GET:url
+                [manager   GET:url
                     parameters:parameters
-                 headers:nil
+                       headers:nil
                       progress:^(NSProgress * _Nonnull downloadProgress) { }
                        success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject)
                 {
@@ -2225,7 +2225,7 @@
 
 #pragma message "Start Request in Reload"
 
-            [manager GET:self->VC.url
+            [manager   GET:self->VC.url
                 parameters:parameters
                    headers:nil
                   progress:^(NSProgress * _Nonnull downloadProgress) { }
@@ -2245,7 +2245,7 @@
                                         self->VC.contentLoaded = NO;
 
                                         self->VC.original = @{ @"$jason": res[@"$jason"] };
-                        [self drawViewFromJason:self->VC.original
+                                        [self drawViewFromJason:self->VC.original
                                                         asFinal:YES];
                                     });
                        }];
@@ -2573,7 +2573,7 @@
             [progressView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
 
 #pragma message "Webview Styles"
-            
+
             if (bg[@"style"]) {
                 if (bg[@"style"][@"background"]) {
                     vc.background.backgroundColor = [JasonHelper colorwithHexString:bg[@"style"][@"background"] alpha:1.0];
@@ -2591,10 +2591,9 @@
 }
 
 - (void)buildCamera:(NSDictionary *)options forVC:(JasonViewController *)vc {
-    
-    DTLogDebug(@"Building Camera");
-    
-    
+    DTLogDebug (@"Building Camera");
+
+
     NSError * error = nil;
     // Find back/front camera
     // based on options
@@ -2617,34 +2616,33 @@
 
     // Add input to the session
     AVCaptureDeviceInput * input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
-    
-    if(error) {
-        DTLogWarning(@"$vision: %@", error);
+
+    if (error) {
+        DTLogWarning (@"$vision: %@", error);
     }
-    
-    if(![self.avCaptureSession canAddInput:input]) {
-        DTLogWarning(@"$vision: No camera found. Are you using a simulator?");
-        DTLogDebug(@"Loading error.json");
-        
+
+    if (![self.avCaptureSession canAddInput:input]) {
+        DTLogWarning (@"$vision: No camera found. Are you using a simulator?");
+        DTLogDebug (@"Loading error.json");
+
         [self loadViewByFile:@"error.json" asFinal:YES];
 
-        [self call:@{@"type": @"$util.alert",
-                     @"options": @{
-                             @"description": @"No camera found."
-                             }
-                     }];
+        [self call:@{ @"type": @"$util.alert",
+                      @"options": @{
+                          @"description": @"No camera found."
+        } }];
         return;
     }
-    
+
     [self.avCaptureSession addInput:input];
 
     AVCaptureMetadataOutput * output = [[AVCaptureMetadataOutput alloc] init];
-    
-    if(![self.avCaptureSession canAddOutput:output]){
-        DTLogWarning(@"$vision: Can't add output");
+
+    if (![self.avCaptureSession canAddOutput:output]) {
+        DTLogWarning (@"$vision: Can't add output");
         return;
     }
-    
+
     [self.avCaptureSession addOutput:output];
 
     // Listen for different types of barcode detection
@@ -3992,9 +3990,9 @@
             *
             ****************************************************************************/
             NSString * url = href[@"url"];
-            
+
 #pragma message "$href action"
-            
+
             DTLogDebug (@"Opening External URL %@", url);
 
             if (memory._register && memory._register.count > 0) {
@@ -4009,37 +4007,35 @@
                                       [url hasPrefix:@"mailto:"] ||
                                       [url hasPrefix:@"facetime:"] ||
                                       [url hasPrefix:@"facetime-audio:"]);
-                
-                if(systemSchemes) {
+
+                if (systemSchemes) {
                     #if TARGET_IPHONE_SIMULATOR
-                    DTLogWarning(@"Calling tel:, sms:, mailto:, facetime:, facetime-audio: urls in simulator do not work. Test them in a device.");
-                    [self call:@{@"type": @"$util.alert",
-                                 @"options": @{
-                                         @"description": @"This action should be tested in a real device"
-                                         }
-                                 }];
+                    DTLogWarning (@"Calling tel:, sms:, mailto:, facetime:, facetime-audio: urls in simulator do not work. Test them in a device.");
+                    [self call:@{ @"type": @"$util.alert",
+                                  @"options": @{
+                                      @"description": @"This action should be tested in a real device"
+                    } }];
                     #endif
                 }
-                
+
                 // Secure the url as per apple guidelines
                 // in https://developer.apple.com/documentation/uikit/inter-process_communication/allowing_apps_and_websites_to_link_to_your_content/defining_a_custom_url_scheme_for_your_app
-                
+
                 NSMutableCharacterSet * chars = [[NSCharacterSet URLHostAllowedCharacterSet] mutableCopy];
                 [chars formUnionWithCharacterSet:[NSCharacterSet URLPathAllowedCharacterSet]];
                 [chars formUnionWithCharacterSet:[NSCharacterSet URLQueryAllowedCharacterSet]];
                 [chars formUnionWithCharacterSet:[NSCharacterSet URLFragmentAllowedCharacterSet]];
                 [chars formUnionWithCharacterSet:[NSCharacterSet URLUserAllowedCharacterSet]];
                 [chars formUnionWithCharacterSet:[NSCharacterSet URLPasswordAllowedCharacterSet]];
-                
+
                 NSString * encodedUrl = [[url stringByRemovingPercentEncoding]
                                          stringByAddingPercentEncodingWithAllowedCharacters:chars];
-                
+
                 NSURL * destination = [NSURL URLWithString:encodedUrl];
-                
-                DTLogDebug(@"openURL: %@", encodedUrl);
-                
+
+                DTLogDebug (@"openURL: %@", encodedUrl);
+
                 [[UIApplication sharedApplication] openURL:destination];
-                
             } else {
                 DTLogWarning (@"Invalid Url");
             }
@@ -4314,9 +4310,9 @@
 
                     [self unlock];
                     [self->navigationController presentViewController:nav
-                                                       animated:YES
-                                                     completion:^{
-                                                     }];
+                                                             animated:YES
+                                                           completion:^{
+                                                           }];
                     CFRunLoopWakeUp (CFRunLoopGetCurrent ());
                 }
                 // Option 2. Push transition

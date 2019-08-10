@@ -42,6 +42,8 @@ that triggers when the orientation changes.
 
 - Improved Code Organization.
 
+- Improved Networking Code.
+
 ### Fixed
 
 - Fixed Crash on parsing local json files with wrong syntax.
@@ -95,6 +97,8 @@ that triggers when the orientation changes.
 - Updated to `CYRTextView` 0.4.1 (was 0.4.0).
 
 - Updated to `HMSegmentedControl` 1.5.5 (was 1.5.2).
+
+- Updated to `INTULocationManager` 4.3.2 (was 4.2.0).
 
 ### Removed
 

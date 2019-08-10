@@ -8105,39 +8105,6 @@
 			};
 			name = Release;
 		};
-		124E882C2B92CFD659A9D7631AD8BE3C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F295E3CE3544BD96CB701F10C6D76443 /* INTULocationManager.xcconfig */;
-			buildSettings = {
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EXPANDED_CODE_SIGN_IDENTITY = "";
-				GCC_PREFIX_HEADER = "Target Support Files/INTULocationManager/INTULocationManager-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/INTULocationManager/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/INTULocationManager/INTULocationManager.modulemap";
-				PRODUCT_MODULE_NAME = INTULocationManager;
-				PRODUCT_NAME = INTULocationManager;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
 		1554D9E1AE5AF023E67A2A65945F605A /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 43E5FEC86D8E78DDBDAC9F9649EF558E /* Reachability.xcconfig */;
@@ -8436,6 +8403,40 @@
 				MODULEMAP_FILE = "Target Support Files/PHFDelegateChain/PHFDelegateChain.modulemap";
 				PRODUCT_MODULE_NAME = PHFDelegateChain;
 				PRODUCT_NAME = PHFDelegateChain;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		30D0B34A4DACE03E067371E9C131E922 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F295E3CE3544BD96CB701F10C6D76443 /* INTULocationManager.xcconfig */;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				EXPANDED_CODE_SIGN_IDENTITY = "";
+				GCC_PREFIX_HEADER = "Target Support Files/INTULocationManager/INTULocationManager-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/INTULocationManager/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/INTULocationManager/INTULocationManager.modulemap";
+				PRODUCT_MODULE_NAME = INTULocationManager;
+				PRODUCT_NAME = INTULocationManager;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
@@ -10331,6 +10332,39 @@
 			};
 			name = Release;
 		};
+		F429F6E067F0A095C46B761443C7D375 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F295E3CE3544BD96CB701F10C6D76443 /* INTULocationManager.xcconfig */;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				EXPANDED_CODE_SIGN_IDENTITY = "";
+				GCC_PREFIX_HEADER = "Target Support Files/INTULocationManager/INTULocationManager-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/INTULocationManager/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/INTULocationManager/INTULocationManager.modulemap";
+				PRODUCT_MODULE_NAME = INTULocationManager;
+				PRODUCT_NAME = INTULocationManager;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
 		F50E32AC8431350CD663D9A8927BDF64 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 03129A14FCB91A4B79863C642D21D066 /* DAKeyboardControl.xcconfig */;
@@ -10490,40 +10524,6 @@
 				MODULEMAP_FILE = "Target Support Files/UICKeyChainStore/UICKeyChainStore.modulemap";
 				PRODUCT_MODULE_NAME = UICKeyChainStore;
 				PRODUCT_NAME = UICKeyChainStore;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		FBCFF04166307FC839C8CDAB1B9B60BC /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F295E3CE3544BD96CB701F10C6D76443 /* INTULocationManager.xcconfig */;
-			buildSettings = {
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EXPANDED_CODE_SIGN_IDENTITY = "";
-				GCC_PREFIX_HEADER = "Target Support Files/INTULocationManager/INTULocationManager-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/INTULocationManager/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/INTULocationManager/INTULocationManager.modulemap";
-				PRODUCT_MODULE_NAME = INTULocationManager;
-				PRODUCT_NAME = INTULocationManager;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
@@ -10882,8 +10882,8 @@
 		CDEF3A9B1DEBE102C09A66D5E1E25287 /* Build configuration list for PBXNativeTarget "INTULocationManager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				124E882C2B92CFD659A9D7631AD8BE3C /* Debug */,
-				FBCFF04166307FC839C8CDAB1B9B60BC /* Release */,
+				F429F6E067F0A095C46B761443C7D375 /* Debug */,
+				30D0B34A4DACE03E067371E9C131E922 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
