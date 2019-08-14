@@ -228,7 +228,7 @@
 
         if (href[@"loading"]) {
             vc.loading = href[@"loading"];
-            DTLogDebug (@"With Loading %@", vc.loading);
+            DTLogDebug (@"Is Loading? %d", vc.loading);
         }
     }
 
