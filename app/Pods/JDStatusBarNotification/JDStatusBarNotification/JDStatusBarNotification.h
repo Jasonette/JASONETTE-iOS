@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return The modified JDStatusBarStyle instance.
  */
-typedef JDStatusBarStyle*_Nullable(^JDPrepareStyleBlock)(JDStatusBarStyle *style);
+typedef JDStatusBarStyle*(^JDPrepareStyleBlock)(JDStatusBarStyle *style);
 
 /**
  *  This class is a singletion which is used to present notifications
