@@ -167,7 +167,6 @@
 		48A8DE762241BE340099F6BB /* powered-by-finalsite-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 48A8DE722241BE340099F6BB /* powered-by-finalsite-logo.png */; };
 		48C3B7982200C90F00AA850B /* home.json in Resources */ = {isa = PBXBuildFile; fileRef = 48C3B7962200C90E00AA850B /* home.json */; };
 		48C3B7992200C90F00AA850B /* splash_screen.json in Resources */ = {isa = PBXBuildFile; fileRef = 48C3B7972200C90F00AA850B /* splash_screen.json */; };
-		48DFC70321F7FFB50033F3CF /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DFC70221F7FFB50033F3CF /* SnapshotHelper.swift */; };
 		48DFC70521F903750033F3CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 48DFC70421F903750033F3CF /* Assets.xcassets */; };
 		48E64CAF21B97FF300CA02DC /* checkbox_unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */; };
 		48E64CB021B97FF300CA02DC /* checkbox_checked.png in Resources */ = {isa = PBXBuildFile; fileRef = 48E64CAE21B97FF300CA02DC /* checkbox_checked.png */; };
@@ -222,6 +221,7 @@
 		9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */; };
 		CE4AFF1B212CA8FC006B31F5 /* FinalsiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */; };
 		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
+		FD6947462305DBE200205702 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6947452305DBE100205702 /* SnapshotHelper.swift */; };
 		FDA44F8722B7EE58006E413E /* JasonTimedAction.m in Sources */ = {isa = PBXBuildFile; fileRef = FDA44F8622B7EE58006E413E /* JasonTimedAction.m */; };
 		FDA859A7214066180079031C /* gallery.png in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A5214066180079031C /* gallery.png */; };
 /* End PBXBuildFile section */
@@ -426,7 +426,6 @@
 		48A8DE722241BE340099F6BB /* powered-by-finalsite-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "powered-by-finalsite-logo.png"; path = "../../../config/assets/images/powered-by-finalsite-logo.png"; sourceTree = "<group>"; };
 		48C3B7962200C90E00AA850B /* home.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = home.json; sourceTree = "<group>"; };
 		48C3B7972200C90F00AA850B /* splash_screen.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_screen.json; sourceTree = "<group>"; };
-		48DFC70221F7FFB50033F3CF /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = ../SnapshotHelper.swift; sourceTree = "<group>"; };
 		48DFC70421F903750033F3CF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		48E64CAD21B97FF300CA02DC /* checkbox_unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_unchecked.png; sourceTree = "<group>"; };
 		48E64CAE21B97FF300CA02DC /* checkbox_checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_checked.png; sourceTree = "<group>"; };
@@ -533,6 +532,7 @@
 		EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSwitchComponent.h; sourceTree = "<group>"; };
 		EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSwitchComponent.m; sourceTree = "<group>"; };
 		FD5CBD7B21960AFD00B12C45 /* Finalsite.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Finalsite.entitlements; sourceTree = "<group>"; };
+		FD6947452305DBE100205702 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = ../../../config/fastlane/SnapshotHelper.swift; sourceTree = "<group>"; };
 		FDA44F8622B7EE58006E413E /* JasonTimedAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonTimedAction.m; sourceTree = "<group>"; };
 		FDA44F8822B8021D006E413E /* JasonTimedAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonTimedAction.h; sourceTree = "<group>"; };
 		FDA859A5214066180079031C /* gallery.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gallery.png; sourceTree = "<group>"; };
@@ -566,7 +566,7 @@
 				042A7FD31FAC662F00C1A3F2 /* JasonWebsocketAction.h */,
 				042A7FD41FAC662F00C1A3F2 /* JasonWebsocketAction.m */,
 			);
-			name = "$websocket";
+			name = $websocket;
 			sourceTree = "<group>";
 		};
 		042A7FDA1FAC665E00C1A3F2 /* $websocket */ = {
@@ -575,7 +575,7 @@
 				042A7FD71FAC665B00C1A3F2 /* JasonWebsocketService.h */,
 				042A7FD81FAC665B00C1A3F2 /* JasonWebsocketService.m */,
 			);
-			name = "$websocket";
+			name = $websocket;
 			sourceTree = "<group>";
 		};
 		043814171EF7455E00CC4706 /* $global */ = {
@@ -584,7 +584,7 @@
 				043814141EF7455800CC4706 /* JasonGlobalAction.h */,
 				043814151EF7455800CC4706 /* JasonGlobalAction.m */,
 			);
-			name = "$global";
+			name = $global;
 			sourceTree = "<group>";
 		};
 		043EFED71F50B75C00F5AD48 /* Service */ = {
@@ -604,7 +604,7 @@
 				043EFED41F50B75800F5AD48 /* JasonPushService.h */,
 				043EFED51F50B75800F5AD48 /* JasonPushService.m */,
 			);
-			name = "$push";
+			name = $push;
 			sourceTree = "<group>";
 		};
 		045E09301FC4A882003A6341 /* $agent */ = {
@@ -613,7 +613,7 @@
 				045E092D1FC4A87D003A6341 /* JasonAgentAction.h */,
 				045E092E1FC4A87D003A6341 /* JasonAgentAction.m */,
 			);
-			name = "$agent";
+			name = $agent;
 			sourceTree = "<group>";
 		};
 		045E09341FC4A943003A6341 /* $agent */ = {
@@ -622,7 +622,7 @@
 				045E09311FC4A93F003A6341 /* JasonAgentService.h */,
 				045E09321FC4A93F003A6341 /* JasonAgentService.m */,
 			);
-			name = "$agent";
+			name = $agent;
 			sourceTree = "<group>";
 		};
 		045E5F3E1E36610B0088D5E6 /* $return */ = {
@@ -631,7 +631,7 @@
 				045E5F3B1E3661060088D5E6 /* JasonReturnAction.h */,
 				045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */,
 			);
-			name = "$return";
+			name = $return;
 			sourceTree = "<group>";
 		};
 		0483D9B11FA0B5E4004DDA37 /* $vision */ = {
@@ -640,7 +640,7 @@
 				0483D9AE1FA0B5DF004DDA37 /* JasonVisionService.h */,
 				0483D9AF1FA0B5DF004DDA37 /* JasonVisionService.m */,
 			);
-			name = "$vision";
+			name = $vision;
 			sourceTree = "<group>";
 		};
 		0483D9B51FA16734004DDA37 /* $vision */ = {
@@ -649,7 +649,7 @@
 				0483D9B21FA1672D004DDA37 /* JasonVisionAction.h */,
 				0483D9B31FA1672D004DDA37 /* JasonVisionAction.m */,
 			);
-			name = "$vision";
+			name = $vision;
 			sourceTree = "<group>";
 		};
 		04B1568D1F4B8D6A00625C61 /* $push */ = {
@@ -658,7 +658,7 @@
 				04B1568A1F4B8D6600625C61 /* JasonPushAction.h */,
 				04B1568B1F4B8D6600625C61 /* JasonPushAction.m */,
 			);
-			name = "$push";
+			name = $push;
 			sourceTree = "<group>";
 		};
 		04DC19811F5474730021A7A6 /* $script */ = {
@@ -667,7 +667,7 @@
 				04DC197E1F54746E0021A7A6 /* JasonScriptAction.h */,
 				04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */,
 			);
-			name = "$script";
+			name = $script;
 			sourceTree = "<group>";
 		};
 		485D4A38212C606F00C44D6F /* assets */ = {
@@ -1019,7 +1019,7 @@
 				48A0B8DA218B5E0500908931 /* JasonDocumentViewer.m */,
 				5E3176EF1D1E411E00D87778 /* JasonPortraitPicker.m */,
 			);
-			name = "$media";
+			name = $media;
 			sourceTree = "<group>";
 		};
 		5E31778C1D1F208A00D87778 /* $geo */ = {
@@ -1028,7 +1028,7 @@
 				5E3176A21D1E411E00D87778 /* JasonGeoAction.h */,
 				5E3176A31D1E411E00D87778 /* JasonGeoAction.m */,
 			);
-			name = "$geo";
+			name = $geo;
 			sourceTree = "<group>";
 		};
 		5E31778D1D1F209000D87778 /* $audio */ = {
@@ -1037,7 +1037,7 @@
 				5E3176771D1E411E00D87778 /* JasonAudioAction.h */,
 				5E3176781D1E411E00D87778 /* JasonAudioAction.m */,
 			);
-			name = "$audio";
+			name = $audio;
 			sourceTree = "<group>";
 		};
 		5E31778E1D1F20A400D87778 /* $network */ = {
@@ -1048,7 +1048,7 @@
 				04D947E91F16ACF50063CC65 /* JASONResponseSerializer.h */,
 				04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */,
 			);
-			name = "$network";
+			name = $network;
 			sourceTree = "<group>";
 		};
 		5E31778F1D1F20AB00D87778 /* $oauth */ = {
@@ -1057,7 +1057,7 @@
 				5E3176DE1D1E411E00D87778 /* JasonOauthAction.h */,
 				5E3176DF1D1E411E00D87778 /* JasonOauthAction.m */,
 			);
-			name = "$oauth";
+			name = $oauth;
 			sourceTree = "<group>";
 		};
 		5E3177901D1F229200D87778 /* Helper */ = {
@@ -1078,7 +1078,7 @@
 				5E3177991D1F28C100D87778 /* JasonCacheAction.h */,
 				5E31779A1D1F28C100D87778 /* JasonCacheAction.m */,
 			);
-			name = "$cache";
+			name = $cache;
 			sourceTree = "<group>";
 		};
 		5E3177A91D1F294C00D87778 /* $convert */ = {
@@ -1087,7 +1087,7 @@
 				5E31779B1D1F28C100D87778 /* JasonConvertAction.h */,
 				5E31779C1D1F28C100D87778 /* JasonConvertAction.m */,
 			);
-			name = "$convert";
+			name = $convert;
 			sourceTree = "<group>";
 		};
 		5E3177AA1D1F296300D87778 /* $util */ = {
@@ -1096,7 +1096,7 @@
 				5E3177A11D1F28C100D87778 /* JasonUtilAction.h */,
 				5E3177A21D1F28C100D87778 /* JasonUtilAction.m */,
 			);
-			name = "$util";
+			name = $util;
 			sourceTree = "<group>";
 		};
 		5E3177AB1D1F297400D87778 /* $timer */ = {
@@ -1105,7 +1105,7 @@
 				5E31779F1D1F28C100D87778 /* JasonTimerAction.h */,
 				5E3177A01D1F28C100D87778 /* JasonTimerAction.m */,
 			);
-			name = "$timer";
+			name = $timer;
 			sourceTree = "<group>";
 		};
 		5E3177AC1D1F2A8200D87778 /* file:// */ = {
@@ -1125,7 +1125,7 @@
 				5E9862671DCF1F640084CA4A /* JasonNotificationAction.h */,
 				5E9862681DCF1F640084CA4A /* JasonNotificationAction.m */,
 			);
-			name = "$notification";
+			name = $notification;
 			sourceTree = "<group>";
 		};
 		5EDF644F1DB0480B00C5E403 /* $session */ = {
@@ -1134,7 +1134,7 @@
 				5EDF644C1DB0480500C5E403 /* JasonSessionAction.h */,
 				5EDF644D1DB0480500C5E403 /* JasonSessionAction.m */,
 			);
-			name = "$session";
+			name = $session;
 			sourceTree = "<group>";
 		};
 		5EE85B6D1DA486B10049EACE /* label */ = {
@@ -1235,7 +1235,7 @@
 				5EF904341DD10F6E00C8A94E /* JasonLogAction.h */,
 				5EF904351DD10F6E00C8A94E /* JasonLogAction.m */,
 			);
-			name = "$log";
+			name = $log;
 			sourceTree = "<group>";
 		};
 		7CC63D0148253F040E828E0E /* Frameworks */ = {
@@ -1261,7 +1261,7 @@
 			isa = PBXGroup;
 			children = (
 				CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */,
-				48DFC70221F7FFB50033F3CF /* SnapshotHelper.swift */,
+				FD6947452305DBE100205702 /* SnapshotHelper.swift */,
 				CE4AFF1C212CA8FC006B31F5 /* Info.plist */,
 			);
 			path = FinalsiteUITests;
@@ -1273,7 +1273,6 @@
 				544017FBC088ABD4546FB86F /* Pods-Finalsite.debug.xcconfig */,
 				817CFBB45DC208BA95DD08F5 /* Pods-Finalsite.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -1292,7 +1291,7 @@
 				FDA44F8622B7EE58006E413E /* JasonTimedAction.m */,
 				FDA44F8822B8021D006E413E /* JasonTimedAction.h */,
 			);
-			name = "$timed";
+			name = $timed;
 			sourceTree = "<group>";
 		};
 		FDB723AF2195FCF500468F0C /* FinalsiteNotificationServiceExtension */ = {
@@ -1772,7 +1771,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE4AFF1B212CA8FC006B31F5 /* FinalsiteUITests.swift in Sources */,
-				48DFC70321F7FFB50033F3CF /* SnapshotHelper.swift in Sources */,
+				FD6947462305DBE200205702 /* SnapshotHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1816,7 +1815,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -1874,7 +1873,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Active Internet Technologies, LLC (9SSC73BHX6)";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
