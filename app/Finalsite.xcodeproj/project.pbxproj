@@ -221,7 +221,7 @@
 		9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */; };
 		CE4AFF1B212CA8FC006B31F5 /* FinalsiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */; };
 		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
-		FD6947462305DBE200205702 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6947452305DBE100205702 /* SnapshotHelper.swift */; };
+		FD694748230726B200205702 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD694747230726B200205702 /* SnapshotHelper.swift */; };
 		FDA44F8722B7EE58006E413E /* JasonTimedAction.m in Sources */ = {isa = PBXBuildFile; fileRef = FDA44F8622B7EE58006E413E /* JasonTimedAction.m */; };
 		FDA859A7214066180079031C /* gallery.png in Resources */ = {isa = PBXBuildFile; fileRef = FDA859A5214066180079031C /* gallery.png */; };
 /* End PBXBuildFile section */
@@ -532,7 +532,7 @@
 		EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSwitchComponent.h; sourceTree = "<group>"; };
 		EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSwitchComponent.m; sourceTree = "<group>"; };
 		FD5CBD7B21960AFD00B12C45 /* Finalsite.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Finalsite.entitlements; sourceTree = "<group>"; };
-		FD6947452305DBE100205702 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = ../../../config/fastlane/SnapshotHelper.swift; sourceTree = "<group>"; };
+		FD694747230726B200205702 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = ../../../fastlane/SnapshotHelper.swift; sourceTree = "<group>"; };
 		FDA44F8622B7EE58006E413E /* JasonTimedAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonTimedAction.m; sourceTree = "<group>"; };
 		FDA44F8822B8021D006E413E /* JasonTimedAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonTimedAction.h; sourceTree = "<group>"; };
 		FDA859A5214066180079031C /* gallery.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gallery.png; sourceTree = "<group>"; };
@@ -1261,7 +1261,7 @@
 			isa = PBXGroup;
 			children = (
 				CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */,
-				FD6947452305DBE100205702 /* SnapshotHelper.swift */,
+				FD694747230726B200205702 /* SnapshotHelper.swift */,
 				CE4AFF1C212CA8FC006B31F5 /* Info.plist */,
 			);
 			path = FinalsiteUITests;
@@ -1771,7 +1771,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE4AFF1B212CA8FC006B31F5 /* FinalsiteUITests.swift in Sources */,
-				FD6947462305DBE200205702 /* SnapshotHelper.swift in Sources */,
+				FD694748230726B200205702 /* SnapshotHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
