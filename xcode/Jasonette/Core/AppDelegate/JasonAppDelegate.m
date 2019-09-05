@@ -32,7 +32,7 @@ static NSArray * _services;
     DTLogInfo (@"Loading jr.json files");
     NSArray * jrs = [dirFiles filteredArrayUsingPredicate:
                      [NSPredicate
-                      predicateWithFormat:@"(self ENDSWITH[c] '.json') AND (self BEGINSWITH[c] '$')"]];
+                      predicateWithFormat:@"(self ENDSWITH[c] '.json') AND (self BEGINSWITH[c] 'jr')"]];
 
     if (jrs.count <= 0) {
         DTLogInfo (@"No extensions found with jr.json");
