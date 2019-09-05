@@ -8,12 +8,14 @@
 
 #import "JasonNSClassFromString.h"
 #import "JasonLogger.h"
+#import "Jason.h"
 
 @implementation JasonNSClassFromString
 
 + (nullable Class)classFromString:(nonnull NSString *)className
 {
-    if (!className) {
+    if (!className || [className isEqualToString:@""]) {
+        DTLogWarning(@"Empty className given");
         className = @"";
     }
 
@@ -25,9 +27,15 @@
         className = [NSString stringWithFormat:@"%@.%@", prefix, className];
         class = NSClassFromString (className);
     }
+    
+    if(!class) {
+        // Search in the services for a lowercase string className
+        class = [[Jason client].services[[className lowercaseString]] class];
+    }
 
     if (!class) {
         DTLogWarning (@"Class %@ not found", className);
+        class = nil;
     }
 
     return class;
