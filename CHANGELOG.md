@@ -6,7 +6,7 @@ and this project adheres to [Sentimental Versioning](http://sentimentalversionin
 
 ## [2.0.0] Next Release
 
-This version is the current in development.
+This version is the current in development. Will be released on the week of *6th November 2019*.
 
 ### Added
 
@@ -31,6 +31,9 @@ Based on the code by `@seletz`.
 
 - Added `$orientation` system event
 that triggers when the orientation changes.
+
+- Added `$env.view.params` variable that holds the query params inside the url.
+Example `https://example.com?param1=1&params2=true`. Will show `param1` and `param2` as properties inside the params dictionary.
 
 ### Changed
 
@@ -59,6 +62,8 @@ that triggers when the orientation changes.
 - Fixed `WKWebView` orientation change not working. Based on the code by `@ricardojlpinto`.
 
 - Fixed Crash when using`$vision` on simulator.
+
+- Fixed not finding class when using non standard naming in extensions (now searches in lowercase too).
 
 ### Updated
 
