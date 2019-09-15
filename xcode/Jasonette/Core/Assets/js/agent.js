@@ -3,9 +3,9 @@
  * Defines the $agent object that will be injected in every webview
  */
 const $agent = {
-callbacks: {},
+    callbacks: {},
     
-interface: {}
+    interface: {}
 };
 
 // Make requests to another agent
