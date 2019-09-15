@@ -114,6 +114,10 @@
     } else if (message.body[@"href"]) {
         DTLogDebug (@"Loading Href %@", message.body[@"href"][@"data"]);
         [[Jason client] go:message.body[@"href"][@"data"]];
+        
+        // 5. console.log replacement
+    } else if (message.body[@"log"] && message.body[@"log"][@"arguments"]) {
+        DTLogDebug(@"%@", message.body[@"log"][@"arguments"]);
     }
 }
 

@@ -43,7 +43,15 @@ $agent={
     $agent.interface.postMessage({
       href: { data: href }
     });
-  }
+  },
+    
+   /* Trigger Jasonette logger */
+   log: function() {
+        // In JavaScript, a functions parameters can be accessed from the arguments object.
+        $agent.interface.postMessage({
+                                     log: { arguments }
+                                     });
+    }
 };
 
 
