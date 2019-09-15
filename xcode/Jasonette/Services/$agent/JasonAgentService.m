@@ -115,9 +115,21 @@
         DTLogDebug (@"Loading Href %@", message.body[@"href"][@"data"]);
         [[Jason client] go:message.body[@"href"][@"data"]];
         
-        // 5. console.log replacement
     } else if (message.body[@"log"] && message.body[@"log"][@"arguments"]) {
-        DTLogDebug(@"%@", message.body[@"log"][@"arguments"]);
+        
+        // 5. console.log replacement
+        NSString * level = [message.body[@"log"][@"level"] lowercaseString];
+        NSDictionary * args = message.body[@"log"][@"arguments"];
+        
+        if([level isEqualToString:@"info"]){
+            DTLogInfo(@"%@", args);
+        } else if([level isEqualToString:@"warn"]) {
+            DTLogWarning(@"%@", args);
+        } else if([level isEqualToString:@"error"]) {
+            DTLogError(@"%@", args);
+        } else {
+            DTLogDebug(@"%@", args);
+        }
     }
 }
 
