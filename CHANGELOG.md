@@ -35,6 +35,9 @@ that triggers when the orientation changes.
 - Added `$env.view.params` variable that holds the query params inside the url.
 Example `https://example.com?param1=1&params2=true`. Will show `param1` and `param2` as properties inside the params dictionary.
 
+- Added `$agent.logger` to `agent.js` that can call the system logger.
+Methods: `$agent.logger.log`, `$agent.logger.debug`, `$agent.logger.info`, `$agent.logger.warn`, `$agent.logger.error`. As replacements of `console.log` methods for webviews. 
+
 ### Changed
 
 - Bumped to minimum iOS version `9.0`.
