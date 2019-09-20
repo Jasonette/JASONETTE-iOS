@@ -41,6 +41,8 @@
 	<string>used to write to photo library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>used to access photo library</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>used to access location api</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
