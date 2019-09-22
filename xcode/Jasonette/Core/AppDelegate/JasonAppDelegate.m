@@ -112,7 +112,7 @@ static NSArray * _services;
         DTLogInfo (@"Adding Class %@ to the Stack", className);
         extension = [[ActionClass alloc] init];
         [Jason client].services[className] = extension;
-        
+
         // Standarize naming to ease fetching later
         [Jason client].services[[className lowercaseString]] = extension;
     }

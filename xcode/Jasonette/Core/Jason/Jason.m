@@ -1958,11 +1958,13 @@
 
     NSURLComponents * components = [NSURLComponents componentsWithString:self->VC.url];
     NSMutableDictionary * params = [@{} mutableCopy];
-    if(components.queryItems) {
+
+    if (components.queryItems) {
         for (NSURLQueryItem * item in components.queryItems) {
             params[item.name] = item.value;
         }
     }
+
     dict[@"view"] = @{
             @"url": self->VC.url,
             @"params": params
