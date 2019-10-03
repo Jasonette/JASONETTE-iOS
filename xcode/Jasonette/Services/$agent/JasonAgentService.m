@@ -463,7 +463,7 @@
             [INTUAutoRemoveObserver addObserver:self
                                  forKeyPath:NSStringFromSelector (@selector(estimatedProgress))
                                     options:NSKeyValueObservingOptionNew
-                                        context:&identifier];
+                                        context:(__bridge void * _Nullable)(identifier)];
         }
         
 
@@ -648,9 +648,17 @@
         DTLogDebug (@"%f", progressView.progress);
         
         WKWebView * webview = (WKWebView *) object;
-        if(context != NULL){
-            JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
+        
+        BOOL iOS11 = NO;
+        
+        if(@available(iOS 11, *)){
+            iOS11 = YES;
+        }
+        
+        if (!iOS11 && context != NULL) {
             NSString * identifier = (__bridge NSString *)(context);
+            DTLogDebug(@"iOS <= 10 %@", identifier);
+            JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
             webview = vc.agents[identifier];
         }
 
