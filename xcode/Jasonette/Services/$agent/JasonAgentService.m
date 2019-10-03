@@ -9,6 +9,7 @@
 #import "JasonViewController.h"
 #import "JasonLogger.h"
 #import "JasonNetworking.h"
+#import "INTUAutoRemoveObserver.h"
 
 @interface JasonAgentService () {
     NSDictionary * pending_injections;
@@ -445,10 +446,26 @@
         agent.navigationDelegate = self;
 
         // Adding progressView
-        [agent addObserver:self
-                forKeyPath:NSStringFromSelector (@selector(estimatedProgress))
-                   options:NSKeyValueObservingOptionNew
-                   context:NULL];
+        // Before iOS 11 the observers in webview will throw NSInternalInconsistencyException
+        // When deallocating a webview.
+        // This helper class enables to automatically remove the observer when deallocating
+        // an instance.
+        if (@available(iOS 11, *)) {
+            // No need for helper since Apple automatically removes kvo references on dealloc.
+            [agent addObserver:self
+                    forKeyPath:NSStringFromSelector (@selector(estimatedProgress))
+                       options:NSKeyValueObservingOptionNew
+                       context:NULL];
+
+        } else {
+            // This helper will allow to continue execution normally.
+            DTLogDebug(@"iOS <= 10 detected. Using AutoRemoveObserver for agent %@", identifier);
+            [INTUAutoRemoveObserver addObserver:self
+                                 forKeyPath:NSStringFromSelector (@selector(estimatedProgress))
+                                    options:NSKeyValueObservingOptionNew
+                                        context:&identifier];
+        }
+        
 
         agent.hidden = YES;
 
@@ -629,18 +646,27 @@
         [progressView setAlpha:1.0f];
         [progressView setProgress:((WKWebView *)object).estimatedProgress animated:YES];
         DTLogDebug (@"%f", progressView.progress);
+        
+        WKWebView * webview = (WKWebView *) object;
+        if(context != NULL){
+            JasonViewController * vc = (JasonViewController *)[[Jason client] getVC];
+            NSString * identifier = (__bridge NSString *)(context);
+            webview = vc.agents[identifier];
+        }
 
-        if (((WKWebView *)object).estimatedProgress >= 1.0f) {
-            [UIView animateWithDuration:0.3
-                                  delay:0.3
-                                options:UIViewAnimationOptionCurveEaseOut
-                             animations:^{
-                                 [progressView setAlpha:0.0f];
-                             }
-                             completion:^(BOOL finished) {
-                                 [progressView  setProgress:0.0f
-                                  animated:NO];
-                             }];
+        if(webview && [webview respondsToSelector:@selector(estimatedProgress)]){
+            if (webview.estimatedProgress >= 1.0f) {
+                [UIView animateWithDuration:0.3
+                                      delay:0.3
+                                    options:UIViewAnimationOptionCurveEaseOut
+                                 animations:^{
+                                     [progressView setAlpha:0.0f];
+                                 }
+                                 completion:^(BOOL finished) {
+                                     [progressView  setProgress:0.0f
+                                      animated:NO];
+                                 }];
+            }
         }
     }
 }

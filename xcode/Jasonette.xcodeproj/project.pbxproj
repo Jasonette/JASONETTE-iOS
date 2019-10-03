@@ -94,6 +94,7 @@
 		EF07A20422D6186100D0D3FF /* JasonWebsocketService.m in Sources */ = {isa = PBXBuildFile; fileRef = EF07A1B022D6186100D0D3FF /* JasonWebsocketService.m */; };
 		EF07A20522D6186100D0D3FF /* JasonVisionService.m in Sources */ = {isa = PBXBuildFile; fileRef = EF07A1B222D6186100D0D3FF /* JasonVisionService.m */; };
 		EF07A20622D6186100D0D3FF /* JasonAgentService.m in Sources */ = {isa = PBXBuildFile; fileRef = EF07A1B522D6186100D0D3FF /* JasonAgentService.m */; };
+		EF72736823465463005C5515 /* INTUAutoRemoveObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = EF72736623465463005C5515 /* INTUAutoRemoveObserver.m */; };
 		EF82979B22D30A71003ED64B /* jr.sample.json in Resources */ = {isa = PBXBuildFile; fileRef = EF82979922D30A71003ED64B /* jr.sample.json */; };
 		EF9781C322D9A0810024FDAE /* hello.json in Resources */ = {isa = PBXBuildFile; fileRef = EF9781C222D9A0810024FDAE /* hello.json */; };
 /* End PBXBuildFile section */
@@ -252,6 +253,8 @@
 		EF07A1B322D6186100D0D3FF /* JasonVisionService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonVisionService.h; sourceTree = "<group>"; };
 		EF07A1B522D6186100D0D3FF /* JasonAgentService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonAgentService.m; sourceTree = "<group>"; };
 		EF07A1B622D6186100D0D3FF /* JasonAgentService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonAgentService.h; sourceTree = "<group>"; };
+		EF72736623465463005C5515 /* INTUAutoRemoveObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = INTUAutoRemoveObserver.m; sourceTree = "<group>"; };
+		EF72736723465463005C5515 /* INTUAutoRemoveObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = INTUAutoRemoveObserver.h; sourceTree = "<group>"; };
 		EF82979222D28D96003ED64B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Jasonette/Info.plist; sourceTree = SOURCE_ROOT; };
 		EF82979922D30A71003ED64B /* jr.sample.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = jr.sample.json; sourceTree = "<group>"; };
 		EF9781C222D9A0810024FDAE /* hello.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hello.json; sourceTree = "<group>"; };
@@ -589,6 +592,7 @@
 		EF07A12C22D6186100D0D3FF /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				EF72736523465463005C5515 /* INTUAutoRemoveObserver */,
 				EF07A12D22D6186100D0D3FF /* JasonHelper */,
 				EF07A13022D6186100D0D3FF /* JasonNSClassFromString */,
 				EF07A13322D6186100D0D3FF /* JasonOptionHelper.h */,
@@ -1048,6 +1052,15 @@
 			path = $agent;
 			sourceTree = "<group>";
 		};
+		EF72736523465463005C5515 /* INTUAutoRemoveObserver */ = {
+			isa = PBXGroup;
+			children = (
+				EF72736623465463005C5515 /* INTUAutoRemoveObserver.m */,
+				EF72736723465463005C5515 /* INTUAutoRemoveObserver.h */,
+			);
+			path = INTUAutoRemoveObserver;
+			sourceTree = "<group>";
+		};
 		EF82979822D30A71003ED64B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -1284,6 +1297,7 @@
 				EF07A1BD22D6186100D0D3FF /* JasonComponent.m in Sources */,
 				EF07A1F322D6186100D0D3FF /* JasonVisionAction.m in Sources */,
 				EF07A1DE22D6186100D0D3FF /* JasonHtmlComponent.m in Sources */,
+				EF72736823465463005C5515 /* INTUAutoRemoveObserver.m in Sources */,
 				EF07A1FC22D6186100D0D3FF /* JasonHorizontalSectionItem.m in Sources */,
 				EF07A1C322D6186100D0D3FF /* JasonStack.m in Sources */,
 				EF07A1BE22D6186100D0D3FF /* UIView+JasonComponentPayload.m in Sources */,
