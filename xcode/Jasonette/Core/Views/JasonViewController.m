@@ -46,6 +46,13 @@
 
 @implementation JasonViewController
 
+- (NSDictionary *) style {
+    if(!_style) {
+        _style = @{};
+    }
+    
+    return _style;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
