@@ -96,7 +96,7 @@ to prevent random crashes.
 
 - Updated to `NSHash` 1.2.0 (was 1.1.0).
 
-- Updated to `DTCoreText` 1.6.22 (was 1.6.17).
+- Updated to `DTCoreText` 1.6.23 (was 1.6.17).
 
 - Updated to `DTFoundation` 1.7.14 (was 1.7.10).
 
