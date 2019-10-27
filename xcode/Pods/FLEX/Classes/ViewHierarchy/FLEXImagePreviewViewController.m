@@ -6,15 +6,16 @@
 //  Copyright (c) 2014 Flipboard. All rights reserved.
 //
 
+#import "FLEXColor.h"
 #import "FLEXImagePreviewViewController.h"
 #import "FLEXUtility.h"
 
 @interface FLEXImagePreviewViewController () <UIScrollViewDelegate>
 
-@property (nonatomic, strong) UIImage *image;
+@property (nonatomic) UIImage *image;
 
-@property (nonatomic, strong) UIScrollView *scrollView;
-@property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic) UIScrollView *scrollView;
+@property (nonatomic) UIImageView *imageView;
 
 @end
 
@@ -34,7 +35,7 @@
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [FLEXUtility scrollViewGrayColor];
+    self.view.backgroundColor = [FLEXColor scrollViewBackgroundColor];
     
     self.imageView = [[UIImageView alloc] initWithImage:self.image];
     self.scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
@@ -80,29 +81,36 @@
 
 - (void)actionButtonPressed:(id)sender
 {
-    static BOOL CanSaveToCameraRoll = NO;
+    static BOOL canSaveToCameraRoll = NO, didShowWarning = NO;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         if ([UIDevice currentDevice].systemVersion.floatValue < 10) {
-            CanSaveToCameraRoll = YES;
+            canSaveToCameraRoll = YES;
             return;
         }
         
-        NSBundle *mainBundle = [NSBundle mainBundle];
+        NSBundle *mainBundle = NSBundle.mainBundle;
         if ([mainBundle.infoDictionary.allKeys containsObject:@"NSPhotoLibraryUsageDescription"]) {
-            CanSaveToCameraRoll = YES;
-        } else {
-            NSLog(@"Add NSPhotoLibraryUsageDescription in app's Info.plist for saving captured image into camera roll.");
+            canSaveToCameraRoll = YES;
         }
     });
     
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[self.image] applicationActivities:@[]];
     
-    if (!CanSaveToCameraRoll) {
+    if (!canSaveToCameraRoll && !didShowWarning) {
         activityVC.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll];
+
+        didShowWarning = YES;
+        NSString *msg = @"Add 'NSPhotoLibraryUsageDescription' to this app's Info.plist to save images.";
+        [FLEXAlert makeAlert:^(FLEXAlert *make) {
+            make.title(@"Reminder").message(msg);
+            make.button(@"OK").handler(^(NSArray<NSString *> *strings) {
+                [self presentViewController:activityVC animated:YES completion:nil];
+            });
+        } showFrom:self];
+    } else {
+        [self presentViewController:activityVC animated:YES completion:nil];
     }
-    
-    [self presentViewController:activityVC animated:YES completion:nil];
 }
 
 @end

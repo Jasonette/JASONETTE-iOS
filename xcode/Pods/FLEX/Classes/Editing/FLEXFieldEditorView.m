@@ -12,10 +12,10 @@
 
 @interface FLEXFieldEditorView ()
 
-@property (nonatomic, strong) UILabel *targetDescriptionLabel;
-@property (nonatomic, strong) UIView *targetDescriptionDivider;
-@property (nonatomic, strong) UILabel *fieldDescriptionLabel;
-@property (nonatomic, strong) UIView *fieldDescriptionDivider;
+@property (nonatomic) UILabel *targetDescriptionLabel;
+@property (nonatomic) UIView *targetDescriptionDivider;
+@property (nonatomic) UILabel *fieldDescriptionLabel;
+@property (nonatomic) UIView *fieldDescriptionDivider;
 
 @end
 
@@ -25,7 +25,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.targetDescriptionLabel = [[UILabel alloc] init];
+        self.targetDescriptionLabel = [UILabel new];
         self.targetDescriptionLabel.numberOfLines = 0;
         self.targetDescriptionLabel.font = [[self class] labelFont];
         [self addSubview:self.targetDescriptionLabel];
@@ -33,7 +33,7 @@
         self.targetDescriptionDivider = [[self class] dividerView];
         [self addSubview:self.targetDescriptionDivider];
         
-        self.fieldDescriptionLabel = [[UILabel alloc] init];
+        self.fieldDescriptionLabel = [UILabel new];
         self.fieldDescriptionLabel.numberOfLines = 0;
         self.fieldDescriptionLabel.font = [[self class] labelFont];
         [self addSubview:self.fieldDescriptionLabel];
@@ -123,14 +123,14 @@
 
 + (UIView *)dividerView
 {
-    UIView *dividerView = [[UIView alloc] init];
+    UIView *dividerView = [UIView new];
     dividerView.backgroundColor = [self dividerColor];
     return dividerView;
 }
 
 + (UIColor *)dividerColor
 {
-    return [UIColor lightGrayColor];
+    return UIColor.lightGrayColor;
 }
 
 + (CGFloat)horizontalPadding

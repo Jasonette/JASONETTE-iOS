@@ -10,7 +10,7 @@
 
 @interface FLEXArgumentInputSwitchView ()
 
-@property (nonatomic, strong) UISwitch *inputSwitch;
+@property (nonatomic) UISwitch *inputSwitch;
 
 @end
 
@@ -20,7 +20,7 @@
 {
     self = [super initWithArgumentTypeEncoding:typeEncoding];
     if (self) {
-        self.inputSwitch = [[UISwitch alloc] init];
+        self.inputSwitch = [UISwitch new];
         [self.inputSwitch addTarget:self action:@selector(switchValueDidChange:) forControlEvents:UIControlEventValueChanged];
         [self.inputSwitch sizeToFit];
         [self addSubview:self.inputSwitch];

@@ -8,13 +8,13 @@
 
 #import "FLEXManager.h"
 
-@class FLEXGlobalsTableViewControllerEntry;
+@class FLEXGlobalsEntry;
 
 @interface FLEXManager ()
 
-/// An array of FLEXGlobalsTableViewControllerEntry objects that have been registered by the user.
-@property (nonatomic, readonly, strong) NSArray<FLEXGlobalsTableViewControllerEntry *> *userGlobalEntries;
+/// An array of FLEXGlobalsEntry objects that have been registered by the user.
+@property (nonatomic, readonly) NSArray<FLEXGlobalsEntry *> *userGlobalEntries;
 
-@property (nonatomic, readonly, strong) NSDictionary<NSString *, FLEXCustomContentViewerFuture> *customContentTypeViewers;
+@property (nonatomic, readonly) NSDictionary<NSString *, FLEXCustomContentViewerFuture> *customContentTypeViewers;
 
 @end

@@ -57,11 +57,12 @@
 
 + (instancetype)instancesTableViewControllerForClassName:(NSString *)className
 {
-    const char *classNameCString = [className UTF8String];
+    const char *classNameCString = className.UTF8String;
     NSMutableArray *instances = [NSMutableArray array];
     [FLEXHeapEnumerator enumerateLiveObjectsUsingBlock:^(__unsafe_unretained id object, __unsafe_unretained Class actualClass) {
         if (strcmp(classNameCString, class_getName(actualClass)) == 0) {
-            // Note: objects of certain classes crash when retain is called. It is up to the user to avoid tapping into instance lists for these classes.
+            // Note: objects of certain classes crash when retain is called.
+            // It is up to the user to avoid tapping into instance lists for these classes.
             // Ex. OS_dispatch_queue_specific_queue
             // In the future, we could provide some kind of warning for classes that are known to be problematic.
             if (malloc_size((__bridge const void *)(object)) > 0) {
@@ -71,7 +72,7 @@
     }];
     NSArray<FLEXObjectRef *> *references = [FLEXObjectRef referencingAll:instances];
     FLEXInstancesTableViewController *viewController = [[self alloc] initWithReferences:references];
-    viewController.title = [NSString stringWithFormat:@"%@ (%lu)", className, (unsigned long)[instances count]];
+    viewController.title = [NSString stringWithFormat:@"%@ (%lu)", className, (unsigned long)instances.count];
     return viewController;
 }
 
@@ -93,7 +94,7 @@
             for (unsigned int ivarIndex = 0; ivarIndex < ivarCount; ivarIndex++) {
                 Ivar ivar = ivars[ivarIndex];
                 const char *typeEncoding = ivar_getTypeEncoding(ivar);
-                if (typeEncoding[0] == @encode(id)[0] || typeEncoding[0] == @encode(Class)[0]) {
+                if (typeEncoding[0] == FLEXTypeEncodingObjcObject || typeEncoding[0] == FLEXTypeEncodingObjcClass) {
                     ptrdiff_t offset = ivar_getOffset(ivar);
                     uintptr_t *fieldPointer = (__bridge void *)tryObject + offset;
                     if (*fieldPointer == (uintptr_t)(__bridge void *)object) {
@@ -209,7 +210,7 @@
         UIFont *cellFont = [FLEXUtility defaultTableViewCellLabelFont];
         cell.textLabel.font = cellFont;
         cell.detailTextLabel.font = cellFont;
-        cell.detailTextLabel.textColor = [UIColor grayColor];
+        cell.detailTextLabel.textColor = UIColor.grayColor;
     }
 
     FLEXObjectRef *row = self.sections[indexPath.section][indexPath.row];

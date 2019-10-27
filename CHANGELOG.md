@@ -6,7 +6,7 @@ and this project adheres to [Sentimental Versioning](http://sentimentalversionin
 
 ## [2.0.0] Next Release
 
-This version is the current in development. Will be released on the week of *6th November 2019*.
+This version is the current in development. Will be released after the week of *6th November 2019*.
 
 ### Added
 
@@ -68,6 +68,12 @@ Methods: `$agent.logger.log`, `$agent.logger.debug`, `$agent.logger.info`, `$age
 
 - Fixed not finding class when using non standard naming in extensions (now searches in lowercase too).
 
+- Fixed Crash in iOS 10 when using webcontainers. It crashed because before iOS 11 the observers to notifications does not autorelease. Solved using `INTUAutoRemoveObserver`.
+
+- Fixed Random Crash. The property `styles` in `JasonViewController` was not initialized
+in some use cases. Now is lazy allocated
+to prevent random crashes.
+
 ### Updated
 
 - Updated to `AFNetworking` 3.2.1 (was 3.1.0).
@@ -92,7 +98,7 @@ Methods: `$agent.logger.log`, `$agent.logger.debug`, `$agent.logger.info`, `$age
 
 - Updated to `DTCoreText` 1.6.22 (was 1.6.17).
 
-- Updated to `DTFoundation` 1.7.13 (was 1.7.10).
+- Updated to `DTFoundation` 1.7.14 (was 1.7.10).
 
 - Updated to `FreeStreamer` 4.0.0 (was 3.5.7).
 
@@ -110,12 +116,14 @@ Methods: `$agent.logger.log`, `$agent.logger.debug`, `$agent.logger.info`, `$age
 
 ### Removed
 
-- Nothing
+- `UIWebview` Dependencies. Since Apple will stop accepting apps that use that API.
 
 ### Notes
 
-This version is a complete overhaul focusing on 
+- This version is a complete overhaul focusing on 
 modularization of the code and update of the libraries, improving the quality of the framework, maintaining the same json api.
+
+- The next version will be re engineered so it will be easier to maintain and find bugs. New arquitecture and possible adopting Swift Language.
 
 ### People
 

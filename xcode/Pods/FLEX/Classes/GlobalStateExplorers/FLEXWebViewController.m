@@ -8,11 +8,12 @@
 
 #import "FLEXWebViewController.h"
 #import "FLEXUtility.h"
+#import <WebKit/WebKit.h>
 
-@interface FLEXWebViewController () <UIWebViewDelegate>
+@interface FLEXWebViewController () <WKNavigationDelegate>
 
-@property (nonatomic, strong) UIWebView *webView;
-@property (nonatomic, strong) NSString *originalText;
+@property (nonatomic) WKWebView *webView;
+@property (nonatomic) NSString *originalText;
 
 @end
 
@@ -22,10 +23,12 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.webView = [[UIWebView alloc] init];
-        self.webView.delegate = self;
-        self.webView.dataDetectorTypes = UIDataDetectorTypeLink;
-        self.webView.scalesPageToFit = YES;
+        WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
+
+        configuration.dataDetectorTypes = UIDataDetectorTypeLink;
+
+        self.webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:configuration];
+        self.webView.navigationDelegate = self;
     }
     return self;
 }
@@ -53,9 +56,9 @@
 
 - (void)dealloc
 {
-    // UIWebView's delegate is assign so we need to clear it manually.
-    if (_webView.delegate == self) {
-        _webView.delegate = nil;
+    // WKWebView's delegate is assigned so we need to clear it manually.
+    if (_webView.navigationDelegate == self) {
+        _webView.navigationDelegate = nil;
     }
 }
 
@@ -67,33 +70,34 @@
     self.webView.frame = self.view.bounds;
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
-    if ([self.originalText length] > 0) {
+    if (self.originalText.length > 0) {
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Copy" style:UIBarButtonItemStylePlain target:self action:@selector(copyButtonTapped:)];
     }
 }
 
 - (void)copyButtonTapped:(id)sender
 {
-    [[UIPasteboard generalPasteboard] setString:self.originalText];
+    [UIPasteboard.generalPasteboard setString:self.originalText];
 }
 
 
-#pragma mark - UIWebView Delegate
+#pragma mark - WKWebView Delegate
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    BOOL shouldStart = NO;
-    if (navigationType == UIWebViewNavigationTypeOther) {
+    WKNavigationActionPolicy policy = WKNavigationActionPolicyCancel;
+    if (navigationAction.navigationType == WKNavigationTypeOther) {
         // Allow the initial load
-        shouldStart = YES;
+        policy = WKNavigationActionPolicyAllow;
     } else {
         // For clicked links, push another web view controller onto the navigation stack so that hitting the back button works as expected.
-        // Don't allow the current web view do handle the navigation.
+        // Don't allow the current web view to handle the navigation.
+        NSURLRequest *request = navigationAction.request;
         FLEXWebViewController *webVC = [[[self class] alloc] initWithURL:[request URL]];
         webVC.title = [[request URL] absoluteString];
         [self.navigationController pushViewController:webVC animated:YES];
     }
-    return shouldStart;
+    decisionHandler(policy);
 }
 
 
@@ -111,17 +115,17 @@
 
 + (NSSet<NSString *> *)webViewSupportedPathExtensions
 {
-    static NSSet<NSString *> *pathExtenstions = nil;
+    static NSSet<NSString *> *pathExtensions = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         // Note that this is not exhaustive, but all these extensions should work well in the web view.
-        // See https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/CreatingContentforSafarioniPhone/CreatingContentforSafarioniPhone.html#//apple_ref/doc/uid/TP40006482-SW7
-        pathExtenstions = [NSSet<NSString *> setWithArray:@[@"jpg", @"jpeg", @"png", @"gif", @"pdf", @"svg", @"tiff", @"3gp", @"3gpp", @"3g2",
-                                                            @"3gp2", @"aiff", @"aif", @"aifc", @"cdda", @"amr", @"mp3", @"swa", @"mp4", @"mpeg",
-                                                            @"mpg", @"mp3", @"wav", @"bwf", @"m4a", @"m4b", @"m4p", @"mov", @"qt", @"mqv", @"m4v"]];
+        // See https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/CreatingContentforSafarioniPhone/CreatingContentforSafarioniPhone.html#//apple_ref/doc/uid/TP40006482-SW7
+        pathExtensions = [NSSet<NSString *> setWithArray:@[@"jpg", @"jpeg", @"png", @"gif", @"pdf", @"svg", @"tiff", @"3gp", @"3gpp", @"3g2",
+                                                           @"3gp2", @"aiff", @"aif", @"aifc", @"cdda", @"amr", @"mp3", @"swa", @"mp4", @"mpeg",
+                                                           @"mpg", @"mp3", @"wav", @"bwf", @"m4a", @"m4b", @"m4p", @"mov", @"qt", @"mqv", @"m4v"]];
         
     });
-    return pathExtenstions;
+    return pathExtensions;
 }
 
 @end

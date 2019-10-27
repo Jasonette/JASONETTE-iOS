@@ -20,7 +20,7 @@
     NSString *_databasePath;
 }
 
-@property (nonatomic, strong) NSArray<NSString *> *tables;
+@property (nonatomic) NSArray<NSString *> *tables;
 
 + (NSArray<NSString *> *)supportedSQLiteExtensions;
 + (NSArray<NSString *> *)supportedRealmExtensions;
@@ -88,7 +88,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    FLEXTableContentViewController *contentViewController = [[FLEXTableContentViewController alloc] init];
+    FLEXTableContentViewController *contentViewController = [FLEXTableContentViewController new];
     
     contentViewController.contentsArray = [_dbm queryAllDataWithTableName:self.tables[indexPath.row]];
     contentViewController.columnsArray = [_dbm queryAllColumnsWithTableName:self.tables[indexPath.row]];

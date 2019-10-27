@@ -10,19 +10,19 @@
 #import "FLEXHeapEnumerator.h"
 #import "FLEXInstancesTableViewController.h"
 #import "FLEXUtility.h"
+#import "FLEXScopeCarousel.h"
 #import <objc/runtime.h>
 
 static const NSInteger kFLEXLiveObjectsSortAlphabeticallyIndex = 0;
 static const NSInteger kFLEXLiveObjectsSortByCountIndex = 1;
 static const NSInteger kFLEXLiveObjectsSortBySizeIndex = 2;
 
-@interface FLEXLiveObjectsTableViewController () <UISearchBarDelegate>
+@interface FLEXLiveObjectsTableViewController ()
 
-@property (nonatomic, strong) NSDictionary<NSString *, NSNumber *> *instanceCountsForClassNames;
-@property (nonatomic, strong) NSDictionary<NSString *, NSNumber *> *instanceSizesForClassNames;
+@property (nonatomic) NSDictionary<NSString *, NSNumber *> *instanceCountsForClassNames;
+@property (nonatomic) NSDictionary<NSString *, NSNumber *> *instanceSizesForClassNames;
 @property (nonatomic, readonly) NSArray<NSString *> *allClassNames;
-@property (nonatomic, strong) NSArray<NSString *> *filteredClassNames;
-@property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic) NSArray<NSString *> *filteredClassNames;
 
 @end
 
@@ -32,15 +32,12 @@ static const NSInteger kFLEXLiveObjectsSortBySizeIndex = 2;
 {
     [super viewDidLoad];
     
-    self.searchBar = [[UISearchBar alloc] init];
-    self.searchBar.placeholder = [FLEXUtility searchBarPlaceholderText];
-    self.searchBar.delegate = self;
-    self.searchBar.showsScopeBar = YES;
-    self.searchBar.scopeButtonTitles = @[@"Sort Alphabetically", @"Sort by Count", @"Sort by Size"];
-    [self.searchBar sizeToFit];
-    self.tableView.tableHeaderView = self.searchBar;
+    self.showsSearchBar = YES;
+    self.searchBarDebounceInterval = kFLEXDebounceInstant;
+    self.showsCarousel = YES;
+    self.carousel.items = @[@"A→Z", @"Count", @"Size"];
     
-    self.refreshControl = [[UIRefreshControl alloc] init];
+    self.refreshControl = [UIRefreshControl new];
     [self.refreshControl addTarget:self action:@selector(refreshControlDidRefresh:) forControlEvents:UIControlEventValueChanged];
     
     [self reloadTableData];
@@ -48,7 +45,7 @@ static const NSInteger kFLEXLiveObjectsSortBySizeIndex = 2;
 
 - (NSArray<NSString *> *)allClassNames
 {
-    return [self.instanceCountsForClassNames allKeys];
+    return self.instanceCountsForClassNames.allKeys;
 }
 
 - (void)reloadTableData
@@ -90,7 +87,7 @@ static const NSInteger kFLEXLiveObjectsSortBySizeIndex = 2;
     self.instanceCountsForClassNames = mutableCountsForClassNames;
     self.instanceSizesForClassNames = mutableSizesForClassNames;
     
-    [self updateTableDataForSearchFilter];
+    [self updateSearchResults:nil];
 }
 
 - (void)refreshControlDidRefresh:(id)sender
@@ -131,48 +128,40 @@ static const NSInteger kFLEXLiveObjectsSortBySizeIndex = 2;
 }
 
 
-#pragma mark - Search
+#pragma mark - FLEXGlobalsEntry
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    [self updateTableDataForSearchFilter];
++ (NSString *)globalsEntryTitle:(FLEXGlobalsRow)row {
+    return @"💩  Heap Objects";
 }
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    [searchBar resignFirstResponder];
++ (UIViewController *)globalsEntryViewController:(FLEXGlobalsRow)row {
+    return [self new];
 }
 
-- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
-{
-    [self updateTableDataForSearchFilter];
-}
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    // Dismiss the keyboard when interacting with filtered results.
-    [self.searchBar endEditing:YES];
-}
+#pragma mark - Search bar
 
-- (void)updateTableDataForSearchFilter
+- (void)updateSearchResults:(NSString *)filter
 {
-    if ([self.searchBar.text length] > 0) {
-        NSPredicate *searchPreidcate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", self.searchBar.text];
-        self.filteredClassNames = [self.allClassNames filteredArrayUsingPredicate:searchPreidcate];
+    NSInteger selectedScope = self.selectedScope;
+    
+    if (filter.length) {
+        NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", filter];
+        self.filteredClassNames = [self.allClassNames filteredArrayUsingPredicate:searchPredicate];
     } else {
         self.filteredClassNames = self.allClassNames;
     }
     
-    if (self.searchBar.selectedScopeButtonIndex == kFLEXLiveObjectsSortAlphabeticallyIndex) {
+    if (selectedScope == kFLEXLiveObjectsSortAlphabeticallyIndex) {
         self.filteredClassNames = [self.filteredClassNames sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-    } else if (self.searchBar.selectedScopeButtonIndex == kFLEXLiveObjectsSortByCountIndex) {
+    } else if (selectedScope == kFLEXLiveObjectsSortByCountIndex) {
         self.filteredClassNames = [self.filteredClassNames sortedArrayUsingComparator:^NSComparisonResult(NSString *className1, NSString *className2) {
             NSNumber *count1 = self.instanceCountsForClassNames[className1];
             NSNumber *count2 = self.instanceCountsForClassNames[className2];
             // Reversed for descending counts.
             return [count2 compare:count1];
         }];
-    } else if (self.searchBar.selectedScopeButtonIndex == kFLEXLiveObjectsSortBySizeIndex) {
+    } else if (selectedScope == kFLEXLiveObjectsSortBySizeIndex) {
         self.filteredClassNames = [self.filteredClassNames sortedArrayUsingComparator:^NSComparisonResult(NSString *className1, NSString *className2) {
             NSNumber *count1 = self.instanceCountsForClassNames[className1];
             NSNumber *count2 = self.instanceCountsForClassNames[className2];
@@ -197,7 +186,7 @@ static const NSInteger kFLEXLiveObjectsSortBySizeIndex = 2;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.filteredClassNames count];
+    return self.filteredClassNames.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

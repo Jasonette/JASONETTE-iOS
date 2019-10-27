@@ -11,7 +11,7 @@
 
 @interface FLEXKeyboardHelpViewController ()
 
-@property (nonatomic, strong) UITextView *textView;
+@property (nonatomic) UITextView *textView;
 
 @end
 
@@ -27,8 +27,8 @@
 #if TARGET_OS_SIMULATOR
     self.textView.text = [[FLEXKeyboardShortcutManager sharedManager] keyboardShortcutsDescription];
 #endif
-    self.textView.backgroundColor = [UIColor blackColor];
-    self.textView.textColor = [UIColor whiteColor];
+    self.textView.backgroundColor = UIColor.blackColor;
+    self.textView.textColor = UIColor.whiteColor;
     self.textView.font = [UIFont boldSystemFontOfSize:14.0];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
     

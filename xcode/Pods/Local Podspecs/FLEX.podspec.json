@@ -23,7 +23,7 @@
   },
   "social_media_url": "https://twitter.com/NSExceptional",
   "platforms": {
-    "ios": "8.0"
+    "ios": "9.0"
   },
   "source": {
     "git": "https://github.com/Flipboard/FLEX.git",
@@ -33,7 +33,11 @@
   "frameworks": [
     "Foundation",
     "UIKit",
-    "CoreGraphics"
+    "CoreGraphics",
+    "ImageIO",
+    "QuartzCore",
+    "WebKit",
+    "Security"
   ],
   "libraries": [
     "z",

@@ -12,11 +12,10 @@
 #import "FLEXUtility.h"
 #import <objc/runtime.h>
 
-@interface FLEXClassesTableViewController () <UISearchBarDelegate>
+@interface FLEXClassesTableViewController ()
 
-@property (nonatomic, strong) NSArray<NSString *> *classNames;
-@property (nonatomic, strong) NSArray<NSString *> *filteredClassNames;
-@property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic) NSArray<NSString *> *classNames;
+@property (nonatomic) NSArray<NSString *> *filteredClassNames;
 
 @end
 
@@ -26,11 +25,7 @@
 {
     [super viewDidLoad];
     
-    self.searchBar = [[UISearchBar alloc] init];
-    self.searchBar.placeholder = [FLEXUtility searchBarPlaceholderText];
-    self.searchBar.delegate = self;
-    [self.searchBar sizeToFit];
-    self.tableView.tableHeaderView = self.searchBar;
+    self.showsSearchBar = YES;
 }
 
 - (void)setBinaryImageName:(NSString *)binaryImageName
@@ -51,7 +46,7 @@
 - (void)loadClassNames
 {
     unsigned int classNamesCount = 0;
-    const char **classNames = objc_copyClassNamesForImage([self.binaryImageName UTF8String], &classNamesCount);
+    const char **classNames = objc_copyClassNamesForImage(self.binaryImageName.UTF8String, &classNamesCount);
     if (classNames) {
         NSMutableArray<NSString *> *classNameStrings = [NSMutableArray array];
         for (unsigned int i = 0; i < classNamesCount; i++) {
@@ -69,33 +64,36 @@
 - (void)updateTitle
 {
     NSString *shortImageName = self.binaryImageName.lastPathComponent;
-    self.title = [NSString stringWithFormat:@"%@ Classes (%lu)", shortImageName, (unsigned long)[self.filteredClassNames count]];
+    self.title = [NSString stringWithFormat:@"%@ Classes (%lu)", shortImageName, (unsigned long)self.filteredClassNames.count];
 }
 
 
-#pragma mark - Search
+#pragma mark - FLEXGlobalsEntry
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
++ (NSString *)globalsEntryTitle:(FLEXGlobalsRow)row {
+    return [NSString stringWithFormat:@"📕  %@ Classes", [FLEXUtility applicationName]];
+}
+
++ (UIViewController *)globalsEntryViewController:(FLEXGlobalsRow)row {
+    FLEXClassesTableViewController *classesViewController = [self new];
+    classesViewController.binaryImageName = [FLEXUtility applicationImageName];
+
+    return classesViewController;
+}
+
+
+#pragma mark - Search bar
+
+- (void)updateSearchResults:(NSString *)searchText
 {
-    if ([searchText length] > 0) {
-        NSPredicate *searchPreidcate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", searchText];
-        self.filteredClassNames = [self.classNames filteredArrayUsingPredicate:searchPreidcate];
+    if (searchText.length > 0) {
+        NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", searchText];
+        self.filteredClassNames = [self.classNames filteredArrayUsingPredicate:searchPredicate];
     } else {
         self.filteredClassNames = self.classNames;
     }
     [self updateTitle];
     [self.tableView reloadData];
-}
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    [searchBar resignFirstResponder];
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    // Dismiss the keyboard when interacting with filtered results.
-    [self.searchBar endEditing:YES];
 }
 
 
@@ -108,7 +106,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.filteredClassNames count];
+    return self.filteredClassNames.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -132,7 +130,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *className = self.filteredClassNames[indexPath.row];
-    Class selectedClass = objc_getClass([className UTF8String]);
+    Class selectedClass = objc_getClass(className.UTF8String);
     FLEXObjectExplorerViewController *objectExplorer = [FLEXObjectExplorerFactory explorerViewControllerForObject:selectedClass];
     [self.navigationController pushViewController:objectExplorer animated:YES];
 }

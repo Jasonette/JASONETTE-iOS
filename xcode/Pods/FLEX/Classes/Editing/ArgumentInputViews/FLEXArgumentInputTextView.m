@@ -6,12 +6,14 @@
 //
 //
 
+#import "FLEXColor.h"
 #import "FLEXArgumentInputTextView.h"
 #import "FLEXUtility.h"
 
-@interface FLEXArgumentInputTextView () <UITextViewDelegate>
+@interface FLEXArgumentInputTextView ()
 
-@property (nonatomic, strong) UITextView *inputTextView;
+@property (nonatomic) UITextView *inputTextView;
+@property (nonatomic) UILabel *placeholderLabel;
 @property (nonatomic, readonly) NSUInteger numberOfInputLines;
 
 @end
@@ -22,23 +24,31 @@
 {
     self = [super initWithArgumentTypeEncoding:typeEncoding];
     if (self) {
-        self.inputTextView = [[UITextView alloc] init];
+        self.inputTextView = [UITextView new];
         self.inputTextView.font = [[self class] inputFont];
-        self.inputTextView.backgroundColor = [UIColor whiteColor];
-        self.inputTextView.layer.borderColor = [[UIColor blackColor] CGColor];
-        self.inputTextView.layer.borderWidth = 1.0;
+        self.inputTextView.backgroundColor = [FLEXColor primaryBackgroundColor];
+        self.inputTextView.layer.borderColor = [FLEXColor borderColor].CGColor;
+        self.inputTextView.layer.borderWidth = 1.f;
+        self.inputTextView.layer.cornerRadius = 5.f;
         self.inputTextView.autocapitalizationType = UITextAutocapitalizationTypeNone;
         self.inputTextView.autocorrectionType = UITextAutocorrectionTypeNo;
         self.inputTextView.delegate = self;
         self.inputTextView.inputAccessoryView = [self createToolBar];
         [self addSubview:self.inputTextView];
+
+        self.placeholderLabel = [UILabel new];
+        self.placeholderLabel.font = self.inputTextView.font;
+        self.placeholderLabel.textColor = [FLEXColor deemphasizedTextColor];
+        self.placeholderLabel.numberOfLines = 0;
+        [self.inputTextView addSubview:self.placeholderLabel];
+
     }
     return self;
 }
 
-#pragma mark - private
+#pragma mark - Private
 
-- (UIToolbar*)createToolBar
+- (UIToolbar *)createToolBar
 {
     UIToolbar *toolBar = [UIToolbar new];
     [toolBar sizeToFit];
@@ -53,12 +63,25 @@
     [self.inputTextView resignFirstResponder];
 }
 
-
-#pragma mark - Text View Changes
-
-- (void)textViewDidChange:(UITextView *)textView
+- (void)setInputPlaceholderText:(NSString *)placeholder
 {
-    [self.delegate argumentInputViewValueDidChange:self];
+    self.placeholderLabel.text = placeholder;
+    if (placeholder.length) {
+        if (!self.inputTextView.text.length) {
+            self.placeholderLabel.hidden = NO;
+        } else {
+            self.placeholderLabel.hidden = YES;
+        }
+    } else {
+        self.placeholderLabel.hidden = YES;
+    }
+
+    [self setNeedsLayout];
+}
+
+- (NSString *)inputPlaceholderText
+{
+    return self.placeholderLabel.text;
 }
 
 
@@ -77,25 +100,28 @@
     [super layoutSubviews];
     
     self.inputTextView.frame = CGRectMake(0, self.topInputFieldVerticalLayoutGuide, self.bounds.size.width, [self inputTextViewHeight]);
+    // Placeholder label is positioned by insetting origin,
+    // which is the line fragment padding for X and 0 for Y,
+    // by the content inset then the text container inset
+    CGFloat leading = self.inputTextView.textContainer.lineFragmentPadding;
+    CGSize s = self.inputTextView.frame.size;
+    self.placeholderLabel.frame = CGRectMake(leading, 0, s.width, s.height);
+    self.placeholderLabel.frame = UIEdgeInsetsInsetRect(
+        UIEdgeInsetsInsetRect(self.placeholderLabel.frame, self.inputTextView.contentInset),
+        self.inputTextView.textContainerInset
+    );
 }
 
 - (NSUInteger)numberOfInputLines
 {
-    NSUInteger numberOfInputLines = 0;
     switch (self.targetSize) {
         case FLEXArgumentInputViewSizeDefault:
-            numberOfInputLines = 2;
-            break;
-            
+            return 2;
         case FLEXArgumentInputViewSizeSmall:
-            numberOfInputLines = 1;
-            break;
-            
+            return 1;
         case FLEXArgumentInputViewSizeLarge:
-            numberOfInputLines = 8;
-            break;
+            return 8;
     }
-    return numberOfInputLines;
 }
 
 - (CGFloat)inputTextViewHeight
@@ -111,11 +137,34 @@
 }
 
 
+#pragma mark - Trait collection changes
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+#if FLEX_AT_LEAST_IOS13_SDK
+    if (@available(iOS 13.0, *)) {
+        if (previousTraitCollection.userInterfaceStyle != self.traitCollection.userInterfaceStyle) {
+            self.inputTextView.layer.borderColor = [FLEXColor borderColor].CGColor;
+        }
+    }
+#endif
+}
+
+
 #pragma mark - Class Helpers
 
 + (UIFont *)inputFont
 {
     return [FLEXUtility defaultFontOfSize:14.0];
+}
+
+
+#pragma mark - UITextViewDelegate
+
+- (void)textViewDidChange:(UITextView *)textView
+{
+    [self.delegate argumentInputViewValueDidChange:self];
+    self.placeholderLabel.hidden = !(self.inputPlaceholderText.length && !textView.text.length);
 }
 
 @end

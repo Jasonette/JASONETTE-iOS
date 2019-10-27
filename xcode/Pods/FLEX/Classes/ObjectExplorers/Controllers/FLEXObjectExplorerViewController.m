@@ -16,14 +16,8 @@
 #import "FLEXMethodCallingViewController.h"
 #import "FLEXInstancesTableViewController.h"
 #import "FLEXTableView.h"
+#import "FLEXScopeCarousel.h"
 #import <objc/runtime.h>
-
-typedef NS_ENUM(NSUInteger, FLEXObjectExplorerScope) {
-    FLEXObjectExplorerScopeNoInheritance,
-    FLEXObjectExplorerScopeWithParent,
-    FLEXObjectExplorerScopeAllButNSObject,
-    FLEXObjectExplorerScopeNSObjectOnly
-};
 
 typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     FLEXMetadataKindProperties,
@@ -34,58 +28,46 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
 
 // Convenience boxes to keep runtime properties, ivars, and methods in foundation collections.
 @interface FLEXPropertyBox : NSObject
-@property (nonatomic, assign) objc_property_t property;
+@property (nonatomic) objc_property_t property;
 @end
 @implementation FLEXPropertyBox
 @end
 
 @interface FLEXIvarBox : NSObject
-@property (nonatomic, assign) Ivar ivar;
+@property (nonatomic) Ivar ivar;
 @end
 @implementation FLEXIvarBox
 @end
 
 @interface FLEXMethodBox : NSObject
-@property (nonatomic, assign) Method method;
+@property (nonatomic) Method method;
 @end
 @implementation FLEXMethodBox
 @end
 
-@interface FLEXObjectExplorerViewController () <UISearchBarDelegate>
+@interface FLEXObjectExplorerViewController ()
 
-@property (nonatomic, strong) NSArray<FLEXPropertyBox *> *properties;
-@property (nonatomic, strong) NSArray<FLEXPropertyBox *> *propertiesWithParent;
-@property (nonatomic, strong) NSArray<FLEXPropertyBox *> *inheritedProperties;
-@property (nonatomic, strong) NSArray<FLEXPropertyBox *> *NSObjectProperties;
-@property (nonatomic, strong) NSArray<FLEXPropertyBox *> *filteredProperties;
+@property (nonatomic) NSMutableArray<NSArray<FLEXPropertyBox *> *> *properties;
+@property (nonatomic) NSArray<FLEXPropertyBox *> *filteredProperties;
 
-@property (nonatomic, strong) NSArray<FLEXIvarBox *> *ivars;
-@property (nonatomic, strong) NSArray<FLEXIvarBox *> *ivarsWithParent;
-@property (nonatomic, strong) NSArray<FLEXIvarBox *> *inheritedIvars;
-@property (nonatomic, strong) NSArray<FLEXIvarBox *> *NSObjectIvars;
-@property (nonatomic, strong) NSArray<FLEXIvarBox *> *filteredIvars;
+@property (nonatomic) NSMutableArray<NSArray<FLEXIvarBox *> *> *ivars;
+@property (nonatomic) NSArray<FLEXIvarBox *> *filteredIvars;
 
-@property (nonatomic, strong) NSArray<FLEXMethodBox *> *methods;
-@property (nonatomic, strong) NSArray<FLEXMethodBox *> *methodsWithParent;
-@property (nonatomic, strong) NSArray<FLEXMethodBox *> *inheritedMethods;
-@property (nonatomic, strong) NSArray<FLEXMethodBox *> *NSObjectMethods;
-@property (nonatomic, strong) NSArray<FLEXMethodBox *> *filteredMethods;
+@property (nonatomic) NSMutableArray<NSArray<FLEXMethodBox *> *> *methods;
+@property (nonatomic) NSArray<FLEXMethodBox *> *filteredMethods;
 
-@property (nonatomic, strong) NSArray<FLEXMethodBox *> *classMethods;
-@property (nonatomic, strong) NSArray<FLEXMethodBox *> *classMethodsWithParent;
-@property (nonatomic, strong) NSArray<FLEXMethodBox *> *inheritedClassMethods;
-@property (nonatomic, strong) NSArray<FLEXMethodBox *> *NSObjectClassMethods;
-@property (nonatomic, strong) NSArray<FLEXMethodBox *> *filteredClassMethods;
+@property (nonatomic) NSMutableArray<NSArray<FLEXMethodBox *> *> *classMethods;
+@property (nonatomic) NSArray<FLEXMethodBox *> *filteredClassMethods;
 
-@property (nonatomic, strong) NSArray<Class> *superclasses;
-@property (nonatomic, strong) NSArray<Class> *filteredSuperclasses;
+@property (nonatomic, copy) NSArray<Class> *classHierarchy;
+@property (nonatomic, copy) NSArray<Class> *filteredSuperclasses;
 
-@property (nonatomic, strong) NSArray *cachedCustomSectionRowCookies;
-@property (nonatomic, strong) NSIndexSet *customSectionVisibleIndexes;
+@property (nonatomic) NSArray *cachedCustomSectionRowCookies;
+@property (nonatomic) NSIndexSet *customSectionVisibleIndexes;
 
-@property (nonatomic, strong) UISearchBar *searchBar;
-@property (nonatomic, strong) NSString *filterText;
-@property (nonatomic, assign) FLEXObjectExplorerScope scope;
+@property (nonatomic) NSString *filterText;
+/// An index into the `classHierarchy` array
+@property (nonatomic) NSInteger classScope;
 
 @end
 
@@ -96,8 +78,8 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     if (self == [FLEXObjectExplorerViewController class]) {
         // Initialize custom menu items for entire app
         UIMenuItem *copyObjectAddress = [[UIMenuItem alloc] initWithTitle:@"Copy Address" action:@selector(copyObjectAddress:)];
-        [UIMenuController sharedMenuController].menuItems = @[copyObjectAddress];
-        [[UIMenuController sharedMenuController] update];
+        UIMenuController.sharedMenuController.menuItems = @[copyObjectAddress];
+        [UIMenuController.sharedMenuController update];
     }
 }
 
@@ -110,14 +92,12 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
 {
     [super viewDidLoad];
     
-    self.searchBar = [[UISearchBar alloc] init];
-    self.searchBar.placeholder = [FLEXUtility searchBarPlaceholderText];
-    self.searchBar.delegate = self;
-    self.searchBar.showsScopeBar = YES;
+    self.showsSearchBar = YES;
+    self.searchBarDebounceInterval = kFLEXDebounceInstant;
+    self.showsCarousel = YES;
     [self refreshScopeTitles];
-    self.tableView.tableHeaderView = self.searchBar;
     
-    self.refreshControl = [[UIRefreshControl alloc] init];
+    self.refreshControl = [UIRefreshControl new];
     [self.refreshControl addTarget:self action:@selector(refreshControlDidRefresh:) forControlEvents:UIControlEventValueChanged];
 }
 
@@ -130,15 +110,33 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     [self updateTableData];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [self.searchBar endEditing:YES];
-}
-
 - (void)refreshControlDidRefresh:(id)sender
 {
     [self updateTableData];
     [self.refreshControl endRefreshing];
+}
+
+- (BOOL)shouldShowDescription
+{
+    // Not if we have filter text that doesn't match the desctiption.
+    if (self.filterText.length) {
+        NSString *description = [self displayedObjectDescription];
+        return [description rangeOfString:self.filterText options:NSCaseInsensitiveSearch].length > 0;
+    }
+
+    return YES;
+}
+
+- (NSString *)displayedObjectDescription
+{
+    NSString *desc = [FLEXUtility safeDescriptionForObject:self.object];
+
+    if (!desc.length) {
+        NSString *address = [FLEXUtility addressOfObject:self.object];
+        desc = [NSString stringWithFormat:@"Object at %@ returned empty description", address];
+    }
+
+    return desc;
 }
 
 
@@ -146,96 +144,38 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
 
 - (void)refreshScopeTitles
 {
-    if (!self.searchBar) return;
+    [self updateSuperclasses];
 
-    Class parent = [self.object superclass];
-    Class parentSuper = [parent superclass];
+    self.carousel.items = [FLEXUtility map:self.classHierarchy block:^id(Class cls, NSUInteger idx) {
+        return NSStringFromClass(cls);
+    }];
 
-    NSMutableArray *scopes = [NSMutableArray arrayWithObject:@"Base"];
-    if (parent) {
-        [scopes addObject:@"+ Parent"];
-    }
-    if (parentSuper && parentSuper != [NSObject class]) {
-        [scopes addObject:@"+ Inherited"];
-    }
-    if ([self.object isKindOfClass:[NSObject class]]) {
-        [scopes addObject:@"NSObject"];
-    }
-
-    self.searchBar.scopeButtonTitles = scopes;
-    [self.searchBar sizeToFit];
     [self updateTableData];
 }
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+- (void)updateSearchResults:(NSString *)newText;
 {
-    self.filterText = searchText;
-}
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    [searchBar resignFirstResponder];
-}
-
-- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
-{
-    self.scope = selectedScope;
+    self.filterText = newText;
     [self updateDisplayedData];
 }
 
-- (NSArray *)metadata:(FLEXMetadataKind)metadataKind forScope:(FLEXObjectExplorerScope)scope
+- (NSArray *)metadata:(FLEXMetadataKind)metadataKind forClassAtIndex:(NSUInteger)idx
 {
     switch (metadataKind) {
         case FLEXMetadataKindProperties:
-            switch (self.scope) {
-                case FLEXObjectExplorerScopeNoInheritance:
-                    return self.properties;
-                case FLEXObjectExplorerScopeWithParent:
-                    return self.propertiesWithParent;
-                case FLEXObjectExplorerScopeAllButNSObject:
-                    return self.inheritedProperties;
-                case FLEXObjectExplorerScopeNSObjectOnly:
-                    return self.NSObjectProperties;
-            }
+            return self.properties[idx];
         case FLEXMetadataKindIvars:
-            switch (self.scope) {
-                case FLEXObjectExplorerScopeNoInheritance:
-                    return self.ivars;
-                case FLEXObjectExplorerScopeWithParent:
-                    return self.ivarsWithParent;
-                case FLEXObjectExplorerScopeAllButNSObject:
-                    return self.inheritedIvars;
-                case FLEXObjectExplorerScopeNSObjectOnly:
-                    return self.NSObjectIvars;
-            }
+            return self.ivars[idx];
         case FLEXMetadataKindMethods:
-            switch (self.scope) {
-                case FLEXObjectExplorerScopeNoInheritance:
-                    return self.methods;
-                case FLEXObjectExplorerScopeWithParent:
-                    return self.methodsWithParent;
-                case FLEXObjectExplorerScopeAllButNSObject:
-                    return self.inheritedMethods;
-                case FLEXObjectExplorerScopeNSObjectOnly:
-                    return self.NSObjectMethods;
-            }
+            return self.methods[idx];
         case FLEXMetadataKindClassMethods:
-            switch (self.scope) {
-                case FLEXObjectExplorerScopeNoInheritance:
-                    return self.classMethods;
-                case FLEXObjectExplorerScopeWithParent:
-                    return self.classMethodsWithParent;
-                case FLEXObjectExplorerScopeAllButNSObject:
-                    return self.inheritedClassMethods;
-                case FLEXObjectExplorerScopeNSObjectOnly:
-                    return self.NSObjectClassMethods;
-            }
+            return self.classMethods[idx];
     }
 }
 
-- (NSInteger)totalCountOfMetadata:(FLEXMetadataKind)metadataKind forScope:(FLEXObjectExplorerScope)scope
+- (NSInteger)totalCountOfMetadata:(FLEXMetadataKind)metadataKind forClassAtIndex:(NSUInteger)idx
 {
-    return [self metadata:metadataKind forScope:scope].count;
+    return [self metadata:metadataKind forClassAtIndex:idx].count;
 }
 
 #pragma mark - Setter overrides
@@ -245,28 +185,20 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     _object = object;
     // Use [object class] here rather than object_getClass because we don't want to show the KVO prefix for observed objects.
     self.title = [[object class] description];
-    [self refreshScopeTitles];
-}
 
-- (void)setFilterText:(NSString *)filterText
-{
-    if (_filterText != filterText || ![_filterText isEqual:filterText]) {
-        _filterText = filterText;
-        [self updateDisplayedData];
+    // Only refresh if the view has appeared
+    // TODO: make .object readonly so we don't have to deal with this...
+    if (self.showsCarousel) {
+        [self refreshScopeTitles];
     }
 }
-
 
 #pragma mark - Reloading
 
 - (void)updateTableData
 {
     [self updateCustomData];
-    [self updateProperties];
-    [self updateIvars];
-    [self updateMethods];
-    [self updateClassMethods];
-    [self updateSuperclasses];
+    [self updateMetadata];
     [self updateDisplayedData];
 }
 
@@ -284,39 +216,23 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     }
 }
 
-- (BOOL)shouldShowDescription
+- (void)updateMetadata
 {
-    // Not if we have filter text that doesn't match the desctiption.
-    if (self.filterText.length) {
-        NSString *description = [self displayedObjectDescription];
-        return [description rangeOfString:self.filterText options:NSCaseInsensitiveSearch].length > 0;
+    self.properties = [NSMutableArray new];
+    self.ivars = [NSMutableArray new];
+    self.methods = [NSMutableArray new];
+    self.classMethods = [NSMutableArray new];
+
+    for (Class cls in self.classHierarchy) {
+        [self.properties addObject:[[self class] propertiesForClass:cls]];
+        [self.ivars addObject:[[self class] ivarsForClass:cls]];
+        [self.methods addObject:[[self class] methodsForClass:cls]];
+        [self.classMethods addObject:[[self class] methodsForClass:object_getClass(cls)]];
     }
-    
-    return YES;
-}
-
-- (NSString *)displayedObjectDescription {
-    NSString *desc = [FLEXUtility safeDescriptionForObject:self.object];
-
-    if (!desc.length) {
-        NSString *address = [FLEXUtility addressOfObject:self.object];
-        desc = [NSString stringWithFormat:@"Object at %@ returned empty description", address];
-    }
-
-    return desc;
 }
 
 
 #pragma mark - Properties
-
-- (void)updateProperties
-{
-    Class class = [self.object class];
-    self.properties = [[self class] propertiesForClass:class];
-    self.propertiesWithParent = [self.properties arrayByAddingObjectsFromArray:[[self class] propertiesForClass:[class superclass]]];
-    self.inheritedProperties = [self.properties arrayByAddingObjectsFromArray:[[self class] inheritedPropertiesForClass:class]];
-    self.NSObjectProperties = [[self class] propertiesForClass:[NSObject class]];
-}
 
 + (NSArray<FLEXPropertyBox *> *)propertiesForClass:(Class)class
 {
@@ -329,7 +245,7 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     objc_property_t *propertyList = class_copyPropertyList(class, &propertyCount);
     if (propertyList) {
         for (unsigned int i = 0; i < propertyCount; i++) {
-            FLEXPropertyBox *propertyBox = [[FLEXPropertyBox alloc] init];
+            FLEXPropertyBox *propertyBox = [FLEXPropertyBox new];
             propertyBox.property = propertyList[i];
             [boxedProperties addObject:propertyBox];
         }
@@ -338,22 +254,12 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     return boxedProperties;
 }
 
-/// Skips NSObject
-+ (NSArray<FLEXPropertyBox *> *)inheritedPropertiesForClass:(Class)class
-{
-    NSMutableArray<FLEXPropertyBox *> *inheritedProperties = [NSMutableArray array];
-    while ((class = [class superclass]) && class != [NSObject class]) {
-        [inheritedProperties addObjectsFromArray:[self propertiesForClass:class]];
-    }
-    return inheritedProperties;
-}
-
 - (void)updateFilteredProperties
 {
-    NSArray<FLEXPropertyBox *> *candidateProperties = [self metadata:FLEXMetadataKindProperties forScope:self.scope];
+    NSArray<FLEXPropertyBox *> *candidateProperties = [self metadata:FLEXMetadataKindProperties forClassAtIndex:self.selectedScope];
     
     NSArray<FLEXPropertyBox *> *unsortedFilteredProperties = nil;
-    if ([self.filterText length] > 0) {
+    if (self.filterText.length > 0) {
         NSMutableArray<FLEXPropertyBox *> *mutableUnsortedFilteredProperties = [NSMutableArray array];
         for (FLEXPropertyBox *propertyBox in candidateProperties) {
             NSString *prettyName = [FLEXRuntimeUtility prettyNameForProperty:propertyBox.property];
@@ -395,15 +301,6 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
 
 #pragma mark - Ivars
 
-- (void)updateIvars
-{
-    Class class = [self.object class];
-    self.ivars = [[self class] ivarsForClass:class];
-    self.ivarsWithParent = [self.ivars arrayByAddingObjectsFromArray:[[self class] ivarsForClass:[class superclass]]];
-    self.inheritedIvars = [self.ivars arrayByAddingObjectsFromArray:[[self class] inheritedIvarsForClass:class]];
-    self.NSObjectIvars = [[self class] ivarsForClass:[NSObject class]];
-}
-
 + (NSArray<FLEXIvarBox *> *)ivarsForClass:(Class)class
 {
     if (!class) {
@@ -414,7 +311,7 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     Ivar *ivarList = class_copyIvarList(class, &ivarCount);
     if (ivarList) {
         for (unsigned int i = 0; i < ivarCount; i++) {
-            FLEXIvarBox *ivarBox = [[FLEXIvarBox alloc] init];
+            FLEXIvarBox *ivarBox = [FLEXIvarBox new];
             ivarBox.ivar = ivarList[i];
             [boxedIvars addObject:ivarBox];
         }
@@ -423,22 +320,12 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     return boxedIvars;
 }
 
-/// Skips NSObject
-+ (NSArray<FLEXIvarBox *> *)inheritedIvarsForClass:(Class)class
-{
-    NSMutableArray<FLEXIvarBox *> *inheritedIvars = [NSMutableArray array];
-    while ((class = [class superclass]) && class != [NSObject class]) {
-        [inheritedIvars addObjectsFromArray:[self ivarsForClass:class]];
-    }
-    return inheritedIvars;
-}
-
 - (void)updateFilteredIvars
 {
-    NSArray<FLEXIvarBox *> *candidateIvars = [self metadata:FLEXMetadataKindIvars forScope:self.scope];
+    NSArray<FLEXIvarBox *> *candidateIvars = [self metadata:FLEXMetadataKindIvars forClassAtIndex:self.selectedScope];
     
     NSArray<FLEXIvarBox *> *unsortedFilteredIvars = nil;
-    if ([self.filterText length] > 0) {
+    if (self.filterText.length > 0) {
         NSMutableArray<FLEXIvarBox *> *mutableUnsortedFilteredIvars = [NSMutableArray array];
         for (FLEXIvarBox *ivarBox in candidateIvars) {
             NSString *prettyName = [FLEXRuntimeUtility prettyNameForIvar:ivarBox.ivar];
@@ -479,34 +366,15 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
 
 #pragma mark - Methods
 
-- (void)updateMethods
-{
-    Class class = [self.object class];
-    self.methods = [[self class] methodsForClass:class];
-    self.methodsWithParent = [self.methods arrayByAddingObjectsFromArray:[[self class] methodsForClass:[class superclass]]];
-    self.inheritedMethods = [self.methods arrayByAddingObjectsFromArray:[[self class] inheritedMethodsForClass:class]];
-    self.NSObjectMethods = [[self class] methodsForClass:[NSObject class]];
-}
-
 - (void)updateFilteredMethods
 {
-    NSArray<FLEXMethodBox *> *candidateMethods = [self metadata:FLEXMetadataKindMethods forScope:self.scope];
+    NSArray<FLEXMethodBox *> *candidateMethods = [self metadata:FLEXMetadataKindMethods forClassAtIndex:self.selectedScope];
     self.filteredMethods = [self filteredMethodsFromMethods:candidateMethods areClassMethods:NO];
-}
-
-- (void)updateClassMethods
-{
-    const char *className = [NSStringFromClass([self.object class]) UTF8String];
-    Class metaClass = objc_getMetaClass(className);
-    self.classMethods = [[self class] methodsForClass:metaClass];
-    self.classMethodsWithParent = [self.classMethods arrayByAddingObjectsFromArray:[[self class] methodsForClass:[metaClass superclass]]];
-    self.inheritedClassMethods = [self.classMethods arrayByAddingObjectsFromArray:[[self class] inheritedMethodsForClass:metaClass]];
-    self.NSObjectClassMethods = [[self class] methodsForClass:[NSObject class]];
 }
 
 - (void)updateFilteredClassMethods
 {
-    NSArray<FLEXMethodBox *> *candidateMethods = [self metadata:FLEXMetadataKindClassMethods forScope:self.scope];
+    NSArray<FLEXMethodBox *> *candidateMethods = [self metadata:FLEXMetadataKindClassMethods forClassAtIndex:self.selectedScope];
     self.filteredClassMethods = [self filteredMethodsFromMethods:candidateMethods areClassMethods:YES];
 }
 
@@ -521,7 +389,7 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     Method *methodList = class_copyMethodList(class, &methodCount);
     if (methodList) {
         for (unsigned int i = 0; i < methodCount; i++) {
-            FLEXMethodBox *methodBox = [[FLEXMethodBox alloc] init];
+            FLEXMethodBox *methodBox = [FLEXMethodBox new];
             methodBox.method = methodList[i];
             [boxedMethods addObject:methodBox];
         }
@@ -530,21 +398,11 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     return boxedMethods;
 }
 
-/// Skips NSObject
-+ (NSArray<FLEXMethodBox *> *)inheritedMethodsForClass:(Class)class
-{
-    NSMutableArray<FLEXMethodBox *> *inheritedMethods = [NSMutableArray array];
-    while ((class = [class superclass]) && class != [NSObject class]) {
-        [inheritedMethods addObjectsFromArray:[self methodsForClass:class]];
-    }
-    return inheritedMethods;
-}
-
 - (NSArray<FLEXMethodBox *> *)filteredMethodsFromMethods:(NSArray<FLEXMethodBox *> *)methods areClassMethods:(BOOL)areClassMethods
 {
     NSArray<FLEXMethodBox *> *candidateMethods = methods;
     NSArray<FLEXMethodBox *> *unsortedFilteredMethods = nil;
-    if ([self.filterText length] > 0) {
+    if (self.filterText.length > 0) {
         NSMutableArray<FLEXMethodBox *> *mutableUnsortedFilteredMethods = [NSMutableArray array];
         for (FLEXMethodBox *methodBox in candidateMethods) {
             NSString *prettyName = [FLEXRuntimeUtility prettyNameForMethod:methodBox.method isClassMethod:areClassMethods];
@@ -578,35 +436,31 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
     return [FLEXRuntimeUtility prettyNameForMethod:classMethodBox.method isClassMethod:YES];
 }
 
+- (objc_property_t)viewPropertyForName:(NSString *)propertyName
+{
+    return class_getProperty([self.object class], propertyName.UTF8String);
+}
+
 
 #pragma mark - Superclasses
 
-+ (NSArray<Class> *)superclassesForClass:(Class)class
-{
-    NSMutableArray<Class> *superClasses = [NSMutableArray array];
-    while ((class = [class superclass])) {
-        [superClasses addObject:class];
-    }
-    return superClasses;
-}
-
 - (void)updateSuperclasses
 {
-    self.superclasses = [[self class] superclassesForClass:[self.object class]];
+    self.classHierarchy = [FLEXRuntimeUtility classHierarchyOfObject:self.object];
 }
 
 - (void)updateFilteredSuperclasses
 {
-    if ([self.filterText length] > 0) {
+    if (self.filterText.length > 0) {
         NSMutableArray<Class> *filteredSuperclasses = [NSMutableArray array];
-        for (Class superclass in self.superclasses) {
-            if ([NSStringFromClass(superclass) rangeOfString:self.filterText options:NSCaseInsensitiveSearch].length > 0) {
+        for (Class superclass in self.classHierarchy) {
+            if ([NSStringFromClass(superclass) localizedCaseInsensitiveContainsString:self.filterText]) {
                 [filteredSuperclasses addObject:superclass];
             }
         }
         self.filteredSuperclasses = filteredSuperclasses;
     } else {
-        self.filteredSuperclasses = self.superclasses;
+        self.filteredSuperclasses = self.classHierarchy;
     }
 }
 
@@ -669,32 +523,32 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
             break;
             
         case FLEXObjectExplorerSectionCustom:
-            numberOfRows = [self.customSectionVisibleIndexes count];
+            numberOfRows = self.customSectionVisibleIndexes.count;
             break;
             
         case FLEXObjectExplorerSectionProperties:
-            numberOfRows = [self.filteredProperties count];
+            numberOfRows = self.filteredProperties.count;
             break;
             
         case FLEXObjectExplorerSectionIvars:
-            numberOfRows = [self.filteredIvars count];
+            numberOfRows = self.filteredIvars.count;
             break;
             
         case FLEXObjectExplorerSectionMethods:
-            numberOfRows = [self.filteredMethods count];
+            numberOfRows = self.filteredMethods.count;
             break;
             
         case FLEXObjectExplorerSectionClassMethods:
-            numberOfRows = [self.filteredClassMethods count];
+            numberOfRows = self.filteredClassMethods.count;
             break;
             
         case FLEXObjectExplorerSectionSuperclasses:
-            numberOfRows = [self.filteredSuperclasses count];
+            numberOfRows = self.filteredSuperclasses.count;
             break;
             
         case FLEXObjectExplorerSectionReferencingInstances:
             // Hide this section if there is fliter text since there's nothing searchable (only 1 row, always the same).
-            numberOfRows = [self.filterText length] == 0 ? 1 : 0;
+            numberOfRows = self.filterText.length == 0 ? 1 : 0;
             break;
     }
     return numberOfRows;
@@ -789,7 +643,7 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
                 FLEXPropertyBox *propertyBox = self.filteredProperties[row];
                 objc_property_t property = propertyBox.property;
                 id currentValue = [self valueForPropertyAtIndex:row];
-                BOOL canEdit = [FLEXPropertyEditorViewController canEditProperty:property currentValue:currentValue];
+                BOOL canEdit = [FLEXPropertyEditorViewController canEditProperty:property onObject:self.object currentValue:currentValue];
                 BOOL canExplore = currentValue != nil;
                 canDrillIn = canEdit || canExplore;
             }
@@ -843,27 +697,27 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
         } break;
             
         case FLEXObjectExplorerSectionProperties: {
-            NSUInteger totalCount = [self totalCountOfMetadata:FLEXMetadataKindProperties forScope:self.scope];
-            title = [self sectionTitleWithBaseName:@"Properties" totalCount:totalCount filteredCount:[self.filteredProperties count]];
+            NSUInteger totalCount = [self totalCountOfMetadata:FLEXMetadataKindProperties forClassAtIndex:self.selectedScope];
+            title = [self sectionTitleWithBaseName:@"Properties" totalCount:totalCount filteredCount:self.filteredProperties.count];
         } break;
             
         case FLEXObjectExplorerSectionIvars: {
-            NSUInteger totalCount = [self totalCountOfMetadata:FLEXMetadataKindIvars forScope:self.scope];
-            title = [self sectionTitleWithBaseName:@"Ivars" totalCount:totalCount filteredCount:[self.filteredIvars count]];
+            NSUInteger totalCount = [self totalCountOfMetadata:FLEXMetadataKindIvars forClassAtIndex:self.selectedScope];
+            title = [self sectionTitleWithBaseName:@"Ivars" totalCount:totalCount filteredCount:self.filteredIvars.count];
         } break;
             
         case FLEXObjectExplorerSectionMethods: {
-            NSUInteger totalCount = [self totalCountOfMetadata:FLEXMetadataKindMethods forScope:self.scope];
-            title = [self sectionTitleWithBaseName:@"Methods" totalCount:totalCount filteredCount:[self.filteredMethods count]];
+            NSUInteger totalCount = [self totalCountOfMetadata:FLEXMetadataKindMethods forClassAtIndex:self.selectedScope];
+            title = [self sectionTitleWithBaseName:@"Methods" totalCount:totalCount filteredCount:self.filteredMethods.count];
         } break;
             
         case FLEXObjectExplorerSectionClassMethods: {
-            NSUInteger totalCount = [self totalCountOfMetadata:FLEXMetadataKindClassMethods forScope:self.scope];
-            title = [self sectionTitleWithBaseName:@"Class Methods" totalCount:totalCount filteredCount:[self.filteredClassMethods count]];
+            NSUInteger totalCount = [self totalCountOfMetadata:FLEXMetadataKindClassMethods forClassAtIndex:self.selectedScope];
+            title = [self sectionTitleWithBaseName:@"Class Methods" totalCount:totalCount filteredCount:self.filteredClassMethods.count];
         } break;
             
         case FLEXObjectExplorerSectionSuperclasses: {
-            title = [self sectionTitleWithBaseName:@"Superclasses" totalCount:[self.superclasses count] filteredCount:[self.filteredSuperclasses count]];
+            title = [self sectionTitleWithBaseName:@"Superclasses" totalCount:self.classHierarchy.count filteredCount:self.filteredSuperclasses.count];
         } break;
             
         case FLEXObjectExplorerSectionReferencingInstances: {
@@ -888,7 +742,7 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
             FLEXPropertyBox *propertyBox = self.filteredProperties[row];
             objc_property_t property = propertyBox.property;
             id currentValue = [self valueForPropertyAtIndex:row];
-            if ([FLEXPropertyEditorViewController canEditProperty:property currentValue:currentValue]) {
+            if ([FLEXPropertyEditorViewController canEditProperty:property onObject:self.object currentValue:currentValue]) {
                 viewController = [[FLEXPropertyEditorViewController alloc] initWithTarget:self.object property:property];
             } else if (currentValue) {
                 viewController = [FLEXObjectExplorerFactory explorerViewControllerForObject:currentValue];
@@ -935,7 +789,7 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return [[self visibleExplorerSections] count];
+    return [self visibleExplorerSections].count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -967,7 +821,7 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
             UIFont *cellFont = [FLEXUtility defaultTableViewCellLabelFont];
             cell.textLabel.font = cellFont;
             cell.detailTextLabel.font = cellFont;
-            cell.detailTextLabel.textColor = [UIColor grayColor];
+            cell.detailTextLabel.textColor = UIColor.grayColor;
         }
     }
 
@@ -1079,12 +933,12 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
         stringToCopy = [stringToCopy stringByAppendingString:subtitle];
     }
 
-    [UIPasteboard generalPasteboard].string = stringToCopy;
+    UIPasteboard.generalPasteboard.string = stringToCopy;
 }
 
 - (void)copyObjectAddress:(NSIndexPath *)indexPath
 {
-    [UIPasteboard generalPasteboard].string = [FLEXUtility addressOfObject:self.object];
+    UIPasteboard.generalPasteboard.string = [FLEXUtility addressOfObject:self.object];
 }
 
 
@@ -1097,8 +951,8 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
 
 - (void)updateFilteredCustomData
 {
-    NSIndexSet *filteredIndexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [self.cachedCustomSectionRowCookies count])];
-    if ([self.filterText length] > 0) {
+    NSIndexSet *filteredIndexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.cachedCustomSectionRowCookies.count)];
+    if (self.filterText.length > 0) {
         filteredIndexSet = [filteredIndexSet indexesPassingTest:^BOOL(NSUInteger index, BOOL *stop) {
             BOOL matches = NO;
             NSString *rowTitle = [self customSectionTitleForRowCookie:self.cachedCustomSectionRowCookies[index]];
@@ -1121,31 +975,71 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
 
 - (NSString *)customSectionTitle
 {
-    return nil;
+    return self.shortcutPropertyNames.count ? @"Shortcuts" : nil;
 }
 
 - (NSArray *)customSectionRowCookies
 {
-    return nil;
+    return self.shortcutPropertyNames;
 }
 
 - (NSString *)customSectionTitleForRowCookie:(id)rowCookie
 {
+    if ([rowCookie isKindOfClass:[NSString class]]) {
+        objc_property_t property = [self viewPropertyForName:rowCookie];
+        if (property) {
+            NSString *prettyPropertyName = [FLEXRuntimeUtility prettyNameForProperty:property];
+            // Since we're outside of the "properties" section, prepend @property for clarity.
+            return [@"@property " stringByAppendingString:prettyPropertyName];
+        } else if ([rowCookie respondsToSelector:@selector(description)]) {
+            return [@"No property found for object: " stringByAppendingString:[rowCookie description]];
+        } else {
+            NSString *cls = NSStringFromClass([rowCookie class]);
+            return [@"No property found for object of class " stringByAppendingString:cls];
+        }
+    }
+
     return nil;
 }
 
 - (NSString *)customSectionSubtitleForRowCookie:(id)rowCookie
 {
+    if ([rowCookie isKindOfClass:[NSString class]]) {
+        objc_property_t property = [self viewPropertyForName:rowCookie];
+        if (property) {
+            id value = [FLEXRuntimeUtility valueForProperty:property onObject:self.object];
+            return [FLEXRuntimeUtility descriptionForIvarOrPropertyValue:value];
+        } else {
+            return nil;
+        }
+    }
+
     return nil;
 }
 
 - (BOOL)customSectionCanDrillIntoRowWithCookie:(id)rowCookie
 {
-    return NO;
+    return YES;
 }
 
 - (UIViewController *)customSectionDrillInViewControllerForRowCookie:(id)rowCookie
 {
+    if ([rowCookie isKindOfClass:[NSString class]]) {
+        objc_property_t property = [self viewPropertyForName:rowCookie];
+        if (property) {
+            id currentValue = [FLEXRuntimeUtility valueForProperty:property onObject:self.object];
+            if ([FLEXPropertyEditorViewController canEditProperty:property onObject:self.object currentValue:currentValue]) {
+                return [[FLEXPropertyEditorViewController alloc] initWithTarget:self.object property:property];
+            } else {
+                return [FLEXObjectExplorerFactory explorerViewControllerForObject:currentValue];
+            }
+        } else {
+            [NSException raise:NSInternalInconsistencyException
+                        format:@"Cannot drill into row for cookie: %@", rowCookie];
+            return nil;
+        }
+    }
+
     return nil;
 }
 
@@ -1168,5 +1062,12 @@ typedef NS_ENUM(NSUInteger, FLEXMetadataKind) {
 {
     return YES;
 }
+
+@end
+
+
+@implementation FLEXObjectExplorerViewController (Shortcuts)
+
+- (NSArray<NSString *> *)shortcutPropertyNames { return @[]; }
 
 @end

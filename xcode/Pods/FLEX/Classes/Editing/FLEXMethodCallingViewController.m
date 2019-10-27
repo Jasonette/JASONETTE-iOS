@@ -13,11 +13,12 @@
 #import "FLEXObjectExplorerViewController.h"
 #import "FLEXArgumentInputView.h"
 #import "FLEXArgumentInputViewFactory.h"
+#import "FLEXUtility.h"
 
 @interface FLEXMethodCallingViewController ()
 
-@property (nonatomic, assign) Method method;
-@property (nonatomic, assign) FLEXTypeEncoding *returnType;
+@property (nonatomic) Method method;
+@property (nonatomic) FLEXTypeEncoding *returnType;
 
 @end
 
@@ -94,10 +95,7 @@
     id returnedObject = [FLEXRuntimeUtility performSelector:method_getName(self.method) onObject:self.target withArguments:arguments error:&error];
     
     if (error) {
-        NSString *title = @"Method Call Failed";
-        NSString *message = [error localizedDescription];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
+        [FLEXAlert showAlert:@"Method Call Failed" message:[error localizedDescription] from:self];
     } else if (returnedObject) {
         // For non-nil (or void) return types, push an explorer view controller to display the returned object
         returnedObject = [FLEXRuntimeUtility potentiallyUnwrapBoxedPointer:returnedObject type:self.returnType];

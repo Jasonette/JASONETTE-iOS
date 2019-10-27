@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Flipboard. All rights reserved.
 //
 
+#import "FLEXColor.h"
 #import "FLEXNetworkTransactionDetailTableViewController.h"
 #import "FLEXNetworkCurlLogger.h"
 #import "FLEXNetworkRecorder.h"
@@ -54,7 +55,7 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
     // Force grouped style
     self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleTransactionUpdatedNotification:) name:kFLEXNetworkRecorderTransactionUpdatedNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleTransactionUpdatedNotification:) name:kFLEXNetworkRecorderTransactionUpdatedNotification object:nil];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Copy curl" style:UIBarButtonItemStylePlain target:self action:@selector(copyButtonPressed:)];
     }
     return self;
@@ -89,23 +90,23 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
     NSMutableArray<FLEXNetworkDetailSection *> *sections = [NSMutableArray array];
 
     FLEXNetworkDetailSection *generalSection = [[self class] generalSectionForTransaction:self.transaction];
-    if ([generalSection.rows count] > 0) {
+    if (generalSection.rows.count > 0) {
         [sections addObject:generalSection];
     }
     FLEXNetworkDetailSection *requestHeadersSection = [[self class] requestHeadersSectionForTransaction:self.transaction];
-    if ([requestHeadersSection.rows count] > 0) {
+    if (requestHeadersSection.rows.count > 0) {
         [sections addObject:requestHeadersSection];
     }
     FLEXNetworkDetailSection *queryParametersSection = [[self class] queryParametersSectionForTransaction:self.transaction];
-    if ([queryParametersSection.rows count] > 0) {
+    if (queryParametersSection.rows.count > 0) {
         [sections addObject:queryParametersSection];
     }
     FLEXNetworkDetailSection *postBodySection = [[self class] postBodySectionForTransaction:self.transaction];
-    if ([postBodySection.rows count] > 0) {
+    if (postBodySection.rows.count > 0) {
         [sections addObject:postBodySection];
     }
     FLEXNetworkDetailSection *responseHeadersSection = [[self class] responseHeadersSectionForTransaction:self.transaction];
-    if ([responseHeadersSection.rows count] > 0) {
+    if (responseHeadersSection.rows.count > 0) {
         [sections addObject:responseHeadersSection];
     }
 
@@ -122,20 +123,20 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
 
 - (void)copyButtonPressed:(id)sender
 {
-    [[UIPasteboard generalPasteboard] setString:[FLEXNetworkCurlLogger curlCommandString:_transaction.request]];
+    [UIPasteboard.generalPasteboard setString:[FLEXNetworkCurlLogger curlCommandString:_transaction.request]];
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return [self.sections count];
+    return self.sections.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     FLEXNetworkDetailSection *sectionModel = self.sections[section];
-    return [sectionModel.rows count];
+    return sectionModel.rows.count;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -161,13 +162,15 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
 {
     FLEXNetworkDetailRow *rowModel = [self rowModelAtIndexPath:indexPath];
 
-    UIViewController *viewControllerToPush = nil;
+    UIViewController *viewController = nil;
     if (rowModel.selectionFuture) {
-        viewControllerToPush = rowModel.selectionFuture();
+        viewController = rowModel.selectionFuture();
     }
 
-    if (viewControllerToPush) {
-        [self.navigationController pushViewController:viewControllerToPush animated:YES];
+    if ([viewController isKindOfClass:UIAlertController.class]) {
+        [self presentViewController:viewController animated:YES completion:nil];
+    } else if (viewController) {
+        [self.navigationController pushViewController:viewController animated:YES];
     }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -203,7 +206,7 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
 {
     if (action == @selector(copy:)) {
         FLEXNetworkDetailRow *row = [self rowModelAtIndexPath:indexPath];
-        [[UIPasteboard generalPasteboard] setString:row.detailText];
+        [UIPasteboard.generalPasteboard setString:row.detailText];
     }
 }
 
@@ -214,11 +217,11 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
     NSDictionary<NSString *, id> *titleAttributes = @{ NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:12.0],
                                                        NSForegroundColorAttributeName : [UIColor colorWithWhite:0.5 alpha:1.0] };
     NSDictionary<NSString *, id> *detailAttributes = @{ NSFontAttributeName : [FLEXUtility defaultTableViewCellLabelFont],
-                                                        NSForegroundColorAttributeName : [UIColor blackColor] };
+                                                        NSForegroundColorAttributeName : [FLEXColor primaryTextColor] };
 
     NSString *title = [NSString stringWithFormat:@"%@: ", row.title];
     NSString *detailText = row.detailText ?: @"";
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] init];
+    NSMutableAttributedString *attributedText = [NSMutableAttributedString new];
     [attributedText appendAttributedString:[[NSAttributedString alloc] initWithString:title attributes:titleAttributes]];
     [attributedText appendAttributedString:[[NSAttributedString alloc] initWithString:detailText attributes:detailAttributes]];
 
@@ -231,7 +234,7 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
 {
     NSMutableArray<FLEXNetworkDetailRow *> *rows = [NSMutableArray array];
 
-    FLEXNetworkDetailRow *requestURLRow = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *requestURLRow = [FLEXNetworkDetailRow new];
     requestURLRow.title = @"Request URL";
     NSURL *url = transaction.request.URL;
     requestURLRow.detailText = url.absoluteString;
@@ -242,124 +245,141 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
     };
     [rows addObject:requestURLRow];
 
-    FLEXNetworkDetailRow *requestMethodRow = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *requestMethodRow = [FLEXNetworkDetailRow new];
     requestMethodRow.title = @"Request Method";
     requestMethodRow.detailText = transaction.request.HTTPMethod;
     [rows addObject:requestMethodRow];
 
-    if ([transaction.cachedRequestBody length] > 0) {
-        FLEXNetworkDetailRow *postBodySizeRow = [[FLEXNetworkDetailRow alloc] init];
+    if (transaction.cachedRequestBody.length > 0) {
+        FLEXNetworkDetailRow *postBodySizeRow = [FLEXNetworkDetailRow new];
         postBodySizeRow.title = @"Request Body Size";
-        postBodySizeRow.detailText = [NSByteCountFormatter stringFromByteCount:[transaction.cachedRequestBody length] countStyle:NSByteCountFormatterCountStyleBinary];
+        postBodySizeRow.detailText = [NSByteCountFormatter stringFromByteCount:transaction.cachedRequestBody.length countStyle:NSByteCountFormatterCountStyleBinary];
         [rows addObject:postBodySizeRow];
 
-        FLEXNetworkDetailRow *postBodyRow = [[FLEXNetworkDetailRow alloc] init];
+        FLEXNetworkDetailRow *postBodyRow = [FLEXNetworkDetailRow new];
         postBodyRow.title = @"Request Body";
         postBodyRow.detailText = @"tap to view";
-        postBodyRow.selectionFuture = ^{
+        postBodyRow.selectionFuture = ^UIViewController * () {
+            // Show the body if we can
             NSString *contentType = [transaction.request valueForHTTPHeaderField:@"Content-Type"];
             UIViewController *detailViewController = [self detailViewControllerForMIMEType:contentType data:[self postBodyDataForTransaction:transaction]];
             if (detailViewController) {
                 detailViewController.title = @"Request Body";
-            } else {
-                NSString *alertMessage = [NSString stringWithFormat:@"FLEX does not have a viewer for request body data with MIME type: %@", [transaction.request valueForHTTPHeaderField:@"Content-Type"]];
-                [[[UIAlertView alloc] initWithTitle:@"Can't View Body Data" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                return detailViewController;
             }
-            return detailViewController;
+
+            // We can't show the body, alert user
+            return [FLEXAlert makeAlert:^(FLEXAlert *make) {
+                make.title(@"Can't View HTTP Body Data");
+                make.message(@"FLEX does not have a viewer for request body data with MIME type: ");
+                make.message(contentType);
+                make.button(@"Dismiss").cancelStyle();
+            }];
         };
+
         [rows addObject:postBodyRow];
     }
 
     NSString *statusCodeString = [FLEXUtility statusCodeStringFromURLResponse:transaction.response];
-    if ([statusCodeString length] > 0) {
-        FLEXNetworkDetailRow *statusCodeRow = [[FLEXNetworkDetailRow alloc] init];
+    if (statusCodeString.length > 0) {
+        FLEXNetworkDetailRow *statusCodeRow = [FLEXNetworkDetailRow new];
         statusCodeRow.title = @"Status Code";
         statusCodeRow.detailText = statusCodeString;
         [rows addObject:statusCodeRow];
     }
 
     if (transaction.error) {
-        FLEXNetworkDetailRow *errorRow = [[FLEXNetworkDetailRow alloc] init];
+        FLEXNetworkDetailRow *errorRow = [FLEXNetworkDetailRow new];
         errorRow.title = @"Error";
         errorRow.detailText = transaction.error.localizedDescription;
         [rows addObject:errorRow];
     }
 
-    FLEXNetworkDetailRow *responseBodyRow = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *responseBodyRow = [FLEXNetworkDetailRow new];
     responseBodyRow.title = @"Response Body";
     NSData *responseData = [[FLEXNetworkRecorder defaultRecorder] cachedResponseBodyForTransaction:transaction];
-    if ([responseData length] > 0) {
+    if (responseData.length > 0) {
         responseBodyRow.detailText = @"tap to view";
+
         // Avoid a long lived strong reference to the response data in case we need to purge it from the cache.
         __weak NSData *weakResponseData = responseData;
-        responseBodyRow.selectionFuture = ^{
-            UIViewController *responseBodyDetailViewController = nil;
+        responseBodyRow.selectionFuture = ^UIViewController * () {
+
+            // Show the response if we can
+            NSString *contentType = transaction.response.MIMEType;
             NSData *strongResponseData = weakResponseData;
             if (strongResponseData) {
-                responseBodyDetailViewController = [self detailViewControllerForMIMEType:transaction.response.MIMEType data:strongResponseData];
-                if (!responseBodyDetailViewController) {
-                    NSString *alertMessage = [NSString stringWithFormat:@"FLEX does not have a viewer for responses with MIME type: %@", transaction.response.MIMEType];
-                    [[[UIAlertView alloc] initWithTitle:@"Can't View Response" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                UIViewController *bodyDetailController = [self detailViewControllerForMIMEType:contentType data:strongResponseData];
+                if (bodyDetailController) {
+                    bodyDetailController.title = @"Response";
+                    return bodyDetailController;
                 }
-                responseBodyDetailViewController.title = @"Response";
-            } else {
-                NSString *alertMessage = @"The response has been purged from the cache";
-                [[[UIAlertView alloc] initWithTitle:@"Can't View Response" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
             }
-            return responseBodyDetailViewController;
+
+            // We can't show the response, alert user
+            return [FLEXAlert makeAlert:^(FLEXAlert *make) {
+                make.title(@"Unable to View Response");
+                if (strongResponseData) {
+                    make.message(@"No viewer content type: ").message(contentType);
+                } else {
+                    make.message(@"The response has been purged from the cache");
+                }
+                make.button(@"OK").cancelStyle();
+            }];
         };
     } else {
         BOOL emptyResponse = transaction.receivedDataLength == 0;
         responseBodyRow.detailText = emptyResponse ? @"empty" : @"not in cache";
     }
+
     [rows addObject:responseBodyRow];
 
-    FLEXNetworkDetailRow *responseSizeRow = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *responseSizeRow = [FLEXNetworkDetailRow new];
     responseSizeRow.title = @"Response Size";
     responseSizeRow.detailText = [NSByteCountFormatter stringFromByteCount:transaction.receivedDataLength countStyle:NSByteCountFormatterCountStyleBinary];
     [rows addObject:responseSizeRow];
 
-    FLEXNetworkDetailRow *mimeTypeRow = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *mimeTypeRow = [FLEXNetworkDetailRow new];
     mimeTypeRow.title = @"MIME Type";
     mimeTypeRow.detailText = transaction.response.MIMEType;
     [rows addObject:mimeTypeRow];
 
-    FLEXNetworkDetailRow *mechanismRow = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *mechanismRow = [FLEXNetworkDetailRow new];
     mechanismRow.title = @"Mechanism";
     mechanismRow.detailText = transaction.requestMechanism;
     [rows addObject:mechanismRow];
 
-    NSDateFormatter *startTimeFormatter = [[NSDateFormatter alloc] init];
+    NSDateFormatter *startTimeFormatter = [NSDateFormatter new];
     startTimeFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS";
 
-    FLEXNetworkDetailRow *localStartTimeRow = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *localStartTimeRow = [FLEXNetworkDetailRow new];
     localStartTimeRow.title = [NSString stringWithFormat:@"Start Time (%@)", [[NSTimeZone localTimeZone] abbreviationForDate:transaction.startTime]];
     localStartTimeRow.detailText = [startTimeFormatter stringFromDate:transaction.startTime];
     [rows addObject:localStartTimeRow];
 
     startTimeFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
 
-    FLEXNetworkDetailRow *utcStartTimeRow = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *utcStartTimeRow = [FLEXNetworkDetailRow new];
     utcStartTimeRow.title = @"Start Time (UTC)";
     utcStartTimeRow.detailText = [startTimeFormatter stringFromDate:transaction.startTime];
     [rows addObject:utcStartTimeRow];
 
-    FLEXNetworkDetailRow *unixStartTime = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *unixStartTime = [FLEXNetworkDetailRow new];
     unixStartTime.title = @"Unix Start Time";
     unixStartTime.detailText = [NSString stringWithFormat:@"%f", [transaction.startTime timeIntervalSince1970]];
     [rows addObject:unixStartTime];
 
-    FLEXNetworkDetailRow *durationRow = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *durationRow = [FLEXNetworkDetailRow new];
     durationRow.title = @"Total Duration";
     durationRow.detailText = [FLEXUtility stringFromRequestDuration:transaction.duration];
     [rows addObject:durationRow];
 
-    FLEXNetworkDetailRow *latencyRow = [[FLEXNetworkDetailRow alloc] init];
+    FLEXNetworkDetailRow *latencyRow = [FLEXNetworkDetailRow new];
     latencyRow.title = @"Latency";
     latencyRow.detailText = [FLEXUtility stringFromRequestDuration:transaction.latency];
     [rows addObject:latencyRow];
 
-    FLEXNetworkDetailSection *generalSection = [[FLEXNetworkDetailSection alloc] init];
+    FLEXNetworkDetailSection *generalSection = [FLEXNetworkDetailSection new];
     generalSection.title = @"General";
     generalSection.rows = rows;
 
@@ -368,7 +388,7 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
 
 + (FLEXNetworkDetailSection *)requestHeadersSectionForTransaction:(FLEXNetworkTransaction *)transaction
 {
-    FLEXNetworkDetailSection *requestHeadersSection = [[FLEXNetworkDetailSection alloc] init];
+    FLEXNetworkDetailSection *requestHeadersSection = [FLEXNetworkDetailSection new];
     requestHeadersSection.title = @"Request Headers";
     requestHeadersSection.rows = [self networkDetailRowsFromDictionary:transaction.request.allHTTPHeaderFields];
 
@@ -377,13 +397,13 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
 
 + (FLEXNetworkDetailSection *)postBodySectionForTransaction:(FLEXNetworkTransaction *)transaction
 {
-    FLEXNetworkDetailSection *postBodySection = [[FLEXNetworkDetailSection alloc] init];
+    FLEXNetworkDetailSection *postBodySection = [FLEXNetworkDetailSection new];
     postBodySection.title = @"Request Body Parameters";
-    if ([transaction.cachedRequestBody length] > 0) {
+    if (transaction.cachedRequestBody.length > 0) {
         NSString *contentType = [transaction.request valueForHTTPHeaderField:@"Content-Type"];
         if ([contentType hasPrefix:@"application/x-www-form-urlencoded"]) {
-            NSString *bodyString = [[NSString alloc] initWithData:[self postBodyDataForTransaction:transaction] encoding:NSUTF8StringEncoding];
-            postBodySection.rows = [self networkDetailRowsFromDictionary:[FLEXUtility dictionaryFromQuery:bodyString]];
+            NSString *bodyString = [NSString stringWithCString:[self postBodyDataForTransaction:transaction].bytes encoding:NSUTF8StringEncoding];
+            postBodySection.rows = [self networkDetailRowsFromQueryItems:[FLEXUtility itemsFromQueryString:bodyString]];
         }
     }
     return postBodySection;
@@ -391,17 +411,17 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
 
 + (FLEXNetworkDetailSection *)queryParametersSectionForTransaction:(FLEXNetworkTransaction *)transaction
 {
-    NSDictionary<NSString *, id> *queryDictionary = [FLEXUtility dictionaryFromQuery:transaction.request.URL.query];
-    FLEXNetworkDetailSection *querySection = [[FLEXNetworkDetailSection alloc] init];
+    NSArray<NSURLQueryItem *> *queries = [FLEXUtility itemsFromQueryString:transaction.request.URL.query];
+    FLEXNetworkDetailSection *querySection = [FLEXNetworkDetailSection new];
     querySection.title = @"Query Parameters";
-    querySection.rows = [self networkDetailRowsFromDictionary:queryDictionary];
+    querySection.rows = [self networkDetailRowsFromQueryItems:queries];
 
     return querySection;
 }
 
 + (FLEXNetworkDetailSection *)responseHeadersSectionForTransaction:(FLEXNetworkTransaction *)transaction
 {
-    FLEXNetworkDetailSection *responseHeadersSection = [[FLEXNetworkDetailSection alloc] init];
+    FLEXNetworkDetailSection *responseHeadersSection = [FLEXNetworkDetailSection new];
     responseHeadersSection.title = @"Response Headers";
     if ([transaction.response isKindOfClass:[NSHTTPURLResponse class]]) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)transaction.response;
@@ -412,15 +432,35 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
 
 + (NSArray<FLEXNetworkDetailRow *> *)networkDetailRowsFromDictionary:(NSDictionary<NSString *, id> *)dictionary
 {
-    NSMutableArray<FLEXNetworkDetailRow *> *rows = [NSMutableArray arrayWithCapacity:[dictionary count]];
-    NSArray<NSString *> *sortedKeys = [[dictionary allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    NSMutableArray<FLEXNetworkDetailRow *> *rows = [NSMutableArray new];
+    NSArray<NSString *> *sortedKeys = [dictionary.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    
     for (NSString *key in sortedKeys) {
         id value = dictionary[key];
-        FLEXNetworkDetailRow *row = [[FLEXNetworkDetailRow alloc] init];
+        FLEXNetworkDetailRow *row = [FLEXNetworkDetailRow new];
         row.title = key;
         row.detailText = [value description];
         [rows addObject:row];
     }
+
+    return rows.copy;
+}
+
++ (NSArray<FLEXNetworkDetailRow *> *)networkDetailRowsFromQueryItems:(NSArray<NSURLQueryItem *> *)items
+{
+    // Sort the items by name
+    items = [items sortedArrayUsingComparator:^NSComparisonResult(NSURLQueryItem *item1, NSURLQueryItem *item2) {
+        return [item1.name caseInsensitiveCompare:item2.name];
+    }];
+
+    NSMutableArray<FLEXNetworkDetailRow *> *rows = [NSMutableArray new];
+    for (NSURLQueryItem *item in items) {
+        FLEXNetworkDetailRow *row = [FLEXNetworkDetailRow new];
+        row.title = item.name;
+        row.detailText = item.value;
+        [rows addObject:row];
+    }
+
     return [rows copy];
 }
 
@@ -440,7 +480,7 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
     UIViewController *detailViewController = nil;
     if ([FLEXUtility isValidJSONData:data]) {
         NSString *prettyJSON = [FLEXUtility prettyJSONStringFromData:data];
-        if ([prettyJSON length] > 0) {
+        if (prettyJSON.length > 0) {
             detailViewController = [[FLEXWebViewController alloc] initWithText:prettyJSON];
         }
     } else if ([mimeType hasPrefix:@"image/"]) {
@@ -454,7 +494,7 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
     // Fall back to trying to show the response as text
     if (!detailViewController) {
         NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        if ([text length] > 0) {
+        if (text.length > 0) {
             detailViewController = [[FLEXWebViewController alloc] initWithText:text];
         }
     }
@@ -464,7 +504,7 @@ typedef UIViewController *(^FLEXNetworkDetailRowSelectionFuture)(void);
 + (NSData *)postBodyDataForTransaction:(FLEXNetworkTransaction *)transaction
 {
     NSData *bodyData = transaction.cachedRequestBody;
-    if ([bodyData length] > 0) {
+    if (bodyData.length > 0) {
         NSString *contentEncoding = [transaction.request valueForHTTPHeaderField:@"Content-Encoding"];
         if ([contentEncoding rangeOfString:@"deflate" options:NSCaseInsensitiveSearch].length > 0 || [contentEncoding rangeOfString:@"gzip" options:NSCaseInsensitiveSearch].length > 0) {
             bodyData = [FLEXUtility inflatedDataFromCompressedData:bodyData];

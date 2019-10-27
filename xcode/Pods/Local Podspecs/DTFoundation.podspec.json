@@ -1,6 +1,6 @@
 {
   "name": "DTFoundation",
-  "version": "1.7.13",
+  "version": "1.7.14",
   "summary": "Standard toolset classes and categories.",
   "homepage": "https://github.com/Cocoanetics/DTFoundation",
   "authors": {
@@ -10,7 +10,7 @@
   "social_media_url": "https://twitter.com/cocoanetics",
   "source": {
     "git": "https://github.com/Cocoanetics/DTFoundation.git",
-    "tag": "1.7.13"
+    "tag": "1.7.14"
   },
   "platforms": {
     "ios": "6.0",

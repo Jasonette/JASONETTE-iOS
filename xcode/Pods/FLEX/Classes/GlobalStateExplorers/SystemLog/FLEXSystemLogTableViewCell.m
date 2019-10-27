@@ -13,8 +13,8 @@ NSString *const kFLEXSystemLogTableViewCellIdentifier = @"FLEXSystemLogTableView
 
 @interface FLEXSystemLogTableViewCell ()
 
-@property (nonatomic, strong) UILabel *logMessageLabel;
-@property (nonatomic, strong) NSAttributedString *logMessageAttributedText;
+@property (nonatomic) UILabel *logMessageLabel;
+@property (nonatomic) NSAttributedString *logMessageAttributedText;
 
 @end
 
@@ -24,7 +24,7 @@ NSString *const kFLEXSystemLogTableViewCellIdentifier = @"FLEXSystemLogTableView
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.logMessageLabel = [[UILabel alloc] init];
+        self.logMessageLabel = [UILabel new];
         self.logMessageLabel.numberOfLines = 0;
         self.separatorInset = UIEdgeInsetsZero;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -77,9 +77,9 @@ static const UIEdgeInsets kFLEXLogMessageCellInsets = {10.0, 10.0, 10.0, 10.0};
     NSDictionary<NSString *, id> *attributes = @{ NSFontAttributeName : [UIFont fontWithName:@"CourierNewPSMT" size:12.0] };
     NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text attributes:attributes];
 
-    if ([highlightedText length] > 0) {
+    if (highlightedText.length > 0) {
         NSMutableAttributedString *mutableAttributedText = [attributedText mutableCopy];
-        NSMutableDictionary<NSString *, id> *highlightAttributes = [@{ NSBackgroundColorAttributeName : [UIColor yellowColor] } mutableCopy];
+        NSMutableDictionary<NSString *, id> *highlightAttributes = [@{ NSBackgroundColorAttributeName : UIColor.yellowColor } mutableCopy];
         [highlightAttributes addEntriesFromDictionary:attributes];
         
         NSRange remainingSearchRange = NSMakeRange(0, text.length);
@@ -118,7 +118,7 @@ static const UIEdgeInsets kFLEXLogMessageCellInsets = {10.0, 10.0, 10.0, 10.0};
     static NSDateFormatter *formatter = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        formatter = [[NSDateFormatter alloc] init];
+        formatter = [NSDateFormatter new];
         formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS";
     });
 

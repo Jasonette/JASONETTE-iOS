@@ -6,8 +6,9 @@
 //  Copyright (c) 2015 Flipboard. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "FLEXTableViewController.h"
+#import "FLEXGlobalsEntry.h"
 
-@interface FLEXNetworkHistoryTableViewController : UITableViewController
+@interface FLEXNetworkHistoryTableViewController : FLEXTableViewController <FLEXGlobalsEntry>
 
 @end

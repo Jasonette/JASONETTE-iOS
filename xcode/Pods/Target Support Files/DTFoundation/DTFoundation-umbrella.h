@@ -68,7 +68,6 @@
 #import "UIImage+DTFoundation.h"
 #import "UIScreen+DTFoundation.h"
 #import "UIView+DTFoundation.h"
-#import "UIWebView+DTFoundation.h"
 #import "DTActionSheet.h"
 #import "DTAlertView.h"
 #import "UIView+DTActionHandlers.h"

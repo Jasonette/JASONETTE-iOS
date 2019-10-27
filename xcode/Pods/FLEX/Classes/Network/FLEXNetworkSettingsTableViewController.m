@@ -15,7 +15,7 @@
 
 @property (nonatomic, copy) NSArray<UITableViewCell *> *cells;
 
-@property (nonatomic, strong) UITableViewCell *cacheLimitCell;
+@property (nonatomic) UITableViewCell *cacheLimitCell;
 
 @end
 
@@ -74,8 +74,15 @@
 
 - (void)clearRequestsTapped:(UIButton *)sender
 {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Clear Recorded Requests" otherButtonTitles:nil];
-    [actionSheet showInView:self.view];
+    [FLEXAlert makeSheet:^(FLEXAlert *make) {
+        make.button(@"Cancel").cancelStyle();
+        make.button(@"Clear Recorded Requests").destructiveStyle().handler(^(NSArray *strings) {
+            [[FLEXNetworkRecorder defaultRecorder] clearRecordedActivity];
+        });
+    } showFrom:self];
+
+    self.popoverPresentationController.sourceView = sender;
+    self.popoverPresentationController.sourceRect = sender.bounds;
 }
 
 #pragma mark - Table view data source
@@ -87,7 +94,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.cells count];
+    return self.cells.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath 
@@ -95,25 +102,16 @@
     return self.cells[indexPath.row];
 }
 
-#pragma mark - UIActionSheetDelegate
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex != actionSheet.cancelButtonIndex) {
-        [[FLEXNetworkRecorder defaultRecorder] clearRecordedActivity];
-    }
-}
-
 #pragma mark - Helpers
 
 - (UITableViewCell *)switchCellWithTitle:(NSString *)title toggleAction:(SEL)toggleAction isOn:(BOOL)isOn
 {
-    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    UITableViewCell *cell = [UITableViewCell new];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.textLabel.text = title;
     cell.textLabel.font = [[self class] cellTitleFont];
 
-    UISwitch *theSwitch = [[UISwitch alloc] init];
+    UISwitch *theSwitch = [UISwitch new];
     theSwitch.on = isOn;
     [theSwitch addTarget:self action:toggleAction forControlEvents:UIControlEventValueChanged];
 
@@ -128,13 +126,13 @@
 
 - (UITableViewCell *)buttonCellWithTitle:(NSString *)title touchUpAction:(SEL)action isDestructive:(BOOL)isDestructive
 {
-    UITableViewCell *buttonCell = [[UITableViewCell alloc] init];
+    UITableViewCell *buttonCell = [UITableViewCell new];
     buttonCell.selectionStyle = UITableViewCellSelectionStyleNone;
 
     UIButton *actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [actionButton setTitle:title forState:UIControlStateNormal];
     if (isDestructive) {
-        actionButton.tintColor = [UIColor redColor];
+        actionButton.tintColor = UIColor.redColor;
     }
     actionButton.titleLabel.font = [[self class] cellTitleFont];
     [actionButton addTarget:self action:@selector(clearRequestsTapped:) forControlEvents:UIControlEventTouchUpInside];
@@ -156,12 +154,12 @@
 
 - (UITableViewCell *)sliderCellWithTitle:(NSString *)title changedAction:(SEL)changedAction minimum:(CGFloat)minimum maximum:(CGFloat)maximum initialValue:(CGFloat)initialValue
 {
-    UITableViewCell *sliderCell = [[UITableViewCell alloc] init];
+    UITableViewCell *sliderCell = [UITableViewCell new];
     sliderCell.selectionStyle = UITableViewCellSelectionStyleNone;
     sliderCell.textLabel.text = title;
     sliderCell.textLabel.font = [[self class] cellTitleFont];
 
-    UISlider *slider = [[UISlider alloc] init];
+    UISlider *slider = [UISlider new];
     slider.minimumValue = minimum;
     slider.maximumValue = maximum;
     slider.value = initialValue;

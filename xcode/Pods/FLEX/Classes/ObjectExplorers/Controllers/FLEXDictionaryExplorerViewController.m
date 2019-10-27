@@ -33,7 +33,7 @@
 
 - (NSArray *)customSectionRowCookies
 {
-    return [self.dictionary allKeys];
+    return self.dictionary.allKeys;
 }
 
 - (NSString *)customSectionTitleForRowCookie:(id)rowCookie
@@ -44,11 +44,6 @@
 - (NSString *)customSectionSubtitleForRowCookie:(id)rowCookie
 {
     return [FLEXRuntimeUtility descriptionForIvarOrPropertyValue:self.dictionary[rowCookie]];
-}
-
-- (BOOL)customSectionCanDrillIntoRowWithCookie:(id)rowCookie
-{
-    return YES;
 }
 
 - (UIViewController *)customSectionDrillInViewControllerForRowCookie:(id)rowCookie

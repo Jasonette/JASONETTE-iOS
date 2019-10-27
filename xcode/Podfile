@@ -11,7 +11,7 @@ target 'Jasonette' do
   pod 'DTCoreText', :git => 'https://github.com/jasonelle/ios-pod-dtcoretext.git', :branch => 'jasonelle'
   pod 'JSCoreBom', :git => 'https://github.com/jasonelle/ios-pod-jscorebom.git', :branch => 'jasonelle'
   pod 'SBJson', :git => 'https://github.com/jasonelle/ios-pod-sbjson.git', :branch => 'jasonelle'
-  pod 'FLEX', :git => 'https://github.com/jasonelle/ios-pod-flex.git', :tag => '3.0.0', :configurations => ['Debug'] #,:branch => 'jasonelle'
+  pod 'FLEX', :git => 'https://github.com/jasonelle/ios-pod-flex.git', :configurations => ['Debug'] #,:branch => 'jasonelle'
   pod 'NSHash', :git => 'https://github.com/jasonelle/ios-pod-nshash.git', :branch => 'jasonelle'
   
   ## TODO: Remove this dependency

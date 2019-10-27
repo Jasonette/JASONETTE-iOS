@@ -15,18 +15,18 @@
 
 @interface UIEvent (UIPhysicalKeyboardEvent)
 
-@property (nonatomic, strong) NSString *_modifiedInput;
-@property (nonatomic, strong) NSString *_unmodifiedInput;
-@property (nonatomic, assign) UIKeyModifierFlags _modifierFlags;
-@property (nonatomic, assign) BOOL _isKeyDown;
-@property (nonatomic, assign) long _keyCode;
+@property (nonatomic) NSString *_modifiedInput;
+@property (nonatomic) NSString *_unmodifiedInput;
+@property (nonatomic) UIKeyModifierFlags _modifierFlags;
+@property (nonatomic) BOOL _isKeyDown;
+@property (nonatomic) long _keyCode;
 
 @end
 
 @interface FLEXKeyInput : NSObject <NSCopying>
 
 @property (nonatomic, copy, readonly) NSString *key;
-@property (nonatomic, assign, readonly) UIKeyModifierFlags flags;
+@property (nonatomic, readonly) UIKeyModifierFlags flags;
 @property (nonatomic, copy, readonly) NSString *helpDescription;
 
 @end
@@ -86,7 +86,7 @@
     }
     
     // Fudging to get easy columns with tabs
-    if ([prettyFlags length] < 2) {
+    if (prettyFlags.length < 2) {
         prettyKey = [prettyKey stringByAppendingString:@"\t"];
     }
     
@@ -100,7 +100,7 @@
 
 + (instancetype)keyInputForKey:(NSString *)key flags:(UIKeyModifierFlags)flags helpDescription:(NSString *)helpDescription
 {
-    FLEXKeyInput *keyInput = [[self alloc] init];
+    FLEXKeyInput *keyInput = [self new];
     if (keyInput) {
         keyInput->_key = key;
         keyInput->_flags = flags;
@@ -113,11 +113,11 @@
 
 @interface FLEXKeyboardShortcutManager ()
 
-@property (nonatomic, strong) NSMutableDictionary<FLEXKeyInput *, dispatch_block_t> *actionsForKeyInputs;
+@property (nonatomic) NSMutableDictionary<FLEXKeyInput *, dispatch_block_t> *actionsForKeyInputs;
 
-@property (nonatomic, assign, getter=isPressingShift) BOOL pressingShift;
-@property (nonatomic, assign, getter=isPressingCommand) BOOL pressingCommand;
-@property (nonatomic, assign, getter=isPressingControl) BOOL pressingControl;
+@property (nonatomic, getter=isPressingShift) BOOL pressingShift;
+@property (nonatomic, getter=isPressingCommand) BOOL pressingCommand;
+@property (nonatomic, getter=isPressingControl) BOOL pressingControl;
 
 @end
 
@@ -128,7 +128,7 @@
     static FLEXKeyboardShortcutManager *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedManager = [[[self class] alloc] init];
+        sharedManager = [self new];
     });
     return sharedManager;
 }
@@ -165,14 +165,12 @@
                     pressureLevel++;
                 }
                 if (pressureLevel > 0) {
-#if FLEX_AT_LEAST_IOS11_SDK
                     if (@available(iOS 9.0, *)) {
                         for (UITouch *touch in [event allTouches]) {
                             double adjustedPressureLevel = pressureLevel * 20 * touch.maximumPossibleForce;
                             [touch setValue:@(adjustedPressureLevel) forKey:@"_pressure"];
                         }
                     }
-#endif
                 }
             }
             
@@ -241,9 +239,9 @@ static const long kFLEXCommandKeyCode = 0xe3;
         isKeyDown = [event _isKeyDown];
     }
     
-    BOOL interactionEnabled = ![[UIApplication sharedApplication] isIgnoringInteractionEvents];
+    BOOL interactionEnabled = ![UIApplication.sharedApplication isIgnoringInteractionEvents];
     BOOL hasFirstResponder = NO;
-    if (isKeyDown && [modifiedInput length] > 0 && interactionEnabled) {
+    if (isKeyDown && modifiedInput.length > 0 && interactionEnabled) {
         UIResponder *firstResponder = nil;
         for (UIWindow *window in [FLEXUtility allWindows]) {
             firstResponder = [window valueForKey:@"firstResponder"];
@@ -296,7 +294,7 @@ static const long kFLEXCommandKeyCode = 0xe3;
 - (NSString *)keyboardShortcutsDescription
 {
     NSMutableString *description = [NSMutableString string];
-    NSArray<FLEXKeyInput *> *keyInputs = [[self.actionsForKeyInputs allKeys] sortedArrayUsingComparator:^NSComparisonResult(FLEXKeyInput *_Nonnull input1, FLEXKeyInput *_Nonnull input2) {
+    NSArray<FLEXKeyInput *> *keyInputs = [self.actionsForKeyInputs.allKeys sortedArrayUsingComparator:^NSComparisonResult(FLEXKeyInput *_Nonnull input1, FLEXKeyInput *_Nonnull input2) {
         return [input1.key caseInsensitiveCompare:input2.key];
     }];
     for (FLEXKeyInput *keyInput in keyInputs) {

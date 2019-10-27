@@ -21,11 +21,11 @@ extern NSString *const kFLEXNetworkRecorderTransactionsClearedNotification;
 /// In general, it only makes sense to have one recorder for the entire application.
 + (instancetype)defaultRecorder;
 
-/// Defaults to 25 MB if never set. Values set here are presisted across launches of the app.
-@property (nonatomic, assign) NSUInteger responseCacheByteLimit;
+/// Defaults to 25 MB if never set. Values set here are persisted across launches of the app.
+@property (nonatomic) NSUInteger responseCacheByteLimit;
 
 /// If NO, the recorder not cache will not cache response for content types with an "image", "video", or "audio" prefix.
-@property (nonatomic, assign) BOOL shouldCacheMediaResponses;
+@property (nonatomic) BOOL shouldCacheMediaResponses;
 
 @property (nonatomic, copy) NSArray<NSString *> *hostBlacklist;
 

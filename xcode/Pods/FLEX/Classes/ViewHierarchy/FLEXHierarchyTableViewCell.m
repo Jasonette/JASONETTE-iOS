@@ -11,8 +11,8 @@
 
 @interface FLEXHierarchyTableViewCell ()
 
-@property (nonatomic, strong) UIView *depthIndicatorView;
-@property (nonatomic, strong) UIImageView *colorCircleImageView;
+@property (nonatomic) UIView *depthIndicatorView;
+@property (nonatomic) UIImageView *colorCircleImageView;
 
 @end
 
@@ -27,11 +27,11 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.depthIndicatorView = [[UIView alloc] init];
+        self.depthIndicatorView = [UIView new];
         self.depthIndicatorView.backgroundColor = [FLEXUtility hierarchyIndentPatternColor];
         [self.contentView addSubview:self.depthIndicatorView];
         
-        UIImage *defaultCircleImage = [FLEXUtility circularImageWithColor:[UIColor blackColor] radius:5.0];
+        UIImage *defaultCircleImage = [FLEXUtility circularImageWithColor:UIColor.blackColor radius:5.0];
         self.colorCircleImageView = [[UIImageView alloc] initWithImage:defaultCircleImage];
         [self.contentView addSubview:self.colorCircleImageView];
         
@@ -39,9 +39,9 @@
         self.detailTextLabel.font = [FLEXUtility defaultTableViewCellLabelFont];
         self.accessoryType = UITableViewCellAccessoryDetailButton;
         
-        self.viewBackgroundColorView = [[UIView alloc] init];
+        self.viewBackgroundColorView = [UIView new];
         self.viewBackgroundColorView.clipsToBounds = YES;
-        self.viewBackgroundColorView.layer.borderColor = [UIColor blackColor].CGColor;
+        self.viewBackgroundColorView.layer.borderColor = UIColor.blackColor.CGColor;
         self.viewBackgroundColorView.layer.borderWidth = 1.0f;
         [self.contentView addSubview:self.viewBackgroundColorView];
     }

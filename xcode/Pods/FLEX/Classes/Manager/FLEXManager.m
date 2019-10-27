@@ -7,9 +7,10 @@
 //
 
 #import "FLEXManager.h"
+#import "FLEXUtility.h"
 #import "FLEXExplorerViewController.h"
 #import "FLEXWindow.h"
-#import "FLEXGlobalsTableViewControllerEntry.h"
+#import "FLEXGlobalsEntry.h"
 #import "FLEXObjectExplorerFactory.h"
 #import "FLEXObjectExplorerViewController.h"
 #import "FLEXNetworkObserver.h"
@@ -21,11 +22,11 @@
 
 @interface FLEXManager () <FLEXWindowEventDelegate, FLEXExplorerViewControllerDelegate>
 
-@property (nonatomic, strong) FLEXWindow *explorerWindow;
-@property (nonatomic, strong) FLEXExplorerViewController *explorerViewController;
+@property (nonatomic) FLEXWindow *explorerWindow;
+@property (nonatomic) FLEXExplorerViewController *explorerViewController;
 
-@property (nonatomic, readonly, strong) NSMutableArray<FLEXGlobalsTableViewControllerEntry *> *userGlobalEntries;
-@property (nonatomic, readonly, strong) NSMutableDictionary<NSString *, FLEXCustomContentViewerFuture> *customContentTypeViewers;
+@property (nonatomic, readonly) NSMutableArray<FLEXGlobalsEntry *> *userGlobalEntries;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, FLEXCustomContentViewerFuture> *customContentTypeViewers;
 
 @end
 
@@ -36,7 +37,7 @@
     static FLEXManager *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedManager = [[[self class] alloc] init];
+        sharedManager = [self new];
     });
     return sharedManager;
 }
@@ -56,7 +57,7 @@
     NSAssert([NSThread isMainThread], @"You must use %@ from the main thread only.", NSStringFromClass([self class]));
     
     if (!_explorerWindow) {
-        _explorerWindow = [[FLEXWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        _explorerWindow = [[FLEXWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
         _explorerWindow.eventDelegate = self;
         _explorerWindow.rootViewController = self.explorerViewController;
     }
@@ -67,7 +68,7 @@
 - (FLEXExplorerViewController *)explorerViewController
 {
     if (!_explorerViewController) {
-        _explorerViewController = [[FLEXExplorerViewController alloc] init];
+        _explorerViewController = [FLEXExplorerViewController new];
         _explorerViewController.delegate = self;
     }
 
@@ -77,6 +78,23 @@
 - (void)showExplorer
 {
     self.explorerWindow.hidden = NO;
+#if FLEX_AT_LEAST_IOS13_SDK
+    if (@available(iOS 13.0, *)) {
+        // Only look for a new scene if we don't have one, or the one we have
+        // isn't the active scene
+        if (!self.explorerWindow.windowScene ||
+            self.explorerWindow.windowScene.activationState != UISceneActivationStateForegroundActive) {
+            for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+                // Look for an active UIWindowScene
+                if (scene.activationState == UISceneActivationStateForegroundActive &&
+                    [scene isKindOfClass:[UIWindowScene class]]) {
+                    self.explorerWindow.windowScene = (UIWindowScene *)scene;
+                    break;
+                }
+            }
+        }
+    }
+#endif
 }
 
 - (void)hideExplorer
@@ -90,6 +108,16 @@
     } else {
         [self hideExplorer];
     }
+}
+
+- (void)showExplorerFromScene:(UIWindowScene *)scene
+{
+    #if FLEX_AT_LEAST_IOS13_SDK
+    if (@available(iOS 13.0, *)) {
+        self.explorerWindow.windowScene = scene;
+    }
+    #endif
+    self.explorerWindow.hidden = NO;
 }
 
 - (BOOL)isHidden
@@ -263,7 +291,7 @@
     NSAssert([NSThread isMainThread], @"This method must be called from the main thread.");
 
     entryName = entryName.copy;
-    FLEXGlobalsTableViewControllerEntry *entry = [FLEXGlobalsTableViewControllerEntry entryWithNameFuture:^NSString *{
+    FLEXGlobalsEntry *entry = [FLEXGlobalsEntry entryWithNameFuture:^NSString *{
         return entryName;
     } viewControllerFuture:^UIViewController *{
         return [FLEXObjectExplorerFactory explorerViewControllerForObject:objectFutureBlock()];
@@ -279,7 +307,7 @@
     NSAssert([NSThread isMainThread], @"This method must be called from the main thread.");
 
     entryName = entryName.copy;
-    FLEXGlobalsTableViewControllerEntry *entry = [FLEXGlobalsTableViewControllerEntry entryWithNameFuture:^NSString *{
+    FLEXGlobalsEntry *entry = [FLEXGlobalsEntry entryWithNameFuture:^NSString *{
         return entryName;
     } viewControllerFuture:^UIViewController *{
         UIViewController *viewController = viewControllerFutureBlock();
@@ -302,7 +330,7 @@
 - (void)tryScrollDown
 {
     UIScrollView *firstScrollView = [self firstScrollView];
-    CGPoint contentOffset = [firstScrollView contentOffset];
+    CGPoint contentOffset = firstScrollView.contentOffset;
     CGFloat distance = floor(firstScrollView.frame.size.height / 2.0);
     CGFloat maxContentOffsetY = firstScrollView.contentSize.height + firstScrollView.contentInset.bottom - firstScrollView.frame.size.height;
     distance = MIN(maxContentOffsetY - firstScrollView.contentOffset.y, distance);
@@ -313,7 +341,7 @@
 - (void)tryScrollUp
 {
     UIScrollView *firstScrollView = [self firstScrollView];
-    CGPoint contentOffset = [firstScrollView contentOffset];
+    CGPoint contentOffset = firstScrollView.contentOffset;
     CGFloat distance = floor(firstScrollView.frame.size.height / 2.0);
     CGFloat minContentOffsetY = -firstScrollView.contentInset.top;
     distance = MIN(firstScrollView.contentOffset.y - minContentOffsetY, distance);
@@ -323,16 +351,16 @@
 
 - (UIScrollView *)firstScrollView
 {
-    NSMutableArray<UIView *> *views = [[[[UIApplication sharedApplication] keyWindow] subviews] mutableCopy];
+    NSMutableArray<UIView *> *views = [UIApplication.sharedApplication.keyWindow.subviews mutableCopy];
     UIScrollView *scrollView = nil;
-    while ([views count] > 0) {
-        UIView *view = [views firstObject];
+    while (views.count > 0) {
+        UIView *view = views.firstObject;
         [views removeObjectAtIndex:0];
         if ([view isKindOfClass:[UIScrollView class]]) {
             scrollView = (UIScrollView *)view;
             break;
         } else {
-            [views addObjectsFromArray:[view subviews]];
+            [views addObjectsFromArray:view.subviews];
         }
     }
     return scrollView;
@@ -352,7 +380,7 @@
 
 - (UIViewController *)topViewController
 {
-    UIViewController *topViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    UIViewController *topViewController = [[UIApplication.sharedApplication keyWindow] rootViewController];
     while ([topViewController presentedViewController]) {
         topViewController = [topViewController presentedViewController];
     }
@@ -362,10 +390,12 @@
 - (void)toggleTopViewControllerOfClass:(Class)class
 {
     UIViewController *topViewController = [self topViewController];
-    if ([topViewController isKindOfClass:[UINavigationController class]] && [[[(UINavigationController *)topViewController viewControllers] firstObject] isKindOfClass:[class class]]) {
+    if ([topViewController isKindOfClass:[UINavigationController class]] &&
+        [[(UINavigationController *)topViewController viewControllers].firstObject isKindOfClass:[class class]])
+    {
         [[topViewController presentingViewController] dismissViewControllerAnimated:YES completion:nil];
     } else {
-        id viewController = [[class alloc] init];
+        id viewController = [class new];
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [topViewController presentViewController:navigationController animated:YES completion:nil];
     }

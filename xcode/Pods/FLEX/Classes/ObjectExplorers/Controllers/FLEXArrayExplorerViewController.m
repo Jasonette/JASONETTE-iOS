@@ -34,8 +34,8 @@
 - (NSArray *)customSectionRowCookies
 {
     // Use index numbers as the row cookies
-    NSMutableArray *cookies = [NSMutableArray arrayWithCapacity:[self.array count]];
-    for (NSUInteger i = 0; i < [self.array count]; i++) {
+    NSMutableArray *cookies = [NSMutableArray arrayWithCapacity:self.array.count];
+    for (NSUInteger i = 0; i < self.array.count; i++) {
         [cookies addObject:@(i)];
     }
     return cookies;
@@ -49,11 +49,6 @@
 - (NSString *)customSectionSubtitleForRowCookie:(id)rowCookie
 {
     return [FLEXRuntimeUtility descriptionForIvarOrPropertyValue:[self detailObjectForRowCookie:rowCookie]];
-}
-
-- (BOOL)customSectionCanDrillIntoRowWithCookie:(id)rowCookie
-{
-    return YES;
 }
 
 - (UIViewController *)customSectionDrillInViewControllerForRowCookie:(id)rowCookie

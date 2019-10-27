@@ -33,7 +33,7 @@
 
 - (NSArray *)customSectionRowCookies
 {
-    return [self.set allObjects];
+    return self.set.allObjects;
 }
 
 - (NSString *)customSectionTitleForRowCookie:(id)rowCookie
@@ -44,11 +44,6 @@
 - (NSString *)customSectionSubtitleForRowCookie:(id)rowCookie
 {
     return nil;
-}
-
-- (BOOL)customSectionCanDrillIntoRowWithCookie:(id)rowCookie
-{
-    return YES;
 }
 
 - (UIViewController *)customSectionDrillInViewControllerForRowCookie:(id)rowCookie

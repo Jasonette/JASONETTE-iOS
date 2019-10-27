@@ -52,14 +52,16 @@ typedef NS_ENUM(NSUInteger, FLEXViewExplorerRow) {
     }
     
     [rowCookies addObject:@(FLEXViewExplorerRowPreview)];
-    [rowCookies addObjectsFromArray:[self shortcutPropertyNames]];
+    [rowCookies addObjectsFromArray:[super customSectionRowCookies]];
     
     return rowCookies;
 }
 
 - (NSArray<NSString *> *)shortcutPropertyNames
 {
-    NSArray<NSString *> *propertyNames = @[@"frame", @"bounds", @"center", @"transform", @"backgroundColor", @"alpha", @"opaque", @"hidden", @"clipsToBounds", @"userInteractionEnabled", @"layer"];
+    NSArray *propertyNames = @[@"frame", @"bounds", @"center", @"transform",
+                               @"backgroundColor", @"alpha", @"opaque", @"hidden",
+                               @"clipsToBounds", @"userInteractionEnabled", @"layer"];
     
     if ([self.viewToExplore isKindOfClass:[UILabel class]]) {
         propertyNames = [@[@"text", @"font", @"textColor"] arrayByAddingObjectsFromArray:propertyNames];
@@ -88,12 +90,7 @@ typedef NS_ENUM(NSUInteger, FLEXViewExplorerRow) {
                 break;
         }
     } else if ([rowCookie isKindOfClass:[NSString class]]) {
-        objc_property_t property = [self viewPropertyForName:rowCookie];
-        if (property) {
-            NSString *prettyPropertyName = [FLEXRuntimeUtility prettyNameForProperty:property];
-            // Since we're outside of the "properties" section, prepend @property for clarity.
-            title = [NSString stringWithFormat:@"@property %@", prettyPropertyName];
-        }
+        title = [super customSectionTitleForRowCookie:rowCookie];
     }
     
     return title;
@@ -118,24 +115,10 @@ typedef NS_ENUM(NSUInteger, FLEXViewExplorerRow) {
                 break;
         }
     } else if ([rowCookie isKindOfClass:[NSString class]]) {
-        objc_property_t property = [self viewPropertyForName:rowCookie];
-        if (property) {
-            id value = [FLEXRuntimeUtility valueForProperty:property onObject:self.viewToExplore];
-            subtitle = [FLEXRuntimeUtility descriptionForIvarOrPropertyValue:value];
-        }
+        return [super customSectionSubtitleForRowCookie:rowCookie];
     }
     
     return subtitle;
-}
-
-- (objc_property_t)viewPropertyForName:(NSString *)propertyName
-{
-    return class_getProperty([self.viewToExplore class], [propertyName UTF8String]);
-}
-
-- (BOOL)customSectionCanDrillIntoRowWithCookie:(id)rowCookie
-{
-    return YES;
 }
 
 - (UIViewController *)customSectionDrillInViewControllerForRowCookie:(id)rowCookie
@@ -158,15 +141,7 @@ typedef NS_ENUM(NSUInteger, FLEXViewExplorerRow) {
                 break;
         }
     } else if ([rowCookie isKindOfClass:[NSString class]]) {
-        objc_property_t property = [self viewPropertyForName:rowCookie];
-        if (property) {
-            id currentValue = [FLEXRuntimeUtility valueForProperty:property onObject:self.viewToExplore];
-            if ([FLEXPropertyEditorViewController canEditProperty:property currentValue:currentValue]) {
-                drillInViewController = [[FLEXPropertyEditorViewController alloc] initWithTarget:self.object property:property];
-            } else {
-                drillInViewController = [FLEXObjectExplorerFactory explorerViewControllerForObject:currentValue];
-            }
-        }
+        return [super customSectionDrillInViewControllerForRowCookie:rowCookie];
     }
 
     return drillInViewController;
@@ -189,29 +164,45 @@ typedef NS_ENUM(NSUInteger, FLEXViewExplorerRow) {
 
 #pragma mark - Runtime Adjustment
 
+#define PropertyKey(suffix) kFLEXUtilityAttribute##suffix : @""
+#define PropertyKeyGetter(getter) kFLEXUtilityAttributeCustomGetter : NSStringFromSelector(@selector(getter))
+#define PropertyKeySetter(setter) kFLEXUtilityAttributeCustomSetter : NSStringFromSelector(@selector(setter))
+
+#define FLEXRuntimeUtilityTryAddProperty(iOS_atLeast, name, cls, type, ...) ({ \
+    if (@available(iOS iOS_atLeast, *)) { \
+        NSMutableDictionary *attrs = [NSMutableDictionary dictionaryWithDictionary:@{ \
+            kFLEXUtilityAttributeTypeEncoding : @(type), \
+            __VA_ARGS__ \
+        }]; \
+        [FLEXRuntimeUtility \
+            tryAddPropertyWithName:#name \
+            attributes:attrs \
+            toClass:[cls class] \
+        ]; \
+    } \
+})
+#define FLEXRuntimeUtilityTryAddNonatomicProperty(iOS_atLeast, name, cls, type, ...) \
+    FLEXRuntimeUtilityTryAddProperty(iOS_atLeast, name, cls, @encode(type), PropertyKey(NonAtomic), __VA_ARGS__);
+#define FLEXRuntimeUtilityTryAddObjectProperty(iOS_atLeast, name, cls, type, ...) \
+    FLEXRuntimeUtilityTryAddProperty(iOS_atLeast, name, cls, FLEXEncodeClass(type), PropertyKey(NonAtomic), __VA_ARGS__);
+
 + (void)initialize
 {
-    // A quirk of UIView: a lot of the "@property"s are not actually properties from the perspective of the runtime.
+    // A quirk of UIView and some other classes: a lot of the `@property`s are
+    // not actually properties from the perspective of the runtime.
+    //
     // We add these properties to the class at runtime if they haven't been added yet.
     // This way, we can use our property editor to access and change them.
-    // The property attributes match the declared attributes in UIView.h
-    NSDictionary<NSString *, NSString *> *frameAttributes = @{kFLEXUtilityAttributeTypeEncoding : @(@encode(CGRect)), kFLEXUtilityAttributeNonAtomic : @""};
-    [FLEXRuntimeUtility tryAddPropertyWithName:"frame" attributes:frameAttributes toClass:[UIView class]];
-    
-    NSDictionary<NSString *, NSString *> *alphaAttributes = @{kFLEXUtilityAttributeTypeEncoding : @(@encode(CGFloat)), kFLEXUtilityAttributeNonAtomic : @""};
-    [FLEXRuntimeUtility tryAddPropertyWithName:"alpha" attributes:alphaAttributes toClass:[UIView class]];
-    
-    NSDictionary<NSString *, NSString *> *clipsAttributes = @{kFLEXUtilityAttributeTypeEncoding : @(@encode(BOOL)), kFLEXUtilityAttributeNonAtomic : @""};
-    [FLEXRuntimeUtility tryAddPropertyWithName:"clipsToBounds" attributes:clipsAttributes toClass:[UIView class]];
-    
-    NSDictionary<NSString *, NSString *> *opaqueAttributes = @{kFLEXUtilityAttributeTypeEncoding : @(@encode(BOOL)), kFLEXUtilityAttributeNonAtomic : @"", kFLEXUtilityAttributeCustomGetter : @"isOpaque"};
-    [FLEXRuntimeUtility tryAddPropertyWithName:"opaque" attributes:opaqueAttributes toClass:[UIView class]];
-    
-    NSDictionary<NSString *, NSString *> *hiddenAttributes = @{kFLEXUtilityAttributeTypeEncoding : @(@encode(BOOL)), kFLEXUtilityAttributeNonAtomic : @"", kFLEXUtilityAttributeCustomGetter : @"isHidden"};
-    [FLEXRuntimeUtility tryAddPropertyWithName:"hidden" attributes:hiddenAttributes toClass:[UIView class]];
-    
-    NSDictionary<NSString *, NSString *> *backgroundColorAttributes = @{kFLEXUtilityAttributeTypeEncoding : @(FLEXEncodeClass(UIColor)), kFLEXUtilityAttributeNonAtomic : @"", kFLEXUtilityAttributeCopy : @""};
-    [FLEXRuntimeUtility tryAddPropertyWithName:"backgroundColor" attributes:backgroundColorAttributes toClass:[UIView class]];
+    // The property attributes match the declared attributes in their headers.
+
+    // UIView
+    FLEXRuntimeUtilityTryAddNonatomicProperty(2, frame, UIView, CGRect);
+    FLEXRuntimeUtilityTryAddNonatomicProperty(2, alpha, UIView, CGFloat);
+    FLEXRuntimeUtilityTryAddNonatomicProperty(2, clipsToBounds, UIView, BOOL);
+    FLEXRuntimeUtilityTryAddNonatomicProperty(2, opaque, UIView, BOOL, PropertyKeyGetter(isOpaque));
+    FLEXRuntimeUtilityTryAddNonatomicProperty(2, hidden, UIView, BOOL, PropertyKeyGetter(isHidden));
+    FLEXRuntimeUtilityTryAddObjectProperty(2, backgroundColor, UIView, UIColor, PropertyKey(Copy));
+    FLEXRuntimeUtilityTryAddObjectProperty(6, constraints, UIView, NSArray, PropertyKey(ReadOnly));
 }
 
 @end

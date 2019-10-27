@@ -6,8 +6,8 @@
 //  Copyright © 2015 Flipboard. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "FLEXGlobalsEntry.h"
 
-@interface FLEXCookiesTableViewController : UITableViewController
+@interface FLEXCookiesTableViewController : UITableViewController <FLEXGlobalsEntry>
 
 @end

@@ -11,8 +11,8 @@
 
 @interface FLEXArgumentInputView ()
 
-@property (nonatomic, strong) UILabel *titleLabel;
-@property (nonatomic, strong) NSString *typeEncoding;
+@property (nonatomic) UILabel *titleLabel;
+@property (nonatomic) NSString *typeEncoding;
 
 @end
 
@@ -56,7 +56,7 @@
 - (UILabel *)titleLabel
 {
     if (!_titleLabel) {
-        _titleLabel = [[UILabel alloc] init];
+        _titleLabel = [UILabel new];
         _titleLabel.font = [[self class] titleFont];
         _titleLabel.backgroundColor = self.backgroundColor;
         _titleLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
@@ -68,7 +68,7 @@
 
 - (BOOL)showsTitle
 {
-    return [self.title length] > 0;
+    return self.title.length > 0;
 }
 
 - (CGFloat)topInputFieldVerticalLayoutGuide
@@ -87,17 +87,6 @@
 - (BOOL)inputViewIsFirstResponder
 {
     return NO;
-}
-
-- (void)setInputValue:(id)inputValue
-{
-    // Subclasses should override.
-}
-
-- (id)inputValue
-{
-    // Subclasses should override.
-    return nil;
 }
 
 + (BOOL)supportsObjCType:(const char *)type withCurrentValue:(id)value
@@ -125,7 +114,7 @@
 {
     CGFloat height = 0;
     
-    if ([self.title length] > 0) {
+    if (self.title.length > 0) {
         CGSize constrainSize = CGSizeMake(size.width, CGFLOAT_MAX);
         height += ceil([self.titleLabel sizeThatFits:constrainSize].height);
         height += [[self class] titleBottomPadding];

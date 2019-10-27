@@ -6,11 +6,24 @@
 //  Copyright (c) 2014 Flipboard. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
+#import "FLEXTableViewController.h"
 @protocol FLEXGlobalsTableViewControllerDelegate;
 
-@interface FLEXGlobalsTableViewController : UITableViewController
+typedef NS_ENUM(NSUInteger, FLEXGlobalsSection) {
+    /// NSProcessInfo, Network history, system log,
+    /// heap, address explorer, libraries, app classes
+    FLEXGlobalsSectionProcessAndEvents,
+    /// Browse container, browse bundle, NSBundle.main,
+    /// NSUserDefaults.standard, UIApplication,
+    /// app delegate, key window, root VC, cookies
+    FLEXGlobalsSectionAppShortcuts,
+    /// UIPasteBoard.general, UIScreen, UIDevice
+    FLEXGlobalsSectionMisc,
+    FLEXGlobalsSectionCustom,
+    FLEXGlobalsSectionCount
+};
+
+@interface FLEXGlobalsTableViewController : FLEXTableViewController
 
 @property (nonatomic, weak) id <FLEXGlobalsTableViewControllerDelegate> delegate;
 

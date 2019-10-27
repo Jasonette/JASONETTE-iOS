@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Flipboard. All rights reserved.
 //
 
+#import "FLEXColor.h"
 #import "FLEXNetworkTransactionTableViewCell.h"
 #import "FLEXNetworkTransaction.h"
 #import "FLEXUtility.h"
@@ -15,10 +16,10 @@ NSString *const kFLEXNetworkTransactionCellIdentifier = @"kFLEXNetworkTransactio
 
 @interface FLEXNetworkTransactionTableViewCell ()
 
-@property (nonatomic, strong) UIImageView *thumbnailImageView;
-@property (nonatomic, strong) UILabel *nameLabel;
-@property (nonatomic, strong) UILabel *pathLabel;
-@property (nonatomic, strong) UILabel *transactionDetailsLabel;
+@property (nonatomic) UIImageView *thumbnailImageView;
+@property (nonatomic) UILabel *nameLabel;
+@property (nonatomic) UILabel *pathLabel;
+@property (nonatomic) UILabel *transactionDetailsLabel;
 
 @end
 
@@ -30,22 +31,22 @@ NSString *const kFLEXNetworkTransactionCellIdentifier = @"kFLEXNetworkTransactio
     if (self) {
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-        self.nameLabel = [[UILabel alloc] init];
+        self.nameLabel = [UILabel new];
         self.nameLabel.font = [FLEXUtility defaultTableViewCellLabelFont];
         [self.contentView addSubview:self.nameLabel];
 
-        self.pathLabel = [[UILabel alloc] init];
+        self.pathLabel = [UILabel new];
         self.pathLabel.font = [FLEXUtility defaultTableViewCellLabelFont];
         self.pathLabel.textColor = [UIColor colorWithWhite:0.4 alpha:1.0];
         [self.contentView addSubview:self.pathLabel];
 
-        self.thumbnailImageView = [[UIImageView alloc] init];
-        self.thumbnailImageView.layer.borderColor = [[UIColor blackColor] CGColor];
+        self.thumbnailImageView = [UIImageView new];
+        self.thumbnailImageView.layer.borderColor = UIColor.blackColor.CGColor;
         self.thumbnailImageView.layer.borderWidth = 1.0;
         self.thumbnailImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.contentView addSubview:self.thumbnailImageView];
 
-        self.transactionDetailsLabel = [[UILabel alloc] init];
+        self.transactionDetailsLabel = [UILabel new];
         self.transactionDetailsLabel.font = [FLEXUtility defaultFontOfSize:10.0];
         self.transactionDetailsLabel.textColor = [UIColor colorWithWhite:0.65 alpha:1.0];
         [self.contentView addSubview:self.transactionDetailsLabel];
@@ -79,7 +80,7 @@ NSString *const kFLEXNetworkTransactionCellIdentifier = @"kFLEXNetworkTransactio
     self.nameLabel.text = [self nameLabelText];
     CGSize nameLabelPreferredSize = [self.nameLabel sizeThatFits:CGSizeMake(availableTextWidth, CGFLOAT_MAX)];
     self.nameLabel.frame = CGRectMake(textOriginX, kVerticalPadding, availableTextWidth, nameLabelPreferredSize.height);
-    self.nameLabel.textColor = (self.transaction.error || [FLEXUtility isErrorStatusCodeFromURLResponse:self.transaction.response]) ? [UIColor redColor] : [UIColor blackColor];
+    self.nameLabel.textColor = (self.transaction.error || [FLEXUtility isErrorStatusCodeFromURLResponse:self.transaction.response]) ? UIColor.redColor : [FLEXColor primaryTextColor];
 
     self.pathLabel.text = [self pathLabelText];
     CGSize pathLabelPreferredSize = [self.pathLabel sizeThatFits:CGSizeMake(availableTextWidth, CGFLOAT_MAX)];
@@ -98,7 +99,7 @@ NSString *const kFLEXNetworkTransactionCellIdentifier = @"kFLEXNetworkTransactio
 {
     NSURL *url = self.transaction.request.URL;
     NSString *name = [url lastPathComponent];
-    if ([name length] == 0) {
+    if (name.length == 0) {
         name = @"/";
     }
     NSString *query = [url query];
@@ -112,7 +113,7 @@ NSString *const kFLEXNetworkTransactionCellIdentifier = @"kFLEXNetworkTransactio
 {
     NSURL *url = self.transaction.request.URL;
     NSMutableArray<NSString *> *mutablePathComponents = [[url pathComponents] mutableCopy];
-    if ([mutablePathComponents count] > 0) {
+    if (mutablePathComponents.count > 0) {
         [mutablePathComponents removeLastObject];
     }
     NSString *path = [url host];
@@ -127,19 +128,19 @@ NSString *const kFLEXNetworkTransactionCellIdentifier = @"kFLEXNetworkTransactio
     NSMutableArray<NSString *> *detailComponents = [NSMutableArray array];
 
     NSString *timestamp = [[self class] timestampStringFromRequestDate:self.transaction.startTime];
-    if ([timestamp length] > 0) {
+    if (timestamp.length > 0) {
         [detailComponents addObject:timestamp];
     }
 
     // Omit method for GET (assumed as default)
     NSString *httpMethod = self.transaction.request.HTTPMethod;
-    if ([httpMethod length] > 0) {
+    if (httpMethod.length > 0) {
         [detailComponents addObject:httpMethod];
     }
 
     if (self.transaction.transactionState == FLEXNetworkTransactionStateFinished || self.transaction.transactionState == FLEXNetworkTransactionStateFailed) {
         NSString *statusCodeString = [FLEXUtility statusCodeStringFromURLResponse:self.transaction.response];
-        if ([statusCodeString length] > 0) {
+        if (statusCodeString.length > 0) {
             [detailComponents addObject:statusCodeString];
         }
 
@@ -166,7 +167,7 @@ NSString *const kFLEXNetworkTransactionCellIdentifier = @"kFLEXNetworkTransactio
     static NSDateFormatter *dateFormatter = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter = [NSDateFormatter new];
         dateFormatter.dateFormat = @"HH:mm:ss";
     });
     return [dateFormatter stringFromDate:date];

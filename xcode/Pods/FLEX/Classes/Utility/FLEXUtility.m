@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Flipboard. All rights reserved.
 //
 
+#import "FLEXColor.h"
 #import "FLEXUtility.h"
 #import "FLEXResources.h"
 #import <ImageIO/ImageIO.h>
@@ -25,7 +26,7 @@
     NSString *description = [[view class] description];
     
     NSString *viewControllerDescription = [[[self viewControllerForView:view] class] description];
-    if ([viewControllerDescription length] > 0) {
+    if (viewControllerDescription.length > 0) {
         description = [description stringByAppendingFormat:@" (%@)", viewControllerDescription];
     }
     
@@ -33,7 +34,7 @@
         description = [description stringByAppendingFormat:@" %@", [self stringForCGRect:view.frame]];
     }
     
-    if ([view.accessibilityLabel length] > 0) {
+    if (view.accessibilityLabel.length > 0) {
         description = [description stringByAppendingFormat:@" · %@", view.accessibilityLabel];
     }
     
@@ -81,16 +82,11 @@
     CGFloat diameter = radius * 2.0;
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(diameter, diameter), NO, 0.0);
     CGContextRef imageContext = UIGraphicsGetCurrentContext();
-    CGContextSetFillColorWithColor(imageContext, [color CGColor]);
+    CGContextSetFillColorWithColor(imageContext, color.CGColor);
     CGContextFillEllipseInRect(imageContext, CGRectMake(0, 0, diameter, diameter));
     UIImage *circularImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return circularImage;
-}
-
-+ (UIColor *)scrollViewGrayColor
-{
-    return [UIColor colorWithRed:239.0/255.0 green:239.0/255.0 blue:244.0/255.0 alpha:1.0];
 }
 
 + (UIColor *)hierarchyIndentPatternColor
@@ -100,13 +96,32 @@
     dispatch_once(&onceToken, ^{
         UIImage *indentationPatternImage = [FLEXResources hierarchyIndentPattern];
         patternColor = [UIColor colorWithPatternImage:indentationPatternImage];
+
+#if FLEX_AT_LEAST_IOS13_SDK
+        if (@available(iOS 13.0, *)) {
+            // Create a dark mode version
+            UIGraphicsBeginImageContextWithOptions(indentationPatternImage.size, NO, indentationPatternImage.scale);
+            [[FLEXColor iconColor] set];
+            [indentationPatternImage drawInRect:CGRectMake(0, 0, indentationPatternImage.size.width, indentationPatternImage.size.height)];
+            UIImage *darkModePatternImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+
+            // Create dynamic color provider
+            patternColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull traitCollection) {
+                return (traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight
+                        ? [UIColor colorWithPatternImage:indentationPatternImage]
+                        : [UIColor colorWithPatternImage:darkModePatternImage]);
+            }];
+        }
+#endif
     });
+
     return patternColor;
 }
 
 + (NSString *)applicationImageName
 {
-    return [NSBundle mainBundle].executablePath;
+    return NSBundle.mainBundle.executablePath;
 }
 
 + (NSString *)applicationName
@@ -124,6 +139,21 @@
     } else if ([object respondsToSelector:@selector(description)]) {
         description = [object description];
     }
+    return description;
+}
+
++ (NSString *)safeDebugDescriptionForObject:(id)object
+{
+    NSString *description = [self safeDescriptionForObject:object];
+    if (!description) {
+        NSString *cls = NSStringFromClass(object_getClass(object));
+        if (object_isClass(object)) {
+            description = [cls stringByAppendingString:@" class (no description)"];
+       } else {
+           description = [cls stringByAppendingString:@" instance (no description)"];
+       }
+    }
+
     return description;
 }
 
@@ -162,8 +192,8 @@
     
     NSMutableString *mutableString = [originalString mutableCopy];
     
-    NSArray<NSTextCheckingResult *> *matches = [regex matchesInString:mutableString options:0 range:NSMakeRange(0, [mutableString length])];
-    for (NSTextCheckingResult *result in [matches reverseObjectEnumerator]) {
+    NSArray<NSTextCheckingResult *> *matches = [regex matchesInString:mutableString options:0 range:NSMakeRange(0, mutableString.length)];
+    for (NSTextCheckingResult *result in matches.reverseObjectEnumerator) {
         NSString *foundString = [mutableString substringWithRange:result.range];
         NSString *replacementString = escapingDictionary[foundString];
         if (replacementString) {
@@ -176,7 +206,7 @@
 
 + (UIInterfaceOrientationMask)infoPlistSupportedInterfaceOrientationsMask
 {
-    NSArray<NSString *> *supportedOrientations = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UISupportedInterfaceOrientations"];
+    NSArray<NSString *> *supportedOrientations = NSBundle.mainBundle.infoDictionary[@"UISupportedInterfaceOrientations"];
     UIInterfaceOrientationMask supportedOrientationsMask = 0;
     if ([supportedOrientations containsObject:@"UIInterfaceOrientationPortrait"]) {
         supportedOrientationsMask |= UIInterfaceOrientationMaskPortrait;
@@ -191,17 +221,6 @@
         supportedOrientationsMask |= UIInterfaceOrientationMaskLandscapeLeft;
     }
     return supportedOrientationsMask;
-}
-
-+ (NSString *)searchBarPlaceholderText
-{
-    return @"Filter";
-}
-
-+ (BOOL)isImagePathExtension:(NSString *)extension
-{
-    // https://developer.apple.com/library/ios/documentation/uikit/reference/UIImage_Class/Reference/Reference.html#//apple_ref/doc/uid/TP40006890-CH3-SW3
-    return [@[@"jpg", @"jpeg", @"png", @"gif", @"tiff", @"tif"] containsObject:extension];
 }
 
 + (UIImage *)thumbnailedImageWithMaxPixelDimension:(NSInteger)dimension fromImageData:(NSData *)data
@@ -257,44 +276,32 @@
 
 + (BOOL)isErrorStatusCodeFromURLResponse:(NSURLResponse *)response
 {
-    NSIndexSet *errorStatusCodes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(400, 200)];
-    
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        return [errorStatusCodes containsIndex:httpResponse.statusCode];
+        return httpResponse.statusCode >= 400;
     }
     
     return NO;
 }
 
-+ (NSDictionary<NSString *, id> *)dictionaryFromQuery:(NSString *)query
++ (NSArray<NSURLQueryItem *> *)itemsFromQueryString:(NSString *)query
 {
-    NSMutableDictionary<NSString *, id> *queryDictionary = [NSMutableDictionary dictionary];
+    NSMutableArray<NSURLQueryItem *> *items = [NSMutableArray new];
 
     // [a=1, b=2, c=3]
     NSArray<NSString *> *queryComponents = [query componentsSeparatedByString:@"&"];
     for (NSString *keyValueString in queryComponents) {
         // [a, 1]
         NSArray<NSString *> *components = [keyValueString componentsSeparatedByString:@"="];
-        if ([components count] == 2) {
-            NSString *key = [[components firstObject] stringByRemovingPercentEncoding];
-            id value = [[components lastObject] stringByRemovingPercentEncoding];
+        if (components.count == 2) {
+            NSString *key = components.firstObject.stringByRemovingPercentEncoding;
+            NSString *value = components.lastObject.stringByRemovingPercentEncoding;
 
-            // Handle multiple entries under the same key as an array
-            id existingEntry = queryDictionary[key];
-            if (existingEntry) {
-                if ([existingEntry isKindOfClass:[NSArray class]]) {
-                    value = [existingEntry arrayByAddingObject:value];
-                } else {
-                    value = @[existingEntry, value];
-                }
-            }
-            
-            [queryDictionary setObject:value forKey:key];
+            [items addObject:[NSURLQueryItem queryItemWithName:key value:value]];
         }
     }
 
-    return queryDictionary;
+    return items.copy;
 }
 
 + (NSString *)prettyJSONStringFromData:(NSData *)data
@@ -303,11 +310,11 @@
     
     id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
     if ([NSJSONSerialization isValidJSONObject:jsonObject]) {
-        prettyString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:jsonObject options:NSJSONWritingPrettyPrinted error:NULL] encoding:NSUTF8StringEncoding];
+        prettyString = [NSString stringWithCString:[NSJSONSerialization dataWithJSONObject:jsonObject options:NSJSONWritingPrettyPrinted error:NULL].bytes encoding:NSUTF8StringEncoding];
         // NSJSONSerialization escapes forward slashes. We want pretty json, so run through and unescape the slashes.
         prettyString = [prettyString stringByReplacingOccurrencesOfString:@"\\/" withString:@"/"];
     } else {
-        prettyString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        prettyString = [NSString stringWithCString:data.bytes encoding:NSUTF8StringEncoding];
     }
     
     return prettyString;
@@ -319,18 +326,18 @@
 }
 
 // Thanks to the following links for help with this method
-// http://www.cocoanetics.com/2012/02/decompressing-files-into-memory/
+// https://www.cocoanetics.com/2012/02/decompressing-files-into-memory/
 // https://github.com/nicklockwood/GZIP
 + (NSData *)inflatedDataFromCompressedData:(NSData *)compressedData
 {
     NSData *inflatedData = nil;
-    NSUInteger compressedDataLength = [compressedData length];
+    NSUInteger compressedDataLength = compressedData.length;
     if (compressedDataLength > 0) {
         z_stream stream;
         stream.zalloc = Z_NULL;
         stream.zfree = Z_NULL;
         stream.avail_in = (uInt)compressedDataLength;
-        stream.next_in = (void *)[compressedData bytes];
+        stream.next_in = (void *)compressedData.bytes;
         stream.total_out = 0;
         stream.avail_out = 0;
 
@@ -338,11 +345,11 @@
         if (inflateInit2(&stream, 15 + 32) == Z_OK) {
             int status = Z_OK;
             while (status == Z_OK) {
-                if (stream.total_out >= [mutableData length]) {
+                if (stream.total_out >= mutableData.length) {
                     mutableData.length += compressedDataLength / 2;
                 }
                 stream.next_out = (uint8_t *)[mutableData mutableBytes] + stream.total_out;
-                stream.avail_out = (uInt)([mutableData length] - stream.total_out);
+                stream.avail_out = (uInt)(mutableData.length - stream.total_out);
                 status = inflate(&stream, Z_SYNC_FLUSH);
             }
             if (inflateEnd(&stream) == Z_OK) {
@@ -356,11 +363,25 @@
     return inflatedData;
 }
 
++ (NSArray *)map:(NSArray *)array block:(id(^)(id obj, NSUInteger idx))mapFunc
+{
+    NSMutableArray *map = [NSMutableArray new];
+    [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        id ret = mapFunc(obj, idx);
+        if (ret) {
+            [map addObject:ret];
+        }
+    }];
+
+    return map;
+}
+
 + (NSArray<UIWindow *> *)allWindows
 {
     BOOL includeInternalWindows = YES;
     BOOL onlyVisibleWindows = NO;
 
+    // Obfuscating selector allWindowsIncludingInternalWindows:onlyVisibleWindows:
     NSArray<NSString *> *allWindowsComponents = @[@"al", @"lWindo", @"wsIncl", @"udingInt", @"ernalWin", @"dows:o", @"nlyVisi", @"bleWin", @"dows:"];
     SEL allWindowsSelector = NSSelectorFromString([allWindowsComponents componentsJoinedByString:@""]);
 
@@ -378,13 +399,13 @@
     return windows;
 }
 
-+ (void)alert:(NSString *)title message:(NSString *)message from:(UIViewController *)viewController
++ (UIAlertController *)alert:(NSString *)title message:(NSString *)message
 {
-    [[[UIAlertView alloc] initWithTitle:title
-                                message:message
-                               delegate:nil
-                      cancelButtonTitle:nil
-                      otherButtonTitles:@"Dismiss", nil] show];
+    return [UIAlertController
+        alertControllerWithTitle:title
+        message:message
+        preferredStyle:UIAlertControllerStyleAlert
+    ];
 }
 
 + (SEL)swizzledSelectorForSelector:(SEL)selector
