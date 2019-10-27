@@ -1,6 +1,6 @@
 {
   "name": "DTCoreText",
-  "version": "1.6.22",
+  "version": "1.6.23",
   "platforms": {
     "ios": "4.3",
     "tvos": "9.0"
@@ -8,7 +8,7 @@
   "license": "BSD",
   "source": {
     "git": "https://github.com/Cocoanetics/DTCoreText.git",
-    "tag": "1.6.22"
+    "tag": "1.6.23"
   },
   "source_files": "Core/Source/*.{h,m,c}",
   "ios": {

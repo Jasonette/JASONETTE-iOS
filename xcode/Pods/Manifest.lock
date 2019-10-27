@@ -24,13 +24,13 @@ PODS:
   - CYRTextView (0.4.1)
   - DAKeyboardControl (2.4.0)
   - DHSmartScreenshot (1.3.1)
-  - DTCoreText (1.6.22):
-    - DTCoreText/Core (= 1.6.22)
+  - DTCoreText (1.6.23):
+    - DTCoreText/Core (= 1.6.23)
     - DTFoundation/Core (~> 1.7.5)
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
     - DTFoundation/UIKit (~> 1.7.5)
-  - DTCoreText/Core (1.6.22):
+  - DTCoreText/Core (1.6.23):
     - DTFoundation/Core (~> 1.7.5)
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
@@ -255,7 +255,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AFNetworking:
-    :commit: 236b072311a460d47c40a32d4c05d87795b91acd
+    :commit: 09ee0ddfa2c5a7cbec5cdcaee892384717ec0e43
     :git: https://github.com/jasonelle/ios-pod-afnetworking.git
   APAddressBook:
     :commit: 77888b7c4939550f84fed887945fbd22892a76c2
@@ -264,7 +264,7 @@ CHECKOUT OPTIONS:
     :commit: 684ba5707637cf2a15952fa8922f6fa944b164e2
     :git: https://github.com/jasonelle/ios-pod-cyrtextview.git
   DTCoreText:
-    :commit: 7746c601985b06bade170a8f5f4bcafbb6f0a9c8
+    :commit: 9fccb9b0de0b2eb40c6b33067b03f55f3803c153
     :git: https://github.com/jasonelle/ios-pod-dtcoretext.git
   DTFoundation:
     :commit: 91373daf35aafeaa94e626b9dce28a6a7276af57
@@ -327,7 +327,7 @@ SPEC CHECKSUMS:
   CYRTextView: 39e84d19c9cdf3e69554745c22b8833c6b3c9d36
   DAKeyboardControl: 9d9bca22a5cc3c1d3cc61e24fbd208c3e84a3d2d
   DHSmartScreenshot: ee749048bd7126c4826748f98df3a4adc6ad6c78
-  DTCoreText: ad5135357a0e792f735970ed67d3ecda8b602d3d
+  DTCoreText: 67023bb51b26711d5f640c851f4845aea14c24c9
   DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
   FLEX: e94a8d3d52adccff1b13f7ab7e98fddd4d3ff198
   FreeStreamer: 7e9c976045701ac2f7e9c14c17245203c37bf2ea
