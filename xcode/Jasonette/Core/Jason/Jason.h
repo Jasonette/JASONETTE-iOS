@@ -27,7 +27,7 @@
 
 @import MediaPlayer;
 
-@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, UIWebViewDelegate>
+@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate>
 
 @property (strong, nonatomic) NSDictionary * parser;
 @property (strong, nonatomic) NSDictionary * data;
