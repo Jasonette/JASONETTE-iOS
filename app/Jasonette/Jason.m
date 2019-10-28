@@ -3395,10 +3395,27 @@
                         if (lastView.isModal) {
                             vc.isModal = YES;
                         }
+                        
+                        // if we're replacing the root view controller we need to also update the corresponding tab
+                        if ([self->navigationController.viewControllers objectAtIndex:0] == lastView) {
+                            NSUInteger indexOfTab = [self->tabController.viewControllers indexOfObject:self->navigationController];
+                            NSArray *tabs;
+                            // If we're not on the home page VC.rendered will not contain the footer, so we check our `previous_footer`
+                            // variable that contains the currently displaying tabs that we would have clicked on.
+                            if (self->VC.rendered && self->VC.rendered[@"footer"] && self->VC.rendered[@"footer"][@"tabs"] && self->VC.rendered[@"footer"][@"tabs"][@"items"]) {
+                                tabs = self->VC.rendered[@"footer"][@"tabs"][@"items"];
+                            } else if (self->previous_footer && self->previous_footer[@"tabs"] && self->previous_footer[@"tabs"][@"items"]) {
+                                tabs = self->previous_footer[@"tabs"][@"items"];
+                            }
+
+                            if(tabs) {
+                                tabs[indexOfTab][@"href"][@"url"] = vc.url;
+                            }
+                            
+                        }
 
                         [controllerStack replaceObjectAtIndex:([controllerStack count] - 1) withObject:vc];
-                        
-                        // Assign the updated stack with animation
+
                         [self->navigationController setViewControllers:controllerStack animated:NO];
                     } else {
                         [self->navigationController pushViewController:vc animated:YES];
