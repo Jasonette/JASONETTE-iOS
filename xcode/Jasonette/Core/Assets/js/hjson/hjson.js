@@ -21,3 +21,8 @@
  * https://github.com/douglascrockford/JSON-js (json_parse.js, json2.js)
  */
 "use strict";var t=n("./hjson-common"),o=n("./hjson-version"),i=n("./hjson-parse"),a=n("./hjson-stringify"),s=n("./hjson-comments"),u=n("./hjson-dsf");r.exports={parse:i,stringify:a,endOfLine:function(){return t.EOL},setEndOfLine:function(n){"\n"!==n&&"\r\n"!==n||(t.EOL=n)},version:o,rt:{parse:function(n,r){return(r=r||{}).keepWsc=!0,i(n,r)},stringify:function(n,r){return(r=r||{}).keepWsc=!0,a(n,r)}},comments:s,dsf:u.std}},{"./hjson-comments":1,"./hjson-common":2,"./hjson-dsf":3,"./hjson-parse":4,"./hjson-stringify":5,"./hjson-version":6}],8:[function(n,r,e){},{}]},{},[7])(7)});
+
+// function used in jasonelle
+function to_json(input){
+    return JSON.stringify(Hjson.parse(input));
+}

@@ -1088,10 +1088,6 @@
         DTLogDebug (@"JS: %@", message);
     };
 
-    NSString * hjsonfile = [[NSBundle mainBundle] pathForResource:@"hjson_tojson" ofType:@"js"];
-    NSString * hjsonjs = [NSString stringWithContentsOfFile:hjsonfile
-                                               usedEncoding:&encoding
-                                                      error:&error];
     
     NSString * renderfile = [[NSBundle mainBundle] pathForResource:@"hjson" ofType:@"js"];
     NSString * renderjs = [NSString stringWithContentsOfFile:renderfile
@@ -1099,14 +1095,13 @@
                                                        error:&error];
     
     DTLogDebug(@"Loading hjson.js");
-    [context evaluateScript:hjsonjs];
-    
-    DTLogDebug(@"Loading hjson_tojson.js");
     [context evaluateScript:renderjs];
     
     JSValue * render = context[@"to_json"];
     JSValue * val = [render callWithArguments:@[content]];
     NSString * json = [val toString];
+    
+    DTLogDebug(@"%@", json);
     
     error = nil;
     
@@ -1115,6 +1110,9 @@
                                   dataUsingEncoding:NSUTF8StringEncoding]
               options:kNilOptions
               error:&error];
+    
+    
+   
     
     if(error) {
         DTLogWarning(@"%@", error);

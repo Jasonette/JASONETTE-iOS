@@ -96,7 +96,6 @@
 		EF07A20622D6186100D0D3FF /* JasonAgentService.m in Sources */ = {isa = PBXBuildFile; fileRef = EF07A1B522D6186100D0D3FF /* JasonAgentService.m */; };
 		EF0D48762366307500CCC7AF /* hello.test.hjson in Resources */ = {isa = PBXBuildFile; fileRef = EF0D48752366307500CCC7AF /* hello.test.hjson */; };
 		EF0D487A2366626500CCC7AF /* hjson.js in Resources */ = {isa = PBXBuildFile; fileRef = EF0D48792366626500CCC7AF /* hjson.js */; };
-		EF0D487C23666DFB00CCC7AF /* hjson_tojson.js in Resources */ = {isa = PBXBuildFile; fileRef = EF0D487B23666DFB00CCC7AF /* hjson_tojson.js */; };
 		EF72736823465463005C5515 /* INTUAutoRemoveObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = EF72736623465463005C5515 /* INTUAutoRemoveObserver.m */; };
 		EF82979B22D30A71003ED64B /* jr.sample.json in Resources */ = {isa = PBXBuildFile; fileRef = EF82979922D30A71003ED64B /* jr.sample.json */; };
 		EF9781C322D9A0810024FDAE /* hello.json in Resources */ = {isa = PBXBuildFile; fileRef = EF9781C222D9A0810024FDAE /* hello.json */; };
@@ -258,7 +257,6 @@
 		EF07A1B622D6186100D0D3FF /* JasonAgentService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonAgentService.h; sourceTree = "<group>"; };
 		EF0D48752366307500CCC7AF /* hello.test.hjson */ = {isa = PBXFileReference; lastKnownFileType = text; path = hello.test.hjson; sourceTree = "<group>"; };
 		EF0D48792366626500CCC7AF /* hjson.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hjson.js; sourceTree = "<group>"; };
-		EF0D487B23666DFB00CCC7AF /* hjson_tojson.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hjson_tojson.js; sourceTree = "<group>"; };
 		EF72736623465463005C5515 /* INTUAutoRemoveObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = INTUAutoRemoveObserver.m; sourceTree = "<group>"; };
 		EF72736723465463005C5515 /* INTUAutoRemoveObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = INTUAutoRemoveObserver.h; sourceTree = "<group>"; };
 		EF82979222D28D96003ED64B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Jasonette/Info.plist; sourceTree = SOURCE_ROOT; };
@@ -1062,7 +1060,6 @@
 		EF0D487023662BCA00CCC7AF /* hjson */ = {
 			isa = PBXGroup;
 			children = (
-				EF0D487B23666DFB00CCC7AF /* hjson_tojson.js */,
 				EF0D48792366626500CCC7AF /* hjson.js */,
 				EF0D48752366307500CCC7AF /* hello.test.hjson */,
 			);
@@ -1171,7 +1168,6 @@
 				EF07303D22D28B2400973DE1 /* LaunchScreen.storyboard in Resources */,
 				EF07303C22D28B2400973DE1 /* Media.xcassets in Resources */,
 				EF07A1D122D6186100D0D3FF /* rss.js in Resources */,
-				EF0D487C23666DFB00CCC7AF /* hjson_tojson.js in Resources */,
 				EF0D48762366307500CCC7AF /* hello.test.hjson in Resources */,
 				EF07A1CC22D6186100D0D3FF /* Next@2x.png in Resources */,
 				EF0D487A2366626500CCC7AF /* hjson.js in Resources */,
