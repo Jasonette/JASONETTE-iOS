@@ -2224,6 +2224,8 @@
             [jsonAcceptableContentTypes addObject:@"text/html"];
             [jsonAcceptableContentTypes addObject:@"application/json"];
             [jsonAcceptableContentTypes addObject:@"application/vnd.api+json"];
+            [jsonAcceptableContentTypes addObject:@"application/hjson"];
+            [jsonAcceptableContentTypes addObject:@"application/vnd.api+hjson"];
 
             for (NSString * contentType in [JasonNetworking acceptedContentTypes]) {
                 [jsonAcceptableContentTypes addObject:contentType];

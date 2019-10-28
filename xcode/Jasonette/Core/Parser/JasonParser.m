@@ -59,7 +59,7 @@
        type:(NSString *)type
        with:(id)parser
 {
-    DTLogInfo (@"Begin Parsing Document");
+    DTLogInfo (@"Begin Parsing Document %@ %@", type, data);
 
     if (type && [[type lowercaseString] isEqualToString:@"html"]) {
         if (data && [data count] > 0) {
@@ -74,7 +74,7 @@
             JSContext * context = [[JSContext alloc] init];
             [context setExceptionHandler:^(JSContext * context, JSValue * value) {
                          DTLogWarning (@"%@", value);
-                     }];
+            }];
 
             [context evaluateScript:js];
 

@@ -1072,6 +1072,58 @@
     return [JasonHelper read_local_json:@"file://error.json"];
 }
 
+
++ (nullable NSDictionary *) hjson_to_json: (nonnull NSString *) content {
+    
+    NSStringEncoding encoding;
+    NSError * error = nil;
+    
+    JSContext * context = [JSContext new];
+    [context setExceptionHandler:^(JSContext * context, JSValue * value) {
+        DTLogWarning (@"%@", value);
+    }];
+    
+    [context evaluateScript:@"var console = {};"];
+    context[@"console"][@"log"] = ^(NSString * message) {
+        DTLogDebug (@"JS: %@", message);
+    };
+
+    NSString * hjsonfile = [[NSBundle mainBundle] pathForResource:@"hjson_tojson" ofType:@"js"];
+    NSString * hjsonjs = [NSString stringWithContentsOfFile:hjsonfile
+                                               usedEncoding:&encoding
+                                                      error:&error];
+    
+    NSString * renderfile = [[NSBundle mainBundle] pathForResource:@"hjson" ofType:@"js"];
+    NSString * renderjs = [NSString stringWithContentsOfFile:renderfile
+                                                usedEncoding:&encoding
+                                                       error:&error];
+    
+    DTLogDebug(@"Loading hjson.js");
+    [context evaluateScript:hjsonjs];
+    
+    DTLogDebug(@"Loading hjson_tojson.js");
+    [context evaluateScript:renderjs];
+    
+    JSValue * render = context[@"to_json"];
+    JSValue * val = [render callWithArguments:@[content]];
+    NSString * json = [val toString];
+    
+    error = nil;
+    
+    NSDictionary * result = [NSJSONSerialization
+              JSONObjectWithData:[json
+                                  dataUsingEncoding:NSUTF8StringEncoding]
+              options:kNilOptions
+              error:&error];
+    
+    if(error) {
+        DTLogWarning(@"%@", error);
+        return nil;
+    }
+    
+    return result;
+}
+
 + (id)read_local_json:(NSString *)url
 {
     DTLogInfo (@"Reading Local JSON from URL %@", url);
@@ -1097,8 +1149,15 @@
         [inputStream close];
 
         if (error) {
-            DTLogError (@"Error Parsing Json %@", error);
-            result = [JasonHelper loadErrorJson];
+            NSString * content = [JasonHelper read_local_file:json];
+            if(content) {
+                DTLogDebug(@"Trying hjson.js");
+                result = [JasonHelper hjson_to_json:content];
+            }
+            
+            if(!result) {
+                result = [JasonHelper loadErrorJson];
+            }
         }
     } else {
         DTLogError (@"Jason File Not Found %@", url);

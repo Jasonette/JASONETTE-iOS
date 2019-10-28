@@ -48,4 +48,5 @@
 + (id)getPlistSettings:(NSString *)key;
 
 + (id)                              loadErrorJson;
++ (nullable NSDictionary *) hjson_to_json: (nonnull NSString *) content;
 @end
