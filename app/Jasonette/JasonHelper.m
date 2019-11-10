@@ -410,9 +410,11 @@
     }
 }
 + (void)setStatusBarBackgroundColor:(UIColor *)color {
-    UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
-    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
-        statusBar.backgroundColor = color;
+    if (@available(iOS 13, *)) {} else {
+        UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
+        if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
+            statusBar.backgroundColor = color;
+        }
     }
 }
 + (id)parse: (id)data ofType: (NSString *)type with: (id)template{
