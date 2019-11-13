@@ -13,6 +13,37 @@
 }
 + (void) stylize: (NSDictionary *)json component: (UIView *)component{
     NSDictionary *style = json[@"style"];
+    
+    if(json[@"alt"]){
+        if([json[@"alt"] length] == 0) {
+            component.isAccessibilityElement = NO;
+            component.accessibilityTraits = UIAccessibilityTraitNone;
+        } else {
+            component.accessibilityLabel = json[@"alt"];
+            component.shouldGroupAccessibilityChildren = YES;
+        }
+    }
+    
+    if(json[@"role"]){
+        NSString *role_string = json[@"role"];
+        NSMutableArray *roles = [[role_string componentsSeparatedByString:@" "] mutableCopy];
+        [roles removeObject:@""];
+        for(NSString *role in roles){
+            if([role isEqualToString:@"selected"] || [role isEqualToString:@"checked"]) {
+                component.accessibilityTraits |= UIAccessibilityTraitSelected;
+            }
+            if([role isEqualToString:@"button"] || [role isEqualToString:@"checkbox"]) {
+                component.accessibilityTraits |= UIAccessibilityTraitButton;
+            }
+            if([role isEqualToString:@"link"]) {
+                component.accessibilityTraits |= UIAccessibilityTraitLink;
+            }
+            if([role isEqualToString:@"none"]) {
+                component.accessibilityTraits = UIAccessibilityTraitNone;
+            }
+        }
+    }
+    
     if(style){
         // background
         if([component respondsToSelector:@selector(backgroundColor)]){

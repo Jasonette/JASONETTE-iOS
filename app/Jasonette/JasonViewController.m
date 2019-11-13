@@ -673,12 +673,42 @@
     } else if(item[@"action"]){
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+        cell.accessibilityTraits = UIAccessibilityTraitButton;
         UIView *b = [[UIView alloc] init];
         b.backgroundColor = [JasonHelper darkerColorForColor:cell.backgroundColor];
         cell.selectedBackgroundView = b;
     } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    
+    if(item[@"alt"]){
+        cell.accessibilityLabel = item[@"alt"];
+        cell.shouldGroupAccessibilityChildren = true;
+    }
+    
+    if(item[@"role"]){
+        NSString *role_string = item[@"role"];
+        NSMutableArray *roles = [[role_string componentsSeparatedByString:@" "] mutableCopy];
+        [roles removeObject:@""];
+        cell.accessibilityTraits = UIAccessibilityTraitNone;
+        for(NSString *role in roles){
+            if([role isEqualToString:@"selected"] || [role isEqualToString:@"checked"]) {
+                cell.accessibilityTraits |= UIAccessibilityTraitSelected;
+            }
+            if([role isEqualToString:@"button"] || [role isEqualToString:@"checkbox"]) {
+                cell.accessibilityTraits |= UIAccessibilityTraitButton;
+            }
+            if([role isEqualToString:@"link"]) {
+                cell.accessibilityTraits |= UIAccessibilityTraitLink;
+            }
+            if([role isEqualToString:@"live"]) {
+                cell.accessibilityTraits |= UIAccessibilityTraitUpdatesFrequently;
+            }
+            if([role isEqualToString:@"not_enabled"]) {
+                cell.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+            }
+        }
     }
     
     if(item[@"menu"]){
