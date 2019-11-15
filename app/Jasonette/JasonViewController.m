@@ -687,6 +687,11 @@
         cell.shouldGroupAccessibilityChildren = true;
     }
     
+    if(item[@"hide_accessible_children"]) {
+        cell.accessibilityNavigationStyle = UIAccessibilityNavigationStyleCombined;
+        cell.contentView.accessibilityElementsHidden = true;
+    }
+    
     if(item[@"role"]){
         NSString *role_string = item[@"role"];
         NSMutableArray *roles = [[role_string componentsSeparatedByString:@" "] mutableCopy];
