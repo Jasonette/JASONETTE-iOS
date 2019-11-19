@@ -713,6 +713,9 @@
             if([role isEqualToString:@"not_enabled"]) {
                 cell.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
             }
+            if([role isEqualToString:@"header"]) {
+                cell.accessibilityTraits |= UIAccessibilityTraitHeader;
+            }
         }
     }
     

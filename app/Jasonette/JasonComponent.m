@@ -41,6 +41,9 @@
             if([role isEqualToString:@"none"]) {
                 component.accessibilityTraits = UIAccessibilityTraitNone;
             }
+            if([role isEqualToString:@"header"]) {
+                component.accessibilityTraits |= UIAccessibilityTraitHeader;
+            }
         }
     }
     
