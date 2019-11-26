@@ -348,9 +348,7 @@
         style = [@{} mutableCopy];
     }
     
-    
     NSArray *items = row[@"items"];
-    
     
     // Find height of this section by looking at heights of the children
     // Find the max value
@@ -683,8 +681,13 @@
     }
     
     if(item[@"alt"]){
-        cell.accessibilityLabel = item[@"alt"];
-        cell.shouldGroupAccessibilityChildren = true;
+        if([item[@"alt"] length] == 0) {
+            cell.isAccessibilityElement = NO;
+            cell.accessibilityElementsHidden = true;
+        } else {
+            cell.isAccessibilityElement = YES;
+            cell.accessibilityLabel = item[@"alt"];
+        }
     }
     
     if(item[@"hide_accessible_children"]) {

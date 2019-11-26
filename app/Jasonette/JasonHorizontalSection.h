@@ -19,6 +19,7 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (strong, nonatomic) IBOutlet MDCPageControl *pageControl;
 @property (strong, nonatomic) NSArray *items;
+@property (nonatomic) NSInteger currentItem;
 @property (strong, nonatomic) NSDictionary *style;
 @property (strong, nonatomic) NSDictionary *stylesheet;
 
