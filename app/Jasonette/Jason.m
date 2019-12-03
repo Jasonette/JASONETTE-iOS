@@ -2579,6 +2579,12 @@
             } else {
                 [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
             }
+            
+            if(right_menu[@"alt"]) {
+                [btn setAccessibilityLabel:right_menu[@"alt"]];
+                [btn setAccessibilityNavigationStyle:UIAccessibilityNavigationStyleCombined];
+            }
+            
             [btn addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
             UIView *view = [[UIView alloc] initWithFrame:btn.frame];
             [view addSubview:btn];

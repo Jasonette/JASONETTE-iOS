@@ -37,6 +37,23 @@
     } else if([keyboard isEqualToString:@"email"]) {
         component.keyboardType = UIKeyboardTypeEmailAddress;
     }
+    
+    NSString *returnKey = json[@"return_key"];
+    returnKey = returnKey ? returnKey : @"return";
+    if([returnKey isEqualToString:@"return"]){
+        component.returnKeyType = UIReturnKeyDefault;
+    } else if([returnKey isEqualToString:@"next"]) {
+        component.returnKeyType = UIReturnKeyNext;
+    } else if([returnKey isEqualToString:@"search"]) {
+        component.returnKeyType = UIReturnKeySearch;
+    } else if([returnKey isEqualToString:@"done"]) {
+        component.returnKeyType = UIReturnKeyDone;
+    } else if([returnKey isEqualToString:@"go"]) {
+        component.returnKeyType = UIReturnKeyGo;
+    } else if([returnKey isEqualToString:@"continue"]) {
+        component.returnKeyType = UIReturnKeyContinue;
+    }
+    
 
     if(options && options[@"value"]){
         component.text = [options[@"value"] description];
@@ -128,9 +145,14 @@
     if(textField.payload && textField.payload[@"name"]){
       [self updateForm:@{textField.payload[@"name"]: textField.text}];
     }
+}
+
++ (BOOL)textFieldShouldReturn:(UITextField *)textField{
+    [textField resignFirstResponder];
     if(textField.payload && textField.payload[@"action"]){
         [[Jason client] call:textField.payload[@"action"]];
     }
+    return YES;
 }
 
 @end
