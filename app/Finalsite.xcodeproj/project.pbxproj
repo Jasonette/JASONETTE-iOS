@@ -80,6 +80,7 @@
 		5EE85B7E1DA59D740049EACE /* JasonComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B7D1DA59D740049EACE /* JasonComponent.m */; };
 		5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B801DA5C0080049EACE /* JasonLayer.m */; };
 		5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF904351DD10F6E00C8A94E /* JasonLogAction.m */; };
+		6C1B938F2398068600E6BFBD /* UILabelledSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C1B938E2398068600E6BFBD /* UILabelledSwitch.m */; };
 		9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */; };
 		CE4AFF1B212CA8FC006B31F5 /* FinalsiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */; };
 		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
@@ -456,6 +457,8 @@
 		5EE85B801DA5C0080049EACE /* JasonLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonLayer.m; sourceTree = "<group>"; };
 		5EF904341DD10F6E00C8A94E /* JasonLogAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonLogAction.h; sourceTree = "<group>"; };
 		5EF904351DD10F6E00C8A94E /* JasonLogAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonLogAction.m; sourceTree = "<group>"; };
+		6C1B938E2398068600E6BFBD /* UILabelledSwitch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UILabelledSwitch.m; sourceTree = "<group>"; };
+		6C1B93902398069C00E6BFBD /* UILabelledSwitch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UILabelledSwitch.h; sourceTree = "<group>"; };
 		817CFBB45DC208BA95DD08F5 /* Pods-Finalsite.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finalsite.release.xcconfig"; path = "Target Support Files/Pods-Finalsite/Pods-Finalsite.release.xcconfig"; sourceTree = "<group>"; };
 		9A16EE0D1E592DC4006D3F73 /* JasonOptionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonOptionHelper.h; sourceTree = "<group>"; };
 		9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonOptionHelper.m; sourceTree = "<group>"; };
@@ -1289,6 +1292,8 @@
 			children = (
 				EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */,
 				EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */,
+				6C1B938E2398068600E6BFBD /* UILabelledSwitch.m */,
+				6C1B93902398069C00E6BFBD /* UILabelledSwitch.h */,
 			);
 			name = switch;
 			sourceTree = "<group>";
@@ -2034,6 +2039,7 @@
 				0483D9B41FA1672D004DDA37 /* JasonVisionAction.m in Sources */,
 				5E09563C1DA34F1A007ADC78 /* JasonSliderComponent.m in Sources */,
 				5E3177711D1E411F00D87778 /* JasonHelper.m in Sources */,
+				6C1B938F2398068600E6BFBD /* UILabelledSwitch.m in Sources */,
 				5E3177521D1E411F00D87778 /* JasonNetworkAction.m in Sources */,
 				9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */,
 				5E31775C1D1E411F00D87778 /* JasonParser.m in Sources */,
