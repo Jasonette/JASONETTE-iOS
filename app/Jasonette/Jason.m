@@ -2624,6 +2624,12 @@
                             }
                         }
                         
+                        if(titleDict[@"alt"]) {
+                            [v.navigationItem setIsAccessibilityElement:YES];
+                            [v.navigationItem setAccessibilityTraits:UIAccessibilityTraitHeader];
+                            [v.navigationItem setAccessibilityLabel:titleDict[@"alt"]];
+                        }
+                        
                     } else if([titleDict[@"type"] isEqualToString:@"label"]) {
                         
                         UILabel *tLabel = [[UILabel alloc] init];
