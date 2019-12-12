@@ -12,6 +12,7 @@
 #import "SDImageCache.h"
 #import "SDWebImageDownloader.h"
 #import "Finalsite-Swift.h"
+#import "UIColor+NamedColors.h"
 
 @interface Jason(){
     UINavigationController *navigationController;
@@ -334,8 +335,8 @@
         if (self->loadingOverlayView) {
             self->loadingOverlayView.hidden = NO;
         } else {
-            UIColor *baseIndicatorColor = [UIColor colorWithRed:0.14 green:0.266 blue:0.387 alpha:1.0];
-            
+            UIColor *baseIndicatorColor = [UIColor colorPrimaryDark];
+
             self->activityIndicator = [[MDCActivityIndicator alloc] init];
             self->activityIndicator.indicatorMode = MDCActivityIndicatorModeIndeterminate;
             [self->activityIndicator sizeToFit];
@@ -2578,6 +2579,12 @@
             } else {
                 [btn setBackgroundImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
             }
+            
+            if(right_menu[@"alt"]) {
+                [btn setAccessibilityLabel:right_menu[@"alt"]];
+                [btn setAccessibilityNavigationStyle:UIAccessibilityNavigationStyleCombined];
+            }
+            
             [btn addTarget:self action:@selector(rightMenu) forControlEvents:UIControlEventTouchUpInside];
             UIView *view = [[UIView alloc] initWithFrame:btn.frame];
             [view addSubview:btn];
@@ -2615,6 +2622,12 @@
                                     [self setLogoImage:image withStyle:style forVC:v];
                                 }];
                             }
+                        }
+                        
+                        if(titleDict[@"alt"]) {
+                            [v.navigationItem setIsAccessibilityElement:YES];
+                            [v.navigationItem setAccessibilityTraits:UIAccessibilityTraitHeader];
+                            [v.navigationItem setAccessibilityLabel:titleDict[@"alt"]];
                         }
                         
                     } else if([titleDict[@"type"] isEqualToString:@"label"]) {
@@ -3394,10 +3407,27 @@
                         if (lastView.isModal) {
                             vc.isModal = YES;
                         }
+                        
+                        // if we're replacing the root view controller we need to also update the corresponding tab
+                        if ([self->navigationController.viewControllers objectAtIndex:0] == lastView) {
+                            NSUInteger indexOfTab = [self->tabController.viewControllers indexOfObject:self->navigationController];
+                            NSArray *tabs;
+                            // If we're not on the home page VC.rendered will not contain the footer, so we check our `previous_footer`
+                            // variable that contains the currently displaying tabs that we would have clicked on.
+                            if (self->VC.rendered && self->VC.rendered[@"footer"] && self->VC.rendered[@"footer"][@"tabs"] && self->VC.rendered[@"footer"][@"tabs"][@"items"]) {
+                                tabs = self->VC.rendered[@"footer"][@"tabs"][@"items"];
+                            } else if (self->previous_footer && self->previous_footer[@"tabs"] && self->previous_footer[@"tabs"][@"items"]) {
+                                tabs = self->previous_footer[@"tabs"][@"items"];
+                            }
+
+                            if(tabs) {
+                                tabs[indexOfTab][@"href"][@"url"] = vc.url;
+                            }
+                            
+                        }
 
                         [controllerStack replaceObjectAtIndex:([controllerStack count] - 1) withObject:vc];
-                        
-                        // Assign the updated stack with animation
+
                         [self->navigationController setViewControllers:controllerStack animated:NO];
                     } else {
                         [self->navigationController pushViewController:vc animated:YES];

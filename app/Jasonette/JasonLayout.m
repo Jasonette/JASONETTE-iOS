@@ -224,6 +224,43 @@ static NSMutableDictionary *_stylesheet = nil;
         [layout setAxis:UILayoutConstraintAxisHorizontal];
     }
     
+    if(item[@"alt"]){
+        if([item[@"alt"] length] == 0) {
+            layout.isAccessibilityElement = NO;
+            layout.accessibilityTraits = UIAccessibilityTraitNone;
+        } else {
+            layout.isAccessibilityElement = YES;
+            layout.accessibilityLabel = item[@"alt"];
+        }
+    }
+    
+    if(item[@"role"]){
+        NSString *role_string = item[@"role"];
+        NSMutableArray *roles = [[role_string componentsSeparatedByString:@" "] mutableCopy];
+        [roles removeObject:@""];
+        layout.accessibilityTraits = UIAccessibilityTraitNone;
+        for(NSString *role in roles){
+            if([role isEqualToString:@"selected"] || [role isEqualToString:@"checked"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitSelected;
+            }
+            if([role isEqualToString:@"button"] || [role isEqualToString:@"checkbox"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitButton;
+            }
+            if([role isEqualToString:@"link"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitLink;
+            }
+            if([role isEqualToString:@"live"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitUpdatesFrequently;
+            }
+            if([role isEqualToString:@"not_enabled"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+            }
+            if([role isEqualToString:@"header"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitHeader;
+            }
+        }
+    }
+    
     NSDictionary *default_style = item[@"style"];
     
     NSMutableDictionary *style;

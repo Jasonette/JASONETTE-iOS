@@ -18,7 +18,21 @@
         }
         if(json[@"text"] && ![json[@"text"] isEqual:[NSNull null]]){
             component.text = [json[@"text"] description];
+            
+            if(json[@"label"] && ![json[@"label"] isEqual:[NSNull null]]) {
+                component.accessibilityLabel = json[@"label"];
+                component.accessibilityValue = component.text;
+            }
+                                                
+            if([component.text length] == 0){
+                [component setIsAccessibilityElement:NO];
+                [component setAccessibilityTraits:UIAccessibilityTraitNone];
+            } else {
+                [component setIsAccessibilityElement:YES];
+                [component setAccessibilityTraits:UIAccessibilityTraitStaticText];
+            }
         }
+        
         [component setContentCompressionResistancePriority:UILayoutPriorityRequired - 1 forAxis:UILayoutConstraintAxisVertical];
         [component setContentHuggingPriority:UILayoutPriorityRequired -1 forAxis:UILayoutConstraintAxisVertical];
         [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
