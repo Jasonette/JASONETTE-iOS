@@ -21,6 +21,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "JasonAgentService.h"
 #import <MBProgressHUD/MBProgressHUD.h>
+#import "Reachability.h"
 #ifdef DEBUG
 #include <FLEX/FLEX.h>
 #endif
@@ -87,5 +88,8 @@
 - (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController*) vc;
 - (void)drawBackground:(NSString *)bg forVC: (JasonViewController *)vc;
 - (void)drawAdvancedBackground:(NSDictionary *)bg forVC: (JasonViewController *)vc;
+
+- (BOOL)connected;
+
 @end
 
