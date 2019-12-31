@@ -17,10 +17,11 @@ import UIKit
     
     @objc func reset() {
         DispatchQueue.main.async { [weak self] in
-            let homeTab = self?.viewControllers?.remove(at: 0)
+            let homeTab = self?.viewControllers?.remove(at: 0) as? UINavigationController
             self?.viewControllers?.removeAll()
             self?.viewControllers?.append(homeTab!)
+            
+            homeTab!.popToRootViewController(animated: false)
         }
     }
-
 }
