@@ -1891,14 +1891,11 @@
                          if (self->VC.on_error) {
                              [[Jason client] call: self->VC.on_error];
                          } else {
-                             [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
-                             [[Jason client] call: @{
-                                                     @"type": @"$util.alert",
-                                                     @"options": @{
-                                                             @"title": @"Debug",
-                                                             @"description": [error localizedDescription]
-                                                             }
-                                                     }];
+                             if ([self connected]) {
+                                 [[Jason client] loadViewByFile: @"file://error.json" asFinal:YES];
+                             } else {
+                                 [[Jason client] loadViewByFile: @"file://offline.json" asFinal:YES];
+                             }
                          }
                      }
                  }];
@@ -4026,6 +4023,13 @@
         NSError *error;
         [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
     }
+}
+
+- (BOOL)connected
+{
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus networkStatus = [reachability currentReachabilityStatus];
+    return networkStatus != NotReachable;
 }
 
 @end
