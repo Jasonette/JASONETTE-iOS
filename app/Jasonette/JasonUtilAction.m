@@ -141,6 +141,7 @@
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        alert.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.VC.navigationController presentViewController:alert animated:YES completion:nil];
     });
 }
@@ -272,6 +273,7 @@
     }];
 
     dispatch_async(dispatch_get_main_queue(), ^{
+        controller.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.VC.navigationController presentViewController:controller animated:YES completion:nil];
     });
 
@@ -300,6 +302,7 @@
             alert.popoverPresentationController.sourceRect = CGRectMake(self.VC.view.bounds.size.width / 2.0, self.VC.view.bounds.size.height / 2.0, 1.0, 1.0);
             [alert.popoverPresentationController setPermittedArrowDirections:0];
         }
+        alert.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.VC.navigationController presentViewController:alert animated:YES completion:nil]; // 6
     });
     
@@ -334,6 +337,7 @@
     dateSelectionController.message = description;
     
     //Now just present the date selection controller using the standard iOS presentation method
+    dateSelectionController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.VC.tabBarController presentViewController:dateSelectionController animated:YES completion:nil];
 
 }

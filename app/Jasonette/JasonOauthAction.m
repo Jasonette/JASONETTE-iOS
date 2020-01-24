@@ -645,6 +645,7 @@
                                         // By default use SFSafariViewController
                                         SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:URL];
                                         vc.delegate = self;
+                                        vc.modalPresentationStyle = UIModalPresentationFullScreen;
                                         [self.VC presentViewController:vc animated:NO completion:^{ }];
                                     }
                                 });
@@ -803,6 +804,7 @@
                             // By default use SFSafariViewController
                             SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:U];
                             vc.delegate = self;
+                            vc.modalPresentationStyle = UIModalPresentationFullScreen;
                             [self.VC presentViewController:vc animated:NO completion:^{ }];
                         }
                     }

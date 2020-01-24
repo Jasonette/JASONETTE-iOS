@@ -3287,6 +3287,7 @@
             if([transition isEqualToString:@"modal"]){
                 UINavigationController *newNav = [[UINavigationController alloc]initWithRootViewController:vc];
                 [newNav setNavigationBarHidden:YES animated:NO];
+                newNav.modalPresentationStyle = UIModalPresentationFullScreen;
                 [self->navigationController presentViewController:newNav animated:YES completion:^{ }];
             } else {
                 [self->navigationController presentViewController:vc animated:YES completion:^{ }];
@@ -3356,6 +3357,7 @@
                     vc.extendedLayoutIncludesOpaqueBars = YES;
                     root.tabBar.hidden = YES;
                     
+                    tab.modalPresentationStyle = UIModalPresentationFullScreen;
                     [root presentViewController:tab animated:YES completion:^{
                     }];
                     CFRunLoopWakeUp(CFRunLoopGetCurrent());
@@ -3571,6 +3573,7 @@
                         }
                     }
                     [self unlock];
+                    nav.modalPresentationStyle = UIModalPresentationFullScreen;
                     [self->navigationController presentViewController:nav animated:YES completion:^{
                     }];
                     CFRunLoopWakeUp(CFRunLoopGetCurrent());

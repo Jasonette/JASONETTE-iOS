@@ -1749,6 +1749,7 @@
 - (void)attributedLabel:(__unused TTTAttributedLabel *)label
    didSelectLinkWithURL:(NSURL *)url {
     SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:url];
+    vc.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.navigationController presentViewController:vc animated:YES completion:nil];
 }
 

@@ -44,6 +44,7 @@
             [player play];
 
         } else {
+            controller.modalPresentationStyle = UIModalPresentationFullScreen;
             [self.VC.navigationController presentViewController:controller animated:YES completion:^{
                 [player play];
             }];
@@ -87,6 +88,7 @@
     viewer.fileURL = filePath;
     QLPreviewController * preview = [[QLPreviewController alloc] init];
     preview.dataSource = viewer;
+    preview.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.VC.navigationController presentViewController:preview animated:YES completion:nil];
 }
 
@@ -134,6 +136,7 @@
             }
         }
     }
+    picker.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.VC.navigationController presentViewController:picker animated:YES completion:NULL];
     
 }
@@ -179,6 +182,7 @@
             }
         }
     }
+    picker.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.VC.navigationController presentViewController:picker animated:YES completion:NULL];
     
 }
