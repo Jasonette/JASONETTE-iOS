@@ -1,0 +1,1186 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		042852531E984B890081F742 /* NoPaddingButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 042852521E984B890081F742 /* NoPaddingButton.m */; };
+		042A7FD51FAC662F00C1A3F2 /* JasonWebsocketAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 042A7FD41FAC662F00C1A3F2 /* JasonWebsocketAction.m */; };
+		042A7FD91FAC665B00C1A3F2 /* JasonWebsocketService.m in Sources */ = {isa = PBXBuildFile; fileRef = 042A7FD81FAC665B00C1A3F2 /* JasonWebsocketService.m */; };
+		043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 043814151EF7455800CC4706 /* JasonGlobalAction.m */; };
+		043EFED61F50B75800F5AD48 /* JasonPushService.m in Sources */ = {isa = PBXBuildFile; fileRef = 043EFED51F50B75800F5AD48 /* JasonPushService.m */; };
+		045C77E91F0278EA00F06598 /* preload.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77E81F0278EA00F06598 /* preload.json */; };
+		045C77EB1F02791D00F06598 /* error.json in Resources */ = {isa = PBXBuildFile; fileRef = 045C77EA1F02791D00F06598 /* error.json */; };
+		045E092C1FC4930B003A6341 /* agent.js in Resources */ = {isa = PBXBuildFile; fileRef = 045E092B1FC4930B003A6341 /* agent.js */; };
+		045E092F1FC4A87D003A6341 /* JasonAgentAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E092E1FC4A87D003A6341 /* JasonAgentAction.m */; };
+		045E09331FC4A93F003A6341 /* JasonAgentService.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E09321FC4A93F003A6341 /* JasonAgentService.m */; };
+		045E093A1FC5F98A003A6341 /* xhtml.js in Resources */ = {isa = PBXBuildFile; fileRef = 045E09391FC5F989003A6341 /* xhtml.js */; };
+		045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */; };
+		0483D9B01FA0B5DF004DDA37 /* JasonVisionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0483D9AF1FA0B5DF004DDA37 /* JasonVisionService.m */; };
+		0483D9B41FA1672D004DDA37 /* JasonVisionAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 0483D9B31FA1672D004DDA37 /* JasonVisionAction.m */; };
+		04B1568C1F4B8D6600625C61 /* JasonPushAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04B1568B1F4B8D6600625C61 /* JasonPushAction.m */; };
+		04C851961FE62812000B0B94 /* st.js in Resources */ = {isa = PBXBuildFile; fileRef = 04C851951FE62812000B0B94 /* st.js */; };
+		04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */; };
+		04DC19801F54746E0021A7A6 /* JasonScriptAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */; };
+		04F3BCBE1F2BF9ED00C95170 /* NSObject+JSONPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */; };
+		5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */; };
+		5E0956301DA34D70007ADC78 /* JasonImageComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09562F1DA34D6F007ADC78 /* JasonImageComponent.m */; };
+		5E0956331DA34EEA007ADC78 /* JasonButtonComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0956321DA34EEA007ADC78 /* JasonButtonComponent.m */; };
+		5E0956361DA34EFC007ADC78 /* JasonTextareaComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0956351DA34EFC007ADC78 /* JasonTextareaComponent.m */; };
+		5E0956391DA34F0C007ADC78 /* JasonTextfieldComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0956381DA34F0C007ADC78 /* JasonTextfieldComponent.m */; };
+		5E09563C1DA34F1A007ADC78 /* JasonSliderComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09563B1DA34F1A007ADC78 /* JasonSliderComponent.m */; };
+		5E09563F1DA34F34007ADC78 /* JasonHtmlComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E09563E1DA34F34007ADC78 /* JasonHtmlComponent.m */; };
+		5E0956421DA34F4D007ADC78 /* JasonSpaceComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0956411DA34F4D007ADC78 /* JasonSpaceComponent.m */; };
+		5E2CB5C61D9DF5B600DA2B83 /* JasonComponentFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E2CB5C51D9DF5B600DA2B83 /* JasonComponentFactory.m */; };
+		5E2CB5C91D9ED6FB00DA2B83 /* JasonLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E2CB5C81D9ED6FB00DA2B83 /* JasonLayout.m */; };
+		5E31765E1D1E400C00D87778 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E31765D1D1E400C00D87778 /* main.m */; };
+		5E3176611D1E400C00D87778 /* JasonAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176601D1E400C00D87778 /* JasonAppDelegate.m */; };
+		5E3177131D1E411E00D87778 /* JasonAudioAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176781D1E411E00D87778 /* JasonAudioAction.m */; };
+		5E31771D1D1E411F00D87778 /* JasonVerticalSectionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176891D1E411E00D87778 /* JasonVerticalSectionItem.m */; };
+		5E31771E1D1E411F00D87778 /* JasonVerticalSectionItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E31768A1D1E411E00D87778 /* JasonVerticalSectionItem.xib */; };
+		5E3177221D1E411F00D87778 /* JasonHorizontalSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176901D1E411E00D87778 /* JasonHorizontalSection.m */; };
+		5E3177231D1E411F00D87778 /* JasonHorizontalSection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176911D1E411E00D87778 /* JasonHorizontalSection.xib */; };
+		5E3177241D1E411F00D87778 /* JasonHorizontalSectionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176931D1E411E00D87778 /* JasonHorizontalSectionItem.m */; };
+		5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176941D1E411E00D87778 /* JasonHorizontalSectionItem.xib */; };
+		5E3177291D1E411F00D87778 /* csv.js in Resources */ = {isa = PBXBuildFile; fileRef = 5E31769B1D1E411E00D87778 /* csv.js */; };
+		5E3177301D1E411F00D87778 /* JasonGeoAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176A31D1E411E00D87778 /* JasonGeoAction.m */; };
+		5E3177351D1E411F00D87778 /* icon-error.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176A91D1E411E00D87778 /* icon-error.png */; };
+		5E3177361D1E411F00D87778 /* icon-error@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176AA1D1E411E00D87778 /* icon-error@2x.png */; };
+		5E3177371D1E411F00D87778 /* icon-info.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176AB1D1E411E00D87778 /* icon-info.png */; };
+		5E3177381D1E411F00D87778 /* icon-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176AC1D1E411E00D87778 /* icon-info@2x.png */; };
+		5E3177391D1E411F00D87778 /* icon-success.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176AD1D1E411E00D87778 /* icon-success.png */; };
+		5E31773A1D1E411F00D87778 /* icon-success@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176AE1D1E411E00D87778 /* icon-success@2x.png */; };
+		5E3177481D1E411F00D87778 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176C01D1E411E00D87778 /* LaunchScreen.storyboard */; };
+		5E31774C1D1E411F00D87778 /* JasonMediaAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176C61D1E411E00D87778 /* JasonMediaAction.m */; };
+		5E31774D1D1E411F00D87778 /* JasonMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176C81D1E411E00D87778 /* JasonMemory.m */; };
+		5E3177511D1E411F00D87778 /* more@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176D01D1E411E00D87778 /* more@2x.png */; };
+		5E3177521D1E411F00D87778 /* JasonNetworkAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176D21D1E411E00D87778 /* JasonNetworkAction.m */; };
+		5E3177531D1E411F00D87778 /* Next@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176D31D1E411E00D87778 /* Next@2x.png */; };
+		5E3177591D1E411F00D87778 /* JasonOauthAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176DF1D1E411E00D87778 /* JasonOauthAction.m */; };
+		5E31775C1D1E411F00D87778 /* JasonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176E41D1E411E00D87778 /* JasonParser.m */; };
+		5E31775F1D1E411F00D87778 /* placeholder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176E81D1E411E00D87778 /* placeholder@2x.png */; };
+		5E3177611D1E411F00D87778 /* Jason.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176EB1D1E411E00D87778 /* Jason.m */; };
+		5E3177641D1E411F00D87778 /* JasonPortraitPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176EF1D1E411E00D87778 /* JasonPortraitPicker.m */; };
+		5E3177671D1E411F00D87778 /* rss.js in Resources */ = {isa = PBXBuildFile; fileRef = 5E3176F41D1E411E00D87778 /* rss.js */; };
+		5E31776D1D1E411F00D87778 /* JasonStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176FE1D1E411E00D87778 /* JasonStack.m */; };
+		5E31776F1D1E411F00D87778 /* JasonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3177011D1E411E00D87778 /* JasonViewController.m */; };
+		5E3177701D1E411F00D87778 /* UIBarButtonItem+Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3177031D1E411E00D87778 /* UIBarButtonItem+Badge.m */; };
+		5E3177711D1E411F00D87778 /* JasonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3177051D1E411E00D87778 /* JasonHelper.m */; };
+		5E3177781D1E414C00D87778 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E3177771D1E414C00D87778 /* Media.xcassets */; };
+		5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5E3177791D1E4A8E00D87778 /* settings.plist */; };
+		5E3177A31D1F28C100D87778 /* JasonCacheAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E31779A1D1F28C100D87778 /* JasonCacheAction.m */; };
+		5E3177A41D1F28C100D87778 /* JasonConvertAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E31779C1D1F28C100D87778 /* JasonConvertAction.m */; };
+		5E3177A61D1F28C100D87778 /* JasonTimerAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3177A01D1F28C100D87778 /* JasonTimerAction.m */; };
+		5E3177A71D1F28C100D87778 /* JasonUtilAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3177A21D1F28C100D87778 /* JasonUtilAction.m */; };
+		5E3840751D3A3D2200D1C421 /* placeholderr@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E3840741D3A3D2200D1C421 /* placeholderr@2x.png */; };
+		5E9862691DCF1F640084CA4A /* JasonNotificationAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E9862681DCF1F640084CA4A /* JasonNotificationAction.m */; };
+		5EBFBB511D563ABD0074B805 /* UIView+JasonComponentPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EBFBB501D563ABD0074B805 /* UIView+JasonComponentPayload.m */; };
+		5EDF644E1DB0480500C5E403 /* JasonSessionAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EDF644D1DB0480500C5E403 /* JasonSessionAction.m */; };
+		5EE85B6A1DA444770049EACE /* JasonMapComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B691DA444770049EACE /* JasonMapComponent.m */; };
+		5EE85B6C1DA45F8F0049EACE /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EE85B6B1DA45F8F0049EACE /* MapKit.framework */; };
+		5EE85B791DA582940049EACE /* JasonAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B781DA582930049EACE /* JasonAction.m */; };
+		5EE85B7E1DA59D740049EACE /* JasonComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B7D1DA59D740049EACE /* JasonComponent.m */; };
+		5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE85B801DA5C0080049EACE /* JasonLayer.m */; };
+		5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF904351DD10F6E00C8A94E /* JasonLogAction.m */; };
+		9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */; };
+		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
+		F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		042852511E984B890081F742 /* NoPaddingButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoPaddingButton.h; sourceTree = "<group>"; };
+		042852521E984B890081F742 /* NoPaddingButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoPaddingButton.m; sourceTree = "<group>"; };
+		042A7FD31FAC662F00C1A3F2 /* JasonWebsocketAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonWebsocketAction.h; sourceTree = "<group>"; };
+		042A7FD41FAC662F00C1A3F2 /* JasonWebsocketAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonWebsocketAction.m; sourceTree = "<group>"; };
+		042A7FD71FAC665B00C1A3F2 /* JasonWebsocketService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonWebsocketService.h; sourceTree = "<group>"; };
+		042A7FD81FAC665B00C1A3F2 /* JasonWebsocketService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonWebsocketService.m; sourceTree = "<group>"; };
+		043814141EF7455800CC4706 /* JasonGlobalAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonGlobalAction.h; sourceTree = "<group>"; };
+		043814151EF7455800CC4706 /* JasonGlobalAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonGlobalAction.m; sourceTree = "<group>"; };
+		043EFED41F50B75800F5AD48 /* JasonPushService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonPushService.h; sourceTree = "<group>"; };
+		043EFED51F50B75800F5AD48 /* JasonPushService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonPushService.m; sourceTree = "<group>"; };
+		045C77E81F0278EA00F06598 /* preload.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = preload.json; sourceTree = "<group>"; };
+		045C77EA1F02791D00F06598 /* error.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = error.json; sourceTree = "<group>"; };
+		045E092B1FC4930B003A6341 /* agent.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = agent.js; sourceTree = "<group>"; };
+		045E092D1FC4A87D003A6341 /* JasonAgentAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonAgentAction.h; sourceTree = "<group>"; };
+		045E092E1FC4A87D003A6341 /* JasonAgentAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonAgentAction.m; sourceTree = "<group>"; };
+		045E09311FC4A93F003A6341 /* JasonAgentService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonAgentService.h; sourceTree = "<group>"; };
+		045E09321FC4A93F003A6341 /* JasonAgentService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonAgentService.m; sourceTree = "<group>"; };
+		045E09391FC5F989003A6341 /* xhtml.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = xhtml.js; sourceTree = "<group>"; };
+		045E5F3B1E3661060088D5E6 /* JasonReturnAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonReturnAction.h; sourceTree = "<group>"; };
+		045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonReturnAction.m; sourceTree = "<group>"; };
+		0483D9AE1FA0B5DF004DDA37 /* JasonVisionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonVisionService.h; sourceTree = "<group>"; };
+		0483D9AF1FA0B5DF004DDA37 /* JasonVisionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonVisionService.m; sourceTree = "<group>"; };
+		0483D9B21FA1672D004DDA37 /* JasonVisionAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonVisionAction.h; sourceTree = "<group>"; };
+		0483D9B31FA1672D004DDA37 /* JasonVisionAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonVisionAction.m; sourceTree = "<group>"; };
+		04B1568A1F4B8D6600625C61 /* JasonPushAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonPushAction.h; sourceTree = "<group>"; };
+		04B1568B1F4B8D6600625C61 /* JasonPushAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonPushAction.m; sourceTree = "<group>"; };
+		04C851951FE62812000B0B94 /* st.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = st.js; sourceTree = "<group>"; };
+		04D947E91F16ACF50063CC65 /* JASONResponseSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JASONResponseSerializer.h; sourceTree = "<group>"; };
+		04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JASONResponseSerializer.m; sourceTree = "<group>"; };
+		04DC197E1F54746E0021A7A6 /* JasonScriptAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonScriptAction.h; sourceTree = "<group>"; };
+		04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonScriptAction.m; sourceTree = "<group>"; };
+		04F3BCBC1F2BF9ED00C95170 /* NSObject+JSONPayload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+JSONPayload.h"; sourceTree = "<group>"; };
+		04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+JSONPayload.m"; sourceTree = "<group>"; };
+		1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.release.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.release.xcconfig"; sourceTree = "<group>"; };
+		2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Jasonette.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E025B471DE017EB0016786A /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		5E09562A1DA33264007ADC78 /* JasonComponentProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonComponentProtocol.h; sourceTree = "<group>"; };
+		5E09562B1DA33514007ADC78 /* JasonLabelComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonLabelComponent.h; sourceTree = "<group>"; };
+		5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonLabelComponent.m; sourceTree = "<group>"; };
+		5E09562E1DA34D6F007ADC78 /* JasonImageComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonImageComponent.h; sourceTree = "<group>"; };
+		5E09562F1DA34D6F007ADC78 /* JasonImageComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonImageComponent.m; sourceTree = "<group>"; };
+		5E0956311DA34EEA007ADC78 /* JasonButtonComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonButtonComponent.h; sourceTree = "<group>"; };
+		5E0956321DA34EEA007ADC78 /* JasonButtonComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonButtonComponent.m; sourceTree = "<group>"; };
+		5E0956341DA34EFC007ADC78 /* JasonTextareaComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonTextareaComponent.h; sourceTree = "<group>"; };
+		5E0956351DA34EFC007ADC78 /* JasonTextareaComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonTextareaComponent.m; sourceTree = "<group>"; };
+		5E0956371DA34F0C007ADC78 /* JasonTextfieldComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonTextfieldComponent.h; sourceTree = "<group>"; };
+		5E0956381DA34F0C007ADC78 /* JasonTextfieldComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonTextfieldComponent.m; sourceTree = "<group>"; };
+		5E09563A1DA34F1A007ADC78 /* JasonSliderComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSliderComponent.h; sourceTree = "<group>"; };
+		5E09563B1DA34F1A007ADC78 /* JasonSliderComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSliderComponent.m; sourceTree = "<group>"; };
+		5E09563D1DA34F34007ADC78 /* JasonHtmlComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonHtmlComponent.h; sourceTree = "<group>"; };
+		5E09563E1DA34F34007ADC78 /* JasonHtmlComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonHtmlComponent.m; sourceTree = "<group>"; };
+		5E0956401DA34F4D007ADC78 /* JasonSpaceComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSpaceComponent.h; sourceTree = "<group>"; };
+		5E0956411DA34F4D007ADC78 /* JasonSpaceComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSpaceComponent.m; sourceTree = "<group>"; };
+		5E2CB5C41D9DF5B600DA2B83 /* JasonComponentFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonComponentFactory.h; sourceTree = "<group>"; };
+		5E2CB5C51D9DF5B600DA2B83 /* JasonComponentFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonComponentFactory.m; sourceTree = "<group>"; };
+		5E2CB5C71D9ED6FB00DA2B83 /* JasonLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonLayout.h; sourceTree = "<group>"; };
+		5E2CB5C81D9ED6FB00DA2B83 /* JasonLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonLayout.m; sourceTree = "<group>"; };
+		5E3176591D1E400C00D87778 /* Jasonette.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jasonette.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E31765D1D1E400C00D87778 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		5E31765F1D1E400C00D87778 /* JasonAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonAppDelegate.h; sourceTree = "<group>"; };
+		5E3176601D1E400C00D87778 /* JasonAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonAppDelegate.m; sourceTree = "<group>"; };
+		5E31766D1D1E400C00D87778 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5E3176771D1E411E00D87778 /* JasonAudioAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonAudioAction.h; sourceTree = "<group>"; };
+		5E3176781D1E411E00D87778 /* JasonAudioAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonAudioAction.m; sourceTree = "<group>"; };
+		5E3176881D1E411E00D87778 /* JasonVerticalSectionItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonVerticalSectionItem.h; sourceTree = "<group>"; };
+		5E3176891D1E411E00D87778 /* JasonVerticalSectionItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonVerticalSectionItem.m; sourceTree = "<group>"; };
+		5E31768A1D1E411E00D87778 /* JasonVerticalSectionItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JasonVerticalSectionItem.xib; sourceTree = "<group>"; };
+		5E31768F1D1E411E00D87778 /* JasonHorizontalSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonHorizontalSection.h; sourceTree = "<group>"; };
+		5E3176901D1E411E00D87778 /* JasonHorizontalSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonHorizontalSection.m; sourceTree = "<group>"; };
+		5E3176911D1E411E00D87778 /* JasonHorizontalSection.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JasonHorizontalSection.xib; sourceTree = "<group>"; };
+		5E3176921D1E411E00D87778 /* JasonHorizontalSectionItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonHorizontalSectionItem.h; sourceTree = "<group>"; };
+		5E3176931D1E411E00D87778 /* JasonHorizontalSectionItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonHorizontalSectionItem.m; sourceTree = "<group>"; };
+		5E3176941D1E411E00D87778 /* JasonHorizontalSectionItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JasonHorizontalSectionItem.xib; sourceTree = "<group>"; };
+		5E31769B1D1E411E00D87778 /* csv.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = csv.js; sourceTree = "<group>"; };
+		5E3176A21D1E411E00D87778 /* JasonGeoAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonGeoAction.h; sourceTree = "<group>"; };
+		5E3176A31D1E411E00D87778 /* JasonGeoAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonGeoAction.m; sourceTree = "<group>"; };
+		5E3176A91D1E411E00D87778 /* icon-error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-error.png"; sourceTree = "<group>"; };
+		5E3176AA1D1E411E00D87778 /* icon-error@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-error@2x.png"; sourceTree = "<group>"; };
+		5E3176AB1D1E411E00D87778 /* icon-info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-info.png"; sourceTree = "<group>"; };
+		5E3176AC1D1E411E00D87778 /* icon-info@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-info@2x.png"; sourceTree = "<group>"; };
+		5E3176AD1D1E411E00D87778 /* icon-success.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-success.png"; sourceTree = "<group>"; };
+		5E3176AE1D1E411E00D87778 /* icon-success@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-success@2x.png"; sourceTree = "<group>"; };
+		5E3176C01D1E411E00D87778 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		5E3176C51D1E411E00D87778 /* JasonMediaAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonMediaAction.h; sourceTree = "<group>"; };
+		5E3176C61D1E411E00D87778 /* JasonMediaAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonMediaAction.m; sourceTree = "<group>"; };
+		5E3176C71D1E411E00D87778 /* JasonMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonMemory.h; sourceTree = "<group>"; };
+		5E3176C81D1E411E00D87778 /* JasonMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonMemory.m; sourceTree = "<group>"; };
+		5E3176D01D1E411E00D87778 /* more@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "more@2x.png"; sourceTree = "<group>"; };
+		5E3176D11D1E411E00D87778 /* JasonNetworkAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonNetworkAction.h; sourceTree = "<group>"; };
+		5E3176D21D1E411E00D87778 /* JasonNetworkAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonNetworkAction.m; sourceTree = "<group>"; };
+		5E3176D31D1E411E00D87778 /* Next@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Next@2x.png"; sourceTree = "<group>"; };
+		5E3176DE1D1E411E00D87778 /* JasonOauthAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonOauthAction.h; sourceTree = "<group>"; };
+		5E3176DF1D1E411E00D87778 /* JasonOauthAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonOauthAction.m; sourceTree = "<group>"; };
+		5E3176E21D1E411E00D87778 /* JasonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonParser.h; sourceTree = "<group>"; };
+		5E3176E41D1E411E00D87778 /* JasonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonParser.m; sourceTree = "<group>"; };
+		5E3176E81D1E411E00D87778 /* placeholder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "placeholder@2x.png"; sourceTree = "<group>"; };
+		5E3176EA1D1E411E00D87778 /* Jason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Jason.h; sourceTree = "<group>"; };
+		5E3176EB1D1E411E00D87778 /* Jason.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Jason.m; sourceTree = "<group>"; };
+		5E3176EE1D1E411E00D87778 /* JasonPortraitPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonPortraitPicker.h; sourceTree = "<group>"; };
+		5E3176EF1D1E411E00D87778 /* JasonPortraitPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonPortraitPicker.m; sourceTree = "<group>"; };
+		5E3176F41D1E411E00D87778 /* rss.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = rss.js; sourceTree = "<group>"; };
+		5E3176FD1D1E411E00D87778 /* JasonStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonStack.h; sourceTree = "<group>"; };
+		5E3176FE1D1E411E00D87778 /* JasonStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonStack.m; sourceTree = "<group>"; };
+		5E3177001D1E411E00D87778 /* JasonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonViewController.h; sourceTree = "<group>"; };
+		5E3177011D1E411E00D87778 /* JasonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonViewController.m; sourceTree = "<group>"; };
+		5E3177021D1E411E00D87778 /* UIBarButtonItem+Badge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBarButtonItem+Badge.h"; sourceTree = "<group>"; };
+		5E3177031D1E411E00D87778 /* UIBarButtonItem+Badge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBarButtonItem+Badge.m"; sourceTree = "<group>"; };
+		5E3177041D1E411E00D87778 /* JasonHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonHelper.h; sourceTree = "<group>"; };
+		5E3177051D1E411E00D87778 /* JasonHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonHelper.m; sourceTree = "<group>"; };
+		5E3177771D1E414C00D87778 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		5E3177791D1E4A8E00D87778 /* settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = settings.plist; sourceTree = "<group>"; };
+		5E3177991D1F28C100D87778 /* JasonCacheAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonCacheAction.h; sourceTree = "<group>"; };
+		5E31779A1D1F28C100D87778 /* JasonCacheAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonCacheAction.m; sourceTree = "<group>"; };
+		5E31779B1D1F28C100D87778 /* JasonConvertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonConvertAction.h; sourceTree = "<group>"; };
+		5E31779C1D1F28C100D87778 /* JasonConvertAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonConvertAction.m; sourceTree = "<group>"; };
+		5E31779F1D1F28C100D87778 /* JasonTimerAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonTimerAction.h; sourceTree = "<group>"; };
+		5E3177A01D1F28C100D87778 /* JasonTimerAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonTimerAction.m; sourceTree = "<group>"; };
+		5E3177A11D1F28C100D87778 /* JasonUtilAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonUtilAction.h; sourceTree = "<group>"; };
+		5E3177A21D1F28C100D87778 /* JasonUtilAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonUtilAction.m; sourceTree = "<group>"; };
+		5E3840741D3A3D2200D1C421 /* placeholderr@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "placeholderr@2x.png"; sourceTree = "<group>"; };
+		5E9862671DCF1F640084CA4A /* JasonNotificationAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonNotificationAction.h; sourceTree = "<group>"; };
+		5E9862681DCF1F640084CA4A /* JasonNotificationAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonNotificationAction.m; sourceTree = "<group>"; };
+		5EBFBB4F1D563ABD0074B805 /* UIView+JasonComponentPayload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+JasonComponentPayload.h"; sourceTree = "<group>"; };
+		5EBFBB501D563ABD0074B805 /* UIView+JasonComponentPayload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+JasonComponentPayload.m"; sourceTree = "<group>"; };
+		5EDF644C1DB0480500C5E403 /* JasonSessionAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSessionAction.h; sourceTree = "<group>"; };
+		5EDF644D1DB0480500C5E403 /* JasonSessionAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSessionAction.m; sourceTree = "<group>"; };
+		5EE85B681DA444770049EACE /* JasonMapComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonMapComponent.h; sourceTree = "<group>"; };
+		5EE85B691DA444770049EACE /* JasonMapComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonMapComponent.m; sourceTree = "<group>"; };
+		5EE85B6B1DA45F8F0049EACE /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		5EE85B761DA5803F0049EACE /* JasonActionProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonActionProtocol.h; sourceTree = "<group>"; };
+		5EE85B771DA582930049EACE /* JasonAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonAction.h; sourceTree = "<group>"; };
+		5EE85B781DA582930049EACE /* JasonAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonAction.m; sourceTree = "<group>"; };
+		5EE85B7A1DA595A20049EACE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		5EE85B7C1DA59D740049EACE /* JasonComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonComponent.h; sourceTree = "<group>"; };
+		5EE85B7D1DA59D740049EACE /* JasonComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonComponent.m; sourceTree = "<group>"; };
+		5EE85B7F1DA5C0080049EACE /* JasonLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonLayer.h; sourceTree = "<group>"; };
+		5EE85B801DA5C0080049EACE /* JasonLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonLayer.m; sourceTree = "<group>"; };
+		5EF904341DD10F6E00C8A94E /* JasonLogAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonLogAction.h; sourceTree = "<group>"; };
+		5EF904351DD10F6E00C8A94E /* JasonLogAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonLogAction.m; sourceTree = "<group>"; };
+		9A16EE0D1E592DC4006D3F73 /* JasonOptionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonOptionHelper.h; sourceTree = "<group>"; };
+		9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonOptionHelper.m; sourceTree = "<group>"; };
+		BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Jasonette.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette.debug.xcconfig"; sourceTree = "<group>"; };
+		EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonSwitchComponent.h; sourceTree = "<group>"; };
+		EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSwitchComponent.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5E3176561D1E400C00D87778 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EE85B6C1DA45F8F0049EACE /* MapKit.framework in Frameworks */,
+				F9283F33AA628489204A4867 /* Pods_Jasonette.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		024EC1D04366A4267780A921 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */,
+				1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		042A7FD61FAC663500C1A3F2 /* $websocket */ = {
+			isa = PBXGroup;
+			children = (
+				042A7FD31FAC662F00C1A3F2 /* JasonWebsocketAction.h */,
+				042A7FD41FAC662F00C1A3F2 /* JasonWebsocketAction.m */,
+			);
+			name = $websocket;
+			sourceTree = "<group>";
+		};
+		042A7FDA1FAC665E00C1A3F2 /* $websocket */ = {
+			isa = PBXGroup;
+			children = (
+				042A7FD71FAC665B00C1A3F2 /* JasonWebsocketService.h */,
+				042A7FD81FAC665B00C1A3F2 /* JasonWebsocketService.m */,
+			);
+			name = $websocket;
+			sourceTree = "<group>";
+		};
+		043814171EF7455E00CC4706 /* $global */ = {
+			isa = PBXGroup;
+			children = (
+				043814141EF7455800CC4706 /* JasonGlobalAction.h */,
+				043814151EF7455800CC4706 /* JasonGlobalAction.m */,
+			);
+			name = $global;
+			sourceTree = "<group>";
+		};
+		043EFED71F50B75C00F5AD48 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				045E09341FC4A943003A6341 /* $agent */,
+				044C21441FA067B9003E450F /* $push */,
+				0483D9B11FA0B5E4004DDA37 /* $vision */,
+				042A7FDA1FAC665E00C1A3F2 /* $websocket */,
+			);
+			name = Service;
+			sourceTree = "<group>";
+		};
+		044C21441FA067B9003E450F /* $push */ = {
+			isa = PBXGroup;
+			children = (
+				043EFED41F50B75800F5AD48 /* JasonPushService.h */,
+				043EFED51F50B75800F5AD48 /* JasonPushService.m */,
+			);
+			name = $push;
+			sourceTree = "<group>";
+		};
+		045E09301FC4A882003A6341 /* $agent */ = {
+			isa = PBXGroup;
+			children = (
+				045E092D1FC4A87D003A6341 /* JasonAgentAction.h */,
+				045E092E1FC4A87D003A6341 /* JasonAgentAction.m */,
+			);
+			name = $agent;
+			sourceTree = "<group>";
+		};
+		045E09341FC4A943003A6341 /* $agent */ = {
+			isa = PBXGroup;
+			children = (
+				045E09311FC4A93F003A6341 /* JasonAgentService.h */,
+				045E09321FC4A93F003A6341 /* JasonAgentService.m */,
+			);
+			name = $agent;
+			sourceTree = "<group>";
+		};
+		045E5F3E1E36610B0088D5E6 /* $return */ = {
+			isa = PBXGroup;
+			children = (
+				045E5F3B1E3661060088D5E6 /* JasonReturnAction.h */,
+				045E5F3C1E3661060088D5E6 /* JasonReturnAction.m */,
+			);
+			name = $return;
+			sourceTree = "<group>";
+		};
+		0483D9B11FA0B5E4004DDA37 /* $vision */ = {
+			isa = PBXGroup;
+			children = (
+				0483D9AE1FA0B5DF004DDA37 /* JasonVisionService.h */,
+				0483D9AF1FA0B5DF004DDA37 /* JasonVisionService.m */,
+			);
+			name = $vision;
+			sourceTree = "<group>";
+		};
+		0483D9B51FA16734004DDA37 /* $vision */ = {
+			isa = PBXGroup;
+			children = (
+				0483D9B21FA1672D004DDA37 /* JasonVisionAction.h */,
+				0483D9B31FA1672D004DDA37 /* JasonVisionAction.m */,
+			);
+			name = $vision;
+			sourceTree = "<group>";
+		};
+		04B1568D1F4B8D6A00625C61 /* $push */ = {
+			isa = PBXGroup;
+			children = (
+				04B1568A1F4B8D6600625C61 /* JasonPushAction.h */,
+				04B1568B1F4B8D6600625C61 /* JasonPushAction.m */,
+			);
+			name = $push;
+			sourceTree = "<group>";
+		};
+		04DC19811F5474730021A7A6 /* $script */ = {
+			isa = PBXGroup;
+			children = (
+				04DC197E1F54746E0021A7A6 /* JasonScriptAction.h */,
+				04DC197F1F54746E0021A7A6 /* JasonScriptAction.m */,
+			);
+			name = $script;
+			sourceTree = "<group>";
+		};
+		5E0956271DA30970007ADC78 /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				5E2CB5C41D9DF5B600DA2B83 /* JasonComponentFactory.h */,
+				5E2CB5C51D9DF5B600DA2B83 /* JasonComponentFactory.m */,
+				5E09562A1DA33264007ADC78 /* JasonComponentProtocol.h */,
+				5EE85B7C1DA59D740049EACE /* JasonComponent.h */,
+				5EE85B7D1DA59D740049EACE /* JasonComponent.m */,
+				5EBFBB4F1D563ABD0074B805 /* UIView+JasonComponentPayload.h */,
+				5EBFBB501D563ABD0074B805 /* UIView+JasonComponentPayload.m */,
+				5EE85B6D1DA486B10049EACE /* label */,
+				5EE85B6E1DA486B80049EACE /* image */,
+				5EE85B6F1DA486BE0049EACE /* button */,
+				5EE85B701DA486C40049EACE /* textarea */,
+				5EE85B711DA486CA0049EACE /* textfield */,
+				5EE85B721DA486D00049EACE /* slider */,
+				EF8C8CFD1F9195010062CA1C /* switch */,
+				5EE85B731DA486D50049EACE /* html */,
+				5EE85B741DA486DA0049EACE /* space */,
+				5EE85B751DA486DF0049EACE /* map */,
+			);
+			name = Component;
+			sourceTree = "<group>";
+		};
+		5E0956281DA30978007ADC78 /* Layout */ = {
+			isa = PBXGroup;
+			children = (
+				5E2CB5C71D9ED6FB00DA2B83 /* JasonLayout.h */,
+				5E2CB5C81D9ED6FB00DA2B83 /* JasonLayout.m */,
+			);
+			name = Layout;
+			sourceTree = "<group>";
+		};
+		5E0956291DA3112C007ADC78 /* Launcher */ = {
+			isa = PBXGroup;
+			children = (
+				5E31765F1D1E400C00D87778 /* JasonAppDelegate.h */,
+				5E3176601D1E400C00D87778 /* JasonAppDelegate.m */,
+				5E3176C01D1E411E00D87778 /* LaunchScreen.storyboard */,
+				5E31765D1D1E400C00D87778 /* main.m */,
+			);
+			name = Launcher;
+			sourceTree = "<group>";
+		};
+		5E0F0B911D20FFE2009291BE /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				5E025B471DE017EB0016786A /* Constants.h */,
+				5E31766D1D1E400C00D87778 /* Info.plist */,
+				5E3177791D1E4A8E00D87778 /* settings.plist */,
+				5E3177771D1E414C00D87778 /* Media.xcassets */,
+			);
+			name = Config;
+			sourceTree = "<group>";
+		};
+		5E3176501D1E400C00D87778 = {
+			isa = PBXGroup;
+			children = (
+				5E31765B1D1E400C00D87778 /* Jasonette */,
+				5E31765A1D1E400C00D87778 /* Products */,
+				024EC1D04366A4267780A921 /* Pods */,
+				7CC63D0148253F040E828E0E /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		5E31765A1D1E400C00D87778 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5E3176591D1E400C00D87778 /* Jasonette.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5E31765B1D1E400C00D87778 /* Jasonette */ = {
+			isa = PBXGroup;
+			children = (
+				5E0956291DA3112C007ADC78 /* Launcher */,
+				5E0F0B911D20FFE2009291BE /* Config */,
+				5E31777D1D1F1A8300D87778 /* Core */,
+				5E31777C1D1F19ED00D87778 /* Action */,
+				5E31777E1D1F1D1100D87778 /* View */,
+				5E3177901D1F229200D87778 /* Helper */,
+				043EFED71F50B75C00F5AD48 /* Service */,
+			);
+			path = Jasonette;
+			sourceTree = "<group>";
+		};
+		5E31777B1D1F199D00D87778 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				5E3176A91D1E411E00D87778 /* icon-error.png */,
+				5E3176AA1D1E411E00D87778 /* icon-error@2x.png */,
+				5E3176AB1D1E411E00D87778 /* icon-info.png */,
+				5E3176AC1D1E411E00D87778 /* icon-info@2x.png */,
+				5E3176AD1D1E411E00D87778 /* icon-success.png */,
+				5E3176AE1D1E411E00D87778 /* icon-success@2x.png */,
+				5E3176D01D1E411E00D87778 /* more@2x.png */,
+				5E3176D31D1E411E00D87778 /* Next@2x.png */,
+				5E3840741D3A3D2200D1C421 /* placeholderr@2x.png */,
+				5E3176E81D1E411E00D87778 /* placeholder@2x.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
+		5E31777C1D1F19ED00D87778 /* Action */ = {
+			isa = PBXGroup;
+			children = (
+				5EE85B761DA5803F0049EACE /* JasonActionProtocol.h */,
+				5EE85B771DA582930049EACE /* JasonAction.h */,
+				5EE85B781DA582930049EACE /* JasonAction.m */,
+				045E09301FC4A882003A6341 /* $agent */,
+				5E31778D1D1F209000D87778 /* $audio */,
+				5E3177A81D1F291200D87778 /* $cache */,
+				5E3177A91D1F294C00D87778 /* $convert */,
+				5E31778C1D1F208A00D87778 /* $geo */,
+				043814171EF7455E00CC4706 /* $global */,
+				5EF904371DD10F7600C8A94E /* $log */,
+				5E31778B1D1F208500D87778 /* $media */,
+				5E31778E1D1F20A400D87778 /* $network */,
+				5E98626A1DCF1F6A0084CA4A /* $notification */,
+				5EDF644F1DB0480B00C5E403 /* $session */,
+				5E31778F1D1F20AB00D87778 /* $oauth */,
+				04B1568D1F4B8D6A00625C61 /* $push */,
+				045E5F3E1E36610B0088D5E6 /* $return */,
+				04DC19811F5474730021A7A6 /* $script */,
+				5E3177AB1D1F297400D87778 /* $timer */,
+				5E3177AA1D1F296300D87778 /* $util */,
+				0483D9B51FA16734004DDA37 /* $vision */,
+				042A7FD61FAC663500C1A3F2 /* $websocket */,
+			);
+			name = Action;
+			sourceTree = "<group>";
+		};
+		5E31777D1D1F1A8300D87778 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				5E3176EA1D1E411E00D87778 /* Jason.h */,
+				5E3176EB1D1E411E00D87778 /* Jason.m */,
+				5E3176C71D1E411E00D87778 /* JasonMemory.h */,
+				5E3176C81D1E411E00D87778 /* JasonMemory.m */,
+				5E3176FD1D1E411E00D87778 /* JasonStack.h */,
+				5E3176FE1D1E411E00D87778 /* JasonStack.m */,
+				5E3176E21D1E411E00D87778 /* JasonParser.h */,
+				5E3176E41D1E411E00D87778 /* JasonParser.m */,
+				5E3177AC1D1F2A8200D87778 /* file:// */,
+				5E31778A1D1F204600D87778 /* Lib */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		5E31777E1D1F1D1100D87778 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				5E3177001D1E411E00D87778 /* JasonViewController.h */,
+				5E3177011D1E411E00D87778 /* JasonViewController.m */,
+				5E3177021D1E411E00D87778 /* UIBarButtonItem+Badge.h */,
+				5E3177031D1E411E00D87778 /* UIBarButtonItem+Badge.m */,
+				5EE85B821DA5C0160049EACE /* Layer */,
+				5E3177811D1F1D6900D87778 /* Section */,
+				5E0956281DA30978007ADC78 /* Layout */,
+				5E0956271DA30970007ADC78 /* Component */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		5E3177811D1F1D6900D87778 /* Section */ = {
+			isa = PBXGroup;
+			children = (
+				5E3176881D1E411E00D87778 /* JasonVerticalSectionItem.h */,
+				5E3176891D1E411E00D87778 /* JasonVerticalSectionItem.m */,
+				5E31768A1D1E411E00D87778 /* JasonVerticalSectionItem.xib */,
+				5E31768F1D1E411E00D87778 /* JasonHorizontalSection.h */,
+				5E3176901D1E411E00D87778 /* JasonHorizontalSection.m */,
+				5E3176911D1E411E00D87778 /* JasonHorizontalSection.xib */,
+				5E3176921D1E411E00D87778 /* JasonHorizontalSectionItem.h */,
+				5E3176931D1E411E00D87778 /* JasonHorizontalSectionItem.m */,
+				5E3176941D1E411E00D87778 /* JasonHorizontalSectionItem.xib */,
+			);
+			name = Section;
+			sourceTree = "<group>";
+		};
+		5E31778A1D1F204600D87778 /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				5E31769B1D1E411E00D87778 /* csv.js */,
+				5E3176F41D1E411E00D87778 /* rss.js */,
+				045E092B1FC4930B003A6341 /* agent.js */,
+				04C851951FE62812000B0B94 /* st.js */,
+				045E09391FC5F989003A6341 /* xhtml.js */,
+			);
+			name = Lib;
+			sourceTree = "<group>";
+		};
+		5E31778B1D1F208500D87778 /* $media */ = {
+			isa = PBXGroup;
+			children = (
+				5E3176C51D1E411E00D87778 /* JasonMediaAction.h */,
+				5E3176C61D1E411E00D87778 /* JasonMediaAction.m */,
+				5E3176EE1D1E411E00D87778 /* JasonPortraitPicker.h */,
+				5E3176EF1D1E411E00D87778 /* JasonPortraitPicker.m */,
+			);
+			name = $media;
+			sourceTree = "<group>";
+		};
+		5E31778C1D1F208A00D87778 /* $geo */ = {
+			isa = PBXGroup;
+			children = (
+				5E3176A21D1E411E00D87778 /* JasonGeoAction.h */,
+				5E3176A31D1E411E00D87778 /* JasonGeoAction.m */,
+			);
+			name = $geo;
+			sourceTree = "<group>";
+		};
+		5E31778D1D1F209000D87778 /* $audio */ = {
+			isa = PBXGroup;
+			children = (
+				5E3176771D1E411E00D87778 /* JasonAudioAction.h */,
+				5E3176781D1E411E00D87778 /* JasonAudioAction.m */,
+			);
+			name = $audio;
+			sourceTree = "<group>";
+		};
+		5E31778E1D1F20A400D87778 /* $network */ = {
+			isa = PBXGroup;
+			children = (
+				5E3176D11D1E411E00D87778 /* JasonNetworkAction.h */,
+				5E3176D21D1E411E00D87778 /* JasonNetworkAction.m */,
+				04D947E91F16ACF50063CC65 /* JASONResponseSerializer.h */,
+				04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */,
+			);
+			name = $network;
+			sourceTree = "<group>";
+		};
+		5E31778F1D1F20AB00D87778 /* $oauth */ = {
+			isa = PBXGroup;
+			children = (
+				5E3176DE1D1E411E00D87778 /* JasonOauthAction.h */,
+				5E3176DF1D1E411E00D87778 /* JasonOauthAction.m */,
+			);
+			name = $oauth;
+			sourceTree = "<group>";
+		};
+		5E3177901D1F229200D87778 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				9A16EE101E592DC9006D3F73 /* Option */,
+				5E3177041D1E411E00D87778 /* JasonHelper.h */,
+				5E3177051D1E411E00D87778 /* JasonHelper.m */,
+				04F3BCBC1F2BF9ED00C95170 /* NSObject+JSONPayload.h */,
+				04F3BCBD1F2BF9ED00C95170 /* NSObject+JSONPayload.m */,
+			);
+			name = Helper;
+			sourceTree = "<group>";
+		};
+		5E3177A81D1F291200D87778 /* $cache */ = {
+			isa = PBXGroup;
+			children = (
+				5E3177991D1F28C100D87778 /* JasonCacheAction.h */,
+				5E31779A1D1F28C100D87778 /* JasonCacheAction.m */,
+			);
+			name = $cache;
+			sourceTree = "<group>";
+		};
+		5E3177A91D1F294C00D87778 /* $convert */ = {
+			isa = PBXGroup;
+			children = (
+				5E31779B1D1F28C100D87778 /* JasonConvertAction.h */,
+				5E31779C1D1F28C100D87778 /* JasonConvertAction.m */,
+			);
+			name = $convert;
+			sourceTree = "<group>";
+		};
+		5E3177AA1D1F296300D87778 /* $util */ = {
+			isa = PBXGroup;
+			children = (
+				5E3177A11D1F28C100D87778 /* JasonUtilAction.h */,
+				5E3177A21D1F28C100D87778 /* JasonUtilAction.m */,
+			);
+			name = $util;
+			sourceTree = "<group>";
+		};
+		5E3177AB1D1F297400D87778 /* $timer */ = {
+			isa = PBXGroup;
+			children = (
+				5E31779F1D1F28C100D87778 /* JasonTimerAction.h */,
+				5E3177A01D1F28C100D87778 /* JasonTimerAction.m */,
+			);
+			name = $timer;
+			sourceTree = "<group>";
+		};
+		5E3177AC1D1F2A8200D87778 /* file:// */ = {
+			isa = PBXGroup;
+			children = (
+				5E31777B1D1F199D00D87778 /* Images */,
+				045C77E81F0278EA00F06598 /* preload.json */,
+				045C77EA1F02791D00F06598 /* error.json */,
+			);
+			name = "file://";
+			sourceTree = "<group>";
+		};
+		5E98626A1DCF1F6A0084CA4A /* $notification */ = {
+			isa = PBXGroup;
+			children = (
+				5E9862671DCF1F640084CA4A /* JasonNotificationAction.h */,
+				5E9862681DCF1F640084CA4A /* JasonNotificationAction.m */,
+			);
+			name = $notification;
+			sourceTree = "<group>";
+		};
+		5EDF644F1DB0480B00C5E403 /* $session */ = {
+			isa = PBXGroup;
+			children = (
+				5EDF644C1DB0480500C5E403 /* JasonSessionAction.h */,
+				5EDF644D1DB0480500C5E403 /* JasonSessionAction.m */,
+			);
+			name = $session;
+			sourceTree = "<group>";
+		};
+		5EE85B6D1DA486B10049EACE /* label */ = {
+			isa = PBXGroup;
+			children = (
+				5E09562B1DA33514007ADC78 /* JasonLabelComponent.h */,
+				5E09562C1DA33514007ADC78 /* JasonLabelComponent.m */,
+			);
+			name = label;
+			sourceTree = "<group>";
+		};
+		5EE85B6E1DA486B80049EACE /* image */ = {
+			isa = PBXGroup;
+			children = (
+				5E09562E1DA34D6F007ADC78 /* JasonImageComponent.h */,
+				5E09562F1DA34D6F007ADC78 /* JasonImageComponent.m */,
+			);
+			name = image;
+			sourceTree = "<group>";
+		};
+		5EE85B6F1DA486BE0049EACE /* button */ = {
+			isa = PBXGroup;
+			children = (
+				5E0956311DA34EEA007ADC78 /* JasonButtonComponent.h */,
+				5E0956321DA34EEA007ADC78 /* JasonButtonComponent.m */,
+				042852511E984B890081F742 /* NoPaddingButton.h */,
+				042852521E984B890081F742 /* NoPaddingButton.m */,
+			);
+			name = button;
+			sourceTree = "<group>";
+		};
+		5EE85B701DA486C40049EACE /* textarea */ = {
+			isa = PBXGroup;
+			children = (
+				5E0956341DA34EFC007ADC78 /* JasonTextareaComponent.h */,
+				5E0956351DA34EFC007ADC78 /* JasonTextareaComponent.m */,
+			);
+			name = textarea;
+			sourceTree = "<group>";
+		};
+		5EE85B711DA486CA0049EACE /* textfield */ = {
+			isa = PBXGroup;
+			children = (
+				5E0956371DA34F0C007ADC78 /* JasonTextfieldComponent.h */,
+				5E0956381DA34F0C007ADC78 /* JasonTextfieldComponent.m */,
+			);
+			name = textfield;
+			sourceTree = "<group>";
+		};
+		5EE85B721DA486D00049EACE /* slider */ = {
+			isa = PBXGroup;
+			children = (
+				5E09563A1DA34F1A007ADC78 /* JasonSliderComponent.h */,
+				5E09563B1DA34F1A007ADC78 /* JasonSliderComponent.m */,
+			);
+			name = slider;
+			sourceTree = "<group>";
+		};
+		5EE85B731DA486D50049EACE /* html */ = {
+			isa = PBXGroup;
+			children = (
+				5E09563D1DA34F34007ADC78 /* JasonHtmlComponent.h */,
+				5E09563E1DA34F34007ADC78 /* JasonHtmlComponent.m */,
+			);
+			name = html;
+			sourceTree = "<group>";
+		};
+		5EE85B741DA486DA0049EACE /* space */ = {
+			isa = PBXGroup;
+			children = (
+				5E0956401DA34F4D007ADC78 /* JasonSpaceComponent.h */,
+				5E0956411DA34F4D007ADC78 /* JasonSpaceComponent.m */,
+			);
+			name = space;
+			sourceTree = "<group>";
+		};
+		5EE85B751DA486DF0049EACE /* map */ = {
+			isa = PBXGroup;
+			children = (
+				5EE85B681DA444770049EACE /* JasonMapComponent.h */,
+				5EE85B691DA444770049EACE /* JasonMapComponent.m */,
+			);
+			name = map;
+			sourceTree = "<group>";
+		};
+		5EE85B821DA5C0160049EACE /* Layer */ = {
+			isa = PBXGroup;
+			children = (
+				5EE85B7F1DA5C0080049EACE /* JasonLayer.h */,
+				5EE85B801DA5C0080049EACE /* JasonLayer.m */,
+			);
+			name = Layer;
+			sourceTree = "<group>";
+		};
+		5EF904371DD10F7600C8A94E /* $log */ = {
+			isa = PBXGroup;
+			children = (
+				5EF904341DD10F6E00C8A94E /* JasonLogAction.h */,
+				5EF904351DD10F6E00C8A94E /* JasonLogAction.m */,
+			);
+			name = $log;
+			sourceTree = "<group>";
+		};
+		7CC63D0148253F040E828E0E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5EE85B7A1DA595A20049EACE /* UIKit.framework */,
+				5EE85B6B1DA45F8F0049EACE /* MapKit.framework */,
+				2F0FCC971E030AF932E421D4 /* Pods_Jasonette.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9A16EE101E592DC9006D3F73 /* Option */ = {
+			isa = PBXGroup;
+			children = (
+				9A16EE0D1E592DC4006D3F73 /* JasonOptionHelper.h */,
+				9A16EE0E1E592DC4006D3F73 /* JasonOptionHelper.m */,
+			);
+			name = Option;
+			sourceTree = "<group>";
+		};
+		EF8C8CFD1F9195010062CA1C /* switch */ = {
+			isa = PBXGroup;
+			children = (
+				EF8C8CFE1F9195240062CA1C /* JasonSwitchComponent.h */,
+				EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */,
+			);
+			name = switch;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5E3176581D1E400C00D87778 /* Jasonette */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5E3176701D1E400C00D87778 /* Build configuration list for PBXNativeTarget "Jasonette" */;
+			buildPhases = (
+				2358BCC5070D5513080379E3 /* [CP] Check Pods Manifest.lock */,
+				5E3176551D1E400C00D87778 /* Sources */,
+				5E3176561D1E400C00D87778 /* Frameworks */,
+				5E3176571D1E400C00D87778 /* Resources */,
+				63FB79939C3EFA5C13310B2B /* [CP] Embed Pods Frameworks */,
+				4838282BA327C039BDB24767 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Jasonette;
+			productName = Jasonette;
+			productReference = 5E3176591D1E400C00D87778 /* Jasonette.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5E3176511D1E400C00D87778 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0800;
+				ORGANIZATIONNAME = Jasonette;
+				TargetAttributes = {
+					5E3176581D1E400C00D87778 = {
+						CreatedOnToolsVersion = 7.3;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+							com.apple.Keychain = {
+								enabled = 0;
+							};
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = 5E3176541D1E400C00D87778 /* Build configuration list for PBXProject "Jasonette" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5E3176501D1E400C00D87778;
+			productRefGroup = 5E31765A1D1E400C00D87778 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5E3176581D1E400C00D87778 /* Jasonette */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5E3176571D1E400C00D87778 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E3177381D1E411F00D87778 /* icon-info@2x.png in Resources */,
+				5E3177511D1E411F00D87778 /* more@2x.png in Resources */,
+				5E3177781D1E414C00D87778 /* Media.xcassets in Resources */,
+				5E3840751D3A3D2200D1C421 /* placeholderr@2x.png in Resources */,
+				045E092C1FC4930B003A6341 /* agent.js in Resources */,
+				5E3177291D1E411F00D87778 /* csv.js in Resources */,
+				5E31771E1D1E411F00D87778 /* JasonVerticalSectionItem.xib in Resources */,
+				5E31777A1D1E4A8E00D87778 /* settings.plist in Resources */,
+				5E3177251D1E411F00D87778 /* JasonHorizontalSectionItem.xib in Resources */,
+				5E3177371D1E411F00D87778 /* icon-info.png in Resources */,
+				5E3177531D1E411F00D87778 /* Next@2x.png in Resources */,
+				045E093A1FC5F98A003A6341 /* xhtml.js in Resources */,
+				5E31773A1D1E411F00D87778 /* icon-success@2x.png in Resources */,
+				5E3177671D1E411F00D87778 /* rss.js in Resources */,
+				5E3177481D1E411F00D87778 /* LaunchScreen.storyboard in Resources */,
+				045C77E91F0278EA00F06598 /* preload.json in Resources */,
+				045C77EB1F02791D00F06598 /* error.json in Resources */,
+				5E3177361D1E411F00D87778 /* icon-error@2x.png in Resources */,
+				5E31775F1D1E411F00D87778 /* placeholder@2x.png in Resources */,
+				5E3177391D1E411F00D87778 /* icon-success.png in Resources */,
+				5E3177351D1E411F00D87778 /* icon-error.png in Resources */,
+				04C851961FE62812000B0B94 /* st.js in Resources */,
+				5E3177231D1E411F00D87778 /* JasonHorizontalSection.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2358BCC5070D5513080379E3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		4838282BA327C039BDB24767 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		63FB79939C3EFA5C13310B2B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Jasonette/Pods-Jasonette-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5E3176551D1E400C00D87778 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EE85B6A1DA444770049EACE /* JasonMapComponent.m in Sources */,
+				5E0956301DA34D70007ADC78 /* JasonImageComponent.m in Sources */,
+				045E092F1FC4A87D003A6341 /* JasonAgentAction.m in Sources */,
+				5E31776D1D1E411F00D87778 /* JasonStack.m in Sources */,
+				5E2CB5C91D9ED6FB00DA2B83 /* JasonLayout.m in Sources */,
+				5E0956391DA34F0C007ADC78 /* JasonTextfieldComponent.m in Sources */,
+				5E3177A61D1F28C100D87778 /* JasonTimerAction.m in Sources */,
+				5E3177131D1E411E00D87778 /* JasonAudioAction.m in Sources */,
+				042852531E984B890081F742 /* NoPaddingButton.m in Sources */,
+				5EE85B791DA582940049EACE /* JasonAction.m in Sources */,
+				04B1568C1F4B8D6600625C61 /* JasonPushAction.m in Sources */,
+				5E2CB5C61D9DF5B600DA2B83 /* JasonComponentFactory.m in Sources */,
+				5E3177611D1E411F00D87778 /* Jason.m in Sources */,
+				5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */,
+				5E3176611D1E400C00D87778 /* JasonAppDelegate.m in Sources */,
+				5E31776F1D1E411F00D87778 /* JasonViewController.m in Sources */,
+				5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */,
+				5E31774D1D1E411F00D87778 /* JasonMemory.m in Sources */,
+				0483D9B41FA1672D004DDA37 /* JasonVisionAction.m in Sources */,
+				5E09563C1DA34F1A007ADC78 /* JasonSliderComponent.m in Sources */,
+				5E3177711D1E411F00D87778 /* JasonHelper.m in Sources */,
+				5E3177521D1E411F00D87778 /* JasonNetworkAction.m in Sources */,
+				9A16EE0F1E592DC4006D3F73 /* JasonOptionHelper.m in Sources */,
+				5E31775C1D1E411F00D87778 /* JasonParser.m in Sources */,
+				5E3177A41D1F28C100D87778 /* JasonConvertAction.m in Sources */,
+				5E0956331DA34EEA007ADC78 /* JasonButtonComponent.m in Sources */,
+				5E09563F1DA34F34007ADC78 /* JasonHtmlComponent.m in Sources */,
+				5EE85B7E1DA59D740049EACE /* JasonComponent.m in Sources */,
+				5E3177641D1E411F00D87778 /* JasonPortraitPicker.m in Sources */,
+				5E9862691DCF1F640084CA4A /* JasonNotificationAction.m in Sources */,
+				5E31771D1D1E411F00D87778 /* JasonVerticalSectionItem.m in Sources */,
+				0483D9B01FA0B5DF004DDA37 /* JasonVisionService.m in Sources */,
+				042A7FD51FAC662F00C1A3F2 /* JasonWebsocketAction.m in Sources */,
+				5E3177A71D1F28C100D87778 /* JasonUtilAction.m in Sources */,
+				5E0956421DA34F4D007ADC78 /* JasonSpaceComponent.m in Sources */,
+				04DC19801F54746E0021A7A6 /* JasonScriptAction.m in Sources */,
+				5E3177701D1E411F00D87778 /* UIBarButtonItem+Badge.m in Sources */,
+				5E0956361DA34EFC007ADC78 /* JasonTextareaComponent.m in Sources */,
+				043814161EF7455800CC4706 /* JasonGlobalAction.m in Sources */,
+				5EF904361DD10F7000C8A94E /* JasonLogAction.m in Sources */,
+				04F3BCBE1F2BF9ED00C95170 /* NSObject+JSONPayload.m in Sources */,
+				5E3177A31D1F28C100D87778 /* JasonCacheAction.m in Sources */,
+				045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */,
+				EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */,
+				5E31765E1D1E400C00D87778 /* main.m in Sources */,
+				5EBFBB511D563ABD0074B805 /* UIView+JasonComponentPayload.m in Sources */,
+				5EDF644E1DB0480500C5E403 /* JasonSessionAction.m in Sources */,
+				043EFED61F50B75800F5AD48 /* JasonPushService.m in Sources */,
+				5E31774C1D1E411F00D87778 /* JasonMediaAction.m in Sources */,
+				045E09331FC4A93F003A6341 /* JasonAgentService.m in Sources */,
+				5E3177241D1E411F00D87778 /* JasonHorizontalSectionItem.m in Sources */,
+				5E3177221D1E411F00D87778 /* JasonHorizontalSection.m in Sources */,
+				04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */,
+				042A7FD91FAC665B00C1A3F2 /* JasonWebsocketService.m in Sources */,
+				5E3177301D1E411F00D87778 /* JasonGeoAction.m in Sources */,
+				5E3177591D1E411F00D87778 /* JasonOauthAction.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5E31766E1D1E400C00D87778 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5E31766F1D1E400C00D87778 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5E3176711D1E400C00D87778 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BEB1DF488FABA35A255BC8E4 /* Pods-Jasonette.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = Jasonette/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.jasonette.seed;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+			};
+			name = Debug;
+		};
+		5E3176721D1E400C00D87778 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1BD8E8486EE7AF4E4934685E /* Pods-Jasonette.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = Jasonette/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.jasonette.seed;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5E3176541D1E400C00D87778 /* Build configuration list for PBXProject "Jasonette" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E31766E1D1E400C00D87778 /* Debug */,
+				5E31766F1D1E400C00D87778 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5E3176701D1E400C00D87778 /* Build configuration list for PBXNativeTarget "Jasonette" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E3176711D1E400C00D87778 /* Debug */,
+				5E3176721D1E400C00D87778 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5E3176511D1E400C00D87778 /* Project object */;
+}
