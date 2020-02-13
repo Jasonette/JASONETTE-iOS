@@ -6,22 +6,23 @@
 //
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "REMenu.h"
+#import <REMenu/REMenu.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "JasonHelper.h"
 #import "JasonMemory.h"
 #import "JasonParser.h"
 #import "JasonViewController.h"
-#import "BBBadgeBarButtonItem.h"
-#import "AFNetworking.h"
+#import <BBBadgeBarButtonItem/BBBadgeBarButtonItem.h>
+#import <AFNetworking/AFNetworking.h>
 #import <SafariServices/SafariServices.h>
 #import <NSHash/NSString+NSHash.h>
 #import <FreeStreamer/FSAudioStream.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <AVFoundation/AVFoundation.h>
 #import "JasonAgentService.h"
-#import "MBProgressHUD.h"
-#if DEBUG
+#import <MBProgressHUD/MBProgressHUD.h>
+#import "Reachability.h"
+#ifdef DEBUG
 #include <FLEX/FLEX.h>
 #endif
 
@@ -67,6 +68,9 @@
 - (void)call: (id)action with: (NSDictionary *)data;
 
 - (void)loading:(BOOL)turnon;
+- (void)showLoadingOverlay;
+- (void)hideLoadingOverlay;
+- (void)setLoadingProgress:(double)ratio;
 - (void)networkLoading:(BOOL)turnon with: (NSDictionary *)options;
 - (void)search;
 - (void)snapshot;
@@ -84,5 +88,8 @@
 - (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController*) vc;
 - (void)drawBackground:(NSString *)bg forVC: (JasonViewController *)vc;
 - (void)drawAdvancedBackground:(NSDictionary *)bg forVC: (JasonViewController *)vc;
+
+- (BOOL)connected;
+
 @end
 

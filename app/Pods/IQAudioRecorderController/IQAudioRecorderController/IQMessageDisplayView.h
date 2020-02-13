@@ -23,24 +23,24 @@
 // THE SOFTWARE.
 
 
-#import <UIKit/UIKit.h>
+#import <UIKit/UIView.h>
 
 @class IQMessageDisplayView;
 
 @protocol IQMessageDisplayViewDelegate <NSObject>
 
 @optional
-- (void)messageDisplayViewDidTapOnButton:(IQMessageDisplayView *)displayView;
+- (void)messageDisplayViewDidTapOnButton:(nonnull IQMessageDisplayView *)displayView;
 
 @end
 
 @interface IQMessageDisplayView : UIView
 
-@property(nonatomic, weak) IBOutlet id<IQMessageDisplayViewDelegate> delegate;
+@property(nullable, nonatomic, weak) IBOutlet id<IQMessageDisplayViewDelegate> delegate;
 
-@property(nonatomic, strong) UIImage *image;
-@property(nonatomic, strong) NSString *title;
-@property(nonatomic, strong) NSString *message;
-@property(nonatomic, strong) NSString *buttonTitle;
+@property(nullable, nonatomic, strong) UIImage *image;
+@property(nullable, nonatomic, strong) NSString *title;
+@property(nullable, nonatomic, strong) NSString *message;
+@property(nullable, nonatomic, strong) NSString *buttonTitle;
 
 @end

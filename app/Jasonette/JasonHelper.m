@@ -311,7 +311,9 @@
     NSData *data = [converted dataUsingEncoding: NSUTF8StringEncoding];
     id result = [NSJSONSerialization JSONObjectWithData: data options: 0 error: &error];
     if (result == nil) {
+#ifdef DEBUG
         NSLog(@"Error: %@", error.localizedDescription);
+#endif
         return nil;
     }
     return result;
@@ -410,9 +412,13 @@
     }
 }
 + (void)setStatusBarBackgroundColor:(UIColor *)color {
-    UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
-    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
-        statusBar.backgroundColor = color;
+    if (@available(iOS 13.0, *)) {
+        return;
+    } else {
+        UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
+        if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
+            statusBar.backgroundColor = color;
+        }
     }
 }
 + (id)parse: (id)data ofType: (NSString *)type with: (id)template{
@@ -481,7 +487,7 @@
     NSString *expression = [exp description];
     
     if([direction isEqualToString:@"vertical"]){
-        full_dimension = [[UIScreen mainScreen] bounds].size.height;
+        full_dimension = [[UIScreen mainScreen] bounds].size.height - [[UIApplication sharedApplication] statusBarFrame].size.height;
     } else {
         full_dimension = [[UIScreen mainScreen] bounds].size.width;
     }
@@ -650,7 +656,7 @@
   
   if (length == 0) return data;
   
-#if DEBUG
+#ifdef DEBUG
   int warningsCounter = 10;
 #endif
   
@@ -892,7 +898,7 @@
     
     if (invalidByte)
     {
-#if DEBUG
+#ifdef DEBUG
       if (warningsCounter)
       {
         warningsCounter--;
@@ -939,7 +945,9 @@
         ret = [NSJSONSerialization JSONObjectWithStream: inputStream options:kNilOptions error:&error];
         [inputStream close];
     } else {
+#ifdef DEBUG
         NSLog(@"JASON FILE NOT FOUND: %@", jsonFile);
+#endif
         ret = @{};
     }
     return ret;

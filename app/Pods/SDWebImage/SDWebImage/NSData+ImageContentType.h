@@ -1,26 +1,57 @@
-//
-// Created by Fabrice Aneche on 06/01/14.
-// Copyright (c) 2014 Dailymotion. All rights reserved.
-//
+/*
+ * This file is part of the SDWebImage package.
+ * (c) Olivier Poitrey <rs@dailymotion.com>
+ * (c) Fabrice Aneche
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 #import <Foundation/Foundation.h>
+#import "SDWebImageCompat.h"
 
+/**
+ You can use switch case like normal enum. It's also recommended to add a default case. You should not assume anything about the raw value.
+ For custom coder plugin, it can also extern the enum for supported format. See `SDImageCoder` for more detailed information.
+ */
+typedef NSInteger SDImageFormat NS_TYPED_EXTENSIBLE_ENUM;
+static const SDImageFormat SDImageFormatUndefined = -1;
+static const SDImageFormat SDImageFormatJPEG      = 0;
+static const SDImageFormat SDImageFormatPNG       = 1;
+static const SDImageFormat SDImageFormatGIF       = 2;
+static const SDImageFormat SDImageFormatTIFF      = 3;
+static const SDImageFormat SDImageFormatWebP      = 4;
+static const SDImageFormat SDImageFormatHEIC      = 5;
+static const SDImageFormat SDImageFormatHEIF      = 6;
+
+/**
+ NSData category about the image content type and UTI.
+ */
 @interface NSData (ImageContentType)
 
 /**
- *  Compute the content type for an image data
+ *  Return image format
  *
- *  @param data the input data
+ *  @param data the input image data
  *
- *  @return the content type as string (i.e. image/jpeg, image/gif)
+ *  @return the image format as `SDImageFormat` (enum)
  */
-+ (NSString *)sd_contentTypeForImageData:(NSData *)data;
++ (SDImageFormat)sd_imageFormatForImageData:(nullable NSData *)data;
 
-@end
+/**
+ *  Convert SDImageFormat to UTType
+ *
+ *  @param format Format as SDImageFormat
+ *  @return The UTType as CFStringRef
+ */
++ (nonnull CFStringRef)sd_UTTypeFromImageFormat:(SDImageFormat)format CF_RETURNS_NOT_RETAINED NS_SWIFT_NAME(sd_UTType(from:));
 
-
-@interface NSData (ImageContentTypeDeprecated)
-
-+ (NSString *)contentTypeForImageData:(NSData *)data __deprecated_msg("Use `sd_contentTypeForImageData:`");
+/**
+ *  Convert UTTyppe to SDImageFormat
+ *
+ *  @param uttype The UTType as CFStringRef
+ *  @return The Format as SDImageFormat
+ */
++ (SDImageFormat)sd_imageFormatFromUTType:(nonnull CFStringRef)uttype;
 
 @end

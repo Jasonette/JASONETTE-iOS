@@ -56,11 +56,9 @@
 {
     imageView = [[UIImageView alloc] init];
     imageView.tintColor = [UIColor lightGrayColor];
-    imageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:imageView];
     
     labelTitle = [[UILabel alloc] init];
-    labelTitle.translatesAutoresizingMaskIntoConstraints = NO;
     labelTitle.font = [UIFont boldSystemFontOfSize:20.0];
     labelTitle.textColor = [UIColor lightGrayColor];
     labelTitle.numberOfLines = 0;
@@ -68,7 +66,6 @@
     [self addSubview:labelTitle];
     
     labelMessage = [[UILabel alloc] init];
-    labelMessage.translatesAutoresizingMaskIntoConstraints = NO;
     labelMessage.font = [UIFont systemFontOfSize:13.0];
     labelMessage.textColor = [UIColor lightGrayColor];
     labelMessage.numberOfLines = 0;
@@ -77,36 +74,27 @@
     
     buttonAction = [UIButton buttonWithType:UIButtonTypeSystem];
     buttonAction.enabled = NO;
-    buttonAction.translatesAutoresizingMaskIntoConstraints = NO;
     [buttonAction addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
     buttonAction.titleLabel.font = [UIFont boldSystemFontOfSize:17];
     [self addSubview:buttonAction];
     
     //Constraint
     {
-        NSLayoutConstraint *constraint1 = [NSLayoutConstraint constraintWithItem:imageView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:0];
-        
-        NSLayoutConstraint *constraint2 = [NSLayoutConstraint constraintWithItem:imageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
+        imageView.translatesAutoresizingMaskIntoConstraints = NO;
+        labelTitle.translatesAutoresizingMaskIntoConstraints = NO;
+        labelMessage.translatesAutoresizingMaskIntoConstraints = NO;
+        buttonAction.translatesAutoresizingMaskIntoConstraints = NO;
 
-        NSLayoutConstraint *constraint3 = [NSLayoutConstraint constraintWithItem:labelTitle attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:imageView attribute:NSLayoutAttributeBottom multiplier:1 constant:5];
+        NSDictionary *views = @{@"imageView":imageView,@"labelTitle":labelTitle,@"labelMessage":labelMessage,@"buttonAction":buttonAction};
         
-        NSLayoutConstraint *constraint4 = [NSLayoutConstraint constraintWithItem:labelTitle attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1 constant:0];
+        NSMutableArray<NSLayoutConstraint*> *constraints = [[NSMutableArray alloc] init];
         
-        NSLayoutConstraint *constraint5 = [NSLayoutConstraint constraintWithItem:labelTitle attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTrailing multiplier:1 constant:0];
+        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[imageView]-[labelTitle]-[labelMessage]-[buttonAction]-|" options:NSLayoutFormatAlignAllCenterX metrics:nil views:views]];
 
-        NSLayoutConstraint *constraint6 = [NSLayoutConstraint constraintWithItem:labelMessage attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:labelTitle attribute:NSLayoutAttributeBottom multiplier:1 constant:5];
-        
-        NSLayoutConstraint *constraint7 = [NSLayoutConstraint constraintWithItem:labelMessage attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1 constant:0];
-        
-        NSLayoutConstraint *constraint8 = [NSLayoutConstraint constraintWithItem:labelMessage attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTrailing multiplier:1 constant:0];
-        
-        NSLayoutConstraint *constraint9 = [NSLayoutConstraint constraintWithItem:buttonAction attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:labelMessage attribute:NSLayoutAttributeBottom multiplier:1 constant:15];
-        
-        NSLayoutConstraint *constraint10 = [NSLayoutConstraint constraintWithItem:buttonAction attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
-        
-        NSLayoutConstraint *constraint11 = [NSLayoutConstraint constraintWithItem:buttonAction attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1 constant:0];
-        
-        [self addConstraints:@[constraint1,constraint2,constraint3,constraint4,constraint5,constraint6,constraint7,constraint8,constraint9,constraint10,constraint11]];
+        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[labelTitle]-|" options:0 metrics:nil views:views]];
+        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[labelMessage]-|" options:0 metrics:nil views:views]];
+
+        [self addConstraints:constraints];
     }
 }
 
@@ -138,11 +126,14 @@
 - (void)prepareForInterfaceBuilder
 {
     NSBundle* bundle = [NSBundle bundleForClass:self.class];
+    if (bundle == nil)  bundle = [NSBundle mainBundle];
+    NSBundle *resourcesBundle = [NSBundle bundleWithPath:[bundle pathForResource:@"IQAudioRecorderController" ofType:@"bundle"]];
+    if (resourcesBundle == nil) resourcesBundle = bundle;
 
-    self.image = [UIImage imageNamed:@"microphone_access" inBundle:bundle compatibleWithTraitCollection:nil];
-    self.title = @"Access Denied!";
-    self.message = @"We are unable to access microphone due to privacy restrictions. Please enable access for microphone in Settings->Privacy Settings->Microphone";
-    self.buttonTitle = @"Go to Settings";
+    self.image = [UIImage imageNamed:@"microphone_access" inBundle:resourcesBundle compatibleWithTraitCollection:nil];
+    self.title = NSLocalizedString(@"Access Denied!",nil);
+    self.message = NSLocalizedString(@"We are unable to access microphone due to privacy restrictions. Please enable access for microphone in Settings->Privacy Settings->Microphone",nil);
+    self.buttonTitle = NSLocalizedString(@"Go to Settings",nil);
 }
 
 -(void)buttonAction:(UIButton*)button

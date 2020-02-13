@@ -8,6 +8,8 @@
 #import <TDOAuth/TDOAuth.h>
 #import <Accounts/Accounts.h>
 #import <Social/Social.h>
+#import <UICKeyChainStore/UICKeyChainStore.h>
+
 
 @implementation JasonOauthAction
 - (void)performSocialFrameworkRequestFor: (ACAccount *)account{
@@ -294,7 +296,7 @@
             for(NSString *key in header){
                 [request setValue:header[key] forHTTPHeaderField:key];
             }
-            [[manager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+            [[manager dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
                 if(!error){
                     [[Jason client] success:responseObject];
                 } else {
@@ -379,7 +381,7 @@
                 
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                    NSString* ErrorResponse = [[NSString alloc] initWithData:(NSData *)error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] encoding:NSUTF8StringEncoding];
-                   NSLog(@"#E = %@",ErrorResponse);
+
                  [[Jason client] error];
             }];
         } else if([method isEqualToString:@"post"]){
@@ -517,7 +519,9 @@
 - (void)refresh_token:(NSString*)provider{
     NSString *client_id = self.options[@"access"][@"client_id"];
     NSString *client_secret = self.options[@"access"][@"client_secret"];
-     NSLog(@"Failed. Refreshing Token...");
+#ifdef DEBUG
+    NSLog(@"Failed. Refreshing Token...");
+#endif
     AFOAuthCredential *credential = [AFOAuthCredential retrieveCredentialWithIdentifier:provider];
     if(credential && credential.isExpired){
         NSDictionary *access_options = self.options[@"access"];
@@ -527,7 +531,9 @@
                                         clientID:client_id
                                           secret:client_secret];
         [OAuth2Manager authenticateUsingOAuthWithURLString:access_options[@"path"] refreshToken:credential.refreshToken success:^(AFOAuthCredential *credential) {
+#ifdef DEBUG
             NSLog(@"Success! your new credential is %@", credential);
+#endif
             [AFOAuthCredential storeCredential:credential withIdentifier:client_id];
             [[Jason client] success];
         } failure:^(NSError *error) {
@@ -609,7 +615,7 @@
                     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
                     manager.requestSerializer = [AFJSONRequestSerializer serializer];
                     
-                    NSURLSessionDataTask *task = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                    NSURLSessionDataTask *task = [manager dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
                         // Ignore if the url is different
                         if(![request.URL.absoluteString isEqualToString:response.URL.absoluteString]) return;
                         
@@ -634,11 +640,12 @@
                                     NSString *view = authorize_options[@"view"];
                                     if(view && [view isEqualToString:@"app"]){
                                         // Launch external safari for oauth
-                                        [[UIApplication sharedApplication] openURL:URL];
+                                        [[UIApplication sharedApplication] openURL:URL options:@{} completionHandler:nil];
                                     } else {
                                         // By default use SFSafariViewController
                                         SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:URL];
                                         vc.delegate = self;
+                                        vc.modalPresentationStyle = UIModalPresentationFullScreen;
                                         [self.VC presentViewController:vc animated:NO completion:^{ }];
                                     }
                                 });
@@ -756,7 +763,7 @@
             *
             ********************************************************************************/
             NSString *client_id = self.options[@"authorize"][@"client_id"];
-            NSString *client_secret = self.options[@"authorize"][@"client_secret"];
+            // NSString *client_secret = self.options[@"authorize"][@"client_secret"];
             
             NSDictionary *authorize_options = self.options[@"authorize"];
             if(!authorize_options || authorize_options.count == 0){
@@ -792,11 +799,12 @@
                         
                         if(view && [view isEqualToString:@"app"]){
                             // Launch external safari for oauth
-                            [[UIApplication sharedApplication] openURL:U];
+                            [[UIApplication sharedApplication] openURL:U options:@{} completionHandler:nil];
                         } else {
                             // By default use SFSafariViewController
                             SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:U];
                             vc.delegate = self;
+                            vc.modalPresentationStyle = UIModalPresentationFullScreen;
                             [self.VC presentViewController:vc animated:NO completion:^{ }];
                         }
                     }
@@ -882,7 +890,7 @@
                 manager.responseSerializer = [AFHTTPResponseSerializer serializer];
                 manager.requestSerializer = [AFJSONRequestSerializer serializer];
                 
-                NSURLSessionDataTask *task = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                NSURLSessionDataTask *task = [manager dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
                     // Ignore if the url is different
                     if(![request.URL.absoluteString isEqualToString:response.URL.absoluteString]) return;
                     
@@ -1018,9 +1026,13 @@
                                                             [[Jason client] success];
                                                         }
                                                         failure:^(NSError *error) {
+#ifdef DEBUG
                                                             NSLog(@"Error: %@", error);
+#endif
                                                             NSString* ErrorResponse = [[NSString alloc] initWithData:(NSData *)error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] encoding:NSUTF8StringEncoding];
+#ifdef DEBUG
                                                             NSLog(@"#ncoded = %@",ErrorResponse);
+#endif
 
                                                             [[Jason client] error];
                                                         }];

@@ -41,16 +41,19 @@ static NSMutableDictionary *_stylesheet = nil;
                     NSData *data = [[NSFileManager defaultManager] contentsAtPath:filePath];
                     
                     // Check for animated GIF
-                    NSString *imageContentType = [NSData sd_contentTypeForImageData:data];
-                    if ([imageContentType isEqualToString:@"image/gif"]) {
-                        localImage = [UIImage sd_animatedGIFWithData:data];
+                    SDImageFormat imageFormat = [NSData sd_imageFormatForImageData:data];
+                    if (imageFormat == SDImageFormatGIF) {
+                        localImage = [UIImage sd_imageWithGIFData:data];
+                        layerChild.image = localImage;
+                        layerChild.animationImages = localImage.images;
+                        layerChild.animationDuration = localImage.duration;
+                        [layerChild startAnimating];
                     } else {
                         localImage = [UIImage imageNamed:localImageName];
+                        layerChild.image = localImage;
                     }
                     
                     CGSize size = localImage.size;
-                    
-                    layerChild.image = localImage;
                     
                     if(size.width > 0 && size.height > 0){
                         
@@ -73,13 +76,11 @@ static NSMutableDictionary *_stylesheet = nil;
                     
                     [layerChild sd_setImageWithURL:url completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                         CGSize size = image.size;
-                        
+
                         if(size.width > 0 && size.height > 0){
-                            
                             if(layer[@"style"]){
                                 [self setStyle:layer[@"style"] ForLayerChild:layerChild ofSize:[NSValue valueWithCGSize:size]];
-                                
-                                
+
                                 if(layer[@"style"][@"color"]){
                                     // Setting tint color for an image
                                     UIColor *newColor = [JasonHelper colorwithHexString:layer[@"style"][@"color"] alpha:1.0];
@@ -87,11 +88,10 @@ static NSMutableDictionary *_stylesheet = nil;
                                     layerChild.image = newImage;
                                 }
                             }
-                            
                         }
                     }];
-                    
                 }
+
                 if(layer[@"action"]){
                     if(layer[@"name"]){
                         layerView.payload = [@{@"type": @"layer", @"action": layer[@"action"], @"name": layer[@"name"]} mutableCopy];
@@ -235,8 +235,8 @@ static NSMutableDictionary *_stylesheet = nil;
         left = screenWidth - [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"right"]] - width;
     } else {
         left = 100.0f;
-        
     }
+
     if(style[@"top"]){
         top = [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"top"]];
     } else if(style[@"bottom"]){
@@ -276,7 +276,7 @@ static NSMutableDictionary *_stylesheet = nil;
 }
 + (void)setStylesheet:(NSMutableDictionary *)stylesheet{
     if (stylesheet != _stylesheet){
-        _stylesheet = [stylesheet mutableCopy];
+        [_stylesheet addEntriesFromDictionary:stylesheet];
     }
 }
 

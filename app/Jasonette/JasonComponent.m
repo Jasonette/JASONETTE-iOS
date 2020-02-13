@@ -13,6 +13,40 @@
 }
 + (void) stylize: (NSDictionary *)json component: (UIView *)component{
     NSDictionary *style = json[@"style"];
+    
+    if(json[@"alt"]){
+        if([json[@"alt"] length] == 0) {
+            component.isAccessibilityElement = NO;
+            component.accessibilityTraits = UIAccessibilityTraitNone;
+        } else {
+            component.accessibilityLabel = json[@"alt"];
+            component.shouldGroupAccessibilityChildren = YES;
+        }
+    }
+    
+    if(json[@"role"]){
+        NSString *role_string = json[@"role"];
+        NSMutableArray *roles = [[role_string componentsSeparatedByString:@" "] mutableCopy];
+        [roles removeObject:@""];
+        for(NSString *role in roles){
+            if([role isEqualToString:@"selected"] || [role isEqualToString:@"checked"]) {
+                component.accessibilityTraits |= UIAccessibilityTraitSelected;
+            }
+            if([role isEqualToString:@"button"] || [role isEqualToString:@"checkbox"]) {
+                component.accessibilityTraits |= UIAccessibilityTraitButton;
+            }
+            if([role isEqualToString:@"link"]) {
+                component.accessibilityTraits |= UIAccessibilityTraitLink;
+            }
+            if([role isEqualToString:@"none"]) {
+                component.accessibilityTraits = UIAccessibilityTraitNone;
+            }
+            if([role isEqualToString:@"header"]) {
+                component.accessibilityTraits |= UIAccessibilityTraitHeader;
+            }
+        }
+    }
+    
     if(style){
         // background
         if([component respondsToSelector:@selector(backgroundColor)]){
@@ -63,8 +97,15 @@
         
         // width
         if(style[@"width"]){
-            NSString *widthStr = style[@"width"];
-            CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
+            NSString *widthStr = [style[@"width"] description];
+            CGFloat width;
+            
+            if ([widthStr isEqualToString:@"auto"]) {
+                width = component.intrinsicContentSize.width;
+                json[@"style"][@"width"] = [[NSNumber numberWithFloat:width] stringValue];
+            } else {
+                width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
+            }
 
             // Look for any width constraint
             NSLayoutConstraint *constraint_to_update = nil;
@@ -124,7 +165,7 @@
             [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
             [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
         }
-        
+
         // corner radius
         if(style[@"corner_radius"]){
             CGFloat radius = [style[@"corner_radius"] floatValue];
@@ -133,7 +174,7 @@
         } else {
             component.layer.cornerRadius = 0;
         }
-        
+
         // border width
         if(style[@"border_width"]){
             CGFloat borderWidth = [style[@"border_width"] floatValue];
@@ -150,16 +191,21 @@
             component.layer.borderColor = nil;
         }
         
-        // text styling
+        if (style[@"center_crop"]) {
+            [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+            [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+            component.contentMode = UIViewContentModeScaleAspectFill;
+            component.clipsToBounds = YES;
+        }
     }
+    // text styling
     [self stylize:json text:component];
     
 }
 + (void)stylize:(NSDictionary *)json text:(UIView *)el{
     NSDictionary *style = json[@"style"];
+
     if(style){
-        
-        
         // Alignment
         if(style[@"align"]){
             NSDictionary *alignment_map = @{

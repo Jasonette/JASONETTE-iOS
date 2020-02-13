@@ -58,7 +58,6 @@
     NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
     [NSURLCache setSharedURLCache:URLCache];
     
-    
     // # initialize
     // Run "initialize" for built-in daemon type actions
     NSArray *native_daemon_actions = @[@"JasonPushService", @"JasonVisionService", @"JasonWebsocketService", @"JasonAgentService"];
@@ -68,6 +67,11 @@
     // Run "initialize" method for all extensions
     [self init_extensions: launchOptions];
     
+    // Appending custom string on user agent so we can identify when we're using a webview embedded in the app
+    UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+    NSString *agent = [NSString stringWithFormat:@"%@ Finalsite-App/%@ Safari", [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:agent, @"UserAgent", nil];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
     
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey]){
         // launched with url. so wait until openURL is called.
@@ -88,11 +92,6 @@
         [self openURL:self.launchURL type: @"start"];
         self.launchURL = nil;
     }
-}
-
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    if (!url) return NO;
-    return [self openURL:url type: @"go"];
 }
 
 - (BOOL) openURL: (NSURL *) url type: (NSString *) type{
@@ -127,24 +126,31 @@
 
 
 #ifdef PUSH
-#pragma mark - Remote Notification Delegate below iOS 9
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
-    [application registerForRemoteNotifications];
-}
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
-    NSString *device_token = [[NSString alloc]initWithFormat:@"%@",[[[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""]];
-    NSLog(@"Device Token = %@",device_token);
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil userInfo:@{@"token": device_token}];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotificationDeviceRegistered" object:nil userInfo:@{@"token": [self hexadecimalStringFromData:deviceToken]}];
 }
 
--(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+- (NSString *)hexadecimalStringFromData:(NSData *)data
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"onRemoteNotification" object:nil userInfo:userInfo];
+  NSUInteger dataLength = data.length;
+  if (dataLength == 0) {
+    return nil;
+  }
+
+  const unsigned char *dataBuffer = (const unsigned char *)data.bytes;
+  NSMutableString *hexString  = [NSMutableString stringWithCapacity:(dataLength * 2)];
+  for (int i = 0; i < dataLength; ++i) {
+    [hexString appendFormat:@"%02x", dataBuffer[i]];
+  }
+  return [hexString copy];
 }
 
 -(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
+#ifdef DEBUG
     NSLog(@"Error = %@",error);
+#endif
 }
 #endif
 

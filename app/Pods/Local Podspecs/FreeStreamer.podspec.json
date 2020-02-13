@@ -1,19 +1,18 @@
 {
   "name": "FreeStreamer",
-  "version": "3.5.7",
+  "version": "4.0.0",
   "license": "BSD",
-  "summary": "A low-memory footprint streaming audio client for iOS and OS X.",
-  "homepage": "http://muhku.github.io/FreeStreamer/",
+  "summary": "A low-memory footprint streaming audio client for iOS",
+  "homepage": "https://github.com/muhku/FreeStreamer/",
   "authors": {
     "Matias Muhonen": "mmu@iki.fi"
   },
   "source": {
     "git": "https://github.com/muhku/FreeStreamer.git",
-    "tag": "3.5.7"
+    "tag": "4.0.0"
   },
   "platforms": {
-    "ios": "6.0",
-    "osx": "10.7"
+    "ios": "6.0"
   },
   "source_files": [
     "FreeStreamer/FreeStreamer/FSAudioController.h",
@@ -66,16 +65,9 @@
       "MediaPlayer"
     ]
   },
-  "osx": {
-    "frameworks": [
-      "CFNetwork",
-      "AudioToolbox",
-      "AVFoundation"
-    ]
-  },
   "libraries": [
     "xml2",
-    "stdc++"
+    "c++"
   ],
   "xcconfig": {
     "HEADER_SEARCH_PATHS": "$(SDKROOT)/usr/include/libxml2"

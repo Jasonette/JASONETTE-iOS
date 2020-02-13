@@ -10,53 +10,83 @@
 #import "SDWebImageDownloader.h"
 #import "SDWebImageOperation.h"
 
-extern NSString *const SDWebImageDownloadStartNotification;
-extern NSString *const SDWebImageDownloadReceiveResponseNotification;
-extern NSString *const SDWebImageDownloadStopNotification;
-extern NSString *const SDWebImageDownloadFinishNotification;
+/**
+ Describes a downloader operation. If one wants to use a custom downloader op, it needs to inherit from `NSOperation` and conform to this protocol
+ For the description about these methods, see `SDWebImageDownloaderOperation`
+ @note If your custom operation class does not use `NSURLSession` at all, do not implement the optional methods and session delegate methods.
+ */
+@protocol SDWebImageDownloaderOperation <NSURLSessionTaskDelegate, NSURLSessionDataDelegate>
+@required
+- (nonnull instancetype)initWithRequest:(nullable NSURLRequest *)request
+                              inSession:(nullable NSURLSession *)session
+                                options:(SDWebImageDownloaderOptions)options;
 
-@interface SDWebImageDownloaderOperation : NSOperation <SDWebImageOperation, NSURLSessionTaskDelegate, NSURLSessionDataDelegate>
+- (nonnull instancetype)initWithRequest:(nullable NSURLRequest *)request
+                              inSession:(nullable NSURLSession *)session
+                                options:(SDWebImageDownloaderOptions)options
+                                context:(nullable SDWebImageContext *)context;
+
+- (nullable id)addHandlersForProgress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
+                            completed:(nullable SDWebImageDownloaderCompletedBlock)completedBlock;
+
+- (BOOL)cancel:(nullable id)token;
+
+@property (strong, nonatomic, readonly, nullable) NSURLRequest *request;
+@property (strong, nonatomic, readonly, nullable) NSURLResponse *response;
+
+@optional
+@property (strong, nonatomic, readonly, nullable) NSURLSessionTask *dataTask;
+@property (strong, nonatomic, nullable) NSURLCredential *credential;
+@property (assign, nonatomic) double minimumProgressInterval;
+
+@end
+
+
+/**
+ The download operation class for SDWebImageDownloader.
+ */
+@interface SDWebImageDownloaderOperation : NSOperation <SDWebImageDownloaderOperation>
 
 /**
  * The request used by the operation's task.
  */
-@property (strong, nonatomic, readonly) NSURLRequest *request;
+@property (strong, nonatomic, readonly, nullable) NSURLRequest *request;
+
+/**
+ * The response returned by the operation's task.
+ */
+@property (strong, nonatomic, readonly, nullable) NSURLResponse *response;
 
 /**
  * The operation's task
  */
-@property (strong, nonatomic, readonly) NSURLSessionTask *dataTask;
-
-
-@property (assign, nonatomic) BOOL shouldDecompressImages;
+@property (strong, nonatomic, readonly, nullable) NSURLSessionTask *dataTask;
 
 /**
- *  Was used to determine whether the URL connection should consult the credential storage for authenticating the connection.
- *  @deprecated Not used for a couple of versions
- */
-@property (nonatomic, assign) BOOL shouldUseCredentialStorage __deprecated_msg("Property deprecated. Does nothing. Kept only for backwards compatibility");
-
-/**
- * The credential used for authentication challenges in `-connection:didReceiveAuthenticationChallenge:`.
+ * The credential used for authentication challenges in `-URLSession:task:didReceiveChallenge:completionHandler:`.
  *
  * This will be overridden by any shared credentials that exist for the username or password of the request URL, if present.
  */
-@property (nonatomic, strong) NSURLCredential *credential;
+@property (strong, nonatomic, nullable) NSURLCredential *credential;
 
 /**
- * The SDWebImageDownloaderOptions for the receiver.
+ * The minimum interval about progress percent during network downloading. Which means the next progress callback and current progress callback's progress percent difference should be larger or equal to this value. However, the final finish download progress callback does not get effected.
+ * The value should be 0.0-1.0.
+ * @note If you're using progressive decoding feature, this will also effect the image refresh rate.
+ * @note This value may enhance the performance if you don't want progress callback too frequently.
+ * Defaults to 0, which means each time we receive the new data from URLSession, we callback the progressBlock immediately.
+ */
+@property (assign, nonatomic) double minimumProgressInterval;
+
+/**
+ * The options for the receiver.
  */
 @property (assign, nonatomic, readonly) SDWebImageDownloaderOptions options;
 
 /**
- * The expected size of data.
+ * The context for the receiver.
  */
-@property (assign, nonatomic) NSInteger expectedSize;
-
-/**
- * The response returned by the operation's connection.
- */
-@property (strong, nonatomic) NSURLResponse *response;
+@property (copy, nonatomic, readonly, nullable) SDWebImageContext *context;
 
 /**
  *  Initializes a `SDWebImageDownloaderOperation` object
@@ -66,20 +96,12 @@ extern NSString *const SDWebImageDownloadFinishNotification;
  *  @param request        the URL request
  *  @param session        the URL session in which this operation will run
  *  @param options        downloader options
- *  @param progressBlock  the block executed when a new chunk of data arrives. 
- *                        @note the progress block is executed on a background queue
- *  @param completedBlock the block executed when the download is done. 
- *                        @note the completed block is executed on the main queue for success. If errors are found, there is a chance the block will be executed on a background queue
- *  @param cancelBlock    the block executed if the download (operation) is cancelled
  *
  *  @return the initialized instance
  */
-- (id)initWithRequest:(NSURLRequest *)request
-            inSession:(NSURLSession *)session
-              options:(SDWebImageDownloaderOptions)options
-             progress:(SDWebImageDownloaderProgressBlock)progressBlock
-            completed:(SDWebImageDownloaderCompletedBlock)completedBlock
-            cancelled:(SDWebImageNoParamsBlock)cancelBlock;
+- (nonnull instancetype)initWithRequest:(nullable NSURLRequest *)request
+                              inSession:(nullable NSURLSession *)session
+                                options:(SDWebImageDownloaderOptions)options;
 
 /**
  *  Initializes a `SDWebImageDownloaderOperation` object
@@ -87,20 +109,38 @@ extern NSString *const SDWebImageDownloadFinishNotification;
  *  @see SDWebImageDownloaderOperation
  *
  *  @param request        the URL request
+ *  @param session        the URL session in which this operation will run
  *  @param options        downloader options
+ *  @param context        A context contains different options to perform specify changes or processes, see `SDWebImageContextOption`. This hold the extra objects which `options` enum can not hold.
+ *
+ *  @return the initialized instance
+ */
+- (nonnull instancetype)initWithRequest:(nullable NSURLRequest *)request
+                              inSession:(nullable NSURLSession *)session
+                                options:(SDWebImageDownloaderOptions)options
+                                context:(nullable SDWebImageContext *)context NS_DESIGNATED_INITIALIZER;
+
+/**
+ *  Adds handlers for progress and completion. Returns a tokent that can be passed to -cancel: to cancel this set of
+ *  callbacks.
+ *
  *  @param progressBlock  the block executed when a new chunk of data arrives.
  *                        @note the progress block is executed on a background queue
  *  @param completedBlock the block executed when the download is done.
  *                        @note the completed block is executed on the main queue for success. If errors are found, there is a chance the block will be executed on a background queue
- *  @param cancelBlock    the block executed if the download (operation) is cancelled
  *
- *  @return the initialized instance. The operation will run in a separate session created for this operation
+ *  @return the token to use to cancel this set of handlers
  */
-- (id)initWithRequest:(NSURLRequest *)request
-              options:(SDWebImageDownloaderOptions)options
-             progress:(SDWebImageDownloaderProgressBlock)progressBlock
-            completed:(SDWebImageDownloaderCompletedBlock)completedBlock
-            cancelled:(SDWebImageNoParamsBlock)cancelBlock
-__deprecated_msg("Method deprecated. Use `initWithRequest:inSession:options:progress:completed:cancelled`");
+- (nullable id)addHandlersForProgress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
+                            completed:(nullable SDWebImageDownloaderCompletedBlock)completedBlock;
+
+/**
+ *  Cancels a set of callbacks. Once all callbacks are canceled, the operation is cancelled.
+ *
+ *  @param token the token representing a set of callbacks to cancel
+ *
+ *  @return YES if the operation was stopped because this was the last token to be canceled. NO otherwise.
+ */
+- (BOOL)cancel:(nullable id)token;
 
 @end

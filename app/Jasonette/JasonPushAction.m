@@ -189,27 +189,22 @@
 - (void)register{
     // currently only remote notification
 #ifdef PUSH
-    if(SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(@"10.0")) {
-        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-        JasonPushService *service = [Jason client].services[@"JasonPushService"];
-        if(service) {
-            center.delegate = service;
-        }
-        [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
-            if( !error && granted){
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    JasonPushService *service = [Jason client].services[@"JasonPushService"];
+    if(service) {
+        center.delegate = service;
+    }
+    [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
+        if( !error && granted){
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [[UIApplication sharedApplication] registerForRemoteNotifications];
                 [[Jason client] success];
-                
-            } else {
-                [[Jason client] error];
-            }
-        }];
-    }
-    else {
-        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
-        [[Jason client] success];
-    }
+            });
+            
+        } else {
+            [[Jason client] error];
+        }
+    }];
 #else
     NSLog(@"Push notification turned off by default. If you'd like to suport push, uncomment the #define statement in Constants.h and turn on the push notification feature from the capabilities tab.");
 #endif

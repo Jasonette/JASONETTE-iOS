@@ -12,12 +12,12 @@
 
 #pragma mark - public
 
-- (void)dispatchAsync:(void (^)())block
+- (void)dispatchAsync:(void (^)(void))block
 {
     [self performSelector:@selector(performBlock:) onThread:self withObject:block waitUntilDone:NO];
 }
 
-- (void)dispatchSync:(void (^)())block
+- (void)dispatchSync:(void (^)(void))block
 {
     [self performSelector:@selector(performBlock:) onThread:self withObject:block waitUntilDone:YES];
 }
@@ -38,7 +38,7 @@
 
 #pragma mark - private
 
-- (void)performBlock:(void (^)())block
+- (void)performBlock:(void (^)(void))block
 {
     block();
 }

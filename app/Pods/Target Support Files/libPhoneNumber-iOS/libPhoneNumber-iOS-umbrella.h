@@ -18,10 +18,9 @@
 #import "NBPhoneNumberUtil.h"
 #import "NBMetadataHelper.h"
 #import "NBAsYouTypeFormatter.h"
-#import "NBMetadataCore.h"
-#import "NBMetadataCoreTest.h"
-#import "NBMetadataCoreMapper.h"
-#import "NBMetadataCoreTestMapper.h"
+#import "NSArray+NBAdditions.h"
+#import "NBRegExMatcher.h"
+#import "NBRegularExpressionCache.h"
 
 FOUNDATION_EXPORT double libPhoneNumber_iOSVersionNumber;
 FOUNDATION_EXPORT const unsigned char libPhoneNumber_iOSVersionString[];

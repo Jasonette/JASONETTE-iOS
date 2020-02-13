@@ -139,20 +139,9 @@
 - (void)abortParsing;
 
 /**
- Sets the receiver’s delegate.
- 
- @param delegate An object that is the new delegate. It is not retained. The delegate must conform to the DTHTMLParserDelegate Protocol protocol.
- 
- @see delegate
+ The receiver’s delegate. It is not retained. The delegate must conform to the DTHTMLParserDelegate Protocol protocol.
  */
-- (void)setDelegate:(id <DTHTMLParserDelegate>)delegate;
-
-/**
- Returns the receiver’s delegate.
- 
- @see delegate
- */
-- (id <DTHTMLParserDelegate>)delegate;
+@property (nonatomic, DT_WEAK_PROPERTY) id <DTHTMLParserDelegate> delegate;
 
 /**
  Returns the column number of the XML document being processed by the receiver.

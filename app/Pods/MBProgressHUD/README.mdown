@@ -5,15 +5,15 @@
 
 `MBProgressHUD` is an iOS drop-in class that displays a translucent HUD with an indicator and/or labels while work is being done in a background thread. The HUD is meant as a replacement for the undocumented, private `UIKit` `UIProgressHUD` with some additional features.
 
-[![](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/1-thumb.png)](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/1.png)
-[![](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/2-thumb.png)](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/2.png)
-[![](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/3-thumb.png)](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/3.png)
-[![](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/4-thumb.png)](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/4.png)
-[![](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/5-thumb.png)](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/5.png)
-[![](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/6-thumb.png)](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/6.png)
-[![](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/7-thumb.png)](http://dl.dropbox.com/u/378729/MBProgressHUD/v1/7.png)
+[![](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/1-small.png)](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/1.png)
+[![](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/2-small.png)](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/2.png)
+[![](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/3-small.png)](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/3.png)
+[![](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/4-small.png)](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/4.png)
+[![](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/5-small.png)](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/5.png)
+[![](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/6-small.png)](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/6.png)
+[![](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/7-small.png)](https://raw.githubusercontent.com/wiki/matej/MBProgressHUD/Screenshots/7.png)
 
-**NOTE:** The class has recently undegone a major rewrite. The old version is available in the [legacy](https://github.com/jdg/MBProgressHUD/tree/legacy) branch, should you need it. 
+**NOTE:** The class has recently undergone a major rewrite. The old version is available in the [legacy](https://github.com/jdg/MBProgressHUD/tree/legacy) branch, should you need it. 
 
 ## Requirements
 
@@ -31,13 +31,13 @@ You will need the latest developer tools in order to build `MBProgressHUD`. Old 
 
 [CocoaPods](http://cocoapods.org) is the recommended way to add MBProgressHUD to your project.
 
-1. Add a pod entry for MBProgressHUD to your Podfile `pod 'MBProgressHUD', '~> 1.0.0'`
+1. Add a pod entry for MBProgressHUD to your Podfile `pod 'MBProgressHUD', '~> 1.1.0'`
 2. Install the pod(s) by running `pod install`.
 3. Include MBProgressHUD wherever you need it with `#import "MBProgressHUD.h"`.
 
 ### Carthage
 
-1. Add MBProgressHUD to your Cartfile. e.g., `github "jdg/MBProgressHUD" ~> 1.0.0`
+1. Add MBProgressHUD to your Cartfile. e.g., `github "jdg/MBProgressHUD" ~> 1.1.0`
 2. Run `carthage update`
 3. Follow the rest of the [standard Carthage installation instructions](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) to add MBProgressHUD to your project.
 
@@ -79,11 +79,11 @@ If you need to configure the HUD you can do this by using the MBProgressHUD refe
 ```objective-c
 MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 hud.mode = MBProgressHUDModeAnnularDeterminate;
-hud.labelText = @"Loading";
+hud.label.text = @"Loading";
 [self doSomethingInBackgroundWithProgressCallback:^(float progress) {
 	hud.progress = progress;
 } completionCallback:^{
-	[hud hide:YES];
+	[hud hideAnimated:YES];
 }];
 ```
 
@@ -92,14 +92,14 @@ You can also use a `NSProgress` object and MBProgressHUD will update itself when
 ```objective-c
 MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 hud.mode = MBProgressHUDModeAnnularDeterminate;
-hud.labelText = @"Loading";
+hud.label.text = @"Loading";
 NSProgress *progress = [self doSomethingInBackgroundCompletion:^{
-	[hud hide:YES];
+	[hud hideAnimated:YES];
 }];
 hud.progressObject = progress;
 ```
 
-UI updates should always be done on the main thread. Some MBProgressHUD setters are however considered "thread safe" and can be called from background threads. Those also include `setMode:`, `setCustomView:`, `setLabelText:`, `setLabelFont:`, `setDetailsLabelText:`, `setDetailsLabelFont:` and `setProgress:`.
+Keep in mind that UI updates, inclining calls to MBProgressHUD should always be done on the main thread.
 
 If you need to run your long-running task in the main thread, you should perform it with a slight delay, so UIKit will have enough time to update the UI (i.e., draw the HUD) before you block the main thread with your task.
 

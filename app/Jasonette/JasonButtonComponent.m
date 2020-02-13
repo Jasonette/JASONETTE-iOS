@@ -7,6 +7,7 @@
 #import "JasonButtonComponent.h"
 #import "NSData+ImageContentType.h"
 #import "UIImage+GIF.h"
+#import "SDWebImageDownloader.h"
 
 @implementation JasonButtonComponent
 + (UIView *)build: (UIButton *)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
@@ -29,21 +30,20 @@
         
         component.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
-        UIImage *placeholder_image = [UIImage imageNamed:@"placeholderr"];
+        UIImage *placeholder_image = [UIImage imageNamed:@"placeholder"];
         [component setImage:placeholder_image forState:UIControlStateNormal];
         NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
-        
-        
-        SDWebImageDownloader *manager = [SDWebImageManager sharedManager].imageDownloader;
+
+        SDWebImageDownloader *downloader = SDWebImageDownloader.sharedDownloader;
         NSDictionary *session = [JasonHelper sessionForUrl:url];
         if(session && session.count > 0 && session[@"header"]){
             for(NSString *key in session[@"header"]){
-                [manager setValue:session[@"header"][key] forHTTPHeaderField:key];
+                [downloader setValue:session[@"header"][key] forHTTPHeaderField:key];
             }
         }
         if(json[@"header"] && [json[@"header"] count] > 0){
             for(NSString *key in json[@"header"]){
-                [manager setValue:json[@"header"][key] forHTTPHeaderField:key];
+                [downloader setValue:json[@"header"][key] forHTTPHeaderField:key];
             }
         }
         
@@ -60,9 +60,12 @@
                 NSData *data = [[NSFileManager defaultManager] contentsAtPath:filePath];
                 
                 // Check for animated GIF
-                NSString *imageContentType = [NSData sd_contentTypeForImageData:data];
-                if ([imageContentType isEqualToString:@"image/gif"]) {
-                    localImage = [UIImage sd_animatedGIFWithData:data];
+                SDImageFormat imageFormat = [NSData sd_imageFormatForImageData:data];
+                if (imageFormat == SDImageFormatGIF) {
+                    localImage = [UIImage sd_imageWithGIFData:data];
+                    component.imageView.animationImages = localImage.images;
+                    component.imageView.animationDuration = localImage.duration;
+                    [component.imageView startAnimating];
                 } else {
                     localImage = [UIImage imageNamed:localImageName];
                 }
@@ -91,6 +94,11 @@
                         } else {
                             [component setImage:imageView.image forState:UIControlStateNormal];
                         }
+                        if (component.imageView.image.images && [component.imageView.image.images count] > 1) {
+                            component.imageView.animationImages = component.imageView.image.images;
+                            component.imageView.animationDuration = component.imageView.image.duration;
+                            [component.imageView startAnimating];
+                        }
                     }
                 }];
             }
@@ -102,7 +110,6 @@
         if(style){
             NSString *url = (NSString *)[JasonHelper cleanNull: json[@"url"] type:@"string"];
    
-                    
             if(style[@"width"] && !style[@"height"]){
                 // Width is set but height is not
                 CGFloat aspectRatioMult;
@@ -124,8 +131,7 @@
                 NSString *widthStr = style[@"width"];
                 CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:widthStr];
                 style[@"height"] = [NSString stringWithFormat:@"%d", (int)(width * aspectRatioMult)];
-            }
-            if(style[@"height"] && !style[@"width"]){
+            } else if(style[@"height"] && !style[@"width"]){
                 // Height is set but width is not
                 CGFloat aspectRatioMult;
                 if(JasonComponentFactory.imageLoaded[url]){
@@ -150,20 +156,13 @@
             mutable_json[@"style"] = style;
         }
         
-    }
-    else{
+    } else {
         [component setImage:nil forState:UIControlStateNormal];
         if(json[@"text"]){
             [component setTitle:[json[@"text"] description] forState:UIControlStateNormal];
         }
-
     }
 
-    
-    
-
-    
-    
     if(json[@"action"]){
         component.payload = [@{@"action": json[@"action"]} mutableCopy];
     }
@@ -189,7 +188,6 @@
             component.tintColor = c;
             [component setTitleColor:c forState:UIControlStateNormal];
         }
-
     }
     
     
@@ -242,8 +240,10 @@
             }
         }
         component.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
-        
-
+        [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+        [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+        [component setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+        [component setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     }
     
     [component setSelected:NO];

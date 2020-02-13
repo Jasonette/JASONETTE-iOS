@@ -1,8 +1,9 @@
-platform :ios, '8.0'
+platform :ios, '10.0'
+project 'Finalsite'
 inhibit_all_warnings!
 use_frameworks!
 
-target 'Jasonette' do
+target 'Finalsite' do
   pod 'UICKeyChainStore'
   pod 'TWMessageBarManager'
   pod 'AFNetworking'
@@ -23,7 +24,8 @@ target 'Jasonette' do
   pod "AFOAuth2Manager"
   pod "CYRTextView"
   pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
-  pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git", :tag => '3.8.1'
+  # pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git", :tag => '3.8.1'
+  pod 'SDWebImage', '~> 5.0'
   pod 'SZTextView'
   pod 'SBJson', '~> 4.0.2'
   pod 'DHSmartScreenshot'
@@ -37,6 +39,8 @@ target 'Jasonette' do
   pod 'FLEX', '~> 2.0', :configurations => ['Debug']
   pod 'SocketRocket'
   #pod 'GoogleMobileAds', '~> 7.8'
+  pod 'MaterialComponents/ActivityIndicator'
+  pod 'MaterialComponents/PageControl'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|

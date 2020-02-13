@@ -1,6 +1,6 @@
 /*
  * This file is part of the FreeStreamer project,
- * (C)Copyright 2011-2016 Matias Muhonen <mmu@iki.fi> 穆马帝
+ * (C)Copyright 2011-2018 Matias Muhonen <mmu@iki.fi> 穆马帝
  * See the file ''LICENSE'' for using the code.
  *
  * https://github.com/muhku/FreeStreamer
@@ -46,6 +46,13 @@
 #endif
 
 namespace astreamer {
+
+static void fsTick(CFRunLoopTimerRef timer, void *info);
+    
+static void fsTick(CFRunLoopTimerRef timer, void *info)
+{
+    // Dummy function just to keep the decoder runloop running
+}
     
 static CFStringRef coreAudioErrorToCFString(CFStringRef basicErrorDescription, OSStatus error)
 {
@@ -86,12 +93,14 @@ Audio_Stream::Audio_Stream() :
     m_seekTimer(0),
     m_inputStreamTimer(0),
     m_stateSetTimer(0),
+    m_decodeTimer(0),
     m_audioFileStream(0),
     m_audioConverter(0),
     m_initializationError(noErr),
     m_outputBufferSize(Stream_Configuration::configuration()->bufferSize),
     m_outputBuffer(new UInt8[m_outputBufferSize]),
     m_packetIdentifier(0),
+    m_playingPacketIdentifier(0),
     m_dataOffset(0),
     m_seekOffset(0),
     m_bounceCount(0),
@@ -117,7 +126,7 @@ Audio_Stream::Audio_Stream() :
     m_converterRunOutOfData(false),
     m_decoderShouldRun(false),
     m_decoderFailed(false),
-    m_decoderActive(false),
+    m_decoderThreadCreated(false),
     m_mainRunLoop(CFRunLoopGetCurrent()),
     m_decodeRunLoop(NULL)
 {
@@ -143,40 +152,47 @@ Audio_Stream::Audio_Stream() :
         AS_TRACE("m_streamStateMutex init failed!\n");
     }
     
-    pthread_create(&m_decodeThread, NULL, decodeLoop, this);
-    pthread_detach(m_decodeThread);
+    m_decoderThreadCreated = (pthread_create(&m_decodeThread, NULL, decodeLoop, this) == 0);
 }
 
 Audio_Stream::~Audio_Stream()
 {
-    pthread_mutex_lock(&m_streamStateMutex);
-    m_decoderShouldRun = false;
+    setDecoderRunState(false);
     
-    if (m_decodeRunLoop) {
-        CFRunLoopStop(m_decodeRunLoop), m_decodeRunLoop = NULL;
+    if (m_decoderThreadCreated) {
+        while (m_decodeRunLoop == NULL || !CFRunLoopIsWaiting(m_decodeRunLoop)) {
+            usleep(0);
+        }
+        CFRunLoopStop(m_decodeRunLoop);
+        pthread_join(m_decodeThread, NULL);
+        m_decodeRunLoop = NULL;
+        m_decoderThreadCreated = false;
     }
     
-    pthread_mutex_unlock(&m_streamStateMutex);
-    
     if (m_defaultContentType) {
-        CFRelease(m_defaultContentType), m_defaultContentType = NULL;
+        CFRelease(m_defaultContentType);
+        m_defaultContentType = NULL;
     }
     
     if (m_contentType) {
-        CFRelease(m_contentType), m_contentType = NULL;
+        CFRelease(m_contentType);
+        m_contentType = NULL;
     }
     
     close(true);
     
-    delete [] m_outputBuffer, m_outputBuffer = 0;
+    delete [] m_outputBuffer;
+    m_outputBuffer = 0;
     
     if (m_inputStream) {
         m_inputStream->m_delegate = 0;
-        delete m_inputStream, m_inputStream = 0;
+        delete m_inputStream;
+        m_inputStream = 0;
     }
     
     if (m_fileOutput) {
-        delete m_fileOutput, m_fileOutput = 0;
+        delete m_fileOutput;
+        m_fileOutput = 0;
     }
     
     pthread_mutex_destroy(&m_packetQueueMutex);
@@ -208,9 +224,10 @@ void Audio_Stream::open(Input_Stream_Position *position)
     m_metaDataSizeInBytes = 0;
     m_discontinuity = true;
     
+    setDecoderRunState(false);
+    
     pthread_mutex_lock(&m_streamStateMutex);
     m_audioQueueConsumedPackets = false;
-    m_decoderShouldRun = false;
     m_decoderFailed    = false;
     pthread_mutex_unlock(&m_streamStateMutex);
     
@@ -223,7 +240,8 @@ void Audio_Stream::open(Input_Stream_Position *position)
     Stream_Configuration *config = Stream_Configuration::configuration();
     
     if (m_contentType) {
-        CFRelease(m_contentType), m_contentType = NULL;
+        CFRelease(m_contentType);
+        m_contentType = NULL;
     }
     
     bool success = false;
@@ -271,19 +289,22 @@ void Audio_Stream::close(bool closeParser)
     
     if (m_seekTimer) {
         CFRunLoopTimerInvalidate(m_seekTimer);
-        CFRelease(m_seekTimer), m_seekTimer = 0;
+        CFRelease(m_seekTimer);
+        m_seekTimer = 0;
     }
     
     if (m_inputStreamTimer) {
         CFRunLoopTimerInvalidate(m_inputStreamTimer);
-        CFRelease(m_inputStreamTimer), m_inputStreamTimer = 0;
+        CFRelease(m_inputStreamTimer);
+        m_inputStreamTimer = 0;
     }
     
     pthread_mutex_lock(&m_streamStateMutex);
     
     if (m_stateSetTimer) {
         CFRunLoopTimerInvalidate(m_stateSetTimer);
-        CFRelease(m_stateSetTimer), m_stateSetTimer = 0;
+        CFRelease(m_stateSetTimer);
+        m_stateSetTimer = 0;
     }
     
     pthread_mutex_unlock(&m_streamStateMutex);
@@ -307,9 +328,7 @@ void Audio_Stream::close(bool closeParser)
         m_audioStreamParserRunning = false;
     }
     
-    pthread_mutex_lock(&m_streamStateMutex);
-    m_decoderShouldRun = false;
-    pthread_mutex_unlock(&m_streamStateMutex);
+    setDecoderRunState(false);
     
     pthread_mutex_lock(&m_packetQueueMutex);
     m_playPacket = 0;
@@ -329,7 +348,8 @@ void Audio_Stream::close(bool closeParser)
     }
     
     if (m_audioConverter) {
-        AudioConverterDispose(m_audioConverter), m_audioConverter = 0;
+        AudioConverterDispose(m_audioConverter);
+        m_audioConverter = 0;
     }
     
     /*
@@ -347,6 +367,8 @@ void Audio_Stream::close(bool closeParser)
     m_queuedTail = 0;
     m_cachedDataSize = 0;
     m_numPacketsToRewind = 0;
+	
+	m_processedPackets.clear();
     
     pthread_mutex_unlock(&m_packetQueueMutex);
     
@@ -422,6 +444,19 @@ AS_Playback_Position Audio_Stream::playbackPosition()
     return playbackPosition;
 }
     
+UInt64 Audio_Stream::audioDataByteCount()
+{
+    UInt64 audioDataBytes = 0;
+    
+    if (m_audioDataByteCount > 0) {
+        audioDataBytes = m_audioDataByteCount;
+    } else {
+        audioDataBytes = contentLength() - m_metaDataSizeInBytes;
+    }
+    
+    return audioDataBytes;
+}
+    
 float Audio_Stream::durationInSeconds()
 {
     if (m_audioDataPacketCount > 0 && m_srcFormat.mFramesPerPacket > 0) {
@@ -429,19 +464,13 @@ float Audio_Stream::durationInSeconds()
     }
     
     // Not enough data provided by the format, use bit rate based estimation
-    UInt64 audioFileLength = 0;
+    UInt64 audioDataBytes = audioDataByteCount();
     
-    if (m_audioDataByteCount > 0) {
-        audioFileLength = m_audioDataByteCount;
-    } else {
-        audioFileLength = contentLength() - m_metaDataSizeInBytes;
-    }
-    
-    if (audioFileLength > 0) {
+    if (audioDataBytes > 0) {
         float bitrate = this->bitrate();
         
         if (bitrate > 0) {
-            return audioFileLength / (bitrate * 0.125);
+            return audioDataBytes / (bitrate * 0.125);
         }
     }
     
@@ -463,9 +492,7 @@ void Audio_Stream::seekToOffset(float offset)
     
     m_originalContentLength = contentLength();
     
-    pthread_mutex_lock(&m_streamStateMutex);
-    m_decoderShouldRun = false;
-    pthread_mutex_unlock(&m_streamStateMutex);
+    setDecoderRunState(false);
     
     pthread_mutex_lock(&m_packetQueueMutex);
     m_numPacketsToRewind = 0;
@@ -477,7 +504,8 @@ void Audio_Stream::seekToOffset(float offset)
     
     if (m_seekTimer) {
         CFRunLoopTimerInvalidate(m_seekTimer);
-        CFRelease(m_seekTimer), m_seekTimer = 0;
+        CFRelease(m_seekTimer);
+        m_seekTimer = 0;
     }
     
     CFRunLoopTimerContext ctx = {0, this, NULL, NULL, NULL};
@@ -517,6 +545,42 @@ float Audio_Stream::currentVolume()
     return m_outputVolume;
 }
     
+void Audio_Stream::setDecoderRunState(bool decoderShouldRun)
+{
+    pthread_mutex_lock(&m_streamStateMutex);
+
+    if (decoderShouldRun && m_decoderThreadCreated) {
+        if (m_decodeTimer == NULL) {
+            CFRunLoopTimerContext ctx = {0, this, NULL, NULL, NULL};
+            
+            m_decodeTimer = CFRunLoopTimerCreate (NULL, CFAbsoluteTimeGetCurrent() + 0.02, 0.02, 0, 0, decodeSinglePacket, &ctx);
+            
+            pthread_mutex_unlock(&m_streamStateMutex);
+            
+            while (m_decodeRunLoop == NULL || !CFRunLoopIsWaiting(m_decodeRunLoop)) {
+                usleep(0);
+            }
+            
+            pthread_mutex_lock(&m_streamStateMutex);
+            
+            CFRunLoopAddTimer(m_decodeRunLoop, m_decodeTimer, kCFRunLoopCommonModes);
+            
+            AS_TRACE("decoder timer added!!!\n");
+        }
+    } else {
+        if (m_decodeTimer != NULL) {
+            CFRunLoopRemoveTimer(m_decodeRunLoop, m_decodeTimer, kCFRunLoopCommonModes);
+            
+            CFRelease(m_decodeTimer);
+            m_decodeTimer = 0;
+            
+            AS_TRACE("decoder timer removed!!!\n");
+        }
+    }
+    m_decoderShouldRun = decoderShouldRun;
+    pthread_mutex_unlock(&m_streamStateMutex);
+}
+    
 void Audio_Stream::setVolume(float volume)
 {
     if (volume < 0) {
@@ -543,7 +607,8 @@ void Audio_Stream::setPlayRate(float playRate)
 void Audio_Stream::setUrl(CFURLRef url)
 {
     if (m_inputStream) {
-        delete m_inputStream, m_inputStream = 0;
+        delete m_inputStream;
+        m_inputStream = 0;
     }
     
     if (HTTP_Stream::canHandleUrl(url)) {
@@ -582,7 +647,8 @@ void Audio_Stream::setStrictContentTypeChecking(bool strictChecking)
 void Audio_Stream::setDefaultContentType(CFStringRef defaultContentType)
 {
     if (m_defaultContentType) {
-        CFRelease(m_defaultContentType), m_defaultContentType = 0;
+        CFRelease(m_defaultContentType);
+        m_defaultContentType = 0;
     }
     if (defaultContentType) {
         m_defaultContentType = CFStringCreateCopy(kCFAllocatorDefault, defaultContentType);
@@ -624,7 +690,8 @@ bool Audio_Stream::isPreloading()
 void Audio_Stream::setOutputFile(CFURLRef url)
 {
     if (m_fileOutput) {
-        delete m_fileOutput, m_fileOutput = 0;
+        delete m_fileOutput;
+        m_fileOutput = 0;
     }
     if (url) {
         m_fileOutput = new File_Output(url);
@@ -736,9 +803,9 @@ out:
     return fileTypeHint;        
 }
     
-void Audio_Stream::audioQueueStateChanged(Audio_Queue::State state)
+void Audio_Stream::audioQueueStateChanged(Audio_Queue::State aqState)
 {
-    if (state == Audio_Queue::RUNNING) {
+    if (aqState == Audio_Queue::RUNNING && SEEKING != state()) {
         invalidateWatchdogTimer();
         setState(PLAYING);
         
@@ -747,9 +814,9 @@ void Audio_Stream::audioQueueStateChanged(Audio_Queue::State state)
         if (currentVolume != m_outputVolume) {
             m_audioQueue->setVolume(m_outputVolume);
         }
-    } else if (state == Audio_Queue::IDLE) {
+    } else if (aqState == Audio_Queue::IDLE) {
         setState(STOPPED);
-    } else if (state == Audio_Queue::PAUSED) {
+    } else if (aqState == Audio_Queue::PAUSED) {
         setState(PAUSED);
     }
 }
@@ -773,6 +840,25 @@ void Audio_Stream::audioQueueBuffersEmpty()
         
         pthread_mutex_lock(&m_packetQueueMutex);
         m_playPacket = m_queuedHead;
+        if (m_processedPackets.size() > 0) {
+            /*
+             * We have audio packets in memory (only case with a non-continuous stream),
+             * so figure out the correct location to set the playback pointer so that we don't
+             * start decoding the packets from the beginning when
+             * buffering resumes.
+             */
+            queued_packet_t *firstPacket = m_processedPackets.front();
+            queued_packet_t *cur = m_queuedHead;
+            while (cur) {
+                if (cur->identifier == firstPacket->identifier) {
+                    break;
+                }
+                cur = cur->next;
+            }
+            if (cur) {
+                m_playPacket = cur;
+            }
+        }
         pthread_mutex_unlock(&m_packetQueueMutex);
         
         // Always make sure we are scheduled to receive data if we start buffering
@@ -881,6 +967,8 @@ void Audio_Stream::streamIsReadyRead()
     
     CFStringRef audioContentType = CFSTR("audio/");
     CFStringRef videoContentType = CFSTR("video/");
+    const CFIndex audioContentTypeLen = CFStringGetLength(audioContentType);
+    const CFIndex videoContentTypeLen = CFStringGetLength(videoContentType);
     bool matchesAudioContentType = false;
     
     CFStringRef contentType = 0;
@@ -890,14 +978,18 @@ void Audio_Stream::streamIsReadyRead()
     }
     
     if (m_contentType) {
-        CFRelease(m_contentType), m_contentType = 0;
+        CFRelease(m_contentType);
+        m_contentType = 0;
     }
     if (contentType) {
         m_contentType = CFStringCreateCopy(kCFAllocatorDefault, contentType);
+        const CFIndex contentTypeLen = CFStringGetLength(contentType);
         
-        if (kCFCompareEqualTo == CFStringCompareWithOptions(contentType, audioContentType, CFRangeMake(0, CFStringGetLength(audioContentType)),0)) {
+        if (contentTypeLen >= audioContentTypeLen &&
+            (kCFCompareEqualTo == CFStringCompareWithOptions(contentType, audioContentType, CFRangeMake(0, audioContentTypeLen),0))) {
             matchesAudioContentType = true;
-        } else if (kCFCompareEqualTo == CFStringCompareWithOptions(contentType, videoContentType, CFRangeMake(0, CFStringGetLength(videoContentType)),0)) {
+        } else if (contentTypeLen >= videoContentTypeLen &&
+            (kCFCompareEqualTo == CFStringCompareWithOptions(contentType, videoContentType, CFRangeMake(0, videoContentTypeLen),0))) {
             matchesAudioContentType = true;
         }
     }
@@ -957,7 +1049,8 @@ void Audio_Stream::streamHasBytesAvailable(UInt8 *data, UInt32 numBytes)
         // Schedule a timer to watch when we can enable the input stream again
         if (m_inputStreamTimer) {
             CFRunLoopTimerInvalidate(m_inputStreamTimer);
-            CFRelease(m_inputStreamTimer), m_inputStreamTimer = 0;
+            CFRelease(m_inputStreamTimer);
+            m_inputStreamTimer = 0;
         }
         
         CFRunLoopTimerContext ctx = {0, this, NULL, NULL, NULL};
@@ -1146,7 +1239,8 @@ void Audio_Stream::closeAudioQueue()
     pthread_mutex_unlock(&m_streamStateMutex);
     
     m_audioQueue->m_delegate = 0;
-    delete m_audioQueue, m_audioQueue = 0;
+    delete m_audioQueue;
+    m_audioQueue = 0;
 }
     
 UInt64 Audio_Stream::defaultContentLength()
@@ -1226,7 +1320,7 @@ void Audio_Stream::setState(State state)
     pthread_mutex_unlock(&m_streamStateMutex);
     
     if (m_delegate) {
-        m_delegate->audioStreamStateChanged(m_state);
+        m_delegate->audioStreamStateChanged(state);
     }
 }
     
@@ -1311,20 +1405,15 @@ void Audio_Stream::seekTimerCallback(CFRunLoopTimerRef timer, void *info)
     
     pthread_mutex_lock(&THIS->m_streamStateMutex);
     
-    if (THIS->m_decoderActive) {
-        AS_TRACE("decoder still active, postponing seeking!\n");
-        pthread_mutex_unlock(&THIS->m_streamStateMutex);
-        return;
-    } else {
-        AS_TRACE("decoder free, seeking\n");
-        
-        if (THIS->m_seekTimer) {
-            CFRunLoopTimerInvalidate(THIS->m_seekTimer);
-            CFRelease(THIS->m_seekTimer), THIS->m_seekTimer = 0;
-        }
-        
-        pthread_mutex_unlock(&THIS->m_streamStateMutex);
+    AS_TRACE("decoder free, seeking\n");
+    
+    if (THIS->m_seekTimer) {
+        CFRunLoopTimerInvalidate(THIS->m_seekTimer);
+        CFRelease(THIS->m_seekTimer);
+        THIS->m_seekTimer = 0;
     }
+    
+    pthread_mutex_unlock(&THIS->m_streamStateMutex);
     
     // Close the audio queue so that it won't ask any more data
     THIS->closeAudioQueue();
@@ -1344,7 +1433,7 @@ void Audio_Stream::seekTimerCallback(CFRunLoopTimerRef timer, void *info)
         SInt64 packetAlignedByteOffset;
         SInt64 seekPacket = floor((duration * THIS->m_seekOffset) / packetDuration);
         
-        THIS->m_packetIdentifier = seekPacket;
+        THIS->m_playingPacketIdentifier = seekPacket;
         
         OSStatus err = AudioFileStreamSeek(THIS->m_audioFileStream, seekPacket, &packetAlignedByteOffset, &ioFlags);
         if (!err) {
@@ -1371,7 +1460,7 @@ void Audio_Stream::seekTimerCallback(CFRunLoopTimerRef timer, void *info)
         
         queued_packet_t *cur = THIS->m_queuedHead;
         while (cur) {
-            if (cur->identifier == THIS->m_packetIdentifier) {
+            if (cur->identifier == THIS->m_playingPacketIdentifier) {
                 foundCachedPacket = true;
                 seekPacket = cur;
                 break;
@@ -1447,9 +1536,7 @@ void Audio_Stream::seekTimerCallback(CFRunLoopTimerRef timer, void *info)
     
     THIS->m_inputStream->setScheduledInRunLoop(true);
     
-    pthread_mutex_lock(&THIS->m_streamStateMutex);
-    THIS->m_decoderShouldRun = true;
-    pthread_mutex_unlock(&THIS->m_streamStateMutex);
+    THIS->setDecoderRunState(true);
 }
     
 void Audio_Stream::inputStreamTimerCallback(CFRunLoopTimerRef timer, void *info)
@@ -1459,7 +1546,8 @@ void Audio_Stream::inputStreamTimerCallback(CFRunLoopTimerRef timer, void *info)
     if (!THIS->m_inputStreamRunning) {
         if (THIS->m_inputStreamTimer) {
             CFRunLoopTimerInvalidate(THIS->m_inputStreamTimer);
-            CFRelease(THIS->m_inputStreamTimer), THIS->m_inputStreamTimer = 0;
+            CFRelease(THIS->m_inputStreamTimer);
+            THIS->m_inputStreamTimer = 0;
         }
         
         return;
@@ -1486,7 +1574,8 @@ void Audio_Stream::stateSetTimerCallback(CFRunLoopTimerRef timer, void *info)
     
     if (THIS->m_stateSetTimer) {
         // Timer is automatically invalidated as it fires only once
-        CFRelease(THIS->m_stateSetTimer), THIS->m_stateSetTimer = 0;
+        CFRelease(THIS->m_stateSetTimer);
+        THIS->m_stateSetTimer = 0;
     }
     
     pthread_mutex_unlock(&THIS->m_streamStateMutex);
@@ -1524,8 +1613,6 @@ void Audio_Stream::decodeSinglePacket(CFRunLoopTimerRef timer, void *info)
     
     pthread_mutex_lock(&THIS->m_streamStateMutex);
     
-    THIS->m_decoderActive = true;
-    
     if (THIS->m_decoderShouldRun && THIS->m_converterRunOutOfData) {
         pthread_mutex_unlock(&THIS->m_streamStateMutex);
         
@@ -1562,9 +1649,6 @@ void Audio_Stream::decodeSinglePacket(CFRunLoopTimerRef timer, void *info)
     }
     
     if (!THIS->decoderShouldRun()) {
-        pthread_mutex_lock(&THIS->m_streamStateMutex);
-        THIS->m_decoderActive = false;
-        pthread_mutex_unlock(&THIS->m_streamStateMutex);
         return;
     }
     
@@ -1672,45 +1756,28 @@ void Audio_Stream::decodeSinglePacket(CFRunLoopTimerRef timer, void *info)
     } else {
         pthread_mutex_unlock(&THIS->m_streamStateMutex);
     }
-    
-    if (!THIS->decoderShouldRun()) {
-        pthread_mutex_lock(&THIS->m_streamStateMutex);
-        THIS->m_decoderActive = false;
-        pthread_mutex_unlock(&THIS->m_streamStateMutex);
-    }
 }
+
     
 void *Audio_Stream::decodeLoop(void *data)
 {
     Audio_Stream *THIS = (Audio_Stream *)data;
     
     pthread_mutex_lock(&THIS->m_streamStateMutex);
-    
     THIS->m_decodeRunLoop = CFRunLoopGetCurrent();
-    
     pthread_mutex_unlock(&THIS->m_streamStateMutex);
     
-    CFRunLoopTimerContext ctx;
-    ctx.version = 0;
-    ctx.info = data;
-    ctx.retain = NULL;
-    ctx.release = NULL;
-    ctx.copyDescription = NULL;
-    CFRunLoopTimerRef timer =
-    CFRunLoopTimerCreate (NULL,
-                          CFAbsoluteTimeGetCurrent() + 0.02, // 20ms
-                          0.02,
-                          0,
-                          0,
-                          decodeSinglePacket,
-                          &ctx);
-    CFRunLoopAddTimer(CFRunLoopGetCurrent(), timer, kCFRunLoopCommonModes);
+    /*
+     * Silly timer to make the runloop to wake up every 5ms
+     */
+    CFRunLoopTimerContext ctx = {0, NULL, NULL, NULL, NULL};
+    CFRunLoopTimerRef tickTimer = CFRunLoopTimerCreate (NULL, CFAbsoluteTimeGetCurrent() + 0.005, 0.005, 0, 0, fsTick, &ctx);
+    CFRunLoopAddTimer(THIS->m_decodeRunLoop, tickTimer, kCFRunLoopCommonModes);
     
     CFRunLoopRun();
     
-    CFRunLoopTimerInvalidate(timer);
-    
-    CFRelease(timer);
+    CFRunLoopRemoveTimer(THIS->m_decodeRunLoop, tickTimer, kCFRunLoopCommonModes);
+    CFRelease(tickTimer);
     
     AS_TRACE("returning from decodeLoop, bye\n");
     
@@ -1752,7 +1819,8 @@ void Audio_Stream::invalidateWatchdogTimer()
 {
     if (m_watchdogTimer) {
         CFRunLoopTimerInvalidate(m_watchdogTimer);
-        CFRelease(m_watchdogTimer), m_watchdogTimer = 0;
+        CFRelease(m_watchdogTimer);
+        m_watchdogTimer = 0;
         
         AS_TRACE("Watchdog invalidated\n");
     }
@@ -1824,9 +1892,7 @@ void Audio_Stream::determineBufferingLimits()
                 
                 m_initialBufferingCompleted = true;
                 
-                pthread_mutex_lock(&m_streamStateMutex);
-                m_decoderShouldRun = true;
-                pthread_mutex_unlock(&m_streamStateMutex);
+                setDecoderRunState(true);
                 
                 return;
             }
@@ -1851,9 +1917,7 @@ void Audio_Stream::determineBufferingLimits()
             
             m_initialBufferingCompleted = true;
             
-            pthread_mutex_lock(&m_streamStateMutex);
-            m_decoderShouldRun = true;
-            pthread_mutex_unlock(&m_streamStateMutex);
+            setDecoderRunState(true);
         } else {
             pthread_mutex_unlock(&m_packetQueueMutex);
             AS_TRACE("not enough cached data to start playback\n");
@@ -1881,9 +1945,7 @@ void Audio_Stream::determineBufferingLimits()
         if (m_bytesReceived >= numBytesRequiredToBeBuffered ||
             m_bytesReceived >= config->maxPrebufferedByteCount * 0.9) {
             m_initialBufferingCompleted = true;
-            pthread_mutex_lock(&m_streamStateMutex);
-            m_decoderShouldRun = true;
-            pthread_mutex_unlock(&m_streamStateMutex);
+            setDecoderRunState(true);
             
             AS_TRACE("%llu bytes received, overriding buffering limits\n", m_bytesReceived);
         }
@@ -1905,39 +1967,30 @@ void Audio_Stream::cleanupCachedData()
     AS_LOCK_TRACE("cleanupCachedData: lock\n");
     pthread_mutex_lock(&m_packetQueueMutex);
     
-    if (m_processedPackets.size() == 0) {
-        AS_LOCK_TRACE("cleanupCachedData: unlock\n");
-        pthread_mutex_unlock(&m_packetQueueMutex);
-        
-        // Nothing can be cleaned yet, sorry
-        AS_TRACE("Cache cleanup called but no free packets\n");
-        return;
-    }
-    
-    queued_packet_t *lastPacket = m_processedPackets.back();
-    
-    bool keepCleaning = true;
     queued_packet_t *cur = m_queuedHead;
-    while (cur && keepCleaning) {
-        if (cur->identifier == lastPacket->identifier) {
-            AS_TRACE("Found the last packet to be cleaned up\n");
-            keepCleaning  = false;
+    /* Incoming (not yet processed) packets are added at the end (tail)
+       of the queue. Hence the processed packets reside in the front
+       of the queue. Clean the packets until we found the last packet
+       which is still needed.
+     */
+    for (;;) {
+        if (cur && m_playPacket && cur->identifier == m_playPacket->identifier) {
+            break;
         }
-        
-        queued_packet_t *tmp = cur->next;
-        
-        m_cachedDataSize -= cur->desc.mDataByteSize;
-        
-        free(cur);
-        cur = tmp;
-        if (cur == m_playPacket){
-            keepCleaning = false;
-            AS_TRACE("Found m_playPacket\n");
+        if (cur && !m_processedPackets.empty() &&
+            cur->identifier == m_processedPackets.back()->identifier) {
+            queued_packet_t *nextPacket = cur->next;
+            
+            m_cachedDataSize -= cur->desc.mDataByteSize;
+            
+            free(cur);
+            cur = nextPacket;
+            m_processedPackets.pop_back();
+        } else {
+            break;
         }
     }
     m_queuedHead = cur;
-    
-    m_processedPackets.clear();
     
     AS_LOCK_TRACE("cleanupCachedData: unlock\n");
     pthread_mutex_unlock(&m_packetQueueMutex);

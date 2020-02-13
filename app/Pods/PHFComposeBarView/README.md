@@ -118,4 +118,8 @@ properties and their descriptions.
 
 Philipe Fatio ([@fphilipe](http://twitter.com/fphilipe))
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/fphilipe/phfcomposebarview/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+### Sponsors
+
+These people and companies have sponsored the development so far:
+
+- [Liveminds](https://liveminds.com) ([\#64](https://github.com/fphilipe/PHFComposeBarView/pull/64))

@@ -33,11 +33,13 @@
     if (self) {
         
         lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 2, CGRectGetHeight(self.bounds))];
+        lineView.userInteractionEnabled = NO;
         lineView.backgroundColor = [UIColor redColor];
         [self addSubview:lineView];
         
         smallLineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds)/2, CGRectGetWidth(lineView.frame))];
         smallLineView.backgroundColor = [UIColor redColor];
+        smallLineView.userInteractionEnabled = NO;
         [self addSubview:smallLineView];
         
         timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.bounds)-20, CGRectGetWidth(self.bounds), 20)];

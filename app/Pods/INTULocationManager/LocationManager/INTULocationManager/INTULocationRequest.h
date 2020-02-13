@@ -1,7 +1,7 @@
 //
 //  INTULocationRequest.h
 //
-//  Copyright (c) 2014-2015 Intuit Inc.
+//  Copyright (c) 2014-2017 Intuit Inc.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@
 
 #import "INTULocationRequestDefines.h"
 
-__INTU_ASSUME_NONNULL_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 /** The available types of location requests. */
 typedef NS_ENUM(NSInteger, INTULocationRequestType) {
@@ -60,7 +60,7 @@ typedef NS_ENUM(NSInteger, INTULocationRequestType) {
 @interface INTULocationRequest : NSObject
 
 /** The delegate for this location request. */
-@property (nonatomic, weak, __INTU_NULLABLE) id<INTULocationRequestDelegate> delegate;
+@property (nonatomic, weak, nullable) id<INTULocationRequestDelegate> delegate;
 /** The request ID for this location request (set during initialization). */
 @property (nonatomic, readonly) INTULocationRequestID requestID;
 /** The type of this location request (set during initialization). */
@@ -77,7 +77,7 @@ typedef NS_ENUM(NSInteger, INTULocationRequestType) {
 /** Whether this location request has timed out (will also be YES if it has been completed). Subcriptions can never time out. */
 @property (nonatomic, readonly) BOOL hasTimedOut;
 /** The block to execute when the location request completes. */
-@property (nonatomic, copy, __INTU_NULLABLE) INTULocationRequestBlock block;
+@property (nonatomic, copy, nullable) INTULocationRequestBlock block;
 
 /** Designated initializer. Initializes and returns a newly allocated location request object with the specified type. */
 - (instancetype)initWithType:(INTULocationRequestType)type __INTU_DESIGNATED_INITIALIZER;
@@ -100,4 +100,4 @@ typedef NS_ENUM(NSInteger, INTULocationRequestType) {
 
 @end
 
-__INTU_ASSUME_NONNULL_END
+NS_ASSUME_NONNULL_END

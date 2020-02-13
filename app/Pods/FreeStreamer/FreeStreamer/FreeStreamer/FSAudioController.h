@@ -1,6 +1,6 @@
 /*
  * This file is part of the FreeStreamer project,
- * (C)Copyright 2011-2016 Matias Muhonen <mmu@iki.fi> 穆马帝
+ * (C)Copyright 2011-2018 Matias Muhonen <mmu@iki.fi> 穆马帝
  * See the file ''LICENSE'' for using the code.
  *
  * https://github.com/muhku/FreeStreamer
@@ -216,6 +216,13 @@
  * by default
  */
 @property (nonatomic,assign) BOOL enableDebugOutput;
+
+/**
+ * This property determines if automatic audio session handling is enabled.
+ * This is YES by default.
+ */
+@property (nonatomic,assign) BOOL automaticAudioSessionHandlingEnabled;
+
 /**
  * This property holds the configuration used for the streaming.
  */

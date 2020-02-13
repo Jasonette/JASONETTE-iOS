@@ -4,11 +4,13 @@ Show messages on top of the status bar. Customizable colors, font and animation.
 
 ![Animation](gfx/animation.gif "Animation")
 
+![Animation](gfx/iphoneX.png "iPhone X")
+
 ![Screenshots](gfx/screenshots.png "Screenshots")
 
 ## Installation
 
-#### Cocoapods:
+#### CocoaPods:
 
 `pod 'JDStatusBarNotification'`
 
@@ -18,6 +20,22 @@ Show messages on top of the status bar. Customizable colors, font and animation.
 
 1. Drag the `JDStatusBarNotification/JDStatusBarNotification` folder into your project.
 2. Add `#include "JDStatusBarNotification.h"`, where you want to use it
+
+#### Carthage:
+
+`github "calimarkus/JDStatusBarNotification"`
+
+(more infos on Carthage [here](https://github.com/Carthage/Carthage))
+
+## Beware: App Rejections
+
+Some people informed me, that their apps got rejected for using status bar overlays (for violating 10.1/10.3).
+All cases I'm aware of are listed here:
+
+- [@goelv](https://github.com/goelv) in [#15](https://github.com/calimarkus/JDStatusBarNotification/issues/15)
+- [@dskyu](https://github.com/dskyu) in [#30](https://github.com/calimarkus/JDStatusBarNotification/issues/30)
+- [@graceydb](https://github.com/graceydb) in [#49](https://github.com/calimarkus/JDStatusBarNotification/issues/49)
+- [@hongdong](https://github.com/hongdong) in [#91](https://github.com/calimarkus/JDStatusBarNotification/issues/91)
 
 ## Usage
 
@@ -67,10 +85,6 @@ Use them with the following methods:
                  
 To present a notification using a custom style, use the `identifier` you specified in `addStyleNamed:prepare:`. See Customization below.
 
-### Beware
-
-[@goelv](https://github.com/goelv) / [@dskyu](https://github.com/dskyu) / [@graceydb](https://github.com/graceydb) informed me (see [#15](https://github.com/jaydee3/JDStatusBarNotification/issues/15), [#30](https://github.com/jaydee3/JDStatusBarNotification/issues/30), [#49](https://github.com/jaydee3/JDStatusBarNotification/issues/49)), that his app got rejected because of a status bar overlay (for violating 10.1/10.3). So don't overuse it. Although I haven't heard of any other cases.
-
 ## Customization
 
     + (void)setDefaultStyle:(JDPrepareStyleBlock)prepareBlock;
@@ -119,9 +133,9 @@ The `prepareBlock` gives you a copy of the default style, which can be modified 
 
 ## Twitter
 
-I'm [@jaydee3](http://twitter.com/jaydee3) on Twitter. Feel free to [post a tweet](https://twitter.com/intent/tweet?button_hashtag=JDStatusBarNotification&text=Simple%20and%20customizable%20statusbar%20notifications%20for%20iOS!%20Check%20it%20out.%20https://github.com/jaydee3/JDStatusBarNotification&via=jaydee3), if you like JDStatusBarNotification.  
+I'm [@calimarkus](http://twitter.com/calimarkus) on Twitter. Feel free to [post a tweet](https://twitter.com/intent/tweet?button_hashtag=JDStatusBarNotification&text=Simple%20and%20customizable%20statusbar%20notifications%20for%20iOS!%20Check%20it%20out.%20https://github.com/calimarkus/JDStatusBarNotification&via=calimarkus), if you like JDStatusBarNotification.  
 
-[![TweetButton](gfx/tweetbutton.png "Tweet")](https://twitter.com/intent/tweet?button_hashtag=JDStatusBarNotification&text=Simple%20and%20customizable%20statusbar%20notifications%20for%20iOS!%20Check%20it%20out.%20https://github.com/jaydee3/JDStatusBarNotification&via=jaydee3)
+[![TweetButton](gfx/tweetbutton.png "Tweet")](https://twitter.com/intent/tweet?button_hashtag=JDStatusBarNotification&text=Simple%20and%20customizable%20statusbar%20notifications%20for%20iOS!%20Check%20it%20out.%20https://github.com/calimarkus/JDStatusBarNotification&via=calimarkus)
 
-[Github issue]: https://github.com/jaydee3/JDStatusBarNotification/issues
+[Github issue]: https://github.com/calimarkus/JDStatusBarNotification/issues
 [cocoapods website]: http://cocoapods.org

@@ -6,7 +6,6 @@
 //
 #import <UIKit/UIKit.h>
 #import "UIBarButtonItem+Badge.h"
-#import <SDWebImage/UIImageView+WebCache.h>
 #import "JasonHelper.h"
 #import "UIView+JasonComponentPayload.h"
 #import <HMSegmentedControl/HMSegmentedControl.h>
@@ -37,6 +36,7 @@
 
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) NSDictionary *options;
+@property (nonatomic, strong) NSDictionary *on_error;
 @property (nonatomic, strong) NSDictionary *callback;
 @property (nonatomic, strong) NSDictionary *nav;
 @property (nonatomic, strong) NSDictionary *current_cache;
@@ -68,6 +68,7 @@
 @property (nonatomic, strong) NSDictionary *preload;
 @property (nonatomic, assign) BOOL offline;
 @property (nonatomic, assign) BOOL agentReady;
+@property (nonatomic, assign) BOOL tabNeedsRefresh;
 
 @property (strong, nonatomic) NSMutableDictionary *menu;
 @property (strong, nonatomic) NSMutableDictionary *form;

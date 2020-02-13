@@ -5,6 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonAudioAction.h"
+#import "SDWebImageDownloader.h"
 
 @implementation JasonAudioAction
 - (void)record{
@@ -187,7 +188,9 @@
                 if(!image_url){
                     UIImage *i = [UIImage imageNamed:@"placeholder"];
 
-                    MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: i];
+                    MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithBoundsSize:i.size requestHandler:^UIImage * _Nonnull(CGSize size) {
+                        return i;
+                    }];
                     [songInfo setObject:title forKey:MPMediaItemPropertyTitle];
                     [songInfo setObject:author forKey:MPMediaItemPropertyArtist];
                     [songInfo setObject:album forKey:MPMediaItemPropertyAlbumTitle];
@@ -195,13 +198,17 @@
                     [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
                 } else {
                     SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                    [manager downloadImageWithURL:[NSURL URLWithString:image_url]
-                                          options:0
-                                         progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                             // progression tracking code
-                                         }
-                                        completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                            MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: i];
+                    [manager loadImageWithURL:[NSURL URLWithString:image_url]
+                                        options:0
+                                        progress:nil
+                                        completed:^(UIImage *i, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                            MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithBoundsSize:i.size requestHandler:^UIImage * _Nonnull(CGSize size) {
+                                                    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
+                                                    UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext*_Nonnull myContext) {
+                                                        [i drawInRect:(CGRect) {.origin = CGPointZero, .size = size}];
+                                                    }];
+                                                    return image;
+                                            }];
                                             [songInfo setObject:title forKey:MPMediaItemPropertyTitle];
                                             [songInfo setObject:author forKey:MPMediaItemPropertyArtist];
                                             [songInfo setObject:album forKey:MPMediaItemPropertyAlbumTitle];

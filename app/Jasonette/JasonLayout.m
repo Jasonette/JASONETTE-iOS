@@ -33,7 +33,6 @@ static NSMutableDictionary *_stylesheet = nil;
                    } mutableCopy];
     }
     
-    
     // Step 2. JasonLayout Settings
     NSString *t = item[@"type"];
     if([t isEqualToString:@"vertical"]){
@@ -70,17 +69,15 @@ static NSMutableDictionary *_stylesheet = nil;
         layout = [JasonLayout fillChildLayout:layout with:wrappedItem atIndexPath:indexPath withForm:form];
     }
     layout.translatesAutoresizingMaskIntoConstraints = false;
-    [layout setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
     [layout setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
-    [layout setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
     [layout setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
-    
+
     return @{ @"style": style, @"layout": layout };
-    
 }
 
 + (UIStackView *)fillChildLayout: (UIStackView*)layout with:(NSDictionary *)item atIndexPath: (NSIndexPath *)indexPath withForm: (NSDictionary *)form{
     NSArray *children = item[@"components"];
+    item = [self applyStylesheet:item];
     
     // isBuilding = YES means we're building this layout for the first time.
     // Otherwise, we reuse the existing layout.
@@ -89,14 +86,21 @@ static NSMutableDictionary *_stylesheet = nil;
     if(layout.arrangedSubviews && layout.arrangedSubviews.count > 0){
         isBuilding = NO;
     }
+
     NSInteger index = 0;
     for(NSDictionary *child in children){
         if(child && child.count > 0){
             NSString *type = child[@"type"];
+
             if([type isEqualToString:@"vertical"] || [type isEqualToString:@"horizontal"]){
                 if(isBuilding){
                     UIStackView *el = [self fillChildLayout:[[UIStackView alloc] init] with:child atIndexPath:indexPath withForm: form];
                     [layout addArrangedSubview:el];
+                    
+                    if(child[@"action"]) {
+                        el.payload = [@{@"action": child[@"action"]} mutableCopy];
+                        [self addGestureRecognizersTo:el];
+                    }
                 } else {
                     UIStackView *view_to_replace = (UIStackView *)[layout.arrangedSubviews objectAtIndex:index];
                     [self fillChildLayout:view_to_replace with:child atIndexPath:indexPath withForm: form];
@@ -136,11 +140,12 @@ static NSMutableDictionary *_stylesheet = nil;
                     el = [layout.arrangedSubviews objectAtIndex:index];
                 }
                 
+                
                 UIView *component = [JasonComponentFactory build:el withJSON: child withOptions:options];
                 
                 if([component isKindOfClass:[UIImageView class]]){
-                    
-                    if(child[@"style"] && (child[@"style"][@"width"] || child[@"style"][@"height"])){
+                    NSDictionary *styled_child = [JasonComponentFactory applyStylesheet:child];
+                    if(styled_child[@"style"] && (styled_child[@"style"][@"width"] || styled_child[@"style"][@"height"])){
                         // If the style contains style and either the width or the height,
                         // everything has been taken care of from the component level.
                         // So don't do anything
@@ -171,8 +176,11 @@ static NSMutableDictionary *_stylesheet = nil;
                             } else {
                                 aspectRatioMult = (((UIImageView *)component).image.size.height / ((UIImageView *)component).image.size.width);
                             }
-                            
-                            
+
+                            // isNaN check because sometimes this was coming in NaN and breaking everything
+                            if (aspectRatioMult != aspectRatioMult) {
+                                aspectRatioMult = 1.0;
+                            }
                             // The order is important
                             // Step 1. Add constraint
                             NSLayoutConstraint *new_constraint;
@@ -216,6 +224,43 @@ static NSMutableDictionary *_stylesheet = nil;
         [layout setAxis:UILayoutConstraintAxisHorizontal];
     }
     
+    if(item[@"alt"]){
+        if([item[@"alt"] length] == 0) {
+            layout.isAccessibilityElement = NO;
+            layout.accessibilityTraits = UIAccessibilityTraitNone;
+        } else {
+            layout.isAccessibilityElement = YES;
+            layout.accessibilityLabel = item[@"alt"];
+        }
+    }
+    
+    if(item[@"role"]){
+        NSString *role_string = item[@"role"];
+        NSMutableArray *roles = [[role_string componentsSeparatedByString:@" "] mutableCopy];
+        [roles removeObject:@""];
+        layout.accessibilityTraits = UIAccessibilityTraitNone;
+        for(NSString *role in roles){
+            if([role isEqualToString:@"selected"] || [role isEqualToString:@"checked"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitSelected;
+            }
+            if([role isEqualToString:@"button"] || [role isEqualToString:@"checkbox"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitButton;
+            }
+            if([role isEqualToString:@"link"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitLink;
+            }
+            if([role isEqualToString:@"live"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitUpdatesFrequently;
+            }
+            if([role isEqualToString:@"not_enabled"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+            }
+            if([role isEqualToString:@"header"]) {
+                layout.accessibilityTraits |= UIAccessibilityTraitHeader;
+            }
+        }
+    }
+    
     NSDictionary *default_style = item[@"style"];
     
     NSMutableDictionary *style;
@@ -227,7 +272,6 @@ static NSMutableDictionary *_stylesheet = nil;
     
     
     if(!style[@"padding"]) style[@"padding"] = @"0";
-    if(!style[@"background"]) style[@"background"] = @"#ffffff";
     if(!style[@"opacity"]) style[@"opacity"] = @"1";
     
     // Step 2. JasonLayout Settings
@@ -243,8 +287,6 @@ static NSMutableDictionary *_stylesheet = nil;
         if(!style[@"distribution"]) style[@"distribution"] = @"fill";
         if(!style[@"align"]) style[@"align"] = @"fill";
     }
-    
-    
     
     NSDictionary *alignment_map = @{
                                     @"fill": @(UIStackViewAlignmentFill),
@@ -268,12 +310,29 @@ static NSMutableDictionary *_stylesheet = nil;
                                        @"equalspace": @(UIStackViewDistributionEqualSpacing),
                                        @"equalcentertocenter": @(UIStackViewDistributionEqualCentering)
                                        };
+    
     if(style[@"distribution"]){
         layout.distribution = [[distribution_map valueForKey:style[@"distribution"]] intValue];
     }
     
     if(style[@"spacing"]){
         layout.spacing = [JasonHelper pixelsInDirection:item[@"type"] fromExpression:style[@"spacing"]];
+    }
+    
+    if(style[@"width"]) {
+        CGFloat width = [JasonHelper pixelsInDirection:@"horizontal" fromExpression:style[@"width"]];
+        [layout.widthAnchor constraintEqualToConstant:width].active = true;
+        [layout setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
+    } else {
+        [layout setContentHuggingPriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisHorizontal];
+    }
+
+    if(style[@"height"]) {
+        CGFloat height = [JasonHelper pixelsInDirection:@"vertical" fromExpression:style[@"height"]];
+        [layout.heightAnchor constraintEqualToConstant:height].active = true;
+        [layout setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
+    } else {
+        [layout setContentHuggingPriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisVertical];
     }
     
     NSString *padding_left;
@@ -297,6 +356,31 @@ static NSMutableDictionary *_stylesheet = nil;
     layout.layoutMargins = UIEdgeInsetsMake([padding_top floatValue], [padding_left floatValue], [padding_bottom floatValue], [padding_right floatValue]);
     layout.layoutMarginsRelativeArrangement = true;
     
+    // Background Color / Image handling
+    if(style[@"background"]){
+        UIImageView *backgroundView = [[UIImageView alloc] initWithFrame:layout.frame];
+        if (style[@"corner_radius"]) {
+            backgroundView.layer.cornerRadius = [style[@"corner_radius"] floatValue];
+        }
+        backgroundView.clipsToBounds = YES;
+        backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+        [layout insertSubview:backgroundView atIndex:0];
+        
+        // set constraints of background view to match the parent layout
+        [backgroundView.leadingAnchor constraintEqualToAnchor:layout.leadingAnchor].active = true;
+        [backgroundView.trailingAnchor constraintEqualToAnchor:layout.trailingAnchor].active = true;
+        [backgroundView.topAnchor constraintEqualToAnchor:layout.topAnchor].active = true;
+        [backgroundView.bottomAnchor constraintEqualToAnchor:layout.bottomAnchor].active = true;
+        
+        if([style[@"background"] hasPrefix:@"http"]){
+            [backgroundView sd_setImageWithURL:[NSURL URLWithString:style[@"background"]] completed:^(UIImage *i, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                backgroundView.contentMode = UIViewContentModeScaleAspectFill;
+            }];
+        } else {
+            backgroundView.backgroundColor = [JasonHelper colorwithHexString:style[@"background"] alpha:1.0];
+        }
+    }
+    
     if(style && style[@"opacity"]){
         CGFloat opacity = [style[@"opacity"] floatValue];
         layout.alpha = opacity;
@@ -304,8 +388,19 @@ static NSMutableDictionary *_stylesheet = nil;
         layout.alpha = 1.0;
     }
     
-    
     return layout;
+}
+
++ (void) addGestureRecognizersTo: (UIView *) view{
+    UITapGestureRecognizer *singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(layoutTap:)];
+    [view addGestureRecognizer:singleFingerTap];
+}
+
++ (void) layoutTap: (UITapGestureRecognizer *)recognizer{
+    NSDictionary *action = recognizer.view.payload[@"action"];
+    if(action){
+        [[Jason client] call:action];
+    }
 }
 
 + (NSMutableDictionary *)stylesheet{
@@ -316,7 +411,7 @@ static NSMutableDictionary *_stylesheet = nil;
 }
 + (void)setStylesheet:(NSMutableDictionary *)stylesheet{
     if (stylesheet != _stylesheet){
-        _stylesheet = [stylesheet mutableCopy];
+        [_stylesheet addEntriesFromDictionary:stylesheet];
     }
 }
 // Common

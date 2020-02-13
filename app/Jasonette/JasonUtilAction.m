@@ -5,6 +5,7 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonUtilAction.h"
+#import "SDWebImageDownloader.h"
 
 @implementation JasonUtilAction
 - (void)banner{
@@ -66,6 +67,12 @@
     [[Jason client] loading:NO];
     NSString *title = [self.options[@"title"] description];
     NSString *description = [self.options[@"description"] description];
+    NSString *ok_title = @"OK";
+    
+    if(self.options[@"ok_title"]) {
+        ok_title = [self.options[@"ok_title"] description];
+    }
+    
     // 1. Instantiate alert
     UIAlertController *alert= [UIAlertController alertControllerWithTitle:title message:description preferredStyle:UIAlertControllerStyleAlert];
     
@@ -110,7 +117,7 @@
     
     
     // 3. Add buttons
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:ok_title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
             // Handle callback actions
         if(form && form.count > 0){
             for(NSString *input_name in textFields){
@@ -122,17 +129,33 @@
             [[Jason client] success];
         }
     }];
-    UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-        [[Jason client] error];
-        [alert dismissViewControllerAnimated:YES completion:nil];
-    }];
     [alert addAction:ok];
-    [alert addAction:cancel];
+    
+    if (!self.options[@"hide_cancel"]) {
+        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+            [[Jason client] error];
+            [alert dismissViewControllerAnimated:YES completion:nil];
+        }];
+        
+        [alert addAction:cancel];
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        alert.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.VC.navigationController presentViewController:alert animated:YES completion:nil];
     });
 }
+
+- (void)redirectToStore{
+    NSURL *appStoreLink = [self appStoreURL];
+    [[UIApplication sharedApplication] openURL:appStoreLink  options:@{} completionHandler:nil];
+}
+
+- (void)redirectToSettings{
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+
+}
+
 - (void)share{
     NSArray *items = self.options[@"items"];
     NSMutableArray *share_items = [[NSMutableArray alloc] init];
@@ -146,11 +169,10 @@
                     NSString *file_url = item[@"file_url"];
                     if(url){
                         SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                        [manager downloadImageWithURL:[NSURL URLWithString:url]
+                        [manager loadImageWithURL:[NSURL URLWithString:url]
                                               options:0
-                                             progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                             }
-                                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                             progress:nil
+                                            completed:^(UIImage *image, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                                 if (image) {
                                                     [share_items addObject:image];
                                                 }
@@ -251,6 +273,7 @@
     }];
 
     dispatch_async(dispatch_get_main_queue(), ^{
+        controller.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.VC.navigationController presentViewController:controller animated:YES completion:nil];
     });
 
@@ -279,6 +302,7 @@
             alert.popoverPresentationController.sourceRect = CGRectMake(self.VC.view.bounds.size.width / 2.0, self.VC.view.bounds.size.height / 2.0, 1.0, 1.0);
             [alert.popoverPresentationController setPermittedArrowDirections:0];
         }
+        alert.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.VC.navigationController presentViewController:alert animated:YES completion:nil]; // 6
     });
     
@@ -313,140 +337,46 @@
     dateSelectionController.message = description;
     
     //Now just present the date selection controller using the standard iOS presentation method
+    dateSelectionController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.VC.tabBarController presentViewController:dateSelectionController animated:YES completion:nil];
 
 }
-- (void)addressbook{
-    APAddressBook *addressbook = [[APAddressBook alloc] init];
-    addressbook.fieldsMask = APContactFieldName | APContactFieldEmailsWithLabels | APContactFieldPhonesWithLabels;
-    addressbook.filterBlock = ^BOOL(APContact *contact)
-    {
-        return contact.phones.count > 0;
-    };
 
-    addressbook.sortDescriptors = @[
-        [NSSortDescriptor sortDescriptorWithKey:@"name.firstName" ascending:YES],
-        [NSSortDescriptor sortDescriptorWithKey:@"name.lastName" ascending:YES]
-    ];
-    switch([APAddressBook access])
-    {
-        case APAddressBookAccessUnknown:
-        {
-            // Application didn't request address book access yet
-            [addressbook requestAccess:^(BOOL granted, NSError *error)
-            {
-                if(error){
-                    [[Jason client] error];
-                } else {
-                    if(granted){
-                        [self fetchAddressbook: addressbook];
-                    } else {
-                        [[Jason client] error];
-                    }
-                }
-            }];
-            break;
-        }
-        case APAddressBookAccessGranted:
-        {
-            // Access granted
-            [self fetchAddressbook: addressbook];
-            break;
-        }
-        case APAddressBookAccessDenied:
-        {
-            // Access denied or restricted by privacy settings
-            [[Jason client] error];
-            break;
-        }
-    }
-
-}
-- (void)fetchAddressbook: (APAddressBook *)addressbook{
-    [[Jason client] loading:YES];
-    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        [addressbook loadContacts:^(NSArray <APContact *> *contacts, NSError *error)
-        {
-            // hide activity
-            if (!error)
-            {
-                // do something with contacts array
-                NSMutableArray *result = [NSMutableArray array];
-                [contacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                    [result addObject:[NSDictionary dictionaryWithObjects:@[[self contactName:obj], [self contactPhones:obj], [self contactEmails:obj]] forKeys:@[@"name", @"phone", @"email"]]];
-                }];
-
-                [[Jason client] success: result];
-            }
-            else
-            {
-                // show error
-                [[Jason client] error];
-            }
-        }];
+- (NSURL *)appStoreURL
+{
+    static NSURL *appStoreURL;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        appStoreURL = [self appStoreURLFromBundleName:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
     });
-    
+    return appStoreURL;
 }
-- (NSString *)contactName:(APContact *)contact
+
+- (NSURL *)appStoreURLFromBundleName:(NSString *)bundleName
 {
-    if (contact.name.compositeName)
-    {
-        return contact.name.compositeName;
-    }
-    else if (contact.name.firstName && contact.name.lastName)
-    {
-        return [NSString stringWithFormat:@"%@ %@", contact.name.firstName, contact.name.lastName];
-    }
-    else if (contact.name.firstName || contact.name.lastName)
-    {
-        return contact.name.firstName ?: contact.name.lastName;
-    }
-    else
-    {
-        return @"Untitled";
-    }
+    NSURL *appStoreURL = [NSURL URLWithString:[NSString stringWithFormat:@"itms-apps://itunes.com/app/%@", [self sanitizeAppStoreResourceSpecifier:bundleName]]];
+    return appStoreURL;
 }
- 
-- (NSArray *)contactPhones:(APContact *)contact
+
+- (NSString *)sanitizeAppStoreResourceSpecifier:(NSString *)resourceSpecifier
 {
-    if (contact.phones.count > 0)
-    {
-        NSMutableArray *result = [[NSMutableArray alloc] init];
-        for (APPhone *phone in contact.phones)
-        {
-            if(phone.localizedLabel.length == 0){
-                [result addObject:@{@"type": @"", @"text": phone.number}];
-            } else {
-                [result addObject:@{@"type": phone.localizedLabel, @"text": phone.number}];
-            }
-        }
-        return result;
-    }
-    else
-    {
-        return @[];
-    }
-}
- 
-- (NSArray *)contactEmails:(APContact *)contact
-{
-    if (contact.emails.count > 1)
-    {
-        NSMutableArray *result = [[NSMutableArray alloc] init];
-        for (APEmail *email in contact.emails)
-        {
-            [result addObject:email.address];
-        }
-        return result;
-    }
-    else
-    {
-        if(contact.emails.count == 1){
-            return @[contact.emails[0].address];
-        } else {
-            return @[];
-        }
-    }
+    /*
+     https://developer.apple.com/library/ios/qa/qa1633/_index.html
+     To create an App Store Short Link, apply the following rules to your company or app name:
+     
+     Remove all whitespace
+     Convert all characters to lower-case
+     Remove all copyright (©), trademark (™) and registered mark (®) symbols
+     Replace ampersands ("&") with "and"
+     Remove most punctuation (See Listing 2 for the set)
+     Replace accented and other "decorated" characters (ü, å, etc.) with their elemental character (u, a, etc.)
+     Leave all other characters as-is.
+     */
+    resourceSpecifier = [resourceSpecifier stringByReplacingOccurrencesOfString:@"&" withString:@"and"];
+    resourceSpecifier = [[NSString alloc] initWithData:[resourceSpecifier dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] encoding:NSASCIIStringEncoding];
+    resourceSpecifier = [resourceSpecifier stringByReplacingOccurrencesOfString:@"[!¡\"#$%'()*+,-./:;<=>¿?@\\[\\]\\^_`{|}~\\s\\t\\n]" withString:@"" options:NSRegularExpressionSearch range:NSMakeRange(0, resourceSpecifier.length)];
+    resourceSpecifier = [resourceSpecifier lowercaseString];
+    return resourceSpecifier;
 }
 
 @end

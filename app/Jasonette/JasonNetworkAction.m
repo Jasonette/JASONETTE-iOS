@@ -6,7 +6,8 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonNetworkAction.h"
-#import "UICKeyChainStore.h"
+#import "JasonOptionHelper.h"
+#import <UICKeyChainStore/UICKeyChainStore.h>
 
 @implementation JasonNetworkAction
 
@@ -34,7 +35,7 @@
     __weak typeof(self) weakSelf = self;
 
     NSString *original_url = self.VC.url;
-    
+
     if(self.options){
         [[Jason client] networkLoading:YES with:self.options];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
@@ -57,6 +58,12 @@
         NSString *dataType = [self build_data_type: manager];
         NSMutableDictionary *parameters = [self build_params: session];
     
+        JasonOptionHelper *optionHelper = [[JasonOptionHelper alloc] initWithOptions:self.options];
+        
+        BOOL showLoading = [optionHelper getBoolean:@"show_loading"];
+        if (showLoading) {
+            [[Jason client] showLoadingOverlay];
+        }
         
         NSString *method = self.options[@"method"];
         if(!method) method = @"get";
@@ -115,7 +122,7 @@
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
                 [manager GET:url parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
-                    // Nothing
+                    [[Jason client] setLoadingProgress:downloadProgress.fractionCompleted];
                 } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -126,7 +133,9 @@
     }
 }
 - (void)processError: (NSError *)error withOriginalUrl: (NSString*) original_url{
+#ifdef DEBUG
     NSLog(@"Error = %@", error);
+#endif
     [[Jason client] networkLoading:NO with:nil];
     [[Jason client] error: error.userInfo withOriginalUrl:original_url];
 }
@@ -162,7 +171,9 @@
                     NSError *error;
                     Boolean success = [mediaData writeToFile:tmpFile options:0 error:&error];
                     if (!success) {
+#ifdef DEBUG
                         NSLog(@"writeToFile failed with error %@", error);
+#endif
                     }
                     [weakSelf _uploadData: mediaData ofType: contentType withFilename: upload_filename fromOriginalUrl: original_url];
                 }
@@ -176,7 +187,7 @@
     NSString *bucket = storage[@"bucket"];
     NSString *path = storage[@"path"];
     NSString *sign_url = storage[@"sign_url"];
-    
+
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     NSDictionary *session = [JasonHelper sessionForUrl:sign_url];
@@ -227,14 +238,16 @@
         [req setHTTPMethod:@"PUT"];
         [req setURL:[NSURL URLWithString:responseObject[@"$jason"]]];
         
-        NSURLSessionDataTask *upload_task = [manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+        NSURLSessionDataTask *upload_task = [manager dataTaskWithRequest:req uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
             if (!error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self s3UploadDidSucceed: upload_filename withOriginalUrl: original_url];
                 });
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
+#ifdef DEBUG
                     NSLog(@"error = %@", error);
+#endif
                     [self s3UploadDidFail: error withOriginalUrl:original_url];
                 });
             }
@@ -276,6 +289,25 @@
             [self saveCookies];
             NSString *data = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
             [[Jason client] success: data withOriginalUrl:original_url];
+        } else if(dataType && [dataType isEqualToString:@"toFile"]){
+            [self saveCookies];
+            NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[url lastPathComponent]];
+            // iOS cant figure out what type of file something is if it doesn't end in the extension. so we truncate arguments that would
+            // be present on private files
+            NSRange pos = [filePath rangeOfString:@"?"];
+            if (pos.location != NSNotFound) {
+                filePath = [filePath substringToIndex:pos.location];
+            }
+            NSError *error;
+            NSData *data = (NSData *)responseObject;
+            Boolean success = [data writeToFile:filePath options:0 error:&error];
+            if (!success) {
+#ifdef DEBUG
+                NSLog(@"writeToFile failed with error %@", error);
+#endif
+            }
+            
+            [[Jason client] success: filePath withOriginalUrl:original_url];
         } else {
             [[Jason client] success: responseObject withOriginalUrl:original_url];
         }
@@ -295,11 +327,15 @@
     if(![url isEqualToString:@""]) {
         NSURL *urlToCheck = [NSURL URLWithString:url];
         if(!urlToCheck){
+#ifdef DEBUG
             NSLog(@"Error = Invalid URL for $network.request call");
+#endif
             return YES;
         }
     } else {
+#ifdef DEBUG
         NSLog(@"Error = URL not specified for $network.request call");
+#endif
         return YES;
     }
     return NO;
@@ -377,7 +413,7 @@
         serializer.acceptableContentTypes = acceptableContentTypes;
         manager.responseSerializer = serializer;
         
-    } else if(dataType && [dataType isEqualToString:@"raw"]){
+    } else if(dataType && ([dataType isEqualToString:@"raw"] || [dataType isEqualToString:@"toFile"])){
         manager.responseSerializer = [AFHTTPResponseSerializer serializer];
         manager.responseSerializer.acceptableContentTypes = nil;
     } else {

@@ -1,6 +1,6 @@
 /*
  * This file is part of the FreeStreamer project,
- * (C)Copyright 2011-2016 Matias Muhonen <mmu@iki.fi> 穆马帝
+ * (C)Copyright 2011-2018 Matias Muhonen <mmu@iki.fi> 穆马帝
  * See the file ''LICENSE'' for using the code.
  *
  * https://github.com/muhku/FreeStreamer
@@ -101,7 +101,8 @@
                          
                          [strongSelf parseResponseData];
                          
-                         xmlFreeDoc(strongSelf->_xmlDocument), strongSelf->_xmlDocument = nil;
+                         xmlFreeDoc(strongSelf->_xmlDocument);
+                         strongSelf->_xmlDocument = nil;
                          
                          dispatch_async(dispatch_get_main_queue(), ^(){
                              strongSelf.onCompletion();

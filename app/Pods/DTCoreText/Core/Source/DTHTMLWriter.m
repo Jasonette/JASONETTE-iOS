@@ -167,6 +167,13 @@
 			break;
 		}
 			
+		case DTCSSListStyleTypeUpperRoman:
+		{
+			typeString = @"upper-roman";
+			isOrdered = YES;
+			break;
+		}
+			
 		case DTCSSListStyleTypeLowerAlpha:
 		{
 			typeString = @"lower-alpha";
@@ -177,6 +184,13 @@
 		case DTCSSListStyleTypeLowerLatin:
 		{
 			typeString = @"lower-latin";
+			isOrdered = YES;
+			break;
+		}
+			
+		case DTCSSListStyleTypeLowerRoman:
+		{
+			typeString = @"lower-roman";
 			isOrdered = YES;
 			break;
 		}
@@ -593,8 +607,8 @@
 				}];
 			}
 			
-			// check if previous link is over yet
-			if (NSMaxRange(spanRange) >= NSMaxRange(currentLinkRange))
+			// check if the current link tag needs to be closed
+			if (currentLinkRange.location != NSNotFound && (NSMaxRange(spanRange) >= MIN(NSMaxRange(currentLinkRange), NSMaxRange(paragraphRange))))
 			{
 				isLastPartOfHyperlink = YES;
 			}

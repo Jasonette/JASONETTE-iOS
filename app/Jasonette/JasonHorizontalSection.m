@@ -5,6 +5,8 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonHorizontalSection.h"
+#import <MaterialComponents/MaterialPageControl.h>
+
 @interface JasonHorizontalSection (){
     UIImage *placeholder_image;
 }
@@ -79,6 +81,35 @@
     [_collectionView reloadData];
 }
 
+- (void)addPageControl{
+    self.pageControl = [[MDCPageControl alloc] init];
+    
+    self.pageControl.isAccessibilityElement = NO;
+    self.pageControl.accessibilityElementsHidden = YES;
+    
+    self.pageControl.currentPageIndicatorTintColor = [UIColor darkGrayColor];
+    self.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
+    self.pageControl.numberOfPages = [self.items count];
+    self.pageControl.currentPage = 0;
+    self.pageControl.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:self.pageControl];
+    
+    [self.pageControl.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
+    [self.pageControl.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
+    [self.pageControl.topAnchor constraintLessThanOrEqualToAnchor:self.bottomAnchor constant:-10].active = true;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self.pageControl scrollViewDidScroll:scrollView];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self.pageControl scrollViewDidEndDecelerating:scrollView];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    [self.pageControl scrollViewDidEndScrollingAnimation:scrollView];
+}
 
 - (UICollectionViewCell*)getItemCell:(NSDictionary *)item forCollectionView:(UICollectionView *)collectionView atIndexPath:(NSIndexPath *)indexPath{
     NSString *cellType = @"JasonHorizontalSectionItem";
@@ -90,6 +121,7 @@
         NSArray *nib = [[NSBundle mainBundle] loadNibNamed:cellType owner:self options:nil];
         cell = [nib objectAtIndex:0];        
     }
+
     
     if (cell.contentView.subviews.count == 0)
     {
@@ -149,6 +181,39 @@
         // Do nothing
     }
     
+}
+
+- (NSString *)accessibilityLabel {
+    return [NSString stringWithFormat:@"%ld of %lu", (long)self.currentItem + 1, (unsigned long)self.items.count];
+}
+
+- (NSString *)accessibilityValue {
+    return self.items[self.currentItem][@"alt"];
+}
+
+- (void)accessibilityIncrement {
+    if (self.currentItem + 1 >= self.items.count) {
+        return;
+    }
+    self.currentItem++;
+    [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:self.currentItem inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+}
+
+- (void)accessibilityDecrement {
+    if (self.currentItem == 0) {
+        return;
+    }
+    self.currentItem--;
+    [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:self.currentItem inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+}
+
+- (UIAccessibilityTraits)accessibilityTraits {
+    return UIAccessibilityTraitAdjustable;
+}
+
+- (BOOL)isAccessibilityElement
+{
+    return YES;
 }
 
 @end

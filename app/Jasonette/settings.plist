@@ -7,9 +7,9 @@
 	<key>client_secret</key>
 	<string></string>
 	<key>url</key>
-	<string>https://jasonette.github.io/Jasonpedia/hello.json</string>
+	<string>file://splash_screen.json</string>
 	<key>loading</key>
-	<false/>
+	<true/>
 	<key>launch</key>
 	<string></string>
 	<key>debug</key>
