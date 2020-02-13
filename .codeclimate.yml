@@ -1,0 +1,11 @@
+engines:
+  fixme:
+    enabled: true
+  tailor:
+    enabled: false
+ratings:
+  paths:
+  - "**.swift"
+exclude_paths:
+- "/app/Pods/"
+- "**.js"

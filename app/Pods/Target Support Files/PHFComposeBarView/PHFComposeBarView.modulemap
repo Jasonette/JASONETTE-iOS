@@ -1,0 +1,6 @@
+framework module PHFComposeBarView {
+  umbrella header "PHFComposeBarView-umbrella.h"
+
+  export *
+  module * { export * }
+}

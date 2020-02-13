@@ -1,0 +1,6 @@
+framework module SWFrameButton {
+  umbrella header "SWFrameButton-umbrella.h"
+
+  export *
+  module * { export * }
+}

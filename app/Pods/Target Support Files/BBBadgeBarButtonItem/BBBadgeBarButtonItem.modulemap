@@ -1,0 +1,6 @@
+framework module BBBadgeBarButtonItem {
+  umbrella header "BBBadgeBarButtonItem-umbrella.h"
+
+  export *
+  module * { export * }
+}

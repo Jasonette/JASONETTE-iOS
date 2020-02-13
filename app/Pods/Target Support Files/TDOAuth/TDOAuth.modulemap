@@ -1,0 +1,6 @@
+framework module TDOAuth {
+  umbrella header "TDOAuth-umbrella.h"
+
+  export *
+  module * { export * }
+}

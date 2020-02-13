@@ -1,0 +1,409 @@
+#!/bin/sh
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+cd "${DIR}"
+
+
+bundleidentifier(){
+  formatted=(`echo $1 | sed 's/http[s]*:\/\///g' | sed 's/www\.//g' | sed 's/\.json$//g' | sed 's/\//./g' | sed 's/[^a-zA-Z0-9.-]/./g' | sed 's/\.\.+/./g'`)
+  OLDIFS=$IFS
+  IFS=.
+  set -f
+  array=($formatted)
+  str=""
+  IFS=$OLDIFS
+  for (( i=${#array[@]}-1 ; i>=0 ; i-- )) ; do
+    str+="${array[i]}"
+    str+="."
+  done
+  new_bundle_id=(`echo $str | sed 's/\.$//g'`)
+  sed -i '' "s/PRODUCT_BUNDLE_IDENTIFIER[^;]*;/PRODUCT_BUNDLE_IDENTIFIER\ =\ $new_bundle_id;/g" app/Jasonette.xcodeproj/project.pbxproj
+  set +f
+}
+
+settingsplist(){
+cat > app/Jasonette/settings.plist <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>client_id</key>
+  <string></string>
+  <key>client_secret</key>
+  <string></string>
+  <key>url</key>
+  <string>$1</string>
+  <key>loading</key>
+  <false/>
+  <key>launch</key>
+  <string>file://preload.json</string>
+  <key>debug</key>
+  <false/>
+</dict>
+</plist>
+EOF
+}
+
+infoplist(){
+# same as bundleidentifier()
+
+cat > app/Jasonette/Info.plist <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>used to access photo library</string>
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>audio</string>
+  </array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>used to access microphone api</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>used to access media library</string>
+	<key>NSContactsUsageDescription</key>
+	<string>used to access contacts api</string>
+	<key>NSCameraUsageDescription</key>
+	<string>used to access camera api</string>
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>used to access location api</string>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>en</string>
+  <key>CFBundleExecutable</key>
+  <string>\$(EXECUTABLE_NAME)</string>
+  <key>CFBundleIdentifier</key>
+  <string>\$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleName</key>
+  <string>$1</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleShortVersionString</key>
+  <string>1.0</string>
+  <key>CFBundleSignature</key>
+  <string>????</string>
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleURLName</key>
+      <string></string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>$3</string>
+      </array>
+    </dict>
+  </array>
+  <key>CFBundleVersion</key>
+  <string>1</string>
+  <key>LSRequiresIPhoneOS</key>
+  <true/>
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+  </dict>
+  <key>UILaunchStoryboardName</key>
+  <string>LaunchScreen</string>
+  <key>UIMainStoryboardFile</key>
+  <string></string>
+  <key>UIRequiredDeviceCapabilities</key>
+  <array>
+    <string>armv7</string>
+  </array>
+  <key>UISupportedInterfaceOrientations</key>
+  <array>
+    <string>UIInterfaceOrientationPortrait</string>
+    <string>UIInterfaceOrientationLandscapeLeft</string>
+    <string>UIInterfaceOrientationLandscapeRight</string>
+  </array>
+  <key>UISupportedInterfaceOrientations~ipad</key>
+  <array>
+    <string>UIInterfaceOrientationPortrait</string>
+    <string>UIInterfaceOrientationPortraitUpsideDown</string>
+    <string>UIInterfaceOrientationLandscapeLeft</string>
+    <string>UIInterfaceOrientationLandscapeRight</string>
+  </array>
+</dict>
+</plist>
+EOF
+}
+
+generate_iconset(){
+  local full_icon="$1"
+
+  local type=`file -b ${full_icon}`
+  if [[ $type =~ JPEG ]]
+  then
+    cp "$full_icon" Icon-20.jpg &> /dev/null
+    sips -z 29 29 Icon-20.jpg &> /dev/null
+    sips -s format png Icon-20.jpg --out Icon-20.png &> /dev/null
+
+    cp "$full_icon" Icon-Small.jpg &> /dev/null
+    sips -z 29 29 Icon-Small.jpg &> /dev/null
+    sips -s format png Icon-Small.jpg --out Icon-Small.png &> /dev/null
+
+    cp "$full_icon" Icon-Small@2x.jpg &> /dev/null
+    sips -z 58 58 Icon-Small@2x.jpg &> /dev/null
+    sips -s format png Icon-Small@2x.jpg --out Icon-Small@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-Small@3x.jpg &> /dev/null
+    sips -z 87 87 Icon-Small@3x.jpg &> /dev/null
+    sips -s format png Icon-Small@3x.jpg --out Icon-Small@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-Small-50.jpg &> /dev/null
+    sips -z 50 50 Icon-Small-50.jpg &> /dev/null
+    sips -s format png Icon-Small-50.jpg --out Icon-Small-50.png &> /dev/null
+
+    cp "$full_icon" Icon-Small-50@2x.jpg &> /dev/null
+    sips -z 100 100 Icon-Small-50@2x.jpg &> /dev/null
+    sips -s format png Icon-Small-50@2x.jpg --out Icon-Small-50@2x.png &> /dev/null
+
+    cp "$full_icon" Icon.jpg &> /dev/null
+    sips -z 57 57 Icon.jpg &> /dev/null
+    sips -s format png Icon.jpg --out Icon.png &> /dev/null
+
+    cp "$full_icon" Icon@2x.jpg &> /dev/null
+    sips -z 114 114 Icon@2x.jpg &> /dev/null
+    sips -s format png Icon@2x.jpg --out Icon@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-20@2x.jpg &> /dev/null
+    sips -z 40 40 Icon-20@2x.jpg &> /dev/null
+    sips -s format png Icon-20@2x.jpg --out Icon-20@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-40.jpg &> /dev/null
+    sips -z 40 40 Icon-40.jpg &> /dev/null
+    sips -s format png Icon-40.jpg --out Icon-40.png &> /dev/null
+
+    cp "$full_icon" Icon-20@3x.jpg &> /dev/null
+    sips -z 60 60 Icon-20@3x.jpg &> /dev/null
+    sips -s format png Icon-20@3x.jpg --out Icon-20@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-40@2x.jpg &> /dev/null
+    sips -z 80 80 Icon-40@2x.jpg &> /dev/null
+    sips -s format png Icon-40@2x.jpg --out Icon-40@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-40@3x.jpg &> /dev/null
+    sips -z 120 120 Icon-40@3x.jpg &> /dev/null
+    sips -s format png Icon-40@3x.jpg --out Icon-40@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-60@2x.jpg &> /dev/null
+    sips -z 120 120 Icon-60@2x.jpg &> /dev/null
+    sips -s format png Icon-60@2x.jpg --out Icon-60@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-60@3x.jpg &> /dev/null
+    sips -z 180 180 Icon-60@3x.jpg &> /dev/null
+    sips -s format png Icon-60@3x.jpg --out Icon-60@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-72.jpg &> /dev/null
+    sips -z 72 72 Icon-72.jpg &> /dev/null
+    sips -s format png Icon-72.jpg --out Icon-72.png &> /dev/null
+
+    cp "$full_icon" Icon-72@2x.jpg &> /dev/null
+    sips -z 144 144 Icon-72@2x.jpg &> /dev/null
+    sips -s format png Icon-72@2x.jpg --out Icon-72@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-76.jpg &> /dev/null
+    sips -z 76 76 Icon-76.jpg &> /dev/null
+    sips -s format png Icon-76.jpg --out Icon-76.png &> /dev/null
+
+    cp "$full_icon" Icon-76@2x.jpg &> /dev/null
+    sips -z 152 152 Icon-76@2x.jpg &> /dev/null
+    sips -s format png Icon-76@2x.jpg --out Icon-76@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-83.5@2x.jpg &> /dev/null
+    sips -z 167 167 Icon-83.5@2x.jpg &> /dev/null
+    sips -s format png Icon-83.5@2x.jpg --out Icon-83.5@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-1024.jpg &> /dev/null
+    sips -z 1024 1024 Icon-1024.jpg &> /dev/null
+    sips -s format png Icon-1024.jpg --out Icon-1024.png &> /dev/null
+
+    rm Icon-20.jpg
+    rm Icon-20@2x.jpg
+    rm Icon-20@3x.jpg
+    rm Icon-Small.jpg
+    rm Icon-Small@2x.jpg
+    rm Icon-Small@3x.jpg
+    rm Icon-Small-50.jpg
+    rm Icon-Small-50@2x.jpg
+    rm Icon.jpg
+    rm Icon@2x.jpg
+    rm Icon-40.jpg
+    rm Icon-40@2x.jpg
+    rm Icon-40@3x.jpg
+    rm Icon-60@2x.jpg
+    rm Icon-60@3x.jpg
+    rm Icon-72.jpg
+    rm Icon-72@2x.jpg
+    rm Icon-76.jpg
+    rm Icon-76@2x.jpg
+    rm Icon-83.5@2x.jpg
+    rm Icon-1024.jpg
+
+  else
+    cp "$full_icon" Icon-20.png &> /dev/null
+    sips -z 20 20 Icon-20.png &> /dev/null
+
+    cp "$full_icon" Icon-Small.png &> /dev/null
+    sips -z 29 29 Icon-Small.png &> /dev/null
+
+    cp "$full_icon" Icon-20@2x.png &> /dev/null
+    sips -z 40 40 Icon-20@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-Small@2x.png &> /dev/null
+    sips -z 58 58 Icon-Small@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-20@3x.png &> /dev/null
+    sips -z 60 60 Icon-20@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-Small@3x.png &> /dev/null
+    sips -z 87 87 Icon-Small@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-Small-50.png &> /dev/null
+    sips -z 50 50 Icon-Small-50.png &> /dev/null
+
+    cp "$full_icon" Icon-Small-50@2x.png &> /dev/null
+    sips -z 100 100 Icon-Small-50@2x.png &> /dev/null
+
+    cp "$full_icon" Icon.png &> /dev/null
+    sips -z 57 57 Icon.png &> /dev/null
+
+    cp "$full_icon" Icon@2x.png &> /dev/null
+    sips -z 114 114 Icon@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-40.png &> /dev/null
+    sips -z 40 40 Icon-40.png &> /dev/null
+
+    cp "$full_icon" Icon-40@2x.png &> /dev/null
+    sips -z 80 80 Icon-40@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-40@3x.png &> /dev/null
+    sips -z 120 120 Icon-40@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-60@2x.png &> /dev/null
+    sips -z 120 120 Icon-60@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-60@3x.png &> /dev/null
+    sips -z 180 180 Icon-60@3x.png &> /dev/null
+
+    cp "$full_icon" Icon-72.png &> /dev/null
+    sips -z 72 72 Icon-72.png &> /dev/null
+
+    cp "$full_icon" Icon-72@2x.png &> /dev/null
+    sips -z 144 144 Icon-72@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-76.png &> /dev/null
+    sips -z 76 76 Icon-76.png &> /dev/null
+
+    cp "$full_icon" Icon-76@2x.png &> /dev/null
+    sips -z 152 152 Icon-76@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-83.5@2x.png &> /dev/null
+    sips -z 167 167 Icon-83.5@2x.png &> /dev/null
+
+    cp "$full_icon" Icon-1024.png &> /dev/null
+    sips -z 1024 1024 Icon-1024.png &> /dev/null
+  fi
+
+  mv Icon-20.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-20.png &> /dev/null
+  mv Icon-20@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-20@2x.png &> /dev/null
+  mv Icon-20@3x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-20@3x.png &> /dev/null
+  mv Icon-Small.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-Small.png &> /dev/null
+  mv Icon-Small@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-Small@2x.png &> /dev/null
+  mv Icon-Small@3x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-Small@3x.png &> /dev/null
+  mv Icon-Small-50.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-Small-50.png &> /dev/null
+  mv Icon-Small-50@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-Small-50@2x.png &> /dev/null
+  mv Icon.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon.png &> /dev/null
+  mv Icon@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon@2x.png &> /dev/null
+  mv Icon-40.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-40.png &> /dev/null
+  mv Icon-40@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-40@2x.png &> /dev/null
+  mv Icon-40@3x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-40@3x.png &> /dev/null
+  mv Icon-60@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-60@2x.png &> /dev/null
+  mv Icon-60@3x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-60@3x.png &> /dev/null
+  mv Icon-72.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-72.png &> /dev/null
+  mv Icon-72@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-72@2x.png &> /dev/null
+  mv Icon-76.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-76.png &> /dev/null
+  mv Icon-76@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-76@2x.png &> /dev/null
+  mv Icon-83.5@2x.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-83.5@2x.png &> /dev/null
+  mv Icon-1024.png app/Jasonette/Media.xcassets/AppIcon.appiconset/Icon-1024.png &> /dev/null
+
+}
+
+clear
+RED='\033[0;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+LIGHTBLUE='\033[1;94m'
+NONE='\033[00m'
+
+echo "${RED}WELCOME TO JASONETTE!"
+echo ""
+echo "${GREEN}1. Try the demo app (Recommended if you're new)"
+echo "2. Create a new app"
+echo "3. Continue working on the existing app${NONE}"
+echo ""
+
+read -p "Select 1, 2, or 3 and press enter: (1) " option
+
+if ((option == 2))
+then
+  read -p "[NAME] App name: " name
+
+  read -p "[NAME] HOME JSON URL if you have one: (or press Enter to create one): " url
+
+  url_scheme=(`echo -n $url | openssl sha1`)
+  url_scheme="J${url_scheme}"
+
+  if [ ${#url} -gt 0 ]
+  then
+    settingsplist "$url"
+    infoplist "$name" "$url" "$url_scheme"
+    bundleidentifier "$url"
+  else
+    echo ""
+    echo "${LIGHTBLUE}Opening Jasonbase.com .."
+    echo "Jasonbase is a free JSON hosting site."
+    echo "Try writing one, save it, and come back with a URL, I'll wait.${NONE}"
+    echo ""
+    open https://www.jasonbase.com
+    read -p "[URL] Enter the JSON URL: " url
+    while [ ${#url} -eq 0 ]
+    do
+      read -p "[URL] Enter the JSON URL: " url
+    done
+    settingsplist "$url"
+    infoplist "$name" "$url" "$url_scheme"
+    bundleidentifier "$url"
+  fi
+
+  read -p "[ICON] Add a PNG or JPG image to the 'icon' folder and press Enter.." -r e
+  for file in icon/*.{jpg,jpeg,JPG,JPEG,png,PNG}; do
+    [ -e "$file" ] && generate_iconset "$file" && break
+  done
+
+  echo "${GREEN}* URL Scheme: ${url_scheme}://"
+  echo "* OAuth redirect uri: ${url_scheme}://oauth${GREEN}"
+
+  echo "Opening XCode workspace. Please wait..."
+  open app/Jasonette.xcworkspace
+  sleep 10
+elif ((option == 3))
+then
+  echo "Opening XCode workspace. Please wait..."
+  open app/Jasonette.xcworkspace
+  sleep 10
+else
+  new_bundle_id=`uuidgen`
+  settingsplist https://jasonette.github.io/Jasonpedia/hello.json
+  bundleidentifier "com.jasonette.seed.${new_bundle_id}"
+  echo ""
+  echo "You can view the JSON for the included demo app at:"
+  echo "https://github.com/Jasonette/Jasonpedia"
+  echo ""
+  echo "Opening XCode workspace. Please wait..."
+  open app/Jasonette.xcworkspace
+  echo ""
+  echo ""
+  sleep 10
+fi
