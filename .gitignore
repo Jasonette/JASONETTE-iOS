@@ -23,6 +23,7 @@ VersionX-revision.h
 # build products
 build/
 build/*.[oa]
+app/Assets.xcassets/*
 
 # Other source repository archive directories (protects when importing)
 .hg
