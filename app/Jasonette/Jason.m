@@ -798,8 +798,6 @@
     
 }
 - (void)render{
-    NSDictionary *stack = [JasonMemory client]._stack;
-    
     /**************************************************
      *
      * PART 1: Prepare data by filling it in with all the variables
@@ -820,9 +818,9 @@
         data_stub[key] = kv[key];
     }
     
-    if(stack[@"options"]){
-        if(!stack[@"options"][@"type"] || [stack[@"options"][@"type"] isEqualToString:@"json"]){
-            if(stack[@"options"][@"data"]){
+    if(self.options){
+        if(!self.options[@"type"] || [self.options[@"type"] isEqualToString:@"json"]){
+            if(self.options[@"data"]){
                 /**************************************************
                  *
                  * You can pass in 'data' as one of the options for $render action, like so:
@@ -873,7 +871,7 @@
                  *   }
                  *
                  **************************************************/
-                data_stub[@"$jason"] = [self filloutTemplate:stack[@"options"][@"data"] withData:data_stub];
+                data_stub[@"$jason"] = [self filloutTemplate:self.options[@"data"] withData:data_stub];
             }
         }
     }
@@ -893,7 +891,7 @@
             [VC setValue:VC.data[@"$get"][@"head_styles"] forKey:@"style"];
         } @catch (NSException *exception) { }
     }
-    if(stack[@"options"] && stack[@"options"][@"template"]){
+    if(self.options && self.options[@"template"]){
         /**************************************************
          *
          * render can have 'template' attribute as an option, like so:
@@ -907,7 +905,7 @@
          *
          * In this case we use the specified 'empty' template instead of 'body'
          **************************************************/
-        template_name = stack[@"options"][@"template"];
+        template_name = self.options[@"template"];
     }
     NSDictionary *body_parser = VC.parser[template_name];
     
@@ -920,10 +918,10 @@
     if(body_parser){
         
         // if self.data is not empty, render
-        if(stack[@"options"] && stack[@"options"][@"type"]){
-            if([stack[@"options"][@"type"] isEqualToString:@"html"]){
+        if(self.options && self.options[@"type"]){
+            if([self.options[@"type"] isEqualToString:@"html"]){
                 rendered_page = [JasonHelper parse: data_stub ofType:@"html" with:body_parser];
-            } else if([stack[@"options"][@"type"] isEqualToString:@"xml"]){
+            } else if([self.options[@"type"] isEqualToString:@"xml"]){
                 rendered_page = [JasonHelper parse: data_stub ofType:@"xml" with:body_parser];
             } else {
                 rendered_page = [JasonHelper parse: data_stub with:body_parser];
@@ -3229,10 +3227,7 @@
         }
     }
 }
-- (void)onForeground{
-    // Clear the app icon badge
-    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
-    
+- (void)onForeground{   
     // Don't trigger if the view has already come foreground once (because this can be triggered by things like push notification / geolocation alerts)
     if(!isForeground){
         NSDictionary *events = [VC valueForKey:@"events"];
