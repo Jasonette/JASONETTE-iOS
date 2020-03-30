@@ -1769,6 +1769,7 @@
     }
     
     [self->tabController reset];
+    self->previous_footer = nil;
     [self go:@{@"url": self->ROOT_URL, @"transition": @"replace"}];
 }
 
