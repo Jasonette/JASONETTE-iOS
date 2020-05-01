@@ -12,12 +12,13 @@
 
 #import "MaterialActivityIndicator.h"
 #import "MDCActivityIndicator.h"
+#import "MDCActivityIndicatorDelegate.h"
 #import "MaterialPageControl.h"
 #import "MDCPageControl.h"
 #import "MaterialPalettes.h"
 #import "MDCPalettes.h"
 #import "MaterialApplication.h"
-#import "UIApplication+AppExtensions.h"
+#import "UIApplication+MDCAppExtensions.h"
 
 FOUNDATION_EXPORT double MaterialComponentsVersionNumber;
 FOUNDATION_EXPORT const unsigned char MaterialComponentsVersionString[];

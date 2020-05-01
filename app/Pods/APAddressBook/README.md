@@ -12,12 +12,21 @@ APAddressBook is a wrapper on [AddressBook.framework](https://developer.apple.co
 * Get photo of contact
 
 #### Objective-c
-**Installation**
+**Installation via Cocoapods**
 
 Add `APAddressBook` pod to [Podfile](http://guides.cocoapods.org/syntax/podfile.html)
 ```ruby
 pod 'APAddressBook'
 ```
+
+**Installation via Carthage**
+
+Add to your Cartfile
+```ruby
+github 'Alterplay/APAddressBook'
+```
+
+Run `carthage update` to fetch and build the framework. Add `APAddressBook.framework` to your project's 'Linked Frameworks and Libraries'. Ensure that `$(SRCROOT)/Carthage/Build/iOS/APAddressBook.framework` is part of the carthage copy-framework build phase.
 
 **Warning for iOS 10.0 and after**
 
@@ -158,7 +167,7 @@ switch([APAddressBook access])
 ```
 
 #### Swift
-**Installation**
+**Installation via Cocoapods**
 ```ruby
 pod 'APAddressBook/Swift'
 ```
@@ -166,6 +175,15 @@ Import `APAddressBook-Bridging.h` to application's objective-c bridging file.
 ```objective-c
 #import <APAddressBook/APAddressBook-Bridging.h>
 ```
+
+**Installation via Carthage**
+
+Add to your Cartfile
+```ruby
+github 'Alterplay/APAddressBook'
+```
+
+Run `carthage update` to fetch and build the framework. Add `APAddressBook.framework` to your project's 'Linked Frameworks and Libraries'. Ensure that `$(SRCROOT)/Carthage/Build/iOS/APAddressBook.framework` is part of the carthage copy-framework build phase.
 
 **Example**
 

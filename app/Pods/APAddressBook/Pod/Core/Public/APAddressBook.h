@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 #import "APTypes.h"
 
 @class APContact;
@@ -41,3 +45,5 @@
                   completion:(nonnull void (^)(BOOL granted, NSError * _Nullable error))completionBlock;
 
 @end
+
+#pragma clang diagnostic pop

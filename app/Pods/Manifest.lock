@@ -24,22 +24,68 @@ PODS:
   - CYRTextView (0.4.0)
   - DAKeyboardControl (2.4.0)
   - DHSmartScreenshot (1.3.1)
-  - DTCoreText (1.6.21):
-    - DTCoreText/Core (= 1.6.21)
+  - DTCoreText (1.6.23):
+    - DTCoreText/Core (= 1.6.23)
     - DTFoundation/Core (~> 1.7.5)
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
     - DTFoundation/UIKit (~> 1.7.5)
-  - DTCoreText/Core (1.6.21):
+  - DTCoreText/Core (1.6.23):
     - DTFoundation/Core (~> 1.7.5)
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
     - DTFoundation/UIKit (~> 1.7.5)
-  - DTFoundation/Core (1.7.13)
-  - DTFoundation/DTAnimatedGIF (1.7.13)
-  - DTFoundation/DTHTMLParser (1.7.13):
+  - DTFoundation (1.7.14):
+    - DTFoundation/AppKit (= 1.7.14)
+    - DTFoundation/Core (= 1.7.14)
+    - DTFoundation/Debug (= 1.7.14)
+    - DTFoundation/DTAnimatedGIF (= 1.7.14)
+    - DTFoundation/DTASN1 (= 1.7.14)
+    - DTFoundation/DTAsyncFileDeleter (= 1.7.14)
+    - DTFoundation/DTAWS (= 1.7.14)
+    - DTFoundation/DTHTMLParser (= 1.7.14)
+    - DTFoundation/DTProgressHUD (= 1.7.14)
+    - DTFoundation/DTReachability (= 1.7.14)
+    - DTFoundation/DTScripting (= 1.7.14)
+    - DTFoundation/DTSidePanel (= 1.7.14)
+    - DTFoundation/DTSQLite (= 1.7.14)
+    - DTFoundation/DTUTI (= 1.7.14)
+    - DTFoundation/DTZipArchive (= 1.7.14)
+    - DTFoundation/Runtime (= 1.7.14)
+    - DTFoundation/UIKit (= 1.7.14)
+    - DTFoundation/UIKit_BlocksAdditions (= 1.7.14)
+  - DTFoundation/Core (1.7.14)
+  - DTFoundation/Debug (1.7.14):
     - DTFoundation/Core
-  - DTFoundation/UIKit (1.7.13):
+    - DTFoundation/Runtime
+  - DTFoundation/DTAnimatedGIF (1.7.14)
+  - DTFoundation/DTASN1 (1.7.14):
+    - DTFoundation/Core
+  - DTFoundation/DTAsyncFileDeleter (1.7.14):
+    - DTFoundation/Core
+  - DTFoundation/DTAWS (1.7.14):
+    - DTFoundation/Core
+  - DTFoundation/DTHTMLParser (1.7.14):
+    - DTFoundation/Core
+  - DTFoundation/DTProgressHUD (1.7.14):
+    - DTFoundation/Core
+    - DTFoundation/UIKit
+  - DTFoundation/DTReachability (1.7.14):
+    - DTFoundation/Core
+  - DTFoundation/DTScripting (1.7.14):
+    - DTFoundation/Core
+  - DTFoundation/DTSidePanel (1.7.14):
+    - DTFoundation/UIKit
+  - DTFoundation/DTSQLite (1.7.14):
+    - DTFoundation/Core
+  - DTFoundation/DTUTI (1.7.14)
+  - DTFoundation/DTZipArchive (1.7.14):
+    - DTFoundation/DTZipArchive/Minizip (= 1.7.14)
+  - DTFoundation/DTZipArchive/Minizip (1.7.14)
+  - DTFoundation/Runtime (1.7.14)
+  - DTFoundation/UIKit (1.7.14):
+    - DTFoundation/Core
+  - DTFoundation/UIKit_BlocksAdditions (1.7.14):
     - DTFoundation/Core
   - FLEX (2.4.0)
   - FreeStreamer (4.0.0):
@@ -48,19 +94,19 @@ PODS:
   - INTULocationManager (4.3.2)
   - IQAudioRecorderController (1.2.3):
     - SCSiriWaveformView
-  - JDStatusBarNotification (1.6.0)
+  - JDStatusBarNotification (1.6.1)
   - JSCoreBom (1.1.1)
   - libPhoneNumber-iOS (0.9.15)
-  - MaterialComponents/ActivityIndicator (85.1.0):
+  - MaterialComponents/ActivityIndicator (109.1.0):
     - MaterialComponents/Palettes
     - MaterialComponents/private/Application
     - MDFInternationalization
     - MotionAnimator (~> 2.0)
-  - MaterialComponents/PageControl (85.1.0):
+  - MaterialComponents/PageControl (109.1.0):
     - MDFInternationalization
-  - MaterialComponents/Palettes (85.1.0)
-  - MaterialComponents/private/Application (85.1.0)
-  - MBProgressHUD (1.1.0)
+  - MaterialComponents/Palettes (109.1.0)
+  - MaterialComponents/private/Application (109.1.0)
+  - MBProgressHUD (1.2.0)
   - MDFInternationalization (2.0.0)
   - MotionAnimator (2.8.1):
     - MotionInterchange (~> 1.6)
@@ -78,18 +124,22 @@ PODS:
     - RMActionController (~> 1.3.1)
   - SBJson (4.0.5)
   - SCSiriWaveformView (1.1.1)
-  - SDWebImage (5.0.6):
-    - SDWebImage/Core (= 5.0.6)
-  - SDWebImage/Core (5.0.6)
+  - SDWebImage (5.7.3):
+    - SDWebImage/Core (= 5.7.3)
+  - SDWebImage/Core (5.7.3)
   - SocketRocket (0.5.1)
   - SWFrameButton (1.2.2)
   - SWTableViewCell (0.3.7)
   - SZTextView (1.3.0)
-  - TDOAuth (1.2.1):
+  - TDOAuth (1.4.2):
+    - TDOAuth/ObjC (= 1.4.2)
+  - TDOAuth/ObjC (1.4.2):
+    - TDOAuth/Swift
+  - TDOAuth/Swift (1.4.2):
     - OMGHTTPURLRQ/UserAgent
   - TTTAttributedLabel (2.0.0)
   - TWMessageBarManager (1.8.1)
-  - UICKeyChainStore (2.1.2)
+  - UICKeyChainStore (2.2.0)
 
 DEPENDENCIES:
   - AFNetworking
@@ -100,7 +150,8 @@ DEPENDENCIES:
   - CYRTextView
   - DAKeyboardControl
   - DHSmartScreenshot
-  - DTCoreText
+  - DTCoreText (from `https://github.com/jasonelle/ios-pod-dtcoretext.git`, branch `jasonelle`)
+  - DTFoundation
   - FLEX (~> 2.0)
   - FreeStreamer (from `https://github.com/muhku/FreeStreamer.git`)
   - HMSegmentedControl
@@ -129,7 +180,7 @@ DEPENDENCIES:
   - UICKeyChainStore
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - AFNetworking
     - AFOAuth2Manager
     - AHKActionSheet
@@ -138,7 +189,6 @@ SPEC REPOS:
     - CYRTextView
     - DAKeyboardControl
     - DHSmartScreenshot
-    - DTCoreText
     - DTFoundation
     - FLEX
     - HMSegmentedControl
@@ -173,14 +223,20 @@ SPEC REPOS:
     - UICKeyChainStore
 
 EXTERNAL SOURCES:
+  DTCoreText:
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-dtcoretext.git
   FreeStreamer:
     :git: https://github.com/muhku/FreeStreamer.git
   SWTableViewCell:
     :git: https://github.com/gliechtenstein/SWTableViewCell.git
 
 CHECKOUT OPTIONS:
+  DTCoreText:
+    :commit: 9fccb9b0de0b2eb40c6b33067b03f55f3803c153
+    :git: https://github.com/jasonelle/ios-pod-dtcoretext.git
   FreeStreamer:
-    :commit: 810f241e40f2f06ccf01b9022164ab896a72b12e
+    :commit: 43be718aaaafd5dec5ec31aa713cff36af4ee414
     :git: https://github.com/muhku/FreeStreamer.git
   SWTableViewCell:
     :commit: 1c8845e25f520c959391bd79dc6cf271e0cf9a44
@@ -195,18 +251,18 @@ SPEC CHECKSUMS:
   CYRTextView: 1c1a4d708eee54ecad66b8ad42dbfe73083bdfce
   DAKeyboardControl: 9d9bca22a5cc3c1d3cc61e24fbd208c3e84a3d2d
   DHSmartScreenshot: ee749048bd7126c4826748f98df3a4adc6ad6c78
-  DTCoreText: e5d688cffc9f6a61eddd1a4f94e2046851230de3
-  DTFoundation: f03be9fd786f11e505bb8fc44e2a3732bf0917df
+  DTCoreText: 67023bb51b26711d5f640c851f4845aea14c24c9
+  DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
   FLEX: bd1a39e55b56bb413b6f1b34b3c10a0dc44ef079
   FreeStreamer: 7e9c976045701ac2f7e9c14c17245203c37bf2ea
   HMSegmentedControl: f514c6dad47aa3065e0ed2e8046b73efc71221b9
   INTULocationManager: e5dc524611b0cd582f473bc56cc8c389adb2f338
   IQAudioRecorderController: 69a67c2e0b87bd8746cbb4de175fd7a0bf820009
-  JDStatusBarNotification: 21b616e7432284fea6eb0ce9eadc37c8038a5544
+  JDStatusBarNotification: 6052ca9a51ee0bb058f8dc09cf1d63554ef0f743
   JSCoreBom: 712590b897ecd74d9fa9cb0f16857491411c932b
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
-  MaterialComponents: 7401c9849f9860a214f35453e040dc17502e8b6f
-  MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
+  MaterialComponents: 194731e6041c0f05798867af15389f261332c330
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   MDFInternationalization: 010097556d6b09d2c4ea38e0820ea6d37be6a314
   MotionAnimator: ee16aa30567c5bae0fb2750c132915829cfaaf8a
   MotionInterchange: ead0e3ae1f3a5fb539e289debbc7ae036160a10d
@@ -221,16 +277,16 @@ SPEC CHECKSUMS:
   RMDateSelectionViewController: 1157d34245e6a1dda700e8a9c44417321d181951
   SBJson: af3137ccda22be3004487524da0a071c75d4251b
   SCSiriWaveformView: 15b9dd6f94c7536e2032b34a35c6ff74d38c7411
-  SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
+  SDWebImage: 97351f6582ceca541ea294ba66a1fcb342a331c2
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
   SWFrameButton: cd3cc4a8961e8975f4800c0f6d1d3c54c213eb87
   SWTableViewCell: 2a94aadc9d47b2b611fa064566bf57948b95b579
   SZTextView: 094dc6acc9beec537685c545d6e3e0d4975174e1
-  TDOAuth: e473551f818ceacf602643ff620f41b48e068e1a
+  TDOAuth: 510b91042b00f9c0d953bb68775fde0a70461766
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
-  UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
+  UICKeyChainStore: 6a218644594e12f855ec2a10f4fc576c1a69daee
 
-PODFILE CHECKSUM: b3948a35184110bacb72f6a6261f3aa7ab4cd741
+PODFILE CHECKSUM: 0cf1af98b48d09f5c2e5be2378854082e5917ec7
 
-COCOAPODS: 1.7.2
+COCOAPODS: 1.9.1

@@ -25,7 +25,7 @@
                                 <rect key="frame" x="-1" y="-5" width="321" height="491"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 
-                                <color key="backgroundColor" red="0.078125" green="0.60546875" blue="0.77734375" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.15234375" green="0.47265625" blue="0.7734375" alpha="1" colorSpace="calibratedRGB"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
                                 </accessibility>

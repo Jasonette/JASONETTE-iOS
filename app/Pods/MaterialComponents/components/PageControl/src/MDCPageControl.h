@@ -136,4 +136,11 @@
 /** The owner must call this when the scrollView has ended its scrolling animation. */
 - (void)scrollViewDidEndScrollingAnimation:(nonnull UIScrollView *)scrollView;
 
+/**
+ A block that is invoked when the @c MDCPageControl receives a call to @c
+ traitCollectionDidChange:. The block is called after the call to the superclass.
+ */
+@property(nonatomic, copy, nullable) void (^traitCollectionDidChangeBlock)
+    (MDCPageControl *_Nonnull pageControl, UITraitCollection *_Nullable previousTraitCollection);
+
 @end

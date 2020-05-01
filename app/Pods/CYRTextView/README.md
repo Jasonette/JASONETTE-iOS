@@ -1,5 +1,9 @@
 # CYRTextView
 
+[![Version](https://img.shields.io/cocoapods/v/CYRTextView.svg?style=flat)](https://github.com/illyabusigin/CYRTextView)
+[![License](https://img.shields.io/cocoapods/l/CYRTextView.svg?style=flat)](https://github.com/illyabusigin/CYRTextView)
+[![Platform](https://img.shields.io/cocoapods/p/CYRTextView.svg?style=flat)](https://github.com/illyabusigin/CYRTextView)
+
 by **Illya Busigin**
 
 - Visit my blog at [http://illyabusigin.com/](http://illyabusigin.com/)
