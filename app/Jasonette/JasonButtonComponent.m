@@ -169,7 +169,6 @@
     [component removeTarget:self.class action:@selector(actionButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [component addTarget:self.class action:@selector(actionButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    
     // 1. Apply Common Style
     [self stylize:mutable_json component:component];
 

@@ -65,7 +65,7 @@
          name:@"Jason.success"
          object:nil];
         
-        [[NSNotificationCenter defaultCenter]
+        [[NSNotificationCenter defaultCenter]   
          addObserver:self
          selector:@selector(notifyError:)
          name:@"Jason.error"
@@ -797,6 +797,21 @@
     }
     
 }
+
+- (void)setTabBarBadge{
+    if (self.options && self.options[@"index"] && self.options[@"text"] && self->tabController && self->tabController.tabBar.items.count > 0) {
+        UITabBarItem *item = [self->tabController.tabBar.items objectAtIndex:[self.options[@"index"] integerValue]];
+        NSString *badge = [self.options[@"text"] description];
+        
+        if(badge && badge.length > 0){
+            [item setBadgeValue:badge];
+        } else {
+            [item setBadgeValue:nil];
+        }
+    }
+    [self success];
+}
+
 - (void)render{
     /**************************************************
      *
@@ -976,6 +991,7 @@
         // Cache the view after drawing
         [self cache_view];
     }
+    
     [self success];
     
 }
@@ -3093,6 +3109,7 @@
 }
 - (void)setTabBarItem:(UITabBarItem *)item withTab: (NSDictionary *)tab{
     NSString *imageUrl = tab[@"image"];
+    NSString *badge = [tab[@"badge"] description];
 
     if(tab[@"text"]){
         [item setTitle:[tab[@"text"] description]];
@@ -3119,8 +3136,8 @@
     } else {
         [item setTitlePositionAdjustment:UIOffsetMake(0.0, -18.0)];
     }
-    if(tab[@"badge"]){
-        [item setBadgeValue:[tab[@"badge"] description]];
+    if(badge && badge.length > 0){
+        [item setBadgeValue:badge];
     }
 }
 
