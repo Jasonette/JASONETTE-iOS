@@ -1,13 +1,30 @@
 //
 //  JasonLogger.h
-//  Finalsite
+//  Jasonette
 //
-//  Created by Kevin Spain on 5/11/20.
-//  Copyright © 2020 Jasonette. All rights reserved.
+//  Created by Jasonelle Team on 04-07-19.
+//  Copyright © 2019 Jasonette. All rights reserved.
 //
 
-#ifndef JasonLogger_h
-#define JasonLogger_h
+#import <Foundation/Foundation.h>
+#import <DTFoundation/DTLog.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
-#endif /* JasonLogger_h */
+/*! This acts as a wrapper to DTLog.h
+ */
+@interface JasonLogger : NSObject
+
++ (void)setupWithLogLevel:(DTLogLevel)level;
+
++ (void)setLogLevel:(DTLogLevel)level;
++ (void)setHandler:(nonnull DTLogBlock)handler;
+
++ (void)setupWithLogLevelDebug;
++ (void)setupWithLogLevelInfo;
++ (void)setupWithLogLevelWarning;
++ (void)setupWithLogLevelError;
+
+@end
+
+NS_ASSUME_NONNULL_END

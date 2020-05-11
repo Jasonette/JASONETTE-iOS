@@ -348,7 +348,7 @@
         
         
         if([method isEqualToString:@"get"]){
-            [manager GET:path parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
+            [manager GET:path parameters:parameters headers:header progress:^(NSProgress * _Nonnull downloadProgress) {
                 // Nothing
             } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 // Ignore if the url is different
@@ -385,7 +385,7 @@
                  [[Jason client] error];
             }];
         } else if([method isEqualToString:@"post"]){
-            [manager POST:path parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
+            [manager POST:path parameters:parameters headers:header progress:^(NSProgress * _Nonnull downloadProgress) {
                 // Nothing
             } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 // Ignore if the url is different
@@ -407,7 +407,7 @@
                  [[Jason client] error];
             }];
         } else if([method isEqualToString:@"put"]){
-            [manager PUT:path parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            [manager PUT:path parameters:parameters headers:header success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 // Ignore if the url is different
                 NSString *originalRequestPath = task.originalRequest.URL.path;
                 NSString *originalRequestQuery = nil;
@@ -427,7 +427,7 @@
                  [[Jason client] error];
             }];
         } else if([method isEqualToString:@"head"]){
-            [manager HEAD:path parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task) {
+            [manager HEAD:path parameters:parameters headers:header success:^(NSURLSessionDataTask * _Nonnull task) {
                 // Ignore if the url is different
                 NSString *originalRequestPath = task.originalRequest.URL.path;
                 NSString *originalRequestQuery = nil;
@@ -447,7 +447,7 @@
                  [[Jason client] error];
             }];
         } else if([method isEqualToString:@"delete"]){
-            [manager DELETE:path parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            [manager DELETE:path parameters:parameters headers:header success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 // Ignore if the url is different
                 NSString *originalRequestPath = task.originalRequest.URL.path;
                 NSString *originalRequestQuery = nil;
@@ -735,7 +735,7 @@
                         parameters[@"client_secret"] = client_secret;
                     }
                     
-                    [manager POST:access_options[@"path"] parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
+                    [manager POST:access_options[@"path"] parameters:parameters headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
                         // Nothing
                     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                         // Ignore if the url is different

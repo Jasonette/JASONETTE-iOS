@@ -332,10 +332,7 @@
     return @"";
      */
     
-    SBJson4Writer *writer = [[SBJson4Writer alloc] init];
-//    writer.humanReadable = YES;
-    writer.humanReadable = NO;
-    writer.sortKeys = YES;
+    SBJson5Writer *writer = [[SBJson5Writer alloc] init];
     @try {
         NSString *ret = [writer stringWithObject:value];
         if(ret){

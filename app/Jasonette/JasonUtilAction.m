@@ -170,15 +170,15 @@
                     if(url){
                         SDWebImageManager *manager = [SDWebImageManager sharedManager];
                         [manager loadImageWithURL:[NSURL URLWithString:url]
-                                              options:0
-                                             progress:nil
-                                            completed:^(UIImage *image, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                                if (image) {
-                                                    [share_items addObject:image];
-                                                }
-                                                counter--;
-                                                if(counter == 0) [self openShareWith:share_items];
-                                            }];
+                                          options:0
+                                         progress:nil
+                                        completed:^(UIImage *image, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                            if (image) {
+                                [share_items addObject:image];
+                            }
+                            counter--;
+                            if(counter == 0) [self openShareWith:share_items];
+                        }];
                     } else if(file_url){
                         [share_items addObject:file_url];
                         counter--;

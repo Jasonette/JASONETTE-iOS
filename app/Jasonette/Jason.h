@@ -22,13 +22,10 @@
 #import "JasonAgentService.h"
 #import <MBProgressHUD/MBProgressHUD.h>
 #import "Reachability.h"
-#ifdef DEBUG
-#include <FLEX/FLEX.h>
-#endif
 
 @import MediaPlayer;
 
-@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, UIWebViewDelegate>
+@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate>
 
 @property (strong, nonatomic) NSDictionary *parser;
 @property (strong, nonatomic) NSDictionary *data;

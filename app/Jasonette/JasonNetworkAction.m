@@ -71,7 +71,7 @@
         if([[method lowercaseString] isEqualToString:@"post"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
-                [manager POST:url parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
+                [manager POST:url parameters:parameters headers:nil progress:^(NSProgress * _Nonnull uploadProgress) {
                     // Nothing
                 } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
@@ -83,7 +83,7 @@
         } else if([[method lowercaseString] isEqualToString:@"put"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
-                [manager PUT:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+                [manager PUT:url parameters:parameters headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
                     [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     [weakSelf processError: error withOriginalUrl:original_url];
@@ -93,7 +93,7 @@
         } else if([[method lowercaseString] isEqualToString:@"delete"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
-                [manager DELETE:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+                [manager DELETE:url parameters:parameters headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
                     [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     [weakSelf processError: error withOriginalUrl:original_url];
@@ -102,7 +102,7 @@
         } else if([[method lowercaseString] isEqualToString:@"head"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
-                [manager HEAD:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task) {
+                [manager HEAD:url parameters:parameters headers:nil success:^(NSURLSessionDataTask * _Nonnull task) {
                     [self done: task for: url ofType: dataType with: nil original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     [weakSelf processError: error withOriginalUrl:original_url];
@@ -111,7 +111,7 @@
         } else if([[method lowercaseString] isEqualToString:@"patch"]){
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
-                [manager PATCH:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+                [manager PATCH:url parameters:parameters headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
                     [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     [weakSelf processError: error withOriginalUrl:original_url];
@@ -121,7 +121,7 @@
             // GET
             dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [manager.operationQueue cancelAllOperations];
-                [manager GET:url parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
+                [manager GET:url parameters:parameters headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
                     [[Jason client] setLoadingProgress:downloadProgress.fractionCompleted];
                 } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     [self done: task for: url ofType: dataType with: responseObject original_url: original_url];
@@ -222,7 +222,7 @@
     }
     
     [manager.operationQueue cancelAllOperations];
-    [manager GET:sign_url parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
+    [manager GET:sign_url parameters:parameters headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         // Nothing
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         // Ignore if the url is different

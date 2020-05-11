@@ -5,9 +5,11 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonAppDelegate.h"
+#import "JasonLogger.h"
 
 @interface JasonAppDelegate ()
-
+// need to globally define webview or else javascript evaluation fails from objective c dropping it out of scope
+@property(strong,nonatomic) WKWebView *webView;
 @end
 
 
@@ -54,7 +56,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
-    
+
     NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
     [NSURLCache setSharedURLCache:URLCache];
     
@@ -66,13 +68,22 @@
     }
     // Run "initialize" method for all extensions
     [self init_extensions: launchOptions];
-    
+
     // Appending custom string on user agent so we can identify when we're using a webview embedded in the app
-    UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectZero];
-    NSString *agent = [NSString stringWithFormat:@"%@ Finalsite-App/%@ Safari", [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:agent, @"UserAgent", nil];
-    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
-    
+    _webView = [[WKWebView alloc] initWithFrame:CGRectZero];
+
+    [_webView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+        if (error) {
+            DTLogWarning(@"Missing User Agent%@", error);
+        } else {
+            NSString *userAgent = result;
+            NSString *agent = [NSString stringWithFormat:@"%@ Finalsite-App/%@ Safari", userAgent, [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
+
+            NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:agent, @"UserAgent", nil];
+            [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
+        }
+    }];
+
     if(launchOptions && launchOptions.count > 0 && launchOptions[UIApplicationLaunchOptionsURLKey]){
         // launched with url. so wait until openURL is called.
         self.launchURL = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
@@ -83,6 +94,7 @@
     } else {
         [[Jason client] start:nil];
     }
+
     return YES;
 }
 
