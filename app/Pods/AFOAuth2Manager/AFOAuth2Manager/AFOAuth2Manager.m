@@ -222,7 +222,7 @@ static NSError * AFErrorFromRFC6749Section5_2Error(id object) {
     parameters = [NSDictionary dictionaryWithDictionary:mutableParameters];
 
     NSURLSessionTask *task;
-    task = [self POST:URLString parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    task = [self POST:URLString parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (!responseObject) {
             if (failure) {
                 failure(nil);

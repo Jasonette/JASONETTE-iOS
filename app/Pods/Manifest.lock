@@ -87,7 +87,6 @@ PODS:
     - DTFoundation/Core
   - DTFoundation/UIKit_BlocksAdditions (1.7.14):
     - DTFoundation/Core
-  - FLEX (2.4.0)
   - FreeStreamer (4.0.0):
     - Reachability (~> 3.0)
   - HMSegmentedControl (1.5.5)
@@ -113,6 +112,12 @@ PODS:
   - MotionInterchange (1.6.0)
   - NSGIF (1.2.4)
   - NSHash (1.2.0)
+  - OMGHTTPURLRQ (3.2.4):
+    - OMGHTTPURLRQ/RQ (= 3.2.4)
+  - OMGHTTPURLRQ/FormURLEncode (3.2.4)
+  - OMGHTTPURLRQ/RQ (3.2.4):
+    - OMGHTTPURLRQ/FormURLEncode
+    - OMGHTTPURLRQ/UserAgent
   - OMGHTTPURLRQ/UserAgent (3.2.4)
   - PHFComposeBarView (2.1.0):
     - PHFDelegateChain (~> 1.0)
@@ -152,7 +157,6 @@ DEPENDENCIES:
   - DHSmartScreenshot
   - DTCoreText (from `https://github.com/jasonelle/ios-pod-dtcoretext.git`, branch `jasonelle`)
   - DTFoundation
-  - FLEX (~> 2.0)
   - FreeStreamer (from `https://github.com/muhku/FreeStreamer.git`)
   - HMSegmentedControl
   - INTULocationManager
@@ -165,11 +169,13 @@ DEPENDENCIES:
   - MBProgressHUD (~> 1.0)
   - NSGIF (~> 1.0)
   - NSHash
+  - OMGHTTPURLRQ
   - PHFComposeBarView
+  - Reachability
   - REMenu
   - RMDateSelectionViewController
   - SBJson (~> 4.0.2)
-  - SDWebImage (~> 5.0)
+  - SDWebImage (from `https://github.com/jasonelle/ios-pod-sdwebimage.git`)
   - SocketRocket
   - SWFrameButton
   - SWTableViewCell (from `https://github.com/gliechtenstein/SWTableViewCell.git`)
@@ -190,7 +196,6 @@ SPEC REPOS:
     - DAKeyboardControl
     - DHSmartScreenshot
     - DTFoundation
-    - FLEX
     - HMSegmentedControl
     - INTULocationManager
     - IQAudioRecorderController
@@ -213,7 +218,6 @@ SPEC REPOS:
     - RMDateSelectionViewController
     - SBJson
     - SCSiriWaveformView
-    - SDWebImage
     - SocketRocket
     - SWFrameButton
     - SZTextView
@@ -228,6 +232,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/jasonelle/ios-pod-dtcoretext.git
   FreeStreamer:
     :git: https://github.com/muhku/FreeStreamer.git
+  SDWebImage:
+    :git: https://github.com/jasonelle/ios-pod-sdwebimage.git
   SWTableViewCell:
     :git: https://github.com/gliechtenstein/SWTableViewCell.git
 
@@ -238,6 +244,9 @@ CHECKOUT OPTIONS:
   FreeStreamer:
     :commit: 43be718aaaafd5dec5ec31aa713cff36af4ee414
     :git: https://github.com/muhku/FreeStreamer.git
+  SDWebImage:
+    :commit: 3d1abaee82808ea098860da49c836033e7fc74a2
+    :git: https://github.com/jasonelle/ios-pod-sdwebimage.git
   SWTableViewCell:
     :commit: 1c8845e25f520c959391bd79dc6cf271e0cf9a44
     :git: https://github.com/gliechtenstein/SWTableViewCell.git
@@ -253,7 +262,6 @@ SPEC CHECKSUMS:
   DHSmartScreenshot: ee749048bd7126c4826748f98df3a4adc6ad6c78
   DTCoreText: 67023bb51b26711d5f640c851f4845aea14c24c9
   DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
-  FLEX: bd1a39e55b56bb413b6f1b34b3c10a0dc44ef079
   FreeStreamer: 7e9c976045701ac2f7e9c14c17245203c37bf2ea
   HMSegmentedControl: f514c6dad47aa3065e0ed2e8046b73efc71221b9
   INTULocationManager: e5dc524611b0cd582f473bc56cc8c389adb2f338
@@ -277,7 +285,7 @@ SPEC CHECKSUMS:
   RMDateSelectionViewController: 1157d34245e6a1dda700e8a9c44417321d181951
   SBJson: af3137ccda22be3004487524da0a071c75d4251b
   SCSiriWaveformView: 15b9dd6f94c7536e2032b34a35c6ff74d38c7411
-  SDWebImage: 97351f6582ceca541ea294ba66a1fcb342a331c2
+  SDWebImage: 9fb8190491434d2652530112fa88a99b48b3364b
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
   SWFrameButton: cd3cc4a8961e8975f4800c0f6d1d3c54c213eb87
   SWTableViewCell: 2a94aadc9d47b2b611fa064566bf57948b95b579
@@ -287,6 +295,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 6a218644594e12f855ec2a10f4fc576c1a69daee
 
-PODFILE CHECKSUM: 0cf1af98b48d09f5c2e5be2378854082e5917ec7
+PODFILE CHECKSUM: 0b8911900c6f9d442ec35e13fe2ca9cea85339e7
 
 COCOAPODS: 1.9.1

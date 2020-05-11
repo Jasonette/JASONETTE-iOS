@@ -10,14 +10,16 @@ target 'Finalsite' do
   pod 'DTCoreText', :git => 'https://github.com/jasonelle/ios-pod-dtcoretext.git', :branch => 'jasonelle'
   pod 'JSCoreBom', '~> 1.1.1'
   pod 'SBJson', '~> 4.0.2'
-  pod 'FLEX', '~> 2.0', :configurations => ['Debug']
+#  pod 'FLEX', '~> 2.0', :configurations => ['Debug']
   pod 'NSHash'
   
   pod 'APAddressBook'
   
   # Networking
-  pod 'SocketRocket'
-  pod 'AFNetworking'
+  pod 'OMGHTTPURLRQ'#, :git => 'https://github.com/jasonelle/ios-pod-omghttpurlrq.git', :branch => 'jasonelle'
+  pod 'Reachability'#, :git => 'https://github.com/jasonelle/ios-pod-reachability.git', :branch => 'jasonelle'
+  pod 'SocketRocket'#, :git => 'https://github.com/jasonelle/ios-pod-socketrocket.git', :branch => 'jasonelle'
+  pod 'AFNetworking'#, :git => 'https://github.com/jasonelle/ios-pod-afnetworking.git', :branch => 'jasonelle'
   pod 'TDOAuth'
   pod "AFOAuth2Manager"
   
@@ -32,7 +34,7 @@ target 'Finalsite' do
   
   pod 'SWTableViewCell', :git => "https://github.com/gliechtenstein/SWTableViewCell.git"
 
-  pod 'SDWebImage', '~> 5.0'
+  pod 'SDWebImage', :git => 'https://github.com/jasonelle/ios-pod-sdwebimage.git'
   
   pod 'TTTAttributedLabel'
   pod 'BBBadgeBarButtonItem'
