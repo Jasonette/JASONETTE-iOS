@@ -5,15 +5,20 @@
 //  Copyright © 2016 gliechtenstein. All rights reserved.
 //
 #import "JasonComponent.h"
+#import <DTFoundation/DTLog.h>
 
 @implementation JasonComponent
-+ (UIView *)build: (UIView*)component withJSON: (NSDictionary *)json withOptions: (NSDictionary *)options{
-    // Override this
-    return [[UIView alloc] init];
++ (UIView *)build:(UIView *)component
+         withJSON:(NSDictionary *)json
+      withOptions:(NSDictionary *)options
+{
+    DTLogWarning (@"The component should overide this method %@", json);
+    return [UIView new];
 }
+
 + (void) stylize: (NSDictionary *)json component: (UIView *)component{
     NSDictionary *style = json[@"style"];
-    
+
     if(json[@"alt"]){
         if([json[@"alt"] length] == 0) {
             component.isAccessibilityElement = NO;

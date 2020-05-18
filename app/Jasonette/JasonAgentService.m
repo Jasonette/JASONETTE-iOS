@@ -134,6 +134,66 @@
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     // Don't evaluate if about:blank
+    NSString *summon = @"var JASON={call: function(e){var n=document.createElement(\"IFRAME\");n.setAttribute(\"src\",\"jason:\"+JSON.stringify(e)),document.documentElement.appendChild(n),n.parentNode.removeChild(n),n=null}};";
+
+    [webView evaluateJavaScript:summon completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+        DTLogDebug(@"%@", result);
+        if(error){
+            DTLogWarning(@"%@", error);
+        }
+    }];
+
+    // If a height wasn't given then try to measure it
+    if(!webView.payload || !webView.payload[@"height"]){
+        // Find the parent table view and trigger an update so it calculates the new height on the cell
+        id view = [webView superview];
+        while (view && [view isKindOfClass:[UITableView class]] == NO) {
+            view = [view superview];
+        }
+        UITableView *tableView = (UITableView *)view;
+        [tableView beginUpdates];
+
+        [webView evaluateJavaScript:@"document.body.offsetHeight;" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+            CGFloat height;
+            if (error) {
+                DTLogWarning(@"%@", error);
+                height = 200.0;
+            } else {
+                // Adjust the height according to the contents of the webview frame
+                height = [result floatValue];
+            }
+
+            // Look for any height constraint
+            NSLayoutConstraint *constraint_to_update = nil;
+            for(NSLayoutConstraint *constraint in webView.constraints){
+                if([constraint.identifier isEqualToString:@"height"]){
+                    constraint_to_update = constraint;
+                    break;
+                }
+            }
+
+            // if the height constraint exists, we just update. Otherwise create and add.
+            if(constraint_to_update){
+                constraint_to_update.constant = height;
+            } else {
+                NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:webView
+                                                                              attribute:NSLayoutAttributeHeight
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:nil
+                                                                              attribute:NSLayoutAttributeNotAnAttribute
+                                                                             multiplier:1.0
+                                                                               constant:height];
+                constraint.identifier = @"height";
+                [webView addConstraint:constraint];
+            }
+            [webView setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+            [webView setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+
+            [tableView endUpdates]; // trigger parent table view to adjust to new constraint
+        }];
+    }
+    
+    
     if ([webView.URL.absoluteString isEqualToString:@"about:blank"]) {
         return;
     }
@@ -147,7 +207,7 @@
                             stringWithFormat:@"$agent.interface = window.webkit.messageHandlers[\"%@\"];\n",
                             identifier];
 
-    NSString * summon = [raw stringByAppendingString:interface];
+    summon = [raw stringByAppendingString:interface];
 
     webView.payload[@"state"] = @"rendered";
 

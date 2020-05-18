@@ -7,5 +7,5 @@
 #import "JasonComponent.h"
 #import "Jason.h"
 
-@interface JasonHtmlComponent : JasonComponent
+@interface JasonHtmlComponent : JasonComponent <WKNavigationDelegate>
 @end
