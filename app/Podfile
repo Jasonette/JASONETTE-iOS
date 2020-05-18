@@ -16,7 +16,6 @@ target 'Finalsite' do
   pod 'APAddressBook'
   
   # Networking
-  pod 'OMGHTTPURLRQ'#, :git => 'https://github.com/jasonelle/ios-pod-omghttpurlrq.git', :branch => 'jasonelle'
   pod 'Reachability'#, :git => 'https://github.com/jasonelle/ios-pod-reachability.git', :branch => 'jasonelle'
   pod 'SocketRocket'#, :git => 'https://github.com/jasonelle/ios-pod-socketrocket.git', :branch => 'jasonelle'
   pod 'AFNetworking'#, :git => 'https://github.com/jasonelle/ios-pod-afnetworking.git', :branch => 'jasonelle'
@@ -32,7 +31,7 @@ target 'Finalsite' do
   
   pod 'TWMessageBarManager'
   
-  pod 'SWTableViewCell', :git => "https://github.com/gliechtenstein/SWTableViewCell.git"
+  pod 'SWTableViewCell', :git => 'https://github.com/jasonelle/ios-pod-swtableviewcell.git', :branch => 'jasonelle'
 
   pod 'SDWebImage', :git => 'https://github.com/jasonelle/ios-pod-sdwebimage.git'
   

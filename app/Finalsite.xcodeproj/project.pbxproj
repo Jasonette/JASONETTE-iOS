@@ -93,6 +93,7 @@
 		FD920F2824697CE300F22E2C /* JasonLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FD920F2724697CE300F22E2C /* JasonLogger.m */; };
 		FD920F2B2469E93D00F22E2C /* JasonNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = FD920F2A2469E93D00F22E2C /* JasonNetworking.m */; };
 		FD920F302469EA3700F22E2C /* INTUAutoRemoveObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = FD920F2F2469EA3700F22E2C /* INTUAutoRemoveObserver.m */; };
+		FD920F36246A1E1900F22E2C /* JasonNSClassFromString.m in Sources */ = {isa = PBXBuildFile; fileRef = FD920F35246A1E1900F22E2C /* JasonNSClassFromString.m */; };
 		FDA44F8722B7EE58006E413E /* JasonTimedAction.m in Sources */ = {isa = PBXBuildFile; fileRef = FDA44F8622B7EE58006E413E /* JasonTimedAction.m */; };
 		FDE48C8023204463000A6302 /* NativeAppHeader.png in Resources */ = {isa = PBXBuildFile; fileRef = FDE48C7F23204463000A6302 /* NativeAppHeader.png */; };
 		FDE48C842321915E000A6302 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FDE48C832321915E000A6302 /* Colors.xcassets */; };
@@ -489,6 +490,8 @@
 		FD920F2C2469E95000F22E2C /* JasonNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonNetworking.h; sourceTree = "<group>"; };
 		FD920F2E2469EA1200F22E2C /* INTUAutoRemoveObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = INTUAutoRemoveObserver.h; sourceTree = "<group>"; };
 		FD920F2F2469EA3700F22E2C /* INTUAutoRemoveObserver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = INTUAutoRemoveObserver.m; sourceTree = "<group>"; };
+		FD920F35246A1E1900F22E2C /* JasonNSClassFromString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonNSClassFromString.m; sourceTree = "<group>"; };
+		FD920F38246A1E5400F22E2C /* JasonNSClassFromString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonNSClassFromString.h; sourceTree = "<group>"; };
 		FDA44F8622B7EE58006E413E /* JasonTimedAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonTimedAction.m; sourceTree = "<group>"; };
 		FDA44F8822B8021D006E413E /* JasonTimedAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonTimedAction.h; sourceTree = "<group>"; };
 		FDB723B02195FCF500468F0C /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -1105,6 +1108,7 @@
 		5E3177901D1F229200D87778 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				FD920F34246A1DF000F22E2C /* JasonNSClassFromString */,
 				FD920F2D2469E9FB00F22E2C /* INTUAutoRemoveObserver */,
 				9A16EE101E592DC9006D3F73 /* Option */,
 				5E3177041D1E411E00D87778 /* JasonHelper.h */,
@@ -1344,6 +1348,15 @@
 				FD920F2F2469EA3700F22E2C /* INTUAutoRemoveObserver.m */,
 			);
 			path = INTUAutoRemoveObserver;
+			sourceTree = "<group>";
+		};
+		FD920F34246A1DF000F22E2C /* JasonNSClassFromString */ = {
+			isa = PBXGroup;
+			children = (
+				FD920F35246A1E1900F22E2C /* JasonNSClassFromString.m */,
+				FD920F38246A1E5400F22E2C /* JasonNSClassFromString.h */,
+			);
+			path = JasonNSClassFromString;
 			sourceTree = "<group>";
 		};
 		FDA44F8522B7EE02006E413E /* $timed */ = {
@@ -2082,6 +2095,7 @@
 				FDA44F8722B7EE58006E413E /* JasonTimedAction.m in Sources */,
 				5E3177611D1E411F00D87778 /* Jason.m in Sources */,
 				5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */,
+				FD920F36246A1E1900F22E2C /* JasonNSClassFromString.m in Sources */,
 				5E3176611D1E400C00D87778 /* JasonAppDelegate.m in Sources */,
 				5E31776F1D1E411F00D87778 /* JasonViewController.m in Sources */,
 				5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */,

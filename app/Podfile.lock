@@ -112,12 +112,6 @@ PODS:
   - MotionInterchange (1.6.0)
   - NSGIF (1.2.4)
   - NSHash (1.2.0)
-  - OMGHTTPURLRQ (3.2.4):
-    - OMGHTTPURLRQ/RQ (= 3.2.4)
-  - OMGHTTPURLRQ/FormURLEncode (3.2.4)
-  - OMGHTTPURLRQ/RQ (3.2.4):
-    - OMGHTTPURLRQ/FormURLEncode
-    - OMGHTTPURLRQ/UserAgent
   - OMGHTTPURLRQ/UserAgent (3.2.4)
   - PHFComposeBarView (2.1.0):
     - PHFDelegateChain (~> 1.0)
@@ -169,7 +163,6 @@ DEPENDENCIES:
   - MBProgressHUD (~> 1.0)
   - NSGIF (~> 1.0)
   - NSHash
-  - OMGHTTPURLRQ
   - PHFComposeBarView
   - Reachability
   - REMenu
@@ -178,7 +171,7 @@ DEPENDENCIES:
   - SDWebImage (from `https://github.com/jasonelle/ios-pod-sdwebimage.git`)
   - SocketRocket
   - SWFrameButton
-  - SWTableViewCell (from `https://github.com/gliechtenstein/SWTableViewCell.git`)
+  - SWTableViewCell (from `https://github.com/jasonelle/ios-pod-swtableviewcell.git`, branch `jasonelle`)
   - SZTextView
   - TDOAuth
   - TTTAttributedLabel
@@ -235,7 +228,8 @@ EXTERNAL SOURCES:
   SDWebImage:
     :git: https://github.com/jasonelle/ios-pod-sdwebimage.git
   SWTableViewCell:
-    :git: https://github.com/gliechtenstein/SWTableViewCell.git
+    :branch: jasonelle
+    :git: https://github.com/jasonelle/ios-pod-swtableviewcell.git
 
 CHECKOUT OPTIONS:
   DTCoreText:
@@ -249,7 +243,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/jasonelle/ios-pod-sdwebimage.git
   SWTableViewCell:
     :commit: 1c8845e25f520c959391bd79dc6cf271e0cf9a44
-    :git: https://github.com/gliechtenstein/SWTableViewCell.git
+    :git: https://github.com/jasonelle/ios-pod-swtableviewcell.git
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
@@ -295,6 +289,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 6a218644594e12f855ec2a10f4fc576c1a69daee
 
-PODFILE CHECKSUM: 0b8911900c6f9d442ec35e13fe2ca9cea85339e7
+PODFILE CHECKSUM: 7c81ad9b5ba6e12c315234c0bb094650a8a28db7
 
 COCOAPODS: 1.9.1
