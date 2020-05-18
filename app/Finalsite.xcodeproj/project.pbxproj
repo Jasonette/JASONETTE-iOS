@@ -2250,7 +2250,7 @@
 				INFOPLIST_FILE = Jasonette/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.admin;
+				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.finalsiteacademy2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Jasonette/Jasonette-Bridging-Header.h";
@@ -2279,7 +2279,7 @@
 				INFOPLIST_FILE = Jasonette/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.admin;
+				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.finalsiteacademy2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Jasonette/Jasonette-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
