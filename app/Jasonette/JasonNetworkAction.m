@@ -307,9 +307,9 @@
 #endif
             }
             
-            [[Jason client] success: filePath withOriginalUrl:original_url];
+            [[Jason client] success: filePath];
         } else {
-            [[Jason client] success: responseObject withOriginalUrl:original_url];
+            [[Jason client] success: responseObject];
         }
     });
 }

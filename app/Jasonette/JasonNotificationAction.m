@@ -67,7 +67,9 @@
 }
 
 - (void)icon_badge_set{
-       [UIApplication sharedApplication].applicationIconBadgeNumber = [self.options[@"count"] doubleValue];
+    [UIApplication sharedApplication].applicationIconBadgeNumber = [self.options[@"count"] integerValue];
+    
+    [[Jason client] success];
 }
 
 @end
