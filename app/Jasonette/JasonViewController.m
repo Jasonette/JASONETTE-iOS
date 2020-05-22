@@ -817,7 +817,7 @@
     @try{
         NSDictionary *s = [self.sections objectAtIndex:indexPath.section];
         
-        if([s[@"items"] count] > 0){
+        if([s[@"items"] count] > 0 && [s[@"items"] respondsToSelector:@selector(objectAtIndex:)]){
             // if the row has a style, honor that first.
             // If not, look to see if it has a class, if it does, look it up on style object
             
@@ -1027,22 +1027,30 @@
     return newArray;
 }
 
+- (void)loadAssetsInArray: (NSArray *)children{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        for(int i = 0 ; i < children.count ; i++){
+            if([children[i] isKindOfClass:[NSDictionary class]]) {
+                [self loadAssets:children[i]];
+            } else if([children[i] isKindOfClass:[NSArray class]]) {
+                [self loadAssetsInArray:children[i]];
+            } else {
+                [self loadAssets:@{@"string": children[i]}];
+            }
+        }
+    });
+}
+
 - (void)loadAssets: (NSDictionary *)body{
     JasonViewController* weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-    
+        
         NSArray *keys = [body allKeys];
         for(NSString *key in keys){
             if([body[key] isKindOfClass:[NSArray class]]){
                 // Array => Array traversal
                 NSArray *children = (NSArray *)body[key];
-                for(int i = 0 ; i < children.count ; i++){
-                    if([children[i] isKindOfClass:[NSDictionary class]] || [children[i] isKindOfClass:[NSArray class]]){
-                        [self loadAssets:children[i]];
-                    } else {
-                        [self loadAssets:@{@"string": children[i]}];
-                    }
-                }
+                [self loadAssetsInArray:children];
             } else if([body[key] isKindOfClass:[NSDictionary class]]){
                 // NSDictinoary
                 [self loadAssets:body[key]];
