@@ -22,9 +22,8 @@
 	dispatch_once(&onceToken, ^{
 		NSMutableCharacterSet *tmpSet = [[NSCharacterSet URLQueryAllowedCharacterSet] mutableCopy];
 		
-		// remove some characters that might have special meaning
-		[tmpSet removeCharactersInString:@"!*'();:@&=+$,/?%#[]"];
-		
+		// add some characters that might have special meaning
+        [tmpSet  removeCharactersInString: @"!*'();:@&=+$,/?%#[]"];
 		allowedCharacters = [tmpSet copy];
 	});
 	

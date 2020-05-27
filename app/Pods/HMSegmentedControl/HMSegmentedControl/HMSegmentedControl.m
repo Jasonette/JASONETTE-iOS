@@ -10,10 +10,19 @@
 #import <QuartzCore/QuartzCore.h>
 #import <math.h>
 
+@protocol HMAccessibilityDelegate <NSObject>
+@required
+-(void)scrollToAccessibilityElement:(id)sender;
+@end
+
+@interface HMAccessibilityElement : UIAccessibilityElement
+@property (nonatomic, weak) id<HMAccessibilityDelegate> delegate;
+@end
+
 @interface HMScrollView : UIScrollView
 @end
 
-@interface HMSegmentedControl ()
+@interface HMSegmentedControl () <UIScrollViewDelegate, HMAccessibilityDelegate>
 
 @property (nonatomic, strong) CALayer *selectionIndicatorStripLayer;
 @property (nonatomic, strong) CALayer *selectionIndicatorBoxLayer;
@@ -21,6 +30,17 @@
 @property (nonatomic, readwrite) CGFloat segmentWidth;
 @property (nonatomic, readwrite) NSArray<NSNumber *> *segmentWidthsArray;
 @property (nonatomic, strong) HMScrollView *scrollView;
+@property (nonatomic, strong) NSMutableArray *accessibilityElements;
+
+@end
+
+@implementation HMAccessibilityElement
+
+- (void)accessibilityElementDidBecomeFocused
+{
+    if (_delegate!=nil && [_delegate respondsToSelector:@selector(scrollToAccessibilityElement:)])
+        [_delegate performSelector:@selector(scrollToAccessibilityElement:) withObject:self];
+}
 
 @end
 
@@ -124,6 +144,7 @@
 
 - (void)commonInit {
     self.scrollView = [[HMScrollView alloc] init];
+    self.scrollView.delegate = self;
     self.scrollView.scrollsToTop = NO;
     self.scrollView.showsVerticalScrollIndicator = NO;
     self.scrollView.showsHorizontalScrollIndicator = NO;
@@ -284,6 +305,9 @@
     
     CGRect oldRect = rect;
     
+    if (self.accessibilityElements==nil)
+        self.accessibilityElements = [NSMutableArray arrayWithCapacity:0];
+    
     if (self.type == HMSegmentedControlTypeText) {
         [self.sectionTitles enumerateObjectsUsingBlock:^(id titleString, NSUInteger idx, BOOL *stop) {
 
@@ -344,6 +368,31 @@
                 
                 [self.scrollView.layer addSublayer:verticalDividerLayer];
             }
+            
+            if ([self.accessibilityElements count]<=idx) {
+                HMAccessibilityElement *element = [[HMAccessibilityElement alloc] initWithAccessibilityContainer:self];
+                element.delegate = self;
+                element.accessibilityLabel = (self.sectionTitles!=nil&&[self.sectionTitles count]>idx)?[self.sectionTitles objectAtIndex:idx]:[NSString stringWithFormat:@"item %u", (unsigned)idx+1];
+                element.accessibilityFrame = [self convertRect:fullRect toView:nil];
+                if (self.selectedSegmentIndex==idx)
+                    element.accessibilityTraits = UIAccessibilityTraitButton|UIAccessibilityTraitSelected;
+                else
+                    element.accessibilityTraits = UIAccessibilityTraitButton;
+                [self.accessibilityElements addObject:element];
+            } else {
+                CGFloat offset = 0.f;
+                for (int i = 0; i<idx; i++) {
+                    HMAccessibilityElement *accessibilityItem = [self.accessibilityElements objectAtIndex:i];
+                    offset += accessibilityItem.accessibilityFrame.size.width;
+                }
+                HMAccessibilityElement *element = [self.accessibilityElements objectAtIndex:idx];
+                CGRect newRect = CGRectMake(offset-self.scrollView.contentOffset.x, 0, element.accessibilityFrame.size.width, element.accessibilityFrame.size.height);
+                element.accessibilityFrame = [self convertRect:newRect toView:nil];
+                if (self.selectedSegmentIndex==idx)
+                    element.accessibilityTraits = UIAccessibilityTraitButton|UIAccessibilityTraitSelected;
+                else
+                    element.accessibilityTraits = UIAccessibilityTraitButton;
+            }
         
             [self addBackgroundAndBorderLayerWithRect:fullRect];
         }];
@@ -378,6 +427,31 @@
                 verticalDividerLayer.backgroundColor = self.verticalDividerColor.CGColor;
                 
                 [self.scrollView.layer addSublayer:verticalDividerLayer];
+            }
+            
+            if ([self.accessibilityElements count]<=idx) {
+                HMAccessibilityElement *element = [[HMAccessibilityElement alloc] initWithAccessibilityContainer:self];
+                element.delegate = self;
+                element.accessibilityLabel = (self.sectionTitles!=nil&&[self.sectionTitles count]>idx)?[self.sectionTitles objectAtIndex:idx]:[NSString stringWithFormat:@"item %u", (unsigned)idx+1];
+                element.accessibilityFrame = [self convertRect:rect toView:nil];
+                if (self.selectedSegmentIndex==idx)
+                    element.accessibilityTraits = UIAccessibilityTraitButton|UIAccessibilityTraitSelected;
+                else
+                    element.accessibilityTraits = UIAccessibilityTraitButton;
+                [self.accessibilityElements addObject:element];
+            } else {
+                CGFloat offset = 0.f;
+                for (int i = 0; i<idx; i++) {
+                    HMAccessibilityElement *accessibilityItem = [self.accessibilityElements objectAtIndex:i];
+                    offset += accessibilityItem.accessibilityFrame.size.width;
+                }
+                HMAccessibilityElement *element = [self.accessibilityElements objectAtIndex:idx];
+                CGRect newRect = CGRectMake(offset-self.scrollView.contentOffset.x, 0, element.accessibilityFrame.size.width, element.accessibilityFrame.size.height);
+                element.accessibilityFrame = [self convertRect:newRect toView:nil];
+                if (self.selectedSegmentIndex==idx)
+                    element.accessibilityTraits = UIAccessibilityTraitButton|UIAccessibilityTraitSelected;
+                else
+                    element.accessibilityTraits = UIAccessibilityTraitButton;
             }
             
             [self addBackgroundAndBorderLayerWithRect:rect];
@@ -487,6 +561,31 @@
             [self.scrollView.layer addSublayer:imageLayer];
 			titleLayer.contentsScale = [[UIScreen mainScreen] scale];
             [self.scrollView.layer addSublayer:titleLayer];
+            
+            if ([self.accessibilityElements count]<=idx) {
+                HMAccessibilityElement *element = [[HMAccessibilityElement alloc] initWithAccessibilityContainer:self];
+                element.delegate = self;
+                element.accessibilityLabel = (self.sectionTitles!=nil&&[self.sectionTitles count]>idx)?[self.sectionTitles objectAtIndex:idx]:[NSString stringWithFormat:@"item %u", (unsigned)idx+1];
+                element.accessibilityFrame = [self convertRect:CGRectUnion(textRect, imageRect) toView:nil];
+                if (self.selectedSegmentIndex==idx)
+                    element.accessibilityTraits = UIAccessibilityTraitButton|UIAccessibilityTraitSelected;
+                else
+                    element.accessibilityTraits = UIAccessibilityTraitButton;
+                [self.accessibilityElements addObject:element];
+            } else {
+                CGFloat offset = 0.f;
+                for (int i = 0; i<idx; i++) {
+                    HMAccessibilityElement *accessibilityItem = [self.accessibilityElements objectAtIndex:i];
+                    offset += accessibilityItem.accessibilityFrame.size.width;
+                }
+                HMAccessibilityElement *element = [self.accessibilityElements objectAtIndex:idx];
+                CGRect newRect = CGRectMake(offset-self.scrollView.contentOffset.x, 0, element.accessibilityFrame.size.width, element.accessibilityFrame.size.height);
+                element.accessibilityFrame = [self convertRect:newRect toView:nil];
+                if (self.selectedSegmentIndex==idx)
+                    element.accessibilityTraits = UIAccessibilityTraitButton|UIAccessibilityTraitSelected;
+                else
+                    element.accessibilityTraits = UIAccessibilityTraitButton;
+            }
 			
             [self addBackgroundAndBorderLayerWithRect:imageRect];
         }];
@@ -821,10 +920,14 @@
 }
 
 - (void)scrollToSelectedSegmentIndex:(BOOL)animated {
+    [self scrollTo:self.selectedSegmentIndex animated:animated];
+}
+
+- (void)scrollTo:(NSUInteger)index animated:(BOOL)animated {
     CGRect rectForSelectedIndex = CGRectZero;
     CGFloat selectedSegmentOffset = 0;
     if (self.segmentWidthStyle == HMSegmentedControlSegmentWidthStyleFixed) {
-        rectForSelectedIndex = CGRectMake(self.segmentWidth * self.selectedSegmentIndex,
+        rectForSelectedIndex = CGRectMake(self.segmentWidth * index,
                                           0,
                                           self.segmentWidth,
                                           self.frame.size.height);
@@ -834,7 +937,7 @@
         NSInteger i = 0;
         CGFloat offsetter = 0;
         for (NSNumber *width in self.segmentWidthsArray) {
-            if (self.selectedSegmentIndex == i)
+            if (index == i)
                 break;
             offsetter = offsetter + [width floatValue];
             i++;
@@ -842,10 +945,10 @@
         
         rectForSelectedIndex = CGRectMake(offsetter,
                                           0,
-                                          [[self.segmentWidthsArray objectAtIndex:self.selectedSegmentIndex] floatValue],
+                                          [[self.segmentWidthsArray objectAtIndex:index] floatValue],
                                           self.frame.size.height);
         
-        selectedSegmentOffset = (CGRectGetWidth(self.frame) / 2) - ([[self.segmentWidthsArray objectAtIndex:self.selectedSegmentIndex] floatValue] / 2);
+        selectedSegmentOffset = (CGRectGetWidth(self.frame) / 2) - ([[self.segmentWidthsArray objectAtIndex:index] floatValue] / 2);
     }
     
     
@@ -967,6 +1070,52 @@
     }
     
     return [resultingAttrs copy];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    for (HMAccessibilityElement *element in self.accessibilityElements) {
+        NSUInteger idx = [self.accessibilityElements indexOfObject:element];
+        CGFloat offset = 0.f;
+        for (int i = 0; i<idx; i++) {
+            HMAccessibilityElement *elem = [self.accessibilityElements objectAtIndex:i];
+            offset += elem.accessibilityFrame.size.width;
+        }
+        CGRect rect = CGRectMake(offset-scrollView.contentOffset.x, 0, element.accessibilityFrame.size.width, element.accessibilityFrame.size.height);
+        element.accessibilityFrame = [self convertRect:rect toView:nil];
+    }
+}
+
+#pragma mark - HMAccessibilityDelegate
+
+- (void)scrollToAccessibilityElement:(id)sender {
+    NSUInteger index = [self.accessibilityElements indexOfObject:sender];
+    
+    if (index!=NSNotFound)
+        [self scrollTo:index animated:NO];
+}
+
+#pragma mark - UIAccessibilityContainer
+
+- (NSArray *)accessibilityElements {
+    return _accessibilityElements;
+}
+
+- (BOOL)isAccessibilityElement {
+    return NO;
+}
+
+- (NSInteger)accessibilityElementCount {
+    return [[self accessibilityElements] count];
+}
+
+- (NSInteger)indexOfAccessibilityElement:(id)element {
+    return [[self accessibilityElements] indexOfObject:element];
+}
+
+- (id)accessibilityElementAtIndex:(NSInteger)index {
+    return [[self accessibilityElements] objectAtIndex:index];
 }
 
 @end

@@ -29,6 +29,7 @@
 #import "REMenuItem.h"
 #import "REMenuContainerView.h"
 
+@class REMenu;
 @class REMenuItem;
 
 typedef NS_ENUM(NSInteger, REMenuImageAlignment) {
@@ -40,6 +41,15 @@ typedef NS_ENUM(NSInteger, REMenuLiveBackgroundStyle) {
     REMenuLiveBackgroundStyleLight,
     REMenuLiveBackgroundStyleDark
 };
+
+@protocol REMenuDelegate <NSObject>
+@optional
+-(void)willOpenMenu:(REMenu *)menu;
+-(void)didOpenMenu:(REMenu *)menu;
+-(void)willCloseMenu:(REMenu *)menu;
+-(void)didCloseMenu:(REMenu *)menu;
+
+@end
 
 @interface REMenu : NSObject 
 
@@ -53,6 +63,7 @@ typedef NS_ENUM(NSInteger, REMenuLiveBackgroundStyle) {
 @property (copy, readwrite, nonatomic) void (^closeCompletionHandler)(void);
 @property (copy, readwrite, nonatomic) void (^closePreparationBlock)(void);
 @property (assign, readwrite, nonatomic) BOOL closeOnSelection;
+@property (weak, readwrite, nonatomic) id <REMenuDelegate> delegate;
 
 // Style
 //

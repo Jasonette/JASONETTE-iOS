@@ -7,7 +7,11 @@
  */
 
 #import <Foundation/Foundation.h>
+#if (defined(TARGET_OS_MACCATALYST) && TARGET_OS_MACCATALYST)
+#import <CoreAudioTypes/CoreAudioBaseTypes.h>
+#else
 #import <CoreAudio/CoreAudioTypes.h>
+#endif
 
 /**
  * The major version of the current release.

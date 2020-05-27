@@ -22,7 +22,7 @@ https://rawgit.com/googlei18n/libphonenumber/master/javascript/i18n/phonenumbers
 
 Please report, if the above results are different from this iOS library.
 Otherwise, please create issue to following link below to request additional telephone numbers formatting rule.
-https://github.com/googlei18n/libphonenumber/issues
+https://github.com/google/libphonenumber/issues
 
 Metadata in this library was generated from that. so, you should change it first. :)
 
@@ -171,4 +171,4 @@ override func viewDidLoad() {
     NSLog(@"%@", [f inputString:@"16502532222"]); // 1 650 253 2222
 ```
 
-##### Visit [libphonenumber](https://github.com/googlei18n/libphonenumber) for more information or mail (zen.isis@gmail.com)
+##### Visit [libphonenumber](https://github.com/google/libphonenumber) for more information or mail (zen.isis@gmail.com)

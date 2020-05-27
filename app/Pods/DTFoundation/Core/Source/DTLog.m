@@ -65,7 +65,7 @@ void DTLogMessagev(DTLogLevel logLevel, NSString *format, va_list args)
 	// convert to via NSString, since printf does not know %@
 	NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
 	
-	asl_log(client, msg, logLevel, "%s", [message UTF8String]);
+	asl_log(client, msg, (int)logLevel, "%s", [message UTF8String]);
 
 	asl_free(msg);
 	

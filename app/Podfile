@@ -1,44 +1,63 @@
 platform :ios, '10.0'
 project 'Finalsite'
-inhibit_all_warnings!
+#inhibit_all_warnings!
 use_frameworks!
 
 target 'Finalsite' do
   pod 'UICKeyChainStore'
-  pod 'TWMessageBarManager'
-  pod 'AFNetworking'
-  pod 'SWTableViewCell', :git => "https://github.com/gliechtenstein/SWTableViewCell.git"
+  pod 'libPhoneNumber-iOS'
+  pod 'DTFoundation'
+  pod 'DTCoreText', :git => 'https://github.com/jasonelle/ios-pod-dtcoretext.git', :branch => 'jasonelle'
+  pod 'JSCoreBom', '~> 1.1.1'
+  pod 'SBJson', '~> 4.0.2'
+#  pod 'FLEX', '~> 2.0', :configurations => ['Debug']
+  pod 'NSHash'
+  
   pod 'APAddressBook'
+  
+  # Networking
+  pod 'Reachability'#, :git => 'https://github.com/jasonelle/ios-pod-reachability.git', :branch => 'jasonelle'
+  pod 'SocketRocket'#, :git => 'https://github.com/jasonelle/ios-pod-socketrocket.git', :branch => 'jasonelle'
+  pod 'AFNetworking'#, :git => 'https://github.com/jasonelle/ios-pod-afnetworking.git', :branch => 'jasonelle'
+  pod 'TDOAuth'
+  pod "AFOAuth2Manager"
+  
+  # Audio
+  pod 'IQAudioRecorderController'
+  pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
+  
+  # Views
+  pod 'MBProgressHUD', '~> 1.0'
+  
+  pod 'TWMessageBarManager'
+  
+  pod 'SWTableViewCell', :git => 'https://github.com/jasonelle/ios-pod-swtableviewcell.git', :branch => 'jasonelle'
+
+  pod 'SDWebImage', :git => 'https://github.com/jasonelle/ios-pod-sdwebimage.git'
+  
   pod 'TTTAttributedLabel'
   pod 'BBBadgeBarButtonItem'
-  pod 'IQAudioRecorderController'
+  
   pod 'REMenu'
   pod 'JDStatusBarNotification'
   pod 'HMSegmentedControl'
   pod "SWFrameButton"
-  pod 'libPhoneNumber-iOS'
+  
   pod "NSGIF", "~> 1.0"
   pod 'INTULocationManager'
   pod "AHKActionSheet"
-  pod 'TDOAuth'
-  pod "AFOAuth2Manager"
+  
   pod "CYRTextView"
-  pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
-  # pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git", :tag => '3.8.1'
-  pod 'SDWebImage', '~> 5.0'
+  
   pod 'SZTextView'
-  pod 'SBJson', '~> 4.0.2'
+  
   pod 'DHSmartScreenshot'
-  pod 'NSHash'
-  pod 'JSCoreBom', '~> 1.1.1'
+  
   pod "RMDateSelectionViewController"
-  pod 'DTCoreText'
+  
   pod 'PHFComposeBarView'
   pod 'DAKeyboardControl'
-  pod 'MBProgressHUD', '~> 1.0'
-  pod 'FLEX', '~> 2.0', :configurations => ['Debug']
-  pod 'SocketRocket'
-  #pod 'GoogleMobileAds', '~> 7.8'
+
   pod 'MaterialComponents/ActivityIndicator'
   pod 'MaterialComponents/PageControl'
 

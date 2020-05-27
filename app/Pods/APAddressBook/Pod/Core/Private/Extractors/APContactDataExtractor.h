@@ -10,6 +10,9 @@
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 @class APName;
 @class APJob;
 @class APSource;
@@ -35,3 +38,5 @@
 - (NSDate *)dateProperty:(ABPropertyID)property;
 
 @end
+
+#pragma clang diagnostic pop

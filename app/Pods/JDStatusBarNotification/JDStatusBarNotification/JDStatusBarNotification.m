@@ -202,14 +202,14 @@
 
   // prepare for new style
   if (style != self.activeStyle) {
-      self.activeStyle = style;
-      if (self.activeStyle.animationType == JDStatusBarAnimationTypeFade) {
-          self.topBar.alpha = 0.0;
-          self.topBar.transform = CGAffineTransformIdentity;
-      } else {
-          self.topBar.alpha = 1.0;
-          self.topBar.transform = CGAffineTransformMakeTranslation(0, -self.topBar.frame.size.height);
-      }
+    self.activeStyle = style;
+    if (self.activeStyle.animationType == JDStatusBarAnimationTypeFade) {
+      self.topBar.alpha = 0.0;
+      self.topBar.transform = CGAffineTransformIdentity;
+    } else {
+      self.topBar.alpha = 1.0;
+      self.topBar.transform = CGAffineTransformMakeTranslation(0, -self.topBar.frame.size.height);
+    }
   }
 
   // Force update the TopBar frame if the height is 0
@@ -494,8 +494,8 @@
 #pragma mark Rotation
 
 - (void)updateContentFrame:(CGRect)rect {
-    [self updateWindowTransform];
-    [self updateTopBarFrameWithStatusBarFrame:rect];
+  [self updateWindowTransform];
+  [self updateTopBarFrameWithStatusBarFrame:rect];
 }
 
 - (void)updateWindowTransform;
@@ -586,58 +586,64 @@ static CGFloat topBarHeightAdjustedForIphoneX(JDStatusBarStyle *style, CGFloat h
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED < 90000
 - (NSUInteger)supportedInterfaceOrientations {
+  return [[self mainController] supportedInterfaceOrientations];
+}
 #else
-  - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+  return [[self mainController] supportedInterfaceOrientations];
+}
 #endif
-    return [[self mainController] supportedInterfaceOrientations];
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+  return [[self mainController] preferredInterfaceOrientationForPresentation];
+}
+
+// statusbar
+
+static BOOL JDUIViewControllerBasedStatusBarAppearanceEnabled() {
+  static BOOL enabled = NO;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    enabled = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIViewControllerBasedStatusBarAppearance"] boolValue];
+  });
+
+  return enabled;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+  if(JDUIViewControllerBasedStatusBarAppearanceEnabled()) {
+    return [[self mainController] preferredStatusBarStyle];
   }
 
-  - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return [[self mainController] preferredInterfaceOrientationForPresentation];
-  }
+  return [[UIApplication sharedApplication] statusBarStyle];
+}
 
-  // statusbar
-
-  static BOOL JDUIViewControllerBasedStatusBarAppearanceEnabled() {
-    static BOOL enabled = NO;
-    static dispatch_once_t onceToken;
-
-    dispatch_once(&onceToken, ^{
-      enabled = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIViewControllerBasedStatusBarAppearance"] boolValue];
-    });
-
-    return enabled;
-  }
-
-  - (UIStatusBarStyle)preferredStatusBarStyle {
-    if(JDUIViewControllerBasedStatusBarAppearanceEnabled()) {
-      return [[self mainController] preferredStatusBarStyle];
-    }
-
-    return [[UIApplication sharedApplication] statusBarStyle];
-  }
-
-  - (BOOL)prefersStatusBarHidden {
+- (BOOL)prefersStatusBarHidden {
+  if (@available(iOS 13, *)) {
+    return JDStatusBarRootVCLayoutMargin().top == 0;
+  } else {
     return NO;
   }
+}
 
-  - (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
-    if(JDUIViewControllerBasedStatusBarAppearanceEnabled()) {
-      return [[self mainController] preferredStatusBarUpdateAnimation];
-    }
-    return [super preferredStatusBarUpdateAnimation];
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
+  if(JDUIViewControllerBasedStatusBarAppearanceEnabled()) {
+    return [[self mainController] preferredStatusBarUpdateAnimation];
   }
+  return [super preferredStatusBarUpdateAnimation];
+}
 
-  @end
+@end
 
-  @implementation UIApplication (mainWindow)
-  // we don't want the keyWindow, since it could be our own window
-  - (UIWindow*)mainApplicationWindowIgnoringWindow:(UIWindow *)ignoringWindow {
-    for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
-      if (!window.hidden && window != ignoringWindow) {
-        return window;
-      }
+@implementation UIApplication (mainWindow)
+// we don't want the keyWindow, since it could be our own window
+- (UIWindow*)mainApplicationWindowIgnoringWindow:(UIWindow *)ignoringWindow {
+  for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
+    if (!window.hidden && window != ignoringWindow) {
+      return window;
     }
-    return nil;
   }
-  @end
+  return nil;
+}
+@end

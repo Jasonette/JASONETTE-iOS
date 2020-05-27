@@ -38,7 +38,7 @@
                 serializer.acceptableContentTypes = contentTypes;
                 manager.responseSerializer = serializer;
                 
-                [manager GET:script[@"url"] parameters: @{} progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                [manager GET:script[@"url"] parameters: @{} headers:nil progress:^(NSProgress * _Nonnull downloadProgress) { } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     NSString *js = [JasonHelper UTF8StringFromData:((NSData *)responseObject)];
                     [self inject: js into: context];
                     dispatch_group_leave(requireGroup);

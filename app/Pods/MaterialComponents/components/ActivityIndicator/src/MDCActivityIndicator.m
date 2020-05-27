@@ -18,12 +18,13 @@
 #import <MotionAnimator/MotionAnimator.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "MaterialApplication.h"
-#import "MaterialPalettes.h"
 #import "private/MDCActivityIndicator+Private.h"
 #import "private/MDCActivityIndicatorMotionSpec.h"
 #import "private/MaterialActivityIndicatorStrings.h"
 #import "private/MaterialActivityIndicatorStrings_table.h"
+#import "MDCActivityIndicatorDelegate.h"
+#import "MaterialPalettes.h"
+#import "MaterialApplication.h"
 
 static const NSInteger kTotalDetentCount = 5;
 static const NSTimeInterval kAnimateOutDuration = 0.1;
@@ -130,10 +131,6 @@ static const CGFloat kSingleCycleRotation =
   return self;
 }
 
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)layoutSubviews {
   [super layoutSubviews];
 
@@ -148,6 +145,8 @@ static const CGFloat kSingleCycleRotation =
 
     [self updateStrokePath];
   }];
+
+  [self updateStrokeColor];
 }
 
 - (void)commonMDCActivityIndicatorInit {
@@ -422,7 +421,7 @@ static const CGFloat kSingleCycleRotation =
 }
 
 - (void)setRadius:(CGFloat)radius {
-  _radius = MIN(MAX(radius, 5), 72);
+  _radius = MAX(radius, 5);
 
   [self updateStrokePath];
 }
@@ -1014,6 +1013,14 @@ static const CGFloat kSingleCycleRotation =
 
 - (UIAccessibilityTraits)accessibilityTraits {
   return UIAccessibilityTraitUpdatesFrequently;
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (self.traitCollectionDidChangeBlock) {
+    self.traitCollectionDidChangeBlock(self, previousTraitCollection);
+  }
 }
 
 @end

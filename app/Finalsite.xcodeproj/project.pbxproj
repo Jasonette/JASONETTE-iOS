@@ -90,6 +90,10 @@
 		CE4AFF1B212CA8FC006B31F5 /* FinalsiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4AFF1A212CA8FC006B31F5 /* FinalsiteUITests.swift */; };
 		EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */; };
 		FD694748230726B200205702 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD694747230726B200205702 /* SnapshotHelper.swift */; };
+		FD920F2824697CE300F22E2C /* JasonLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FD920F2724697CE300F22E2C /* JasonLogger.m */; };
+		FD920F2B2469E93D00F22E2C /* JasonNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = FD920F2A2469E93D00F22E2C /* JasonNetworking.m */; };
+		FD920F302469EA3700F22E2C /* INTUAutoRemoveObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = FD920F2F2469EA3700F22E2C /* INTUAutoRemoveObserver.m */; };
+		FD920F36246A1E1900F22E2C /* JasonNSClassFromString.m in Sources */ = {isa = PBXBuildFile; fileRef = FD920F35246A1E1900F22E2C /* JasonNSClassFromString.m */; };
 		FDA44F8722B7EE58006E413E /* JasonTimedAction.m in Sources */ = {isa = PBXBuildFile; fileRef = FDA44F8622B7EE58006E413E /* JasonTimedAction.m */; };
 		FDE48C8023204463000A6302 /* NativeAppHeader.png in Resources */ = {isa = PBXBuildFile; fileRef = FDE48C7F23204463000A6302 /* NativeAppHeader.png */; };
 		FDE48C842321915E000A6302 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FDE48C832321915E000A6302 /* Colors.xcassets */; };
@@ -479,6 +483,15 @@
 		EF8C8CFF1F9195240062CA1C /* JasonSwitchComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonSwitchComponent.m; sourceTree = "<group>"; };
 		FD5CBD7B21960AFD00B12C45 /* Finalsite.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Finalsite.entitlements; sourceTree = "<group>"; };
 		FD694747230726B200205702 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = ../../../fastlane/SnapshotHelper.swift; sourceTree = "<group>"; };
+		FD920F242465B7B800F22E2C /* WKWebview+EvaluateJavascript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WKWebview+EvaluateJavascript.h"; sourceTree = "<group>"; };
+		FD920F2524697C7500F22E2C /* JasonLogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonLogger.h; sourceTree = "<group>"; };
+		FD920F2724697CE300F22E2C /* JasonLogger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonLogger.m; sourceTree = "<group>"; };
+		FD920F2A2469E93D00F22E2C /* JasonNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonNetworking.m; sourceTree = "<group>"; };
+		FD920F2C2469E95000F22E2C /* JasonNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonNetworking.h; sourceTree = "<group>"; };
+		FD920F2E2469EA1200F22E2C /* INTUAutoRemoveObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = INTUAutoRemoveObserver.h; sourceTree = "<group>"; };
+		FD920F2F2469EA3700F22E2C /* INTUAutoRemoveObserver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = INTUAutoRemoveObserver.m; sourceTree = "<group>"; };
+		FD920F35246A1E1900F22E2C /* JasonNSClassFromString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonNSClassFromString.m; sourceTree = "<group>"; };
+		FD920F38246A1E5400F22E2C /* JasonNSClassFromString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonNSClassFromString.h; sourceTree = "<group>"; };
 		FDA44F8622B7EE58006E413E /* JasonTimedAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JasonTimedAction.m; sourceTree = "<group>"; };
 		FDA44F8822B8021D006E413E /* JasonTimedAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JasonTimedAction.h; sourceTree = "<group>"; };
 		FDB723B02195FCF500468F0C /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -977,8 +990,11 @@
 		5E31777D1D1F1A8300D87778 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				FD920F292469E92000F22E2C /* Networking */,
 				5E3176EA1D1E411E00D87778 /* Jason.h */,
 				5E3176EB1D1E411E00D87778 /* Jason.m */,
+				FD920F2524697C7500F22E2C /* JasonLogger.h */,
+				FD920F2724697CE300F22E2C /* JasonLogger.m */,
 				5E3176C71D1E411E00D87778 /* JasonMemory.h */,
 				5E3176C81D1E411E00D87778 /* JasonMemory.m */,
 				5E3176FD1D1E411E00D87778 /* JasonStack.h */,
@@ -990,6 +1006,7 @@
 				488D518B218752A1000B9658 /* JasonTabBarController.swift */,
 				488D518F21875713000B9658 /* Jasonette-Bridging-Header.h */,
 				FDE48C8523229076000A6302 /* UIColor+NamedColors.h */,
+				FD920F242465B7B800F22E2C /* WKWebview+EvaluateJavascript.h */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -1091,6 +1108,8 @@
 		5E3177901D1F229200D87778 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				FD920F34246A1DF000F22E2C /* JasonNSClassFromString */,
+				FD920F2D2469E9FB00F22E2C /* INTUAutoRemoveObserver */,
 				9A16EE101E592DC9006D3F73 /* Option */,
 				5E3177041D1E411E00D87778 /* JasonHelper.h */,
 				5E3177051D1E411E00D87778 /* JasonHelper.m */,
@@ -1311,6 +1330,33 @@
 				6C1B93902398069C00E6BFBD /* UILabelledSwitch.h */,
 			);
 			name = switch;
+			sourceTree = "<group>";
+		};
+		FD920F292469E92000F22E2C /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				FD920F2A2469E93D00F22E2C /* JasonNetworking.m */,
+				FD920F2C2469E95000F22E2C /* JasonNetworking.h */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		FD920F2D2469E9FB00F22E2C /* INTUAutoRemoveObserver */ = {
+			isa = PBXGroup;
+			children = (
+				FD920F2E2469EA1200F22E2C /* INTUAutoRemoveObserver.h */,
+				FD920F2F2469EA3700F22E2C /* INTUAutoRemoveObserver.m */,
+			);
+			path = INTUAutoRemoveObserver;
+			sourceTree = "<group>";
+		};
+		FD920F34246A1DF000F22E2C /* JasonNSClassFromString */ = {
+			isa = PBXGroup;
+			children = (
+				FD920F35246A1E1900F22E2C /* JasonNSClassFromString.m */,
+				FD920F38246A1E5400F22E2C /* JasonNSClassFromString.h */,
+			);
+			path = JasonNSClassFromString;
 			sourceTree = "<group>";
 		};
 		FDA44F8522B7EE02006E413E /* $timed */ = {
@@ -1546,8 +1592,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5E3176701D1E400C00D87778 /* Build configuration list for PBXNativeTarget "Finalsite" */;
 			buildPhases = (
-				6C27814D236230EE00C3C2C6 /* ShellScript */,
 				4C60F2A77037C1DE44A1A56B /* [CP] Check Pods Manifest.lock */,
+				6C27814D236230EE00C3C2C6 /* ShellScript */,
 				5E3176551D1E400C00D87778 /* Sources */,
 				5E3176561D1E400C00D87778 /* Frameworks */,
 				5E3176571D1E400C00D87778 /* Resources */,
@@ -1940,12 +1986,10 @@
 				"${BUILT_PRODUCTS_DIR}/AHKActionSheet/AHKActionSheet.framework",
 				"${BUILT_PRODUCTS_DIR}/APAddressBook/APAddressBook.framework",
 				"${BUILT_PRODUCTS_DIR}/BBBadgeBarButtonItem/BBBadgeBarButtonItem.framework",
-				"${BUILT_PRODUCTS_DIR}/CYRTextView/CYRTextView.framework",
 				"${BUILT_PRODUCTS_DIR}/DAKeyboardControl/DAKeyboardControl.framework",
 				"${BUILT_PRODUCTS_DIR}/DHSmartScreenshot/DHSmartScreenshot.framework",
 				"${BUILT_PRODUCTS_DIR}/DTCoreText/DTCoreText.framework",
 				"${BUILT_PRODUCTS_DIR}/DTFoundation/DTFoundation.framework",
-				"${BUILT_PRODUCTS_DIR}/FLEX/FLEX.framework",
 				"${BUILT_PRODUCTS_DIR}/FreeStreamer/FreeStreamer.framework",
 				"${BUILT_PRODUCTS_DIR}/HMSegmentedControl/HMSegmentedControl.framework",
 				"${BUILT_PRODUCTS_DIR}/INTULocationManager/INTULocationManager.framework",
@@ -1986,12 +2030,10 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AHKActionSheet.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/APAddressBook.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BBBadgeBarButtonItem.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CYRTextView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DAKeyboardControl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DHSmartScreenshot.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DTCoreText.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DTFoundation.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FLEX.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FreeStreamer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HMSegmentedControl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/INTULocationManager.framework",
@@ -2048,10 +2090,12 @@
 				042852531E984B890081F742 /* NoPaddingButton.m in Sources */,
 				5EE85B791DA582940049EACE /* JasonAction.m in Sources */,
 				04B1568C1F4B8D6600625C61 /* JasonPushAction.m in Sources */,
+				FD920F302469EA3700F22E2C /* INTUAutoRemoveObserver.m in Sources */,
 				5E2CB5C61D9DF5B600DA2B83 /* JasonComponentFactory.m in Sources */,
 				FDA44F8722B7EE58006E413E /* JasonTimedAction.m in Sources */,
 				5E3177611D1E411F00D87778 /* Jason.m in Sources */,
 				5E09562D1DA33515007ADC78 /* JasonLabelComponent.m in Sources */,
+				FD920F36246A1E1900F22E2C /* JasonNSClassFromString.m in Sources */,
 				5E3176611D1E400C00D87778 /* JasonAppDelegate.m in Sources */,
 				5E31776F1D1E411F00D87778 /* JasonViewController.m in Sources */,
 				5EE85B811DA5C0090049EACE /* JasonLayer.m in Sources */,
@@ -2084,6 +2128,7 @@
 				045E5F3D1E3661060088D5E6 /* JasonReturnAction.m in Sources */,
 				488D518C218752A1000B9658 /* JasonTabBarController.swift in Sources */,
 				EF8C8D001F9195240062CA1C /* JasonSwitchComponent.m in Sources */,
+				FD920F2B2469E93D00F22E2C /* JasonNetworking.m in Sources */,
 				5E31765E1D1E400C00D87778 /* main.m in Sources */,
 				48A0B8DB218B5E0500908931 /* JasonDocumentViewer.m in Sources */,
 				5EBFBB511D563ABD0074B805 /* UIView+JasonComponentPayload.m in Sources */,
@@ -2094,6 +2139,7 @@
 				5E3177241D1E411F00D87778 /* JasonHorizontalSectionItem.m in Sources */,
 				5E3177221D1E411F00D87778 /* JasonHorizontalSection.m in Sources */,
 				04D947EB1F16ACF50063CC65 /* JASONResponseSerializer.m in Sources */,
+				FD920F2824697CE300F22E2C /* JasonLogger.m in Sources */,
 				042A7FD91FAC665B00C1A3F2 /* JasonWebsocketService.m in Sources */,
 				5E3177301D1E411F00D87778 /* JasonGeoAction.m in Sources */,
 				5E3177591D1E411F00D87778 /* JasonOauthAction.m in Sources */,
@@ -2250,7 +2296,7 @@
 				INFOPLIST_FILE = Jasonette/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.finalsiteacademy2;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.finalsite.kevin-test-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Jasonette/Jasonette-Bridging-Header.h";
@@ -2279,7 +2325,7 @@
 				INFOPLIST_FILE = Jasonette/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.finalsite.finalsiteacademy2;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.finalsite.kevin-test-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Jasonette/Jasonette-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

@@ -6,29 +6,26 @@
 //
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <REMenu/REMenu.h>
+#import "REMenu.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "JasonHelper.h"
 #import "JasonMemory.h"
 #import "JasonParser.h"
 #import "JasonViewController.h"
-#import <BBBadgeBarButtonItem/BBBadgeBarButtonItem.h>
-#import <AFNetworking/AFNetworking.h>
+#import "BBBadgeBarButtonItem.h"
+#import "AFNetworking.h"
 #import <SafariServices/SafariServices.h>
 #import <NSHash/NSString+NSHash.h>
 #import <FreeStreamer/FSAudioStream.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <AVFoundation/AVFoundation.h>
 #import "JasonAgentService.h"
-#import <MBProgressHUD/MBProgressHUD.h>
+#import "MBProgressHUD.h"
 #import "Reachability.h"
-#ifdef DEBUG
-#include <FLEX/FLEX.h>
-#endif
 
 @import MediaPlayer;
 
-@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate, UIWebViewDelegate>
+@interface Jason : NSObject <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITabBarControllerDelegate>
 
 @property (strong, nonatomic) NSDictionary *parser;
 @property (strong, nonatomic) NSDictionary *data;

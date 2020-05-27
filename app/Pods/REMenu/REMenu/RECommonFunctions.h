@@ -27,5 +27,5 @@
 
 #ifndef REUIKitIsFlatModeFunction
 #define REUIKitIsFlatModeFunction
-BOOL REUIKitIsFlatMode();
+BOOL REUIKitIsFlatMode(void);
 #endif

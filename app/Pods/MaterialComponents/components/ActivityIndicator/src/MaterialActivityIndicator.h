@@ -13,3 +13,4 @@
 // limitations under the License.
 
 #import "MDCActivityIndicator.h"
+#import "MDCActivityIndicatorDelegate.h"

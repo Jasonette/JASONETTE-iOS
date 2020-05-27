@@ -25,34 +25,34 @@ extern NSString *const JDStatusBarStyleDefault;
 extern NSString *const JDStatusBarStyleDark;
 
 typedef NS_ENUM(NSInteger, JDStatusBarAnimationType) {
-    /// Notification won't animate
-    JDStatusBarAnimationTypeNone,
-    /// Notification will move in from the top, and move out again to the top
-    JDStatusBarAnimationTypeMove,
-    /// Notification will fall down from the top and bounce a little bit
-    JDStatusBarAnimationTypeBounce,
-    /// Notification will fade in and fade out
-    JDStatusBarAnimationTypeFade,
+  /// Notification won't animate
+  JDStatusBarAnimationTypeNone,
+  /// Notification will move in from the top, and move out again to the top
+  JDStatusBarAnimationTypeMove,
+  /// Notification will fall down from the top and bounce a little bit
+  JDStatusBarAnimationTypeBounce,
+  /// Notification will fade in and fade out
+  JDStatusBarAnimationTypeFade,
 };
 
 typedef NS_ENUM(NSInteger, JDStatusBarProgressBarPosition) {
-    /// progress bar will be at the bottom of the status bar
-    JDStatusBarProgressBarPositionBottom,
-    /// progress bar will be at the center of the status bar
-    JDStatusBarProgressBarPositionCenter,
-    /// progress bar will be at the top of the status bar
-    JDStatusBarProgressBarPositionTop,
-    /// progress bar will be below the status bar (the progress bar won't move with the status bar in this case)
-    JDStatusBarProgressBarPositionBelow,
-    /// progress bar will be below the navigation bar (the progress bar won't move with the status bar in this case)
-    JDStatusBarProgressBarPositionNavBar,
+  /// progress bar will be at the bottom of the status bar
+  JDStatusBarProgressBarPositionBottom,
+  /// progress bar will be at the center of the status bar
+  JDStatusBarProgressBarPositionCenter,
+  /// progress bar will be at the top of the status bar
+  JDStatusBarProgressBarPositionTop,
+  /// progress bar will be below the status bar (the progress bar won't move with the status bar in this case)
+  JDStatusBarProgressBarPositionBelow,
+  /// progress bar will be below the navigation bar (the progress bar won't move with the status bar in this case)
+  JDStatusBarProgressBarPositionNavBar,
 };
 
 typedef NS_ENUM(NSInteger, JDStatusBarHeightForIPhoneX) {
-    /// shows parts of the navigation bar
-    JDStatusBarHeightForIPhoneXHalf,
-    /// covers the full navigation bar
-    JDStatusBarHeightForIPhoneXFullNavBar,
+  /// shows parts of the navigation bar
+  JDStatusBarHeightForIPhoneXHalf,
+  /// covers the full navigation bar
+  JDStatusBarHeightForIPhoneXFullNavBar,
 };
 
 /**
