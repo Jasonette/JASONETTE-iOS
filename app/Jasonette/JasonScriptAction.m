@@ -29,7 +29,16 @@
                 [self inject: js into: context];
                 dispatch_group_leave(requireGroup);
             } else {
-                AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+                [[Jason client] showLoadingOverlay];
+                NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+                
+                if(script[@"cache"] && [script[@"cache"] boolValue]) {
+                    configuration.requestCachePolicy = NSURLRequestReturnCacheDataElseLoad;
+                } else {
+                    configuration.requestCachePolicy = NSURLRequestUseProtocolCachePolicy;
+                }
+                
+                AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
                 AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
                 NSMutableSet *contentTypes = [NSMutableSet setWithSet:serializer.acceptableContentTypes];
                 [contentTypes addObject:@"text/plain"];
