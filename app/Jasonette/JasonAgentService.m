@@ -311,8 +311,9 @@
                     decisionHandler(WKNavigationActionPolicyAllow);
                 }
             }
-        } else {
-            decisionHandler(WKNavigationActionPolicyAllow);
+        } else { // otherwise just open the link in the browser
+            [[UIApplication sharedApplication] openURL:navigationAction.request.URL options:@{} completionHandler:nil];
+            decisionHandler(WKNavigationActionPolicyCancel);
         }
     } else {
         decisionHandler(WKNavigationActionPolicyAllow);
