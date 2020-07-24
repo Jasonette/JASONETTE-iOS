@@ -171,7 +171,7 @@ DEPENDENCIES:
   - SDWebImage (from `https://github.com/jasonelle/ios-pod-sdwebimage.git`)
   - SocketRocket
   - SWFrameButton
-  - SWTableViewCell (from `https://github.com/jasonelle/ios-pod-swtableviewcell.git`, branch `jasonelle`)
+  - SWTableViewCell (from `https://github.com/finalsite/SWTableViewCell.git`)
   - SZTextView
   - TDOAuth
   - TTTAttributedLabel
@@ -228,8 +228,7 @@ EXTERNAL SOURCES:
   SDWebImage:
     :git: https://github.com/jasonelle/ios-pod-sdwebimage.git
   SWTableViewCell:
-    :branch: jasonelle
-    :git: https://github.com/jasonelle/ios-pod-swtableviewcell.git
+    :git: https://github.com/finalsite/SWTableViewCell.git
 
 CHECKOUT OPTIONS:
   DTCoreText:
@@ -242,8 +241,8 @@ CHECKOUT OPTIONS:
     :commit: 3d1abaee82808ea098860da49c836033e7fc74a2
     :git: https://github.com/jasonelle/ios-pod-sdwebimage.git
   SWTableViewCell:
-    :commit: 1c8845e25f520c959391bd79dc6cf271e0cf9a44
-    :git: https://github.com/jasonelle/ios-pod-swtableviewcell.git
+    :commit: 67484cead1c1b49edf1ed6eee505d0080e462cf2
+    :git: https://github.com/finalsite/SWTableViewCell.git
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
@@ -289,6 +288,6 @@ SPEC CHECKSUMS:
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
   UICKeyChainStore: 6a218644594e12f855ec2a10f4fc576c1a69daee
 
-PODFILE CHECKSUM: 7c81ad9b5ba6e12c315234c0bb094650a8a28db7
+PODFILE CHECKSUM: 2f8f377cda630c76b89e8c15e27d9d9430ad903c
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3
