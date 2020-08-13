@@ -2146,6 +2146,9 @@
             JasonAgentService *agent = self.services[@"JasonAgentService"];
             vc.background = [agent setup:payload withId:payload[@"id"]];
             
+            // set the height payload so we don't try to autofit to the content
+            vc.background.payload[@"height"] = @"background";
+            
             // Need to make the background transparent so that it doesn't flash white when first loading
             vc.background.opaque = NO;
             vc.background.backgroundColor = [UIColor clearColor];
@@ -2195,7 +2198,6 @@
         [vc.background setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 
         [vc.view addSubview:vc.background];
-        [vc.view sendSubviewToBack:vc.background];
     }
 }
 - (void) buildCamera: (NSDictionary *) options forVC: (JasonViewController *)vc{
