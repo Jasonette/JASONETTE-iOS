@@ -31,7 +31,7 @@ target 'Finalsite' do
   
   pod 'TWMessageBarManager'
   
-  pod 'SWTableViewCell', :git => 'https://github.com/jasonelle/ios-pod-swtableviewcell.git', :branch => 'jasonelle'
+  pod 'SWTableViewCell', :git => 'https://github.com/finalsite/SWTableViewCell.git'
 
   pod 'SDWebImage', :git => 'https://github.com/jasonelle/ios-pod-sdwebimage.git'
   
