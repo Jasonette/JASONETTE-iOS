@@ -211,6 +211,11 @@
                         [share_items addObject:[item[@"text"] description]];
                     }
                     counter--;
+                } else if([item[@"type"] isEqualToString:@"url"]){
+                    if(item[@"url"]){
+                        [share_items addObject:[NSURL URLWithString: [item[@"url"] description]]];
+                    }
+                    counter--;
                 }
             }
         }
