@@ -1,0 +1,28 @@
+/*
+ LTHPasscodeViewController.strings
+ */
+"Enter Passcode" = "암호 입력";
+
+"Enter your old passcode" = "이전 암호 입력";
+
+"Enter your passcode" = "암호 입력";
+
+"Enable Passcode" = "암호 켜기";
+
+"Change Passcode" = "암호 변경";
+
+"Turn Off Passcode" = "암호 끄기";
+
+"Re-enter your passcode" = "암호 재입력";
+
+"Re-enter your new passcode" = "새로운 암호 재입력";
+
+"Enter your new passcode" = "새로운 암호 입력";
+
+"Passcodes did not match. Try again." = "암호가 일치하지 않습니다. 다시 시도하십시오.";
+
+"1 Passcode Failed Attempt" = "1번의 암호 입력 실패";
+
+"%i Passcode Failed Attempts" = "%i번의 암호 입력 실패";
+
+"Unlock using Touch ID" = "Touch ID를 이용해 잠금 해제";

@@ -1,0 +1,28 @@
+/*
+ LTHPasscodeViewController.strings
+ */
+"Enter Passcode" = "Voer toegangscode in";
+
+"Enter your old passcode" = "Voer oude toegangscode in";
+
+"Enter your passcode" = "Voer uw toegangscode in";
+
+"Enable Passcode" = "Zet code aan";
+
+"Change Passcode" = "Wijzig toegangscode";
+
+"Turn Off Passcode" = "Zet code uit";
+
+"Re-enter your passcode" = "Herhaal toegangscode";
+
+"Re-enter your new passcode" = "Herhaal nieuwe toegangscode";
+
+"Enter your new passcode" = "Voer nieuwe toegangscode in";
+
+"Passcodes did not match. Try again." = "Codes niet hetzelfde. Probeer opnieuw.";
+
+"1 Passcode Failed Attempt" = "1 mislukte toegangscodepoging";
+
+"%i Passcode Failed Attempts" = "%i mislukte toegangscodepogingen";
+
+"Unlock using Touch ID" = "Ontgrendel met Touch ID";

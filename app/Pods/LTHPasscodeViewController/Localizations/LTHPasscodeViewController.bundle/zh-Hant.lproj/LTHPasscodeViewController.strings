@@ -1,0 +1,29 @@
+/*
+ LTHPasscodeViewController.strings
+  */
+
+"Enter Passcode" = "輸入密碼";
+
+"Enter your old passcode" = "輸入舊密碼";
+
+"Enter your passcode" = "輸入密碼";
+
+"Enable Passcode" = "啟用密碼";
+
+"Change Passcode" = "改密碼";
+
+"Turn Off Passcode" = "停用密碼";
+
+"Re-enter your passcode" = "重新輸入密碼";
+
+"Re-enter your new passcode" = "重新輸入新密碼";
+
+"Enter your new passcode" = "輸入新密碼";
+
+"Passcodes did not match. Try again." = "密碼錯誤，請重試！";
+
+"1 Passcode Failed Attempt" = "密碼錯誤 1 次";
+
+"%i Passcode Failed Attempts" = "密碼錯誤 %i 次";
+
+"Unlock using Touch ID" = "用 Touch ID 解鎖";

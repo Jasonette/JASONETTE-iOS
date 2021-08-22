@@ -1,0 +1,28 @@
+/*
+ LTHPasscodeViewController.strings
+ */
+"Enter Passcode" = "Vložte Passcode";
+
+"Enter your old passcode" = "Vložte stávající passcode";
+
+"Enter your passcode" = "Vložte svůj passcode";
+
+"Enable Passcode" = "Zapnout Passcode";
+
+"Change Passcode" = "Změnit Passcode";
+
+"Turn Off Passcode" = "Vypnout Passcode";
+
+"Re-enter your passcode" = "Ověřte passcode";
+
+"Re-enter your new passcode" = "Ověřte svůj nový passcode";
+
+"Enter your new passcode" = "Vložte svůj nový passcode";
+
+"Passcodes did not match. Try again." = "Zadání není platné. Zkuste prosím znovu.";
+
+"1 Passcode Failed Attempt" = "1 špatné přihlášení";
+
+"%i Passcode Failed Attempts" = "%i špatných přihlášení";
+
+"Unlock using Touch ID" = "Odemkněte pomocí Touch ID";

@@ -171,6 +171,7 @@
     [self call: action with: nil];
 }
 - (void)call: (id)action with: (NSDictionary*)data{
+    
     JasonMemory *memory = [JasonMemory client];
     // If executing, queue the action with "call" type
     if (memory.executing || !VC.events) {
