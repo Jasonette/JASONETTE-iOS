@@ -321,11 +321,8 @@
                                            return style;
                                        }];
         [JDStatusBarNotification showWithStatus:@"Loading" styleName:@"SBStyle1"];
-        if(navigationController.navigationBar.barStyle == UIStatusBarStyleDefault){
-            [JDStatusBarNotification showActivityIndicator:YES indicatorStyle:UIActivityIndicatorViewStyleWhite];
-        } else {
-            [JDStatusBarNotification showActivityIndicator:YES indicatorStyle:UIActivityIndicatorViewStyleGray];
-        }
+        [JDStatusBarNotification showActivityIndicator:YES indicatorStyle:UIActivityIndicatorViewStyleMedium];
+
     } else {
         if([JDStatusBarNotification isVisible]){
             [JDStatusBarNotification dismissAnimated:YES];
