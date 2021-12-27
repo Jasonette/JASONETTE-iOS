@@ -23,7 +23,7 @@
     [defaults synchronize];
 }
 - (void)loadCookies{
-    NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData: [[NSUserDefaults standardUserDefaults] objectForKey: @"sessionCookies"]];
+    NSArray *cookies = [JasonHelper unarchivedObjectOfClass:[NSArray class] fromData:[[NSUserDefaults standardUserDefaults] objectForKey: @"sessionCookies"]]; 
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     for (NSHTTPCookie *cookie in cookies){
         [cookieStorage setCookie: cookie];

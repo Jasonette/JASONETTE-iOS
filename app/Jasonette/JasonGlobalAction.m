@@ -37,7 +37,7 @@
                 // string type (old version, will deprecate)
                 to_reset = (NSDictionary *)data;
             } else {
-                to_reset = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                to_reset = (NSDictionary*) [JasonHelper unarchivedObjectOfClass:[NSDictionary class] fromData:data];
             }
         } else {
             to_reset = nil;
@@ -110,7 +110,7 @@
                     // string type (old version, will deprecate)
                     to_set = (NSDictionary *)data;
                 } else {
-                    to_set = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                    to_set = (NSDictionary*) [JasonHelper unarchivedObjectOfClass:[NSDictionary class] fromData:data];
                 }
             } else {
                 to_set = nil;

@@ -989,4 +989,15 @@
     }
     return  keyWindow;
 }
+
++ (id)unarchivedObjectOfClass:(Class)cls fromData:(NSData *)data {
+    NSError *error = nil;
+    NSDictionary *dict = [NSKeyedUnarchiver unarchivedObjectOfClass:cls fromData:data error:&error];
+    if (error != nil) {
+#ifdef DEBUG
+        NSLog(@"ERROR unarchiving data : %@", error.localizedDescription);
+#endif
+    }
+    return dict;
+}
 @end

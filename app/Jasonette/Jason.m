@@ -1744,7 +1744,7 @@
                 // string type (old version, will deprecate)
                 dict = (NSDictionary *)data;
             } else {
-                dict = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                dict = (NSDictionary*) [JasonHelper unarchivedObjectOfClass:[NSDictionary class] fromData:data];
             }
             if(dict && dict.count > 0) {
                 data_stub[@"$global"] = dict;
@@ -1846,7 +1846,7 @@
         NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
         NSData *data = [NSData dataWithContentsOfFile:path];
         if(data && data.length > 0){
-            NSDictionary *responseObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            NSDictionary *responseObject = [JasonHelper unarchivedObjectOfClass:[NSDictionary class] fromData:data];
             if(responseObject && responseObject[@"$jason"] && responseObject[@"$jason"][@"head"] && responseObject[@"$jason"][@"head"][@"offline"]){
                 // get rid of $load and $show so they don't get triggered
                 if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$load"]){
