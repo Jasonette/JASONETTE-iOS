@@ -17,7 +17,7 @@
     keychain[@"session"] = [session description];
 }
 - (void)saveCookies{
-    NSData *cookiesData = [NSKeyedArchiver archivedDataWithRootObject: [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
+    NSData *cookiesData = [JasonHelper archivedDataWithRootObject: [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject: cookiesData forKey: @"sessionCookies"];
     [defaults synchronize];

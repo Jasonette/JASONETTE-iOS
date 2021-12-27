@@ -990,6 +990,18 @@
     return  keyWindow;
 }
 
++ (NSData *)archivedDataWithRootObject:(id)rootObject {
+    NSError *error = nil;
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:rootObject requiringSecureCoding:NO error:&error];
+    
+    if (error != nil) {
+#ifdef DEBUG
+        NSLog(@"ERROR archiving data : %@", error.localizedDescription);
+#endif
+    }
+    return data;
+}
+
 + (id)unarchivedObjectOfClass:(Class)cls fromData:(NSData *)data {
     NSError *error = nil;
     NSDictionary *dict = [NSKeyedUnarchiver unarchivedObjectOfClass:cls fromData:data error:&error];

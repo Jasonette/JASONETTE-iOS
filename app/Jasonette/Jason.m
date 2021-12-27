@@ -4027,7 +4027,7 @@
             if(to_store[@"$jason"]){
                 to_store[@"$jason"][@"body"] = self->VC.rendered;
             }
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:to_store];
+            NSData *data = [JasonHelper archivedDataWithRootObject:to_store];
             [data writeToFile:path atomically:YES];
             return;
         }

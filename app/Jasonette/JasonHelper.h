@@ -47,5 +47,6 @@
 + (NSString *) get_local_path: (NSString *) url;
 + (id) getPlistSettings: (NSString *)key;
 + (UIWindow *) getKeyWindow;
++ (NSData *)archivedDataWithRootObject:(id)rootObject;
 + (id)unarchivedObjectOfClass:(Class)cls fromData:(NSData *)data;
 @end

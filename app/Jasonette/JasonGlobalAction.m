@@ -52,7 +52,7 @@
         } else {
             mutated = [@{} mutableCopy];
         }
-        NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:mutated];
+        NSData *updated = [JasonHelper archivedDataWithRootObject:mutated];
         [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
@@ -124,13 +124,13 @@
                 mutated = [self.options mutableCopy];
             }
             
-            NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:mutated];
+            NSData *updated = [JasonHelper archivedDataWithRootObject:mutated];
             [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
             [[NSUserDefaults standardUserDefaults] synchronize];
 
         } else {
             // first time using global
-            NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:self.options];
+            NSData *updated = [JasonHelper archivedDataWithRootObject:self.options];
             [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
             [[NSUserDefaults standardUserDefaults] synchronize];
             mutated = [self.options mutableCopy];
