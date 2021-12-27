@@ -359,7 +359,7 @@
             self->activityIndicatorText.center = self->activityIndicator.center;
             [self->loadingOverlayView addSubview:self->activityIndicatorText];
             
-            UIWindow *currentWindow = [UIApplication sharedApplication].keyWindow;
+            UIWindow *currentWindow = [JasonHelper getKeyWindow];
             [currentWindow addSubview:self->loadingOverlayView];
             
         }
@@ -2727,7 +2727,7 @@
     if (hasGradient) {
         CAGradientLayer *gradient = [CAGradientLayer layer];
         CGRect updatedFrame = navigationController.navigationBar.bounds;
-        updatedFrame.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+        updatedFrame.size.height += [JasonHelper getKeyWindow].windowScene.statusBarManager.statusBarFrame.size.height;
         gradient.frame = updatedFrame;
         gradient.colors = [NSArray arrayWithObjects:(id)[gradientFrom CGColor], (id)[gradientTo CGColor], nil];
         gradient.startPoint = CGPointMake(0.0, 1.0);
@@ -3358,7 +3358,7 @@
                         [self unlock];
                     }
                     
-                    JasonTabBarController *root = (JasonTabBarController *)[[[UIApplication sharedApplication] keyWindow] rootViewController];
+                    JasonTabBarController *root = (JasonTabBarController *)[[JasonHelper getKeyWindow] rootViewController];
                     while (root.presentedViewController) {
                         root = (JasonTabBarController *)root.presentedViewController;
                     }
