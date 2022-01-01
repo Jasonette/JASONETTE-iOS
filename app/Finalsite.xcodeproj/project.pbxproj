@@ -56,7 +56,6 @@
 		5E31774C1D1E411F00D87778 /* JasonMediaAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176C61D1E411E00D87778 /* JasonMediaAction.m */; };
 		5E31774D1D1E411F00D87778 /* JasonMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176C81D1E411E00D87778 /* JasonMemory.m */; };
 		5E3177521D1E411F00D87778 /* JasonNetworkAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176D21D1E411E00D87778 /* JasonNetworkAction.m */; };
-		5E3177591D1E411F00D87778 /* JasonOauthAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176DF1D1E411E00D87778 /* JasonOauthAction.m */; };
 		5E31775C1D1E411F00D87778 /* JasonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176E41D1E411E00D87778 /* JasonParser.m */; };
 		5E3177611D1E411F00D87778 /* Jason.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176EB1D1E411E00D87778 /* Jason.m */; };
 		5E3177641D1E411F00D87778 /* JasonPortraitPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E3176EF1D1E411E00D87778 /* JasonPortraitPicker.m */; };
@@ -420,8 +419,6 @@
 		5E3176C81D1E411E00D87778 /* JasonMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonMemory.m; sourceTree = "<group>"; };
 		5E3176D11D1E411E00D87778 /* JasonNetworkAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonNetworkAction.h; sourceTree = "<group>"; };
 		5E3176D21D1E411E00D87778 /* JasonNetworkAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonNetworkAction.m; sourceTree = "<group>"; };
-		5E3176DE1D1E411E00D87778 /* JasonOauthAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonOauthAction.h; sourceTree = "<group>"; };
-		5E3176DF1D1E411E00D87778 /* JasonOauthAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonOauthAction.m; sourceTree = "<group>"; };
 		5E3176E21D1E411E00D87778 /* JasonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JasonParser.h; sourceTree = "<group>"; };
 		5E3176E41D1E411E00D87778 /* JasonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JasonParser.m; sourceTree = "<group>"; };
 		5E3176EA1D1E411E00D87778 /* Jason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Jason.h; sourceTree = "<group>"; };
@@ -974,7 +971,6 @@
 				5E31778E1D1F20A400D87778 /* $network */,
 				5E98626A1DCF1F6A0084CA4A /* $notification */,
 				5EDF644F1DB0480B00C5E403 /* $session */,
-				5E31778F1D1F20AB00D87778 /* $oauth */,
 				04B1568D1F4B8D6A00625C61 /* $push */,
 				045E5F3E1E36610B0088D5E6 /* $return */,
 				04DC19811F5474730021A7A6 /* $script */,
@@ -1094,15 +1090,6 @@
 				04D947EA1F16ACF50063CC65 /* JASONResponseSerializer.m */,
 			);
 			name = $network;
-			sourceTree = "<group>";
-		};
-		5E31778F1D1F20AB00D87778 /* $oauth */ = {
-			isa = PBXGroup;
-			children = (
-				5E3176DE1D1E411E00D87778 /* JasonOauthAction.h */,
-				5E3176DF1D1E411E00D87778 /* JasonOauthAction.m */,
-			);
-			name = $oauth;
 			sourceTree = "<group>";
 		};
 		5E3177901D1F229200D87778 /* Helper */ = {
@@ -2142,7 +2129,6 @@
 				FD920F2824697CE300F22E2C /* JasonLogger.m in Sources */,
 				042A7FD91FAC665B00C1A3F2 /* JasonWebsocketService.m in Sources */,
 				5E3177301D1E411F00D87778 /* JasonGeoAction.m in Sources */,
-				5E3177591D1E411F00D87778 /* JasonOauthAction.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
