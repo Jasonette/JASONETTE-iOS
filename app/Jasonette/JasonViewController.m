@@ -96,8 +96,8 @@
     self.agents = [[NSMutableDictionary alloc] init];
     
     self.focusField = nil;
-    
-    self.automaticallyAdjustsScrollViewInsets = YES;
+
+    self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
     self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"finishRefreshing" object:nil];
