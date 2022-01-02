@@ -1355,7 +1355,7 @@
     VC = (JasonViewController*)viewController;
     navigationController = viewController.navigationController;
     
-    tabController = navigationController.tabBarController;
+    tabController = (JasonTabBarController *)navigationController.tabBarController;
     tabController.delegate = self;
     
     // Only make the background white if it's being loaded modally
@@ -2377,7 +2377,7 @@
 
     UINavigationBarAppearance *navigationBarAppearance = [[UINavigationBarAppearance alloc] init];
     navigationController = v.navigationController;
-    tabController = v.tabBarController;
+    tabController = (JasonTabBarController *)v.tabBarController;
     if(!nav) {
         navigationController.navigationBar.hidden = YES;
         [JasonHelper setStatusBarBackgroundColor: [UIColor whiteColor]];
