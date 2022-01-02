@@ -2374,7 +2374,8 @@
     [self setupHeader:nav forVC:VC];
 }
 - (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController *)v{
-    
+
+    UINavigationBarAppearance *navigationBarAppearance = [[UINavigationBarAppearance alloc] init];
     navigationController = v.navigationController;
     tabController = v.tabBarController;
     if(!nav) {
@@ -2413,7 +2414,7 @@
             [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
             navigationController.navigationBar.translucent = NO;
             [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
-            
+
             navigationController.navigationBar.backgroundColor = background;
             navigationController.navigationBar.barTintColor = background;
             navigationController.navigationBar.tintColor = color;
@@ -2422,8 +2423,7 @@
         }
     }
 
-    navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-    navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-Bold" size: 18.0]};
+    navigationBarAppearance.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-Bold" size: 18.0]};
     navigationController.navigationBar.hidden = NO;
     
     if(nav[@"style"]){
@@ -2435,13 +2435,7 @@
         if(headStyle[@"color"]){
             color = [JasonHelper colorwithHexString:headStyle[@"color"] alpha:1.0];
         }
-        
-        if(headStyle[@"theme"]){
-            navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
-        } else {
-            navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-        }
-        
+
         if(headStyle[@"shy"]){
             navigationController.hidesBarsOnSwipe = YES;
         } else {
@@ -2462,13 +2456,12 @@
         if(headStyle[@"size"]){
             font_size = headStyle[@"size"];
         }
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
+        navigationBarAppearance.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
     } else {
-        navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
         navigationController.hidesBarsOnSwipe = NO;
         NSString *font_name = @"HelveticaNeue-Bold";
         NSString *font_size = @"18";
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
+        navigationBarAppearance.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
     }
 
     NSDictionary *left_menu = nav[@"left"];
@@ -2732,13 +2725,14 @@
         gradient.colors = [NSArray arrayWithObjects:(id)[gradientFrom CGColor], (id)[gradientTo CGColor], nil];
         gradient.startPoint = CGPointMake(0.0, 1.0);
         gradient.endPoint = CGPointMake(1.0, 0.0);
-        [navigationController.navigationBar setBackgroundImage:[self  imageFromLayer:gradient] forBarMetrics:UIBarMetricsDefault];
+        navigationBarAppearance.backgroundImage = [self imageFromLayer:gradient];
     }
     
     navigationController.navigationBar.backgroundColor = background;
     navigationController.navigationBar.barTintColor = background;
     navigationController.navigationBar.tintColor = color;
-    navigationController.navigationBarHidden = YES;
+    navigationController.navigationBar.scrollEdgeAppearance = navigationBarAppearance;
+    navigationController.navigationBar.standardAppearance = navigationBarAppearance;
     navigationController.navigationBarHidden = NO;
 }
 - (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y forVC: (JasonViewController *)v{
