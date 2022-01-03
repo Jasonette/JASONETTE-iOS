@@ -495,7 +495,6 @@
 		FDB723B22195FCF500468F0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FDE48C7F23204463000A6302 /* NativeAppHeader.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NativeAppHeader.png; sourceTree = "<group>"; };
 		FDE48C832321915E000A6302 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
-		FDE48C8523229076000A6302 /* UIColor+NamedColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+NamedColors.h"; sourceTree = "<group>"; };
 		FDE48C862326ACED000A6302 /* home_header.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = home_header.json; sourceTree = "<group>"; };
 		FDE48C88232BD1D8000A6302 /* checkbox_unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = checkbox_unchecked.png; path = ../../fastlane/shared_assets/checkbox_unchecked.png; sourceTree = "<group>"; };
 		FDE48C89232BD1D8000A6302 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
@@ -1001,7 +1000,6 @@
 				5E31778A1D1F204600D87778 /* Lib */,
 				488D518B218752A1000B9658 /* JasonTabBarController.swift */,
 				488D518F21875713000B9658 /* Jasonette-Bridging-Header.h */,
-				FDE48C8523229076000A6302 /* UIColor+NamedColors.h */,
 				FD920F242465B7B800F22E2C /* WKWebview+EvaluateJavascript.h */,
 			);
 			name = Core;

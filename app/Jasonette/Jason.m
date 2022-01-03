@@ -12,7 +12,6 @@
 #import "SDImageCache.h"
 #import "SDWebImageDownloader.h"
 #import "Finalsite-Swift.h"
-#import "UIColor+NamedColors.h"
 
 @interface Jason(){
     UINavigationController *navigationController;
@@ -334,7 +333,7 @@
         if (self->loadingOverlayView) {
             self->loadingOverlayView.hidden = NO;
         } else {
-            UIColor *baseIndicatorColor = [UIColor colorPrimaryDark];
+            UIColor *baseIndicatorColor = [UIColor colorNamed:@"ColorPrimaryDark"];
 
             self->activityIndicator = [[MDCActivityIndicator alloc] init];
             self->activityIndicator.indicatorMode = MDCActivityIndicatorModeIndeterminate;
