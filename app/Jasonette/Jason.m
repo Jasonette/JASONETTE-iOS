@@ -12,7 +12,6 @@
 #import "SDImageCache.h"
 #import "SDWebImageDownloader.h"
 #import "Finalsite-Swift.h"
-#import "UIColor+NamedColors.h"
 
 @interface Jason(){
     UINavigationController *navigationController;
@@ -321,11 +320,8 @@
                                            return style;
                                        }];
         [JDStatusBarNotification showWithStatus:@"Loading" styleName:@"SBStyle1"];
-        if(navigationController.navigationBar.barStyle == UIStatusBarStyleDefault){
-            [JDStatusBarNotification showActivityIndicator:YES indicatorStyle:UIActivityIndicatorViewStyleWhite];
-        } else {
-            [JDStatusBarNotification showActivityIndicator:YES indicatorStyle:UIActivityIndicatorViewStyleGray];
-        }
+        [JDStatusBarNotification showActivityIndicator:YES indicatorStyle:UIActivityIndicatorViewStyleMedium];
+
     } else {
         if([JDStatusBarNotification isVisible]){
             [JDStatusBarNotification dismissAnimated:YES];
@@ -337,7 +333,7 @@
         if (self->loadingOverlayView) {
             self->loadingOverlayView.hidden = NO;
         } else {
-            UIColor *baseIndicatorColor = [UIColor colorPrimaryDark];
+            UIColor *baseIndicatorColor = [UIColor colorNamed:@"ColorPrimaryDark"];
 
             self->activityIndicator = [[MDCActivityIndicator alloc] init];
             self->activityIndicator.indicatorMode = MDCActivityIndicatorModeIndeterminate;
@@ -362,7 +358,7 @@
             self->activityIndicatorText.center = self->activityIndicator.center;
             [self->loadingOverlayView addSubview:self->activityIndicatorText];
             
-            UIWindow *currentWindow = [UIApplication sharedApplication].keyWindow;
+            UIWindow *currentWindow = [JasonHelper getKeyWindow];
             [currentWindow addSubview:self->loadingOverlayView];
             
         }
@@ -1358,7 +1354,7 @@
     VC = (JasonViewController*)viewController;
     navigationController = viewController.navigationController;
     
-    tabController = navigationController.tabBarController;
+    tabController = (JasonTabBarController *)navigationController.tabBarController;
     tabController.delegate = self;
     
     // Only make the background white if it's being loaded modally
@@ -1747,7 +1743,7 @@
                 // string type (old version, will deprecate)
                 dict = (NSDictionary *)data;
             } else {
-                dict = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                dict = (NSDictionary*) [JasonHelper unarchivedObjectOfClass:[NSDictionary class] fromData:data];
             }
             if(dict && dict.count > 0) {
                 data_stub[@"$global"] = dict;
@@ -1849,7 +1845,7 @@
         NSString *path = [documentsDirectory stringByAppendingPathComponent:normalized_url];
         NSData *data = [NSData dataWithContentsOfFile:path];
         if(data && data.length > 0){
-            NSDictionary *responseObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            NSDictionary *responseObject = [JasonHelper unarchivedObjectOfClass:[NSDictionary class] fromData:data];
             if(responseObject && responseObject[@"$jason"] && responseObject[@"$jason"][@"head"] && responseObject[@"$jason"][@"head"][@"offline"]){
                 // get rid of $load and $show so they don't get triggered
                 if(responseObject[@"$jason"][@"head"][@"actions"] && responseObject[@"$jason"][@"head"][@"actions"][@"$load"]){
@@ -2377,9 +2373,10 @@
     [self setupHeader:nav forVC:VC];
 }
 - (void)setupHeader: (NSDictionary *)nav forVC: (JasonViewController *)v{
-    
+
+    UINavigationBarAppearance *navigationBarAppearance = [[UINavigationBarAppearance alloc] init];
     navigationController = v.navigationController;
-    tabController = v.tabBarController;
+    tabController = (JasonTabBarController *)v.tabBarController;
     if(!nav) {
         navigationController.navigationBar.hidden = YES;
         [JasonHelper setStatusBarBackgroundColor: [UIColor whiteColor]];
@@ -2416,7 +2413,7 @@
             [navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
             navigationController.navigationBar.translucent = NO;
             [JasonHelper setStatusBarBackgroundColor: [UIColor clearColor]];
-            
+
             navigationController.navigationBar.backgroundColor = background;
             navigationController.navigationBar.barTintColor = background;
             navigationController.navigationBar.tintColor = color;
@@ -2425,8 +2422,7 @@
         }
     }
 
-    navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-    navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-Bold" size: 18.0]};
+    navigationBarAppearance.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue-Bold" size: 18.0]};
     navigationController.navigationBar.hidden = NO;
     
     if(nav[@"style"]){
@@ -2438,13 +2434,7 @@
         if(headStyle[@"color"]){
             color = [JasonHelper colorwithHexString:headStyle[@"color"] alpha:1.0];
         }
-        
-        if(headStyle[@"theme"]){
-            navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
-        } else {
-            navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
-        }
-        
+
         if(headStyle[@"shy"]){
             navigationController.hidesBarsOnSwipe = YES;
         } else {
@@ -2465,13 +2455,12 @@
         if(headStyle[@"size"]){
             font_size = headStyle[@"size"];
         }
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
+        navigationBarAppearance.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
     } else {
-        navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
         navigationController.hidesBarsOnSwipe = NO;
         NSString *font_name = @"HelveticaNeue-Bold";
         NSString *font_size = @"18";
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
+        navigationBarAppearance.titleTextAttributes = @{NSForegroundColorAttributeName : color, NSFontAttributeName: [UIFont fontWithName:font_name size:[font_size integerValue]]};
     }
 
     NSDictionary *left_menu = nav[@"left"];
@@ -2730,18 +2719,19 @@
     if (hasGradient) {
         CAGradientLayer *gradient = [CAGradientLayer layer];
         CGRect updatedFrame = navigationController.navigationBar.bounds;
-        updatedFrame.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+        updatedFrame.size.height += [JasonHelper getKeyWindow].windowScene.statusBarManager.statusBarFrame.size.height;
         gradient.frame = updatedFrame;
         gradient.colors = [NSArray arrayWithObjects:(id)[gradientFrom CGColor], (id)[gradientTo CGColor], nil];
         gradient.startPoint = CGPointMake(0.0, 1.0);
         gradient.endPoint = CGPointMake(1.0, 0.0);
-        [navigationController.navigationBar setBackgroundImage:[self  imageFromLayer:gradient] forBarMetrics:UIBarMetricsDefault];
+        navigationBarAppearance.backgroundImage = [self imageFromLayer:gradient];
     }
     
     navigationController.navigationBar.backgroundColor = background;
     navigationController.navigationBar.barTintColor = background;
     navigationController.navigationBar.tintColor = color;
-    navigationController.navigationBarHidden = YES;
+    navigationController.navigationBar.scrollEdgeAppearance = navigationBarAppearance;
+    navigationController.navigationBar.standardAppearance = navigationBarAppearance;
     navigationController.navigationBarHidden = NO;
 }
 - (void)setCenterLogoLabel: (UILabel *)tLabel atY: (CGFloat)y forVC: (JasonViewController *)v{
@@ -3361,7 +3351,7 @@
                         [self unlock];
                     }
                     
-                    JasonTabBarController *root = (JasonTabBarController *)[[[UIApplication sharedApplication] keyWindow] rootViewController];
+                    JasonTabBarController *root = (JasonTabBarController *)[[JasonHelper getKeyWindow] rootViewController];
                     while (root.presentedViewController) {
                         root = (JasonTabBarController *)root.presentedViewController;
                     }
@@ -4030,7 +4020,7 @@
             if(to_store[@"$jason"]){
                 to_store[@"$jason"][@"body"] = self->VC.rendered;
             }
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:to_store];
+            NSData *data = [JasonHelper archivedDataWithRootObject:to_store];
             [data writeToFile:path atomically:YES];
             return;
         }

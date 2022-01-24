@@ -37,7 +37,7 @@
                 // string type (old version, will deprecate)
                 to_reset = (NSDictionary *)data;
             } else {
-                to_reset = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                to_reset = (NSDictionary*) [JasonHelper unarchivedObjectOfClass:[NSDictionary class] fromData:data];
             }
         } else {
             to_reset = nil;
@@ -52,7 +52,7 @@
         } else {
             mutated = [@{} mutableCopy];
         }
-        NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:mutated];
+        NSData *updated = [JasonHelper archivedDataWithRootObject:mutated];
         [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
@@ -110,7 +110,7 @@
                     // string type (old version, will deprecate)
                     to_set = (NSDictionary *)data;
                 } else {
-                    to_set = (NSDictionary*) [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                    to_set = (NSDictionary*) [JasonHelper unarchivedObjectOfClass:[NSDictionary class] fromData:data];
                 }
             } else {
                 to_set = nil;
@@ -124,13 +124,13 @@
                 mutated = [self.options mutableCopy];
             }
             
-            NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:mutated];
+            NSData *updated = [JasonHelper archivedDataWithRootObject:mutated];
             [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
             [[NSUserDefaults standardUserDefaults] synchronize];
 
         } else {
             // first time using global
-            NSData *updated = [NSKeyedArchiver archivedDataWithRootObject:self.options];
+            NSData *updated = [JasonHelper archivedDataWithRootObject:self.options];
             [[NSUserDefaults standardUserDefaults] setObject:updated forKey:global];
             [[NSUserDefaults standardUserDefaults] synchronize];
             mutated = [self.options mutableCopy];

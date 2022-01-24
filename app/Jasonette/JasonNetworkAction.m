@@ -17,13 +17,13 @@
     keychain[@"session"] = [session description];
 }
 - (void)saveCookies{
-    NSData *cookiesData = [NSKeyedArchiver archivedDataWithRootObject: [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
+    NSData *cookiesData = [JasonHelper archivedDataWithRootObject: [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject: cookiesData forKey: @"sessionCookies"];
     [defaults synchronize];
 }
 - (void)loadCookies{
-    NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData: [[NSUserDefaults standardUserDefaults] objectForKey: @"sessionCookies"]];
+    NSArray *cookies = [JasonHelper unarchivedObjectOfClass:[NSArray class] fromData:[[NSUserDefaults standardUserDefaults] objectForKey: @"sessionCookies"]]; 
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     for (NSHTTPCookie *cookie in cookies){
         [cookieStorage setCookie: cookie];

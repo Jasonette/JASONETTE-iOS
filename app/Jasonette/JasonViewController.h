@@ -28,7 +28,7 @@
 #import <GoogleMobileAds/GoogleMobileAds.h>
 #endif
 
-@interface JasonViewController : UIViewController <TTTAttributedLabelDelegate, UISearchBarDelegate, SWTableViewCellDelegate, UISearchResultsUpdating, PHFComposeBarViewDelegate, UITableViewDelegate, UITableViewDataSource
+@interface JasonViewController : UIViewController <TTTAttributedLabelDelegate, UISearchBarDelegate, SWTableViewCellDelegate, UISearchResultsUpdating, PHFComposeBarViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchControllerDelegate
 #ifdef ADS
     , GADBannerViewDelegate, GADInterstitialDelegate
 #endif
