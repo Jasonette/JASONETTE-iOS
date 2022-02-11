@@ -1004,12 +1004,15 @@
 
 + (id)unarchivedObjectOfClass:(Class)cls fromData:(NSData *)data {
     NSError *error = nil;
-    NSDictionary *dict = [NSKeyedUnarchiver unarchivedObjectOfClass:cls fromData:data error:&error];
+    NSSet *supportedClasses = [NSSet setWithObjects:[NSNull class],[NSNumber class],[NSString class],[NSMutableArray class], [NSDictionary class],nil];
+    id object = [NSKeyedUnarchiver unarchivedObjectOfClasses:supportedClasses fromData:data error:&error];
     if (error != nil) {
 #ifdef DEBUG
         NSLog(@"ERROR unarchiving data : %@", error.localizedDescription);
+        NSLog(@"ERROR unarchiving data : %@", error.userInfo.description);
 #endif
     }
-    return dict;
+
+    return object;
 }
 @end
