@@ -13,8 +13,6 @@ target 'Finalsite' do
 #  pod 'FLEX', '~> 2.0', :configurations => ['Debug']
   pod 'NSHash'
   
-  pod 'APAddressBook'
-  
   # Networking
   pod 'Reachability'#, :git => 'https://github.com/jasonelle/ios-pod-reachability.git', :branch => 'jasonelle'
   pod 'SocketRocket'#, :git => 'https://github.com/jasonelle/ios-pod-socketrocket.git', :branch => 'jasonelle'
