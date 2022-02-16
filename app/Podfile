@@ -4,7 +4,7 @@ project 'Finalsite'
 use_frameworks!
 
 target 'Finalsite' do
-  pod 'UICKeyChainStore'
+  pod 'UICKeyChainStore', :git => 'https://github.com/patrickramirezfs/UICKeyChainStore.git', :branch => 'jasonelle'
   pod 'libPhoneNumber-iOS'
   pod 'DTFoundation'
   pod 'DTCoreText', :git => 'https://github.com/jasonelle/ios-pod-dtcoretext.git', :branch => 'jasonelle'
