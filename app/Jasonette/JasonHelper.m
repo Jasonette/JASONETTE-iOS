@@ -484,7 +484,7 @@
     NSString *expression = [exp description];
     
     if([direction isEqualToString:@"vertical"]){
-        full_dimension = [[UIScreen mainScreen] bounds].size.height - [[UIApplication sharedApplication] statusBarFrame].size.height;
+        full_dimension = [[UIScreen mainScreen] bounds].size.height - [self getKeyWindow].windowScene.statusBarManager.statusBarFrame.size.height;;
     } else {
         full_dimension = [[UIScreen mainScreen] bounds].size.width;
     }
@@ -596,7 +596,7 @@
 {
     CGSize imageSize = CGSizeZero;
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = [self getKeyWindow].windowScene.interfaceOrientation;
     if (UIInterfaceOrientationIsPortrait(orientation)) {
         imageSize = [UIScreen mainScreen].bounds.size;
     } else {
@@ -976,5 +976,43 @@
         NSDictionary *settingsPlistSettings = [NSDictionary dictionaryWithContentsOfURL:file];
         return settingsPlistSettings[key];
     }
+}
+
++ (UIWindow *) getKeyWindow {
+    NSArray *windows = UIApplication.sharedApplication.windows;
+    UIWindow *keyWindow = nil;
+    for (UIWindow *window in windows) {
+        if (window.isKeyWindow) {
+            keyWindow = window;
+            break;
+        }
+    }
+    return  keyWindow;
+}
+
++ (NSData *)archivedDataWithRootObject:(id)rootObject {
+    NSError *error = nil;
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:rootObject requiringSecureCoding:NO error:&error];
+    
+    if (error != nil) {
+#ifdef DEBUG
+        NSLog(@"ERROR archiving data : %@", error.localizedDescription);
+#endif
+    }
+    return data;
+}
+
++ (id)unarchivedObjectOfClass:(Class)cls fromData:(NSData *)data {
+    NSError *error = nil;
+    NSSet *supportedClasses = [NSSet setWithObjects:[NSNull class],[NSNumber class],[NSString class],[NSMutableArray class], [NSDictionary class],nil];
+    id object = [NSKeyedUnarchiver unarchivedObjectOfClasses:supportedClasses fromData:data error:&error];
+    if (error != nil) {
+#ifdef DEBUG
+        NSLog(@"ERROR unarchiving data : %@", error.localizedDescription);
+        NSLog(@"ERROR unarchiving data : %@", error.userInfo.description);
+#endif
+    }
+
+    return object;
 }
 @end

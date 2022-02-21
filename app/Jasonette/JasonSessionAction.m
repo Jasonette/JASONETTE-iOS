@@ -66,7 +66,7 @@
             }
 
             
-            NSData *cookiesData = [NSKeyedArchiver archivedDataWithRootObject: [cookieStorage cookies]];
+            NSData *cookiesData = [JasonHelper archivedDataWithRootObject: [cookieStorage cookies]];
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject: cookiesData forKey: @"sessionCookies"];
             [defaults synchronize];
