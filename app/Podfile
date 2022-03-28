@@ -11,7 +11,7 @@ target 'Finalsite' do
   pod 'JSCoreBom', '~> 1.1.1'
   pod 'SBJson', '~> 4.0.2'
 #  pod 'FLEX', '~> 2.0', :configurations => ['Debug']
-  pod 'NSHash'
+  pod 'NSHash', :git => 'https://github.com/patrickramirezfs/NSHash.git', :branch => 'jasonelle'
   
   # Networking
   pod 'Reachability'#, :git => 'https://github.com/jasonelle/ios-pod-reachability.git', :branch => 'jasonelle'

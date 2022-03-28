@@ -1,14 +1,14 @@
 # [![INTULocationManager](https://github.com/intuit/LocationManager/blob/master/Images/INTULocationManager.png?raw=true)](#)  
 [![Build Status](http://img.shields.io/travis/intuit/LocationManager.svg?style=flat)](https://travis-ci.org/intuit/LocationManager) [![Test Coverage](http://img.shields.io/coveralls/intuit/LocationManager.svg?style=flat)](https://coveralls.io/r/intuit/LocationManager) [![Version](http://img.shields.io/cocoapods/v/INTULocationManager.svg?style=flat)](http://cocoapods.org/pods/INTULocationManager) [![Platform](http://img.shields.io/cocoapods/p/INTULocationManager.svg?style=flat)](http://cocoapods.org/pods/INTULocationManager) [![License](http://img.shields.io/cocoapods/l/INTULocationManager.svg?style=flat)](LICENSE)
 
-INTULocationManager makes it easy to get the device's current location and heading on iOS. It is an Objective-C library that also works great in Swift.
+INTULocationManager makes it easy to get the device's current location and is currently heading on iOS. It is an Objective-C library that also works great in Swift.
 
-INTULocationManager provides a block-based asynchronous API to request the current location, either once or continuously. It internally manages multiple simultaneous location and heading requests, and each one-time location request can specify its own desired accuracy level and timeout duration. INTULocationManager automatically starts location services when the first request comes in and stops location services as soon as all requests have been completed, all the while dynamically managing the power consumed by location services to reduce impact on battery life.
+INTULocationManager provides a block-based asynchronous API to request the current location, either once or continuously. It internally manages multiple simultaneous locations and heading requests, and each one-time location request can specify its own desired accuracy level and timeout duration. INTULocationManager automatically starts location services when the first request comes in and stops the location services when all requests have been completed, while dynamically managing the power consumed by location services to reduce the impact on battery life.
 
 ## What's wrong with CLLocationManager?
-CLLocationManager requires you to manually detect and handle things like permissions, stale/inaccurate locations, errors, and more. CLLocationManager uses a more traditional delegate pattern instead of the modern block-based callback pattern. And while it works fine to track changes in the user's location over time (such as for turn-by-turn navigation), it is extremely cumbersome to correctly request a single location update (such as to determine the user's current city to get a weather forecast, or to autofill an address from the current location).
+CLLocationManager requires you to manually detect and handle things like permissions, stale/inaccurate locations, errors, and more. CLLocationManager uses a more traditional delegate pattern instead of the modern block-based callback pattern. And while it works fine to track changes in the user's location over time (such as, for turn-by-turn navigation), it is extremely cumbersome to correctly request a single location update (such as to determine the user's current city to get a weather forecast, or to autofill an address from the current location).
 
-INTULocationManager makes it easy to request both the device's current location, either once or continuously, as well as the device's continuous heading. The API is extremely simple for both one-time location requests and recurring subscriptions to location updates. For one-time location requests, you can specify how accurate of a location you need, and how long you're willing to wait to get it. Significant location change monitoring is also supported. INTULocationManager is power efficient and conserves the device's battery by automatically determining and using the most efficient Core Location accuracy settings, and by automatically powering down location services (e.g. GPS or compass) as soon as they are no longer needed.
+INTULocationManager makes it easy to request both the device's current location, either once or continuously, as well as the device's continuous heading. The API is extremely simple for both one-time location requests and recurring subscriptions to location updates. For one-time location requests, you can specify how accurate of a location you need, and how long you're willing to wait to get it. Significant location change monitoring is also supported. INTULocationManager is power efficient and conserves the device's battery by automatically determining and using the most efficient Core Location accuracy settings, and by automatically powering down location services (e.g. GPS or compass) when they are no longer needed.
 
 ## Installation
 *INTULocationManager requires iOS 9.0 or later.*
@@ -45,7 +45,7 @@ INTULocationManager makes it easy to request both the device's current location,
 
 ### Manually from GitHub
 
-1. Download all the files in the [INTULocationManager subdirectory](LocationManager/INTULocationManager).
+1. Download all the files in [INTULocationManager subdirectory](LocationManager/INTULocationManager).
 1. Add the source files to your Xcode project (drag and drop is easiest).
 1. Import the `INTULocationManager.h` header.
   * Swift: Add `#import "INTULocationManager.h"` to your bridging header.
@@ -54,13 +54,16 @@ INTULocationManager makes it easy to request both the device's current location,
 ## Usage
 
 ### Requesting Permission to Access Location Services
-INTULocationManager automatically handles obtaining permission to access location services when you issue a location request and the user has not already granted your app permission to access location services.
+INTULocationManager automatically handles obtaining permission to access location services when you issue a location request and the user has not already granted your app the permission to access that location services.
 
 #### iOS 9 and above
 Starting with iOS 8, you **must** provide a description for how your app uses location services by setting a string for the key [`NSLocationWhenInUseUsageDescription`](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW26) or [`NSLocationAlwaysUsageDescription`](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW18) in your app's `Info.plist` file. INTULocationManager determines which level of permissions to request based on which description key is present. You should only request the minimum permission level that your app requires, therefore it is recommended that you use the "When In Use" level unless you require more access. If you provide values for both description keys, the more permissive "Always" level is requested.
 
 #### iOS 11
 Starting with iOS 11, you **must** provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription` in your app's `Info.plist` file.
+
+#### iOS 12
+Starting with iOS 12, you will have access to set the `desiredActivityType` as `CLActivityTypeAirborne`.
 
 ### Getting the Current Location (once)
 To get the device's current location, use the method `requestLocationWithDesiredAccuracy:timeout:block:`.
@@ -74,7 +77,16 @@ INTULocationAccuracyHouse         // 15 meters or better, received within the la
 INTULocationAccuracyRoom          // 5 meters or better, received within the last 5 seconds      -- highest accuracy
 ```
 
-The `timeout` parameter specifies how long you are willing to wait for a location with the accuracy you requested. The timeout guarantees that your block will execute within this period of time, either with a location of at least the accuracy you requested (`INTULocationStatusSuccess`), or with whatever location could be determined before the timeout interval was up (`INTULocationStatusTimedOut`). Pass `0.0` for no timeout *(not recommended)*.
+The `desiredActivityType` parameter indicated the **type of activity** that is being tracked. The possible values are:
+```objective-c
+CLActivityTypeFitness               // Track fitness activities such as walking, running, cycling, and so on
+CLActivityTypeAutomotiveNavigation  // Track location changes to the automobile
+CLActivityTypeAirborne              // Track airborne activities - iOS 12 and above
+CLActivityTypeOtherNavigation       // Track vehicular navigation that are not automobile related
+CLActivityTypeOther                 // Track unknown activities. This is the default value
+```
+
+The `timeout` parameter specifies that how long you are willing to wait for a location with the accuracy you requested. The timeout guarantees that your block will execute within this period of time, either with a location of at least the accuracy you requested (`INTULocationStatusSuccess`), or with whichever location could be determined before the timeout interval was up (`INTULocationStatusTimedOut`). Pass `0.0` for no timeout *(not recommended)*.
 
 By default, the timeout countdown begins as soon as the `requestLocationWithDesiredAccuracy:timeout:block:` method is called. However, there is another variant of this method that includes a `delayUntilAuthorized:` parameter, which allows you to pass `YES` to delay the start of the timeout countdown until the user has responded to the system location services permissions prompt (if the user hasn't allowed or denied the app access yet).
 
@@ -143,7 +155,7 @@ INTULocationManager *locMgr = [INTULocationManager sharedInstance];
 ```
 
 ### Subscribing to Significant Location Changes
-To subscribe to significant location changes, use the method `subscribeToSignificantLocationChangesWithBlock:`. This instructs location services to begin monitoring for significant location changes, which is very power efficient. The block will execute indefinitely (until canceled), once for every new updated location regardless of its accuracy. Note that if there are other simultaneously active location requests or subscriptions, the block will execute for every location update (not just for significant location changes). If you intend to take action only when the location has changed significantly, you should implement custom filtering based on the distance & time from the last received location.
+To subscribe the significant location changes, use the method `subscribeToSignificantLocationChangesWithBlock:`. This instructs the location services to begin monitoring for significant location changes, which is very power efficient. The block will execute indefinitely (until canceled), once for every new updated location regardless of its accuracy. Note that if there are other simultaneously active location requests or subscriptions, the block will execute for every location update (not just for significant location changes). If you intend to take action only when the location has changed significantly, you should implement custom filtering based on the distance & time received from the last location.
 
 If an error occurs, the block will execute with a status other than `INTULocationStatusSuccess`, and the subscription will be kept alive.
 

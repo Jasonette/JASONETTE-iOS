@@ -6,6 +6,13 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
+#import <Availability.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 /**
  A Progress indicator shaped like a pie chart. If you don't specify a color then the current tintColor is used. This is useful when using it as a subview of a UIVisualEffectsView with vibrancy effect. Then all subviews using tintColor have the vibrancy applied.
  */
@@ -28,3 +35,5 @@
 + (DTPieProgressIndicator *)pieProgressIndicator;
 
 @end
+
+#endif

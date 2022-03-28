@@ -55,7 +55,6 @@
                  ^(NSData *data, NSURLResponse *response, NSError *error) {
                      FSXMLHttpRequest *strongSelf = weakSelf;
                      
-                     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
                      if(error) {
                          strongSelf->_lastError = FSXMLHttpRequestError_Connection_Failed;
                          
@@ -66,16 +65,19 @@
                              strongSelf.onFailure();
                          });
                      } else {
-                         if (httpResponse.statusCode != 200) {
-                             strongSelf->_lastError = FSXMLHttpRequestError_Invalid_Http_Status;
-                             
-#if defined(DEBUG) || (TARGET_IPHONE_SIMULATOR)
-                             NSLog(@"FSXMLHttpRequest: Unable to receive content for URL: %@", strongSelf.url);
-#endif
-                             dispatch_async(dispatch_get_main_queue(), ^(){
-                                 strongSelf.onFailure();
-                             });
-                             return;
+                         if ([response isKindOfClass:[NSHTTPURLResponse class]]){
+                             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+                             if (httpResponse.statusCode != 200) {
+                                 strongSelf->_lastError = FSXMLHttpRequestError_Invalid_Http_Status;
+                              
+ #if defined(DEBUG) || (TARGET_IPHONE_SIMULATOR)
+                                 NSLog(@"FSXMLHttpRequest: Unable to receive content for URL: %@", strongSelf.url);
+ #endif
+                                 dispatch_async(dispatch_get_main_queue(), ^(){
+                                     strongSelf.onFailure();
+                                 });
+                                 return;
+                             }
                          }
                          
                          const char *encoding = [self detectEncoding:data];

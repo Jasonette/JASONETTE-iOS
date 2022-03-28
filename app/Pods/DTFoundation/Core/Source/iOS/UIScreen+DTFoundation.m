@@ -8,6 +8,10 @@
 
 #import "UIScreen+DTFoundation.h"
 
+#if TARGET_OS_IPHONE && !TARGET_OS_TV && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 @implementation UIScreen (DTFoundation)
 
 - (UIInterfaceOrientation)orientation {
@@ -26,3 +30,5 @@
 }
 
 @end
+
+#endif

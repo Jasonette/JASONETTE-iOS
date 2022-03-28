@@ -6,6 +6,13 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
+#import <Availability.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 /**
  Methods to add simple block-based actions to UIViews.
  */
@@ -25,3 +32,5 @@
 - (void)setLongPressActionWithBlock:(void (^)(void))block;
 
 @end
+
+#endif

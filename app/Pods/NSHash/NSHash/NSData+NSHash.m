@@ -20,12 +20,16 @@
 
 @implementation NSData (NSHash_AdditionalHashingAlgorithms)
 
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 - (nonnull NSData*) MD5 {
-	unsigned int outputLength = CC_MD5_DIGEST_LENGTH;
-	unsigned char output[outputLength];
-	
-	CC_MD5(self.bytes, (unsigned int) self.length, output);
-	return [NSData dataWithBytes:output length:outputLength];
+    unsigned int outputLength = CC_MD5_DIGEST_LENGTH;
+    unsigned char output[outputLength];
+    
+    CC_MD5(self.bytes, (unsigned int) self.length, output);
+    return [NSData dataWithBytes:output length:outputLength];
 }
 
 - (nonnull NSString*) MD5String {
@@ -35,6 +39,9 @@
     CC_MD5(self.bytes, (unsigned int) self.length, output);
     return [self toHexString:output length:outputLength];
 }
+
+
+#pragma clang diagnostic pop
 
 - (nonnull NSData*) SHA1 {
 	unsigned int outputLength = CC_SHA1_DIGEST_LENGTH;

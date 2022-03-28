@@ -1,6 +1,7 @@
 # TDOAuth
 
-[![CI Status](https://img.shields.io/travis/Yahoo/TDOAuth.svg?style=flat)](https://travis-ci.org/Yahoo/TDOAuth)
+[![CI Status](https://github.com/yahoo/TDOAuth/workflows/TDOAuth%20CI/badge.svg?branch=master)](https://github.com/yahoo/TDOAuth/actions)
+[![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg)](https://github.com/apple/swift-package-manager)
 [![Version](https://img.shields.io/cocoapods/v/TDOAuth.svg?style=flat)](https://cocoapods.org/pods/TDOAuth)
 [![License](https://img.shields.io/cocoapods/l/TDOAuth.svg?style=flat)](https://cocoapods.org/pods/TDOAuth)
 [![Platform](https://img.shields.io/cocoapods/p/TDOAuth.svg?style=flat)](https://cocoapods.org/pods/TDOAuth)
@@ -15,12 +16,18 @@ Swift 4, 4.2 or 5. The pure-Swift subspec has no dependencies.
 
 ## Installation
 
+### CocoaPods
+
 TDOAuth is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
 pod 'TDOAuth'
 ```
+
+### SwiftPM
+
+Add `.package(url: "https://github.com/yahoo/TDOAuth.git", from: "1.5.0")` to your `package.swift`
 
 ## Usage (Swift)
 
@@ -141,7 +148,7 @@ NSURLRequest * request = [TDOAuth URLRequestForPath:@"/v1/service/name"
 
 ## Author
 
-Adam Kaplan, adamkaplan@verizonmedia.com
+Adam Kaplan, adamkaplan@yahooinc.com
 
 ## License
 

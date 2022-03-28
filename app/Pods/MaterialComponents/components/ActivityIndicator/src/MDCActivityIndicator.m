@@ -32,6 +32,7 @@ static const CGFloat kCycleRotation = (CGFloat)(3.0 / 2);
 static const CGFloat kOuterRotationIncrement = (CGFloat)(1.0 / kTotalDetentCount) * (CGFloat)M_PI;
 static const CGFloat kSpinnerRadius = 12;
 static const CGFloat kStrokeLength = (CGFloat)0.75;
+static const CGFloat kStrokeWidth = (CGFloat)2.5;
 
 #ifndef CGFLOAT_EPSILON
 #if CGFLOAT_IS_DOUBLE
@@ -171,7 +172,7 @@ static const CGFloat kSingleCycleRotation =
 
   // Property defaults.
   _radius = kSpinnerRadius;
-  _strokeWidth = 2;
+  _strokeWidth = kStrokeWidth;
 
   // Colors.
   _cycleColorsIndex = 0;

@@ -28,23 +28,34 @@
 
 @implementation REMenuContainerView
 
+
 - (void)layoutSubviews
+
+
 {
     [super layoutSubviews];
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    CGFloat landscapeOffset = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 32.0 : 44.0;
-    
-    if (self.navigationBar && !self.appearsBehindNavigationBar) {
-        CGRect frame = self.frame;
-        frame.origin.y = self.navigationBar.frame.origin.y + (UIInterfaceOrientationIsPortrait(orientation) ? 44.0 : landscapeOffset);
-        self.frame = frame;
-    }
-    
-    if (self.appearsBehindNavigationBar) {
-        CGRect frame = self.frame;
-        frame.origin.y = (UIInterfaceOrientationIsPortrait(orientation) ? 44.0 : landscapeOffset) - 44;
-        self.frame = frame;
+    if (@available(iOS 13.0, *)) {
+        UIWindow *firstWindow =  [[UIApplication sharedApplication] delegate].window;
+        UIWindowScene *windowScene = firstWindow.windowScene;
+        
+        UIInterfaceOrientation landscapeOrientation =   UIInterfaceOrientationIsLandscape(windowScene.interfaceOrientation);
+        
+        CGFloat landscapeOffset =  UIUserInterfaceIdiomPhone ? 32.0 : 44.0;
+        
+        if (self.navigationBar && !self.appearsBehindNavigationBar) {
+            CGRect frame = self.frame;
+            frame.origin.y = self.navigationBar.frame.origin.y + (!landscapeOrientation ? 44.0 : landscapeOffset);
+            self.frame = frame;
+        }
+        
+        if (self.appearsBehindNavigationBar) {
+            CGRect frame = self.frame;
+            frame.origin.y = (!landscapeOrientation ? 44.0 : landscapeOffset) - 44;
+            self.frame = frame;
+        }
+    }else{
+        
     }
 }
 

@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 /**
  Class to represent a variable or parameter in a Objective-C scripting expression
  */

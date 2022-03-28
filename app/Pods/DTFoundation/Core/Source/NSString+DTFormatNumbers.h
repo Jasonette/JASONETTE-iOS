@@ -6,6 +6,7 @@
 //  Copyright (c) 2011 Cocoanetics. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 
 /** 
  A collection of category extensions for `NSString` dealing with the formatting of numbers in special contexts. 

@@ -1,6 +1,6 @@
 ![Motion Animator Banner](img/motion-animator-banner.gif)
 
-> An animator for iOS 8+ that combines the best aspects of modern UIView and CALayer animation APIs.
+> An animator for iOS 9+ that combines the best aspects of modern UIView and CALayer animation APIs.
 
 [![Build Status](https://travis-ci.org/material-motion/motion-animator-objc.svg?branch=develop)](https://travis-ci.org/material-motion/motion-animator-objc)
 [![codecov](https://codecov.io/gh/material-motion/motion-animator-objc/branch/develop/graph/badge.svg)](https://codecov.io/gh/material-motion/motion-animator-objc)
@@ -16,7 +16,7 @@
   <tr><td>🎉</td><td>Consistent model layer value expectations.</td></tr>
 </table>
 
-The following properties can be implicitly animated using the MotionAnimator on iOS 8 and up:
+The following properties can be implicitly animated using the MotionAnimator on iOS 9 and up:
 
 <table>
   <tr><td>CALayer <tt>anchorPoint</tt></td></tr>
@@ -71,7 +71,7 @@ UIView.animate(withDuration: 1.0, animations: {
 })
 
 MotionAnimator.animate(withDuration: 1.0, animations: {
-  view.layer.cornerRadius = 10 // Works on iOS 8 and up
+  view.layer.cornerRadius = 10 // Works on iOS 9 and up
 })
 ```
 
@@ -443,7 +443,7 @@ UIView.animate(withDuration: 0.8, animations: {
   view.layer.borderWidth = 10
 }, completion: nil)
 
-// This works all the way back to iOS 8.
+// This works back to iOS 9.
 MotionAnimator.animate(withDuration: 0.8, animations: {
   view.layer.borderWidth = 10
 }, completion: nil)

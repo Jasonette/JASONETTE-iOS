@@ -7,6 +7,9 @@
 //
 
 #import "DTAlertView.h"
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
 #import "DTLog.h"
 
 #if !TARGET_OS_TV  && __IPHONE_OS_VERSION_MIN_REQUIRED < 80000
@@ -183,4 +186,6 @@
 }
 
 @end
+#endif
+
 #endif

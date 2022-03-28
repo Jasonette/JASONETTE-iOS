@@ -7,6 +7,9 @@
 //
 
 #import "DTSidePanelControllerSegue.h"
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
 #import "DTSidePanelController.h"
 
 
@@ -103,3 +106,5 @@
 }
 
 @end
+
+#endif

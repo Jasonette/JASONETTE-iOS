@@ -7,6 +7,9 @@
 //
 
 #import "UIView+DTDebug.h"
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
 #import "NSObject+DTRuntime.h"
 #import "DTLog.h"
 
@@ -58,3 +61,5 @@
 }
 
 @end
+
+#endif

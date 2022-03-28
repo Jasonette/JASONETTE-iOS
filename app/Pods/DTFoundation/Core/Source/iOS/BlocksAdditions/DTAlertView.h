@@ -6,10 +6,15 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
-#import <DTFoundation/DTWeakSupport.h>
 #import <Availability.h>
+#import <TargetConditionals.h>
 
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
 #if !TARGET_OS_TV && __IPHONE_OS_VERSION_MIN_REQUIRED < 80000
+
+@import UIKit;
+
+#import <DTFoundation/DTWeakSupport.h>
 
 // the block to execute when an alert button is tapped
 typedef void (^DTAlertViewBlock)(void);
@@ -57,4 +62,6 @@ typedef void (^DTAlertViewBlock)(void);
 @property (nonatomic, DT_WEAK_PROPERTY) id<UIAlertViewDelegate> alertViewDelegate;
 
 @end
+#endif
+
 #endif

@@ -8,6 +8,10 @@
 
 #import "NSURL+DTAppLinks.h"
 
+#if TARGET_OS_IPHONE
+
+#import <UIKit/UIKit.h>
+
 @implementation NSURL (DTAppLinks)
 
 + (NSURL *)appStoreURLforApplicationIdentifier:(NSString *)identifier
@@ -24,3 +28,5 @@
 }
 
 @end
+
+#endif

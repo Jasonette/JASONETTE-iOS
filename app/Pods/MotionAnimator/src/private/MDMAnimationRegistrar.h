@@ -25,7 +25,7 @@
 // executed.
 - (void)addAnimation:(nonnull CABasicAnimation *)animation
              toLayer:(nonnull CALayer *)layer
-              forKey:(nonnull NSString *)key
+              forKey:(nullable NSString *)key
           completion:(void(^ __nullable)(BOOL))completion;
 
 // For every active animation, reads the associated layer's presentation layer key path and writes

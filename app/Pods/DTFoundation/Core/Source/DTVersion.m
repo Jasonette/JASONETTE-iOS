@@ -8,6 +8,10 @@
 
 #import "DTVersion.h"
 
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#endif
+
 @implementation DTVersion
 
 #pragma mark Creating Versions
@@ -109,7 +113,7 @@
 	static DTVersion *version = nil;
 	
 	dispatch_once(&onceToken, ^{
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE && !TARGET_OS_TV && !TARGET_OS_WATCH
 		NSString *versionStr = [[UIDevice currentDevice] systemVersion];
 		version = [DTVersion versionWithString:versionStr];
 #else

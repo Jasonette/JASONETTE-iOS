@@ -8,6 +8,8 @@
 
 #import "UIView+DTActionHandlers.h"
 
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
 #import <objc/runtime.h>
 
 static char kDTActionHandlerTapBlockKey;
@@ -72,3 +74,5 @@ static char kDTActionHandlerLongPressGestureKey;
 }
 
 @end
+
+#endif

@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 /**
  Represents a node in a DTZipArchive, i.e. a folder or a file. Holds important values for files or directories to uncompress.
  */

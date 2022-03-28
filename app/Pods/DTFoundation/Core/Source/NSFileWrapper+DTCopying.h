@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 /**
  Methods for copying file wrappers.
  */

@@ -8,6 +8,10 @@
 
 #import "DTActivityTitleView.h"
 
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 @interface DTActivityTitleView ()
 
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
@@ -31,11 +35,18 @@
 		
 		if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 		{
-#if TARGET_OS_TV
-			self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-#else
-            self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-#endif
+			if (@available(iOS 13, tvOS 13, *)) {
+				self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+			}
+			else
+			{
+				#if TARGET_OS_TV
+				self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+				#else
+				self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+				#endif
+			}
+			
 			self.titleLabel.textColor = [UIColor colorWithRed:113.0/255.0 green:120.0/255.0 blue:128.0/255.0 alpha:1.0];
 			self.titleLabel.shadowOffset = CGSizeMake(0, 1);
 			self.titleLabel.shadowColor = [UIColor whiteColor];
@@ -114,3 +125,5 @@
 @synthesize activityIndicator = _activityIndicator;
 
 @end
+
+#endif

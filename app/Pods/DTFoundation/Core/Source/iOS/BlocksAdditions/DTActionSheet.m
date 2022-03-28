@@ -7,6 +7,9 @@
 //
 
 #import "DTActionSheet.h"
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
 #import <DTFoundation/DTWeakSupport.h>
 
 #import "DTLog.h"
@@ -181,4 +184,6 @@
 }
 
 @end
+#endif
+
 #endif
