@@ -42,8 +42,7 @@ target 'Finalsite' do
   
   pod "NSGIF", "~> 1.0"
   pod 'INTULocationManager'
-  pod "AHKActionSheet"
-  
+  pod 'AHKActionSheet', :git => 'https://github.com/patrickramirezfs/AHKActionSheet.git', :branch => 'jasonelle-fs'
   pod "CYRTextView"
   
   pod 'SZTextView'
