@@ -37,7 +37,7 @@ target 'Finalsite' do
   pod 'BBBadgeBarButtonItem'
   
   pod 'REMenu'
-  pod 'JDStatusBarNotification'
+  pod 'JDStatusBarNotification', :git => 'https://github.com/patrickramirezfs/JDStatusBarNotification.git', :branch => 'jasonelle-fs'
   pod 'HMSegmentedControl'
   pod "SWFrameButton"
   
