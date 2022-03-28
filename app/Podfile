@@ -25,8 +25,7 @@ target 'Finalsite' do
   pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
   
   # Views
-  pod 'MBProgressHUD', '~> 1.0'
-  
+  pod 'MBProgressHUD', :git => 'https://github.com/patrickramirezfs/MBProgressHUD.git', :branch => 'jasonelle'
   pod 'TWMessageBarManager'
   
   pod 'SWTableViewCell', :git => 'https://github.com/finalsite/SWTableViewCell.git'
