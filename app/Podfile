@@ -50,7 +50,7 @@ target 'Finalsite' do
   
   pod 'DHSmartScreenshot'
   
-  pod "RMDateSelectionViewController"
+  pod 'RMDateSelectionViewController', :git => 'https://github.com/patrickramirezfs/RMDateSelectionViewController.git', :branch => 'jasonelle-fs'
   
   pod 'PHFComposeBarView'
   pod 'DAKeyboardControl'
