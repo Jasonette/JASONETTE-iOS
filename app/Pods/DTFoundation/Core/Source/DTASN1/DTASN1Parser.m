@@ -9,7 +9,6 @@
 #import "DTASN1Parser.h"
 #import "DTASN1BitString.h"
 #import <DTFoundation/DTWeakSupport.h>
-#import "DTLog.h"
 
 @implementation DTASN1Parser
 {
@@ -129,7 +128,7 @@
 	else
 	{
 		// length 0x80 means "indefinite"
-		[self _parseErrorEncountered:@"Indefinite Length form encounted, not implemented"];
+		retValue = NSUIntegerMax;
 	}
 	
 	if (lengthOfLength)
@@ -404,7 +403,7 @@
 	return YES;
 }
 
-- (BOOL)_parseRange:(NSRange)range
+- (BOOL)_parseRange:(NSRange)range actualLength:(NSUInteger *)actualLength
 {
 	_parseLevel++;
 	
@@ -444,8 +443,18 @@
 		
 		location += lengthOfLength;
 		
+		NSRange subRange;
+		
+		if (length == NSUIntegerMax)
+		{
+			subRange = NSMakeRange(location, _dataLength - location);
+		}
+		else
+		{
+			subRange = NSMakeRange(location, length);
+		}
+		
 		// make range
-		NSRange subRange = NSMakeRange(location, length);
 		
 		if (NSMaxRange(subRange) > NSMaxRange(range))
 		{
@@ -475,9 +484,17 @@
 			// allow for sequence without content
 			if (subRange.length > 0)
 			{
-				if (![self _parseRange:subRange])
+				NSUInteger actualLength;
+				
+				if (![self _parseRange:subRange actualLength:&actualLength])
 				{
 					_abortParsing = YES;
+					break;
+				}
+				
+				if (length == NSUIntegerMax)
+				{
+					length = actualLength;
 				}
 			}
 			
@@ -488,6 +505,23 @@
 		}
 		else
 		{
+			if (tagType == DTASN1TypeEOC)
+			{
+				if (actualLength)
+				{
+					*actualLength = location - range.location;
+				}
+				
+				break;
+			}
+			
+			
+			if (length == NSUIntegerMax)
+			{
+				[self _parseErrorEncountered:@"Indefinite length not implemented for primitive types"];
+				return NO;
+			}
+			
 			// primitive
 			if (![self _parseValueWithTag:tagType dataRange:subRange])
 			{
@@ -503,17 +537,12 @@
 			}
 		}
 		
+		NSAssert(length < NSUIntegerMax, @"Invalid Length");
+		
 		// advance
 		location += length;
 		
 	} while (location < NSMaxRange(range));
-	
-	// check that previous length matches up with where we ended up
-	if (location != NSMaxRange(range))
-	{
-		[self _parseErrorEncountered:@"Location not matching up with end of range"];
-		return NO;
-	}
 	
 	_parseLevel--;
 	
@@ -529,7 +558,7 @@
 			[_delegate parserDidStartDocument:self];
 		}
 		
-		BOOL result = [self _parseRange:NSMakeRange(0, _dataLength)];
+		BOOL result = [self _parseRange:NSMakeRange(0, _dataLength) actualLength:NULL];
 		
 		if (result && _delegateFlags.delegateSupportsDocumentEnd)
 		{

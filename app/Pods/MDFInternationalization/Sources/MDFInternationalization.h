@@ -16,11 +16,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import <MDFInternationalization/MDFRTL.h>
-#import <MDFInternationalization/NSLocale+MaterialRTL.h>
-#import <MDFInternationalization/NSString+MaterialBidi.h>
-#import <MDFInternationalization/UIImage+MaterialRTL.h>
-#import <MDFInternationalization/UIView+MaterialRTL.h>
+#import "MDFRTL.h"  // IWYU pragma: export
+#import "NSLocale+MaterialRTL.h"  // IWYU pragma: export
+#import "NSString+MaterialBidi.h"  // IWYU pragma: export
+#import "UIImage+MaterialRTL.h"  // IWYU pragma: export
+#import "UIView+MaterialRTL.h"  // IWYU pragma: export
 
 //! Project version number for MDFInternationalization.
 FOUNDATION_EXPORT double MDFInternationalizationVersionNumber;

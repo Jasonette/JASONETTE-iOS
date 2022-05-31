@@ -6,6 +6,13 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
+#import <Availability.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 /**
  Methods to help with working with images.
  */
@@ -104,3 +111,5 @@
 - (UIImage *)imageScaledToSize:(CGSize)newSize;
 
 @end
+
+#endif

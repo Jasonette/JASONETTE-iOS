@@ -379,7 +379,11 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
                 activityIndicator.color = [UIColor whiteColor];
 #if !TARGET_OS_MACCATALYST
             } else {
-               activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+                if (@available(iOS 13.0, *)) {
+                    activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge];
+                } else {
+                    // Fallback on earlier versions
+                }
             }
 #endif
             [activityIndicator startAnimating];
@@ -743,14 +747,14 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
     [nc addObserver:self selector:@selector(statusBarOrientationDidChange:)
-               name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+               name:UIDeviceOrientationDidChangeNotification object:nil];
 #endif
 }
 
 - (void)unregisterFromNotifications {
 #if !TARGET_OS_TV && !TARGET_OS_MACCATALYST
     NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    [nc removeObserver:self name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    [nc removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 #endif
 }
 

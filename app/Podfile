@@ -4,16 +4,14 @@ project 'Finalsite'
 use_frameworks!
 
 target 'Finalsite' do
-  pod 'UICKeyChainStore'
+  pod 'UICKeyChainStore', :git => 'https://github.com/patrickramirezfs/UICKeyChainStore.git', :branch => 'jasonelle'
   pod 'libPhoneNumber-iOS'
   pod 'DTFoundation'
   pod 'DTCoreText', :git => 'https://github.com/jasonelle/ios-pod-dtcoretext.git', :branch => 'jasonelle'
   pod 'JSCoreBom', '~> 1.1.1'
   pod 'SBJson', '~> 4.0.2'
 #  pod 'FLEX', '~> 2.0', :configurations => ['Debug']
-  pod 'NSHash'
-  
-  pod 'APAddressBook'
+  pod 'NSHash', :git => 'https://github.com/patrickramirezfs/NSHash.git', :branch => 'jasonelle'
   
   # Networking
   pod 'Reachability'#, :git => 'https://github.com/jasonelle/ios-pod-reachability.git', :branch => 'jasonelle'
@@ -27,8 +25,7 @@ target 'Finalsite' do
   pod 'FreeStreamer', :git => "https://github.com/muhku/FreeStreamer.git"
   
   # Views
-  pod 'MBProgressHUD', '~> 1.0'
-  
+  pod 'MBProgressHUD', :git => 'https://github.com/patrickramirezfs/MBProgressHUD.git', :branch => 'jasonelle'
   pod 'TWMessageBarManager'
   
   pod 'SWTableViewCell', :git => 'https://github.com/finalsite/SWTableViewCell.git'
@@ -39,21 +36,20 @@ target 'Finalsite' do
   pod 'BBBadgeBarButtonItem'
   
   pod 'REMenu'
-  pod 'JDStatusBarNotification'
+  pod 'JDStatusBarNotification', :git => 'https://github.com/patrickramirezfs/JDStatusBarNotification.git', :branch => 'jasonelle-fs'
   pod 'HMSegmentedControl'
   pod "SWFrameButton"
   
   pod "NSGIF", "~> 1.0"
   pod 'INTULocationManager'
-  pod "AHKActionSheet"
-  
+  pod 'AHKActionSheet', :git => 'https://github.com/patrickramirezfs/AHKActionSheet.git', :branch => 'jasonelle-fs'
   pod "CYRTextView"
   
   pod 'SZTextView'
   
   pod 'DHSmartScreenshot'
   
-  pod "RMDateSelectionViewController"
+  pod 'RMDateSelectionViewController', :git => 'https://github.com/patrickramirezfs/RMDateSelectionViewController.git', :branch => 'jasonelle-fs'
   
   pod 'PHFComposeBarView'
   pod 'DAKeyboardControl'

@@ -6,6 +6,13 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
+#import <Availability.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 /**
  Constant used by DTCustomColoredAccessory to specify the type of accessory.
  */
@@ -98,3 +105,5 @@ typedef NS_ENUM(NSUInteger, DTCustomColoredAccessoryType)
 @property (nonatomic, assign)  DTCustomColoredAccessoryType type;
 
 @end
+
+#endif

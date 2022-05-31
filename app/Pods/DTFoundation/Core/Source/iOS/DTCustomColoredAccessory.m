@@ -8,6 +8,9 @@
 
 #import "DTCustomColoredAccessory.h"
 
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
 
 @implementation DTCustomColoredAccessory
 {
@@ -235,3 +238,5 @@
 @synthesize type = _type;
 
 @end
+
+#endif

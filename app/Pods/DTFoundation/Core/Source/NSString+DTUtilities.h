@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 
 /** 
  A collection of utility additions for `NSString`.

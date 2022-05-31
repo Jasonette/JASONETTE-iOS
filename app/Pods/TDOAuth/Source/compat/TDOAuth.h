@@ -30,10 +30,15 @@
 #import <Foundation/Foundation.h>
 #import <Availability.h>
 
+#ifdef SWIFT_PACKAGE
+@import TDOAuthCompat;
+#else
 typedef NS_ENUM(NSInteger, TDOAuthSignatureMethod) {
     TDOAuthSignatureMethodHmacSha1,
     TDOAuthSignatureMethodHmacSha256,
 };
+#endif
+
 typedef NS_ENUM(NSInteger, TDOAuthContentType) {
     TDOAuthContentTypeUrlEncodedForm,
     TDOAuthContentTypeJsonObject,

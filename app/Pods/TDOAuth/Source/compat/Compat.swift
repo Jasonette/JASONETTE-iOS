@@ -1,7 +1,15 @@
-// Copyright 2020, Verizon Media.
+// Copyright 2021, Yahoo Inc.
 // Licensed under the terms of the MIT license. See LICENSE file in https://github.com/yahoo/TDOAuth for terms.
 
 import Foundation
+
+#if SWIFT_PACKAGE
+import TDOAuthSwift
+
+@objc public enum TDOAuthSignatureMethod: Int {
+    case hmacSha1, hmacSha256
+}
+#endif
 
 @objc public class TDOAuthCompat: NSObject {
 

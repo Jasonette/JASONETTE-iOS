@@ -69,6 +69,8 @@ typedef NS_ENUM(NSInteger, INTULocationRequestType) {
 @property (nonatomic, readonly) BOOL isRecurring;
 /** The desired accuracy for this location request. */
 @property (nonatomic, assign) INTULocationAccuracy desiredAccuracy;
+/** The desired activity type for this location request. */
+@property (nonatomic, assign) CLActivityType desiredActivityType;
 /** The maximum amount of time the location request should be allowed to live before completing.
     If this value is exactly 0.0, it will be ignored (the request will never timeout by itself). */
 @property (nonatomic, assign) NSTimeInterval timeout;

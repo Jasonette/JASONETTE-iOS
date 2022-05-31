@@ -10,7 +10,10 @@
 #endif
 #endif
 
+#import "NSRunLoop+SRWebSocket.h"
+#import "NSURLRequest+SRWebSocket.h"
 #import "SocketRocket.h"
+#import "SRSecurityPolicy.h"
 #import "SRWebSocket.h"
 
 FOUNDATION_EXPORT double SocketRocketVersionNumber;

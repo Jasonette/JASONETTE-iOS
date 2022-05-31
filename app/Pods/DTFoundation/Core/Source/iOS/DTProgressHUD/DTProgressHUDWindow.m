@@ -7,6 +7,9 @@
 //
 
 #import "DTProgressHUDWindow.h"
+
+#if TARGET_OS_IPHONE && !TARGET_OS_TV && !TARGET_OS_WATCH
+
 #import "DTProgressHUD.h"
 #import "UIScreen+DTFoundation.h"
 
@@ -81,3 +84,5 @@ static CGAffineTransform _transformForInterfaceOrientation(UIInterfaceOrientatio
 }
 
 @end
+
+#endif

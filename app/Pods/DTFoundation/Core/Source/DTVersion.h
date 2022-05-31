@@ -5,6 +5,8 @@
 //  Created by Oliver Drobnik on 11/25/11.
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 
+#import <Foundation/Foundation.h>
+
 /**
   Class that represents a version number comprised of major, minor and maintenance number separated by dots. For example "1.2.2".
   This encapsulation simplifies comparing versions against each other. Sub-numbers that are omitted on creating a `DTVersion` are assumed to be 0.

@@ -342,7 +342,20 @@
     animation.beginTime = ([layer convertTime:CACurrentMediaTime() fromLayer:nil]
                            + traits.delay * timeScaleFactor);
     animation.fillMode = kCAFillModeBackwards;
+  } else if (@available(iOS 14, *)) {
+    // iOS 14 introduced a behavioral change for animations such that they no longer appear to
+    // immediately be committed to the render server, potentially resulting in a brief flicker to
+    // the model layer's value before the animation takes effect. This could reasonably be
+    // considered a bug in iOS.
+    // To work around this, we can explicitly enforce the contract that this animation is expected
+    // to start "now" in terms of render server timing. This does mean we may lose some microseconds
+    // of animation timing at the beginning of the animation, so we only apply this on iOS 14+ where
+    // it's needed. If and when iOS fixes this bug we can remove the following line and lean on the
+    // render server choosing the appropriate start time once the animation is flushed to the render
+    // server.
+    animation.beginTime = [layer convertTime:CACurrentMediaTime() fromLayer:nil];
   }
+
 
   [_registrar addAnimation:animation toLayer:layer forKey:key completion:completion];
 }

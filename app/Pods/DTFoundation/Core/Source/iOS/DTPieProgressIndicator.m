@@ -7,6 +7,11 @@
 //
 
 #import "DTPieProgressIndicator.h"
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 #import "DTCoreGraphicsUtils.h"
 
 #define PIE_SIZE CGFloat_(34)
@@ -109,3 +114,5 @@
 }
 
 @end
+
+#endif

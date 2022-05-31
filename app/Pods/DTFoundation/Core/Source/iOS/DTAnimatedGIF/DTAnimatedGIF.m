@@ -7,6 +7,9 @@
 //
 
 #import "DTAnimatedGIF.h"
+
+#if TARGET_OS_IPHONE
+
 #import <ImageIO/ImageIO.h>
 
 // returns the frame duration for a given image in 1/100th seconds
@@ -138,3 +141,5 @@ UIImage * _Nullable DTAnimatedGIFFromData(NSData * _Nonnull data)
 	
 	return image;
 }
+
+#endif

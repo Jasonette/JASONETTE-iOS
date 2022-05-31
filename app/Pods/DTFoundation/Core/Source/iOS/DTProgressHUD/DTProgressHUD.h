@@ -6,6 +6,13 @@
 //  Copyright 2014 Cocoanetics. All rights reserved.
 //
 
+#import <Availability.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE && !TARGET_OS_TV && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 /**
  Different types for showing and hiding animation
  */
@@ -162,3 +169,5 @@ typedef NS_ENUM(NSUInteger, HUDProgressType)
 - (void)setProgress:(float)progress;
 
 @end
+
+#endif

@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 // The block to execute if a monitored folder changes
 typedef void (^DTFolderMonitorBlock) (void);
 

@@ -7,8 +7,10 @@
 // 
 //
 
-
 #import "DTSidePanelPanGestureRecognizer.h"
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
 
 int const static kDirectionPanThreshold = 20;
 
@@ -54,3 +56,5 @@ int const static kDirectionPanThreshold = 20;
 	_moveY = 0;
 }
 @end
+
+#endif

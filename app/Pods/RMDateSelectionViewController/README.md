@@ -1,20 +1,17 @@
 RMDateSelectionViewController [![Build Status](https://travis-ci.org/CooperRS/RMDateSelectionViewController.svg?branch=master)](https://travis-ci.org/CooperRS/RMDateSelectionViewController/) [![Pod Version](https://img.shields.io/cocoapods/v/RMDateSelectionViewController.svg)](https://cocoapods.org/pods/RMDateSelectionViewController) [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 =============================
 
-This framework allows you to select a date by presenting an action sheet. In addition, it allows you to add actions arround the presented date picker which behave like a button and can be tapped by the user. The result looks very much like an UIActionSheet or UIAlertController with a UIDatePicker and some UIActions attached.
+This framework allows you to select a date by presenting an action sheet. In addition, it allows you to add actions arround the presented date picker which behave like a button and can be tapped by the user. The result looks very much like an `UIActionSheet` or `UIAlertController` with a `UIDatePicker` and some `UIActions` attached.
 
-Besides being a fully-usable project, RMDateSelectionViewController also is an example for an use case of [RMActionController](https://github.com/CooperRS/RMActionController). You can use it to learn how to present a date picker other than UIDatePicker.
+Besides being a fully-usable project, `RMDateSelectionViewController` also is an example for an use case of [RMActionController](https://github.com/CooperRS/RMActionController). You can use it to learn how to present a date picker other than `UIDatePicker`.
 
 ## Screenshots
 
 ### Portrait
 
-| White | Black |
-|:-----:|:-----:|
-|![Portrait](http://cooperrs.github.io/RMDateSelectionViewController/Images/Blur-Screen-Portrait.png)|![Colors](http://cooperrs.github.io/RMDateSelectionViewController/Images/Blur-Screen-Portrait-Black.png)|
-
-### Landscape
-![Landscape](http://cooperrs.github.com/RMDateSelectionViewController/Images/Blur-Screen-Landscape.png)
+| White | Black | Sheet White | Sheet Black |
+|:-----:|:-----:|:---:|:---:|
+|![Portrait](http://cooperrs.github.io/RMDateSelectionViewController/Images/Blur-Screen-Portrait.png) | ![Black](http://cooperrs.github.io/RMDateSelectionViewController/Images/Blur-Screen-Portrait-Black.png) | ![Sheet](http://cooperrs.github.io/RMDateSelectionViewController/Images/Blur-Screen-Portrait-Sheet.png) | ![Sheet-Black](http://cooperrs.github.io/RMDateSelectionViewController/Images/Blur-Screen-Portrait-Sheet-Black.png) |
 
 ## Demo Project
 If you want to run the demo project do not forget to initialize submodules.
@@ -27,9 +24,9 @@ pod "RMDateSelectionViewController", "~> 2.3.1"
 
 ## Usage
 
-For a detailed description on how to use RMDateSelectionViewController take a look at the [Wiki Pages](https://github.com/CooperRS/RMDateSelectionViewController/wiki). The following four steps are a very short intro:
+For a detailed description on how to use `RMDateSelectionViewController` take a look at the [Wiki Pages](https://github.com/CooperRS/RMDateSelectionViewController/wiki). The following four steps are a very short intro:
 
-* Import RMDateSelectionViewController:
+* Import `RMDateSelectionViewController`:
 
 ```objc
 #import <RMDateSelectionViewController/RMDateSelectionViewController.h>
@@ -47,7 +44,7 @@ RMAction<UIDatePicker *> *cancelAction = [RMAction<UIDatePicker *> actionWithTit
 }];
 ```
 
-* Create and instance of RMDateSelectionViewController and present it:
+* Create and instance of `RMDateSelectionViewController` and present it:
 
 ```objc
 RMDateSelectionViewController *dateSelectionController = [RMDateSelectionViewController actionControllerWithStyle:RMActionControllerStyleWhite title:@"Test" message:@"This is a test message.\nPlease choose a date and press 'Select' or 'Cancel'." selectAction:selectAction andCancelAction:cancelAction];
@@ -75,7 +72,7 @@ RMDateSelectionViewController *dateSelectionController = [RMDateSelectionViewCon
 
 ## Migration
 
-See [Migration](https://github.com/CooperRS/RMDateSelectionViewController/wiki/Migration) on how to migrate to the latest version of RMDateSelectionViewController.
+See [Migration](https://github.com/CooperRS/RMDateSelectionViewController/wiki/Migration) on how to migrate to the latest version of `RMDateSelectionViewController`.
 
 ## Documentation
 There is an additional documentation available provided by the CocoaPods team. Take a look at [cocoadocs.org](http://cocoadocs.org/docsets/RMDateSelectionViewController/).
@@ -90,7 +87,7 @@ There is an additional documentation available provided by the CocoaPods team. T
 
 Note: ARC can be turned on and off on a per file basis.
 
-Version 1.5.0 and above of RMDateSelectionViewController use custom transitions for presenting the date selection controller. Custom transitions are a new feature introduced by Apple in iOS 7. Unfortunately, custom transitions are totally broken in landscape mode on iOS 7. This issue has been fixed with iOS 8. So if your application supports landscape mode (even on iPad), version 1.5.0 and above of this control require iOS 8. Otherwise, iOS 7 should be fine. In particular, iOS 7 is fine for version 1.4.3 and below.
+Version 1.5.0 and above of `RMDateSelectionViewController` use custom transitions for presenting the date selection controller. Custom transitions are a new feature introduced by Apple in iOS 7. Unfortunately, custom transitions are totally broken in landscape mode on iOS 7. This issue has been fixed with iOS 8. So if your application supports landscape mode (even on iPad), version 1.5.0 and above of this control require iOS 8. Otherwise, iOS 7 should be fine. In particular, iOS 7 is fine for version 1.4.3 and below.
 
 ## Apps using this control
 Using this control in your app or know anyone who does?
@@ -98,7 +95,7 @@ Using this control in your app or know anyone who does?
 Feel free to add the app to this list: [Apps using RMDateSelectionViewController](https://github.com/CooperRS/RMDateSelectionViewController/wiki/Apps-using-RMDateSelectionViewController)
 
 ## Further Info
-If you want to show an UIPickerView instead of an UIDatePicker, you may take a look at my other control called [RMPickerViewController](https://github.com/CooperRS/RMPickerViewController).
+If you want to show an `UIPickerView` instead of an `UIDatePicker`, you may take a look at my other control called [RMPickerViewController](https://github.com/CooperRS/RMPickerViewController).
 
 If you want to show any other control you may want to take a look at [RMActionController](https://github.com/CooperRS/RMActionController).
 

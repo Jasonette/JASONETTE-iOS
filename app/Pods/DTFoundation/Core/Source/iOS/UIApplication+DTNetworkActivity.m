@@ -8,6 +8,10 @@
 
 #import "UIApplication+DTNetworkActivity.h"
 
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 static NSUInteger __internalOperationCount = 0;
 
 @implementation UIApplication (DTNetworkActivity)
@@ -53,3 +57,5 @@ static NSUInteger __internalOperationCount = 0;
 }
 
 @end
+
+#endif

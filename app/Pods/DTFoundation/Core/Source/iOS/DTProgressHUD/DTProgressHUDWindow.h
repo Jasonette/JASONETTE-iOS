@@ -6,6 +6,13 @@
 //  Copyright (c) 2014 Cocoanetics. All rights reserved.
 //
 
+#import <Availability.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE && !TARGET_OS_TV && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 @class DTProgressHUD;
 
 /**
@@ -20,3 +27,5 @@
 - (instancetype)initWithProgressHUD:(DTProgressHUD *)progressHUD;
 
 @end
+
+#endif

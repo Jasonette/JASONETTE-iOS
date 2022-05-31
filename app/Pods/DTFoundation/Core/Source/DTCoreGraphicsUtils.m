@@ -6,6 +6,8 @@
 //  Copyright 2010 Cocoanetics. All rights reserved.
 //
 
+#import <CoreGraphics/CoreGraphics.h>
+
 #import "DTCoreGraphicsUtils.h"
 
 CGSize DTCGSizeThatFitsKeepingAspectRatio(CGSize originalSize, CGSize sizeToFit)

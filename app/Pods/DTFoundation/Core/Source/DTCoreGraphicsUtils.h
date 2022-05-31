@@ -6,6 +6,8 @@
 //  Copyright 2010 Cocoanetics. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 #import <tgmath.h>
 
 /**

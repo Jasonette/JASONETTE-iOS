@@ -6,6 +6,13 @@
 //  Copyright (c) 2011 Cocoanetics. All rights reserved.
 //
 
+#import <Availability.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE
+
+#import <UIKit/UIKit.h>
+
 
 /** A collection of category extensions for `NSURL` that provide direct access to built-in app capabilities.
  
@@ -42,4 +49,6 @@
 + (NSURL *)appStoreReviewURLForApplicationIdentifier:(NSString *)identifier;
 
 @end
+
+#endif
 

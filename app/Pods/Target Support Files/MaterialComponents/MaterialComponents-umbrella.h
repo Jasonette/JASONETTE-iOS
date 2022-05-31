@@ -11,6 +11,7 @@
 #endif
 
 #import "MaterialActivityIndicator.h"
+#import "MDCActivityIndicator+Interface.h"
 #import "MDCActivityIndicator.h"
 #import "MDCActivityIndicatorDelegate.h"
 #import "MaterialPageControl.h"

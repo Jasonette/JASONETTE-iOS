@@ -7,7 +7,10 @@
 //
 
 #import "UIView+DTFoundation.h"
-#import <QuartzCore/QuartzCore.h>
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
 
 NSString *shadowContext = @"Shadow";
 
@@ -15,6 +18,8 @@ NSString *shadowContext = @"Shadow";
 
 - (UIImage *)snapshotImage
 {
+	NSAssert(self.bounds.size.height > 0 && self.bounds.size.width > 0, @"Trying to create a snapshot from a zero size view");
+	
 	UIGraphicsBeginImageContext(self.bounds.size);
 	[self.layer renderInContext:UIGraphicsGetCurrentContext()];
 	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
@@ -23,7 +28,7 @@ NSString *shadowContext = @"Shadow";
 	return image;
 }
 
-- (void)setRoundedCornersWithRadius:(CGFloat)radius width:(CGFloat)width color:(UIColor *)color
+- (void)setRoundedCornersWithRadius:(CGFloat)radius width:(CGFloat)width color:(UIColor * _Nullable)color
 {
 	self.clipsToBounds = YES;
 	self.layer.cornerRadius = radius;
@@ -35,7 +40,7 @@ NSString *shadowContext = @"Shadow";
 	}
 }
 
-- (void)addShadowWithColor:(UIColor *)color alpha:(CGFloat)alpha radius:(CGFloat)radius offset:(CGSize)offset
+- (void)addShadowWithColor:(UIColor * _Nullable)color alpha:(CGFloat)alpha radius:(CGFloat)radius offset:(CGSize)offset
 {
 	self.layer.shadowOpacity = alpha;
 	self.layer.shadowRadius = radius;
@@ -71,3 +76,5 @@ NSString *shadowContext = @"Shadow";
 }
 
 @end
+
+#endif

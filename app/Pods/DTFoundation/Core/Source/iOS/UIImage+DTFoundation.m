@@ -7,6 +7,11 @@
 //
 
 #import "UIImage+DTFoundation.h"
+
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
+
+#import <UIKit/UIKit.h>
+
 #import "DTCoreGraphicsUtils.h"
 #import "DTLog.h"
 
@@ -349,3 +354,5 @@
 }
 
 @end
+
+#endif
